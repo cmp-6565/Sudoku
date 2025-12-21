@@ -34,7 +34,7 @@ namespace Sudoku
             bookletSizeExisting.Enabled=!Settings.Default.BookletSizeUnlimited;
             unlimited.Checked=Settings.Default.BookletSizeUnlimited;
             minValues.Value=Settings.Default.MinValues;
-            constrast.Value=Settings.Default.Constrast;
+            constrast.Value=Settings.Default.Contrast;
             xSudokuConstrast.Value=Settings.Default.XSudokuConstrast;
             problemDirectory.Text=Settings.Default.ProblemDirectory;
             printSolutions.Checked=Settings.Default.PrintSolution;
@@ -99,7 +99,7 @@ namespace Sudoku
         {
             Settings.Default.BookletSizeNew=(int)bookletSizeNew.Value;
             Settings.Default.MinValues=(int)minValues.Value;
-            Settings.Default.Constrast=(int)constrast.Value;
+            Settings.Default.Contrast=(int)constrast.Value;
             Settings.Default.XSudokuConstrast=(int)xSudokuConstrast.Value;
             Settings.Default.ProblemDirectory=problemDirectory.Text;
             Settings.Default.PrintSolution=printSolutions.Checked;

@@ -69,14 +69,14 @@ namespace Sudoku
             boldDisplayFont=new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size-1]), FontStyle.Bold);
             strikethroughFont=new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size-1]), FontStyle.Bold | FontStyle.Strikeout);
 
-            int colorIndex=255-(int)(255f*((float)Settings.Default.Constrast / 100f));
+            int colorIndex=255-(int)(255f*((float)Settings.Default.Contrast / 100f));
             gray=Color.FromArgb(colorIndex, colorIndex, colorIndex);
             green=Color.FromArgb(127, colorIndex, 127);
-            colorIndex=255-(int)(255f*((float)Settings.Default.Constrast / 220f));
+            colorIndex=255-(int)(255f*((float)Settings.Default.Contrast / 220f));
             lightGray=Color.FromArgb(colorIndex, colorIndex, colorIndex);
-            colorIndex=255-(int)(255f*((float)Settings.Default.Constrast / 1000f));
+            colorIndex=255-(int)(255f*((float)Settings.Default.Contrast / 1000f));
             lightGreen=Color.FromArgb(200, colorIndex, 200);
-            textColor=Settings.Default.Constrast > 50? Color.White: Color.Black;
+            textColor=Settings.Default.Contrast > 50? Color.White: Color.Black;
 
             debug.Checked=Settings.Default.Debug;
             autoCheck.Checked=Settings.Default.AutoCheck;
@@ -168,7 +168,7 @@ namespace Sudoku
 
         // GUI Handling
         /// <summary>
-        /// Sets the layout of the table, mainly the constrast set in the application's options
+        /// Sets the layout of the table, mainly the Contrast set in the application's options
         /// </summary>
         private void FormatTable()
         {
@@ -1884,14 +1884,14 @@ namespace Sudoku
 
                 if(generationParameters.GenerateBooklet) severityLevel=Settings.Default.SeverityLevel;
 
-                int colorIndex=255-(int)(255f*((float)Settings.Default.Constrast / 100f));
+                int colorIndex=255-(int)(255f*((float)Settings.Default.Contrast / 100f));
                 gray=Color.FromArgb(colorIndex, colorIndex, colorIndex);
                 green=Color.FromArgb(64, colorIndex, 64);
-                colorIndex=255-(int)(255f*((float)Settings.Default.Constrast / 220f));
+                colorIndex=255-(int)(255f*((float)Settings.Default.Contrast / 220f));
                 lightGray=Color.FromArgb(colorIndex, colorIndex, colorIndex);
-                colorIndex=255-(int)(255f*((float)Settings.Default.Constrast / 1000f));
+                colorIndex=255-(int)(255f*((float)Settings.Default.Contrast / 1000f));
                 lightGreen=Color.FromArgb(191, colorIndex, 191);
-                textColor=Settings.Default.Constrast > 50? Color.White: Color.Black;
+                textColor=Settings.Default.Contrast > 50? Color.White: Color.Black;
                 normalDisplayFont=new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size-1]), FontStyle.Regular);
                 boldDisplayFont=new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size-1]), FontStyle.Bold);
                 autoPauseTimer.Interval= Convert.ToInt32(Settings.Default.AutoPauseLag)*1000;

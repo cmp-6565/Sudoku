@@ -40,24 +40,24 @@
     ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
     
-    Note-application/x-microsoft.net.object.binary.base64 is the format 
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
     that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
     
     mimetype: application/x-microsoft.net.object.binary.base64
-    value  : The object must be serialized with 
-           : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-           : and then encoded with base64 encoding.
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
-    value  : The object must be serialized with 
-           : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-           : and then encoded with base64 encoding.
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value  : The object must be serialized into a byte array 
-           : using a System.ComponentModel.TypeConverter
-           : and then encoded with base64 encoding.
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -117,224 +117,89 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AtLeast" xml:space="preserve">
-    <value> mindestens eine </value>
-  </data>
-  <data name="CandidatesNotShown" xml:space="preserve">
-    <value>Da die Option "Mögliche Werte anzeigen" aktiviert ist, werden Kandidaten nicht angezeigt. Option "Mögliche Werte anzeigen" ausschalten?</value>
-  </data>
-  <data name="Cellinfo" xml:space="preserve">
-    <value>Information für Feld in Zeile {0}, Spalte {1}{2}:</value>
-  </data>
-  <data name="CellValue" xml:space="preserve">
-    <value>Wert: </value>
-  </data>
-  <data name="Checking" xml:space="preserve">
-    <value>Prüfe...</value>
-  </data>
-  <data name="CheckingStatus" xml:space="preserve">
-    <value>Durchgänge bisher: {0:n0}</value>
-  </data>
-  <data name="CheckResult" xml:space="preserve">
-    <value>Problem ({0}Sudoku) hat{1}Lösung.</value>
-  </data>
-  <data name="Classic" xml:space="preserve">
-    <value>klassisches </value>
-  </data>
-  <data name="CloseAnyway" xml:space="preserve">
-    <value>Das aktuelle Problem ist ungültig und kann nicht gespeichert werden. Trotzdem beenden?</value>
-  </data>
-  <data name="ComplexityLevel" xml:space="preserve">
-    <value>Schwierigkeitsgrad: </value>
-  </data>
-  <data name="Congratulations" xml:space="preserve">
-    <value>Gratulation!</value>
-  </data>
-  <data name="CreateDirectoryFailed" xml:space="preserve">
-    <value>Verzeichnis {0} konnte nicht angelegt werden, Probleme werden nicht automatisch gesichert!</value>
-  </data>
-  <data name="DefiniteCells" xml:space="preserve">
-    <value>Eindeutige Felder:</value>
-  </data>
-  <data name="DefiniteValue" xml:space="preserve">
-    <value>Eindeutiger Wert:</value>
-  </data>
-  <data name="Description" xml:space="preserve">
-    <value>Löst und erstellt Sudoku Probleme\nSowohl klassische 9*9 Sudokus als auch X-Sudokus werden unterstützt</value>
-  </data>
-  <data name="DirectBlocks" xml:space="preserve">
-    <value>Direkte Blockaden: </value>
-  </data>
-  <data name="DisplaySolution" xml:space="preserve">
-    <value>Sudoku (Lösung #{0}, {1:n0} Durchgänge)</value>
-  </data>
-  <data name="Easy" xml:space="preserve">
-    <value>Leicht</value>
-  </data>
-  <data name="Filename" xml:space="preserve">
-    <value>Originalproblem gespeichert unter:</value>
-  </data>
-  <data name="FilledCells" xml:space="preserve">
-    <value>Belegte Felder: </value>
-  </data>
-  <data name="FilterString" xml:space="preserve">
-    <value>Sudoku Probleme (*{0}) | *{0}</value>
-  </data>
-  <data name="GeneratedProblems" xml:space="preserve">
-    <value>Bisher neu generierte Probleme: {0} (von {1})</value>
-  </data>
-  <data name="Generating" xml:space="preserve">
-    <value>Generiere...</value>
-  </data>
-  <data name="GeneratingStatus" xml:space="preserve">
-    <value>Probleme bisher analysiert: {0:n0}</value>
-  </data>
-  <data name="GenerationAborted" xml:space="preserve">
-    <value>Generierung abgebrochen!\n{0}Probleme bisher analysiert: {1:n0}\nDurchgänge bisher: {2:n0}</value>
-  </data>
-  <data name="Hard" xml:space="preserve">
-    <value>Schwer</value>
-  </data>
-  <data name="Homepage" xml:space="preserve">
-    <value>https://sudoku.pi-c-it.de/index.php/de/</value>
-  </data>
-  <data name="IndirectBlocks" xml:space="preserve">
-    <value>Zusätzliche indirekte Blockaden: </value>
-  </data>
-  <data name="Intermediate" xml:space="preserve">
-    <value>Durchschnittlich</value>
-  </data>
-  <data name="Interrupt" xml:space="preserve">
-    <value>Abgebrochen!\nVergangen: {0}\nDurchgänge: {1:n0}</value>
-  </data>
-  <data name="InvalidCulture" xml:space="preserve">
-    <value>Ungültige Sprache ausgewählt!</value>
-  </data>
-  <data name="InvalidNumber" xml:space="preserve">
-    <value>Sie müssen eine Zahl in Zeile {0}, Spalte {1} eingeben.</value>
-  </data>
-  <data name="InvalidProblem" xml:space="preserve">
-    <value>Ungültiges Problem</value>
-  </data>
-  <data name="InvalidSize" xml:space="preserve">
-    <value>Die Papiergröße ist zu klein für die gewählte Druckgröße</value>
-  </data>
-  <data name="InvalidSudokuFile" xml:space="preserve">
-    <value>Die Datei {0} enthält kein gültiges Sudoku-Problem</value>
-  </data>
-  <data name="InvalidSudokuIdentifier" xml:space="preserve">
-    <value>Die Datei enthält weder ein klassisches 9*9-Sudoku noch ein X-Sudoku</value>
-  </data>
-  <data name="InvalidValue" xml:space="preserve">
-    <value>Der Wert {0} in Zeile {1}, Spalte {2} führt zu einem ungültigen Problem.</value>
-  </data>
-  <data name="LoadingFiles" xml:space="preserve">
-    <value>Lade Sudoku Probleme...</value>
-  </data>
-  <data name="LoadingProblem" xml:space="preserve">
-    <value>Lade Problem #</value>
-  </data>
-  <data name="MoreThanOne" xml:space="preserve">
-    <value>Mehr als eine Lösung!</value>
-  </data>
-  <data name="NeededPasses" xml:space="preserve">
-    <value>Benötigte Durchgänge: </value>
-  </data>
-  <data name="NeededTime" xml:space="preserve">
-    <value>Benötigte Zeit: </value>
-  </data>
-  <data name="NewProblemGenerated" xml:space="preserve">
-    <value>Neues Problem generiert! ({0})\nProblem hat {1:n0} vorbelegte Felder\nProbleme analysiert: {2:n0}\nBenötigte Durchgänge: {3:n0}</value>
-  </data>
-  <data name="NewProblems" xml:space="preserve">
-    <value>{0} neue Probleme generiert, starte Ausdruck...</value>
+  <data name="NoProblems" xml:space="preserve">
+    <value>Keine Probleme zum Ausdrucken gefunden</value>
   </data>
   <data name="No" xml:space="preserve">
     <value> keine </value>
   </data>
-  <data name="NoHints" xml:space="preserve">
-    <value>Das Problem hat keine eindeutig belegbaren Zellen</value>
-  </data>
-  <data name="NoProblems" xml:space="preserve">
-    <value>Keine Probleme zum Ausdrucken gefunden</value>
-  </data>
-  <data name="Not" xml:space="preserve">
-    <value> nicht  </value>
-  </data>
-  <data name="NotPrinted" xml:space="preserve">
-    <value>Das Problem konnte nicht gedruckt werden:</value>
-  </data>
-  <data name="NotResolvable" xml:space="preserve">
-    <value>Problem ist nicht lösbar!</value>
-  </data>
-  <data name="OpenFailed" xml:space="preserve">
-    <value>Fehler beim Öffnen!</value>
-  </data>
-  <data name="OutOfBounds" xml:space="preserve">
-    <value>Sie müssen eine Nummer zwischen 1 und {0} in Zeile {1}, Spalte {2} eingeben.</value>
-  </data>
   <data name="Page" xml:space="preserve">
     <value>Seite </value>
   </data>
-  <data name="Paused" xml:space="preserve">
-    <value> (unterbrochen)</value>
+  <data name="DirectBlocks" xml:space="preserve">
+    <value>Direkte Blockaden: </value>
   </data>
-  <data name="picit" xml:space="preserve">
-    <value>IT Beratung &amp;&amp; Entwicklung</value>
+  <data name="GenerationAborted" xml:space="preserve">
+    <value>Generierung abgebrochen!\n{0}Probleme bisher analysiert: {1:n0}\nDurchgänge bisher: {2:n0}</value>
   </data>
-  <data name="Plural" xml:space="preserve">
-    <value>en</value>
+  <data name="InvalidCulture" xml:space="preserve">
+    <value>Ungültige Sprache ausgewählt!</value>
   </data>
-  <data name="PreAllocatedValues" xml:space="preserve">
-    <value>Vorbelegungen: </value>
+  <data name="TotalNumberOfSolutionsSoFar" xml:space="preserve">
+    <value>Gesamtanzahl an Lösungen bisher: </value>
   </data>
-  <data name="PrintCandidates" xml:space="preserve">
-    <value>Drucken der Kandidaten anstelle der möglichen Werte?</value>
+  <data name="MoreThanOne" xml:space="preserve">
+    <value>Mehr als eine Lösung!</value>
   </data>
-  <data name="PrintNotPossible" xml:space="preserve">
-    <value>Drucken des Problems nicht möglich!</value>
+  <data name="Generating" xml:space="preserve">
+    <value>Generiere...</value>
   </data>
-  <data name="ProblemInfo" xml:space="preserve">
-    <value>Das Problem hat\n{0} vorbelegte Felder\n{1} berechnete Felder\nes verbleiben {2} Felder</value>
+  <data name="TotalNumberOfSolutions" xml:space="preserve">
+    <value>Gesamtanzahl an Lösungen: </value>
   </data>
-  <data name="ProblemNotSolved" xml:space="preserve">
-    <value>Problem wurde nicht korrekt gelöst!</value>
+  <data name="None" xml:space="preserve">
+    <value>keine</value>
   </data>
-  <data name="ProblemsLoaded" xml:space="preserve">
-    <value>{0} von {1} Problemen geladen</value>
-  </data>
-  <data name="ProblemSolved" xml:space="preserve">
-    <value>Problem gelöst!</value>
-  </data>
-  <data name="Ready" xml:space="preserve">
-    <value>Bereit</value>
+  <data name="InvalidProblem" xml:space="preserve">
+    <value>Ungültiges Problem</value>
   </data>
   <data name="SaveFailed" xml:space="preserve">
     <value>Fehler beim Speichern!</value>
   </data>
-  <data name="SaveNotPossible" xml:space="preserve">
-    <value>Sichern des Problems nicht möglich!</value>
+  <data name="PreAllocatedValues" xml:space="preserve">
+    <value>Vorbelegungen: </value>
   </data>
-  <data name="SeverityLevelError" xml:space="preserve">
-    <value>Mindestens ein Schwierigkeitsgrad muss ausgewählt sein!</value>
+  <data name="InvalidSudokuIdentifier" xml:space="preserve">
+    <value>Die Datei enthält weder ein klassisches 9*9-Sudoku noch ein X-Sudoku</value>
   </data>
-  <data name="Solution" xml:space="preserve">
-    <value>Lösung</value>
+  <data name="EnterValues" xml:space="preserve">
+    <value>Bitte geben Sie alle Vorgaben (z. B. von einem Problem aus Ihrer Tageszeitung) ein und klicken anschließend auf "Problem|Spiel starten".</value>
   </data>
-  <data name="SolutionOne" xml:space="preserve">
-    <value>Lösung #1</value>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Unbekannter Fehler</value>
   </data>
-  <data name="SolutionsFound" xml:space="preserve">
-    <value>Lösung{0} gefunden!</value>
+  <data name="OpenFailed" xml:space="preserve">
+    <value>Fehler beim Öffnen!</value>
   </data>
-  <data name="SolutionsSoFar" xml:space="preserve">
-    <value>Lösungen bisher: {0:n0}</value>
+  <data name="InvalidValue" xml:space="preserve">
+    <value>Der Wert {0} in Zeile {1}, Spalte {2} führt zu einem ungültigen Problem.</value>
   </data>
-  <data name="SolutionTime" xml:space="preserve">
-    <value>Lösungszeit: </value>
+  <data name="ComplexityLevel" xml:space="preserve">
+    <value>Schwierigkeitsgrad: </value>
   </data>
-  <data name="SudokuError" xml:space="preserve">
-    <value>Sudoku Fehler</value>
+  <data name="Checking" xml:space="preserve">
+    <value>Prüfe...</value>
+  </data>
+  <data name="TimeElapsed" xml:space="preserve">
+    <value>Dauer bisher: </value>
+  </data>
+  <data name="Trivial" xml:space="preserve">
+    <value>Trivial</value>
+  </data>
+  <data name="CreateDirectoryFailed" xml:space="preserve">
+    <value>Verzeichnis {0} konnte nicht angelegt werden, Probleme werden nicht automatisch gesichert!</value>
+  </data>
+  <data name="DisplaySolution" xml:space="preserve">
+    <value>Sudoku (Lösung #{0}, {1:n0} Durchgänge)</value>
+  </data>
+  <data name="DefiniteValue" xml:space="preserve">
+    <value>Eindeutiger Wert:</value>
+  </data>
+  <data name="CloseAnyway" xml:space="preserve">
+    <value>Das aktuelle Problem ist ungültig und kann nicht gespeichert werden. Trotzdem beenden?</value>
+  </data>
+  <data name="TwitterNotPossible" xml:space="preserve">
+    <value>Kein valides Problem, es kann daher nicht getwittert werden</value>
   </data>
   <data name="SudokuTypeError" xml:space="preserve">
     <value>Mindestens ein Typ muss ausgewählt sein!</value>
@@ -342,112 +207,272 @@
   <data name="Thinking" xml:space="preserve">
     <value>Denk, Grübel...</value>
   </data>
-  <data name="TimeElapsed" xml:space="preserve">
-    <value>Dauer bisher: </value>
+  <data name="LoadingProblem" xml:space="preserve">
+    <value>Lade Problem #</value>
   </data>
-  <data name="TimeNeeded" xml:space="preserve">
-    <value>Benötigte Zeit:</value>
+  <data name="Paused" xml:space="preserve">
+    <value> (unterbrochen)</value>
   </data>
-  <data name="TitleNotResolvable" xml:space="preserve">
-    <value>Nicht lösbar!</value>
-  </data>
-  <data name="TotalNumberOfSolutions" xml:space="preserve">
-    <value>Gesamtanzahl an Lösungen: </value>
-  </data>
-  <data name="TotalNumberOfSolutionsSoFar" xml:space="preserve">
-    <value>Gesamtanzahl an Lösungen bisher: </value>
-  </data>
-  <data name="Trivial" xml:space="preserve">
-    <value>Trivial</value>
-  </data>
-  <data name="UnknownError" xml:space="preserve">
-    <value>Unbekannter Fehler</value>
-  </data>
-  <data name="UnsavedChanges" xml:space="preserve">
-    <value>Das aktuelle Problem wurde noch nicht gesichert. Wollen Sie es speichern?</value>
-  </data>
-  <data name="ValidationStatus" xml:space="preserve">
-    <value>Problem ist ein formal gültiges {0}Sudoku.</value>
-  </data>
-  <data name="Version" xml:space="preserve">
-    <value>Version </value>
-  </data>
-  <data name="VersionHistory" xml:space="preserve">
-    <value>https://sudoku.pi-c-it.de/index.php/de/versionshistorie</value>
-  </data>
-  <data name="None" xml:space="preserve">
-    <value>keine</value>
-  </data>
-  <data name="HTMLFrame" xml:space="preserve">
-    <value>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;&lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de"&gt;&lt;head&gt;&lt;meta http-equiv="content-type" content="text/html; charset=utf-8" /&gt;&lt;meta name="robots" content="index, follow" /&gt;&lt;meta name="keywords" content="Sudoku, pi-c-it" /&gt;&lt;link rel="home" type="text/html" title="home:pi-c-it" href="https://www.pi-c-it.de" /&gt;&lt;link rel="author" title="Contact" href="mailto:kontakt%40pi-c-it.de?subject=pi-c-it%20Sudoku" /&gt;&lt;link rel="copyright" title="pi-c-it" href="https://sudoku.pi-c-it.de/index.php/de/impressum" /&gt;&lt;link rel="shortcut icon" href="https://sudoku.pi-c-it.de/images/Sudoku/icon.ico" type="image/ico"/&gt;&lt;link rel="stylesheet" href="http://sudoku.pi-c-it.de/templates/eximium/css/sudoku-game.css" type="text/css" /&gt;&lt;style type="text/css"&gt;body{{font-family: Helvetica,Arial,sans-serif;line-height: 2.5em;margin: 5px 5px 5px 5px;font-size: 12px;color: #333;}}a:link, a:visited{{text-decoration: none;font-weight: normal;}}a:hover{{background-color:black;color:white;font-weight: normal;}}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class="tableheading"&gt;&lt;a href="https://sudoku.pi-c-it.de/index.php?lang=de"&gt;pi-c-it Sudoku&lt;/a&gt;&lt;/div&gt;&lt;div align="center"&gt;{0}&lt;/div&gt;&lt;div align="center"&gt;&lt;h2&gt;{1}&lt;/h2&gt;{2}&lt;/div&gt;&lt;div align="center"&gt;&lt;table border="0" width="75%"&gt;&lt;tr&gt;&lt;td align="left" valign="center" width="40%"&gt;{3}&lt;/td&gt;&lt;td align="center" width="20%"&gt;&lt;img src="http://sudoku.pi-c-it.de/images/Sudoku/Logo.jpg" width="40" height="40"&gt;&lt;/td&gt;&lt;td align="right" valign="center" width="40%"&gt;{4}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</value>
-  </data>
-  <data name="ExportNotPossible" xml:space="preserve">
-    <value>Exportieren des Problems als HTML nicht möglich!</value>
-  </data>
-  <data name="OneOrMoreProblems" xml:space="preserve">
-    <value>Mindestens eins der generierten Probleme </value>
-  </data>
-  <data name="OneProblem" xml:space="preserve">
-    <value>Das generierte Problem </value>
-  </data>
-  <data name="Publish" xml:space="preserve">
-    <value>ist extrem schwer. Möchten Sie das Problem auf der Sudoku-Homepage veröffentlichen?</value>
-  </data>
-  <data name="PublishFailed" xml:space="preserve">
-    <value>Das Veröffentlichen ist leider fehlgeschlagen. Bitte speichern Sie das Problem und senden es dann per EMail an {0}</value>
-  </data>
-  <data name="PublishOK" xml:space="preserve">
-    <value>{0} Probleme auf der Sudoku-Homepage veröffentlicht. Danke!</value>
-  </data>
-  <data name="Minimized" xml:space="preserve">
-    <value>{0} Vorbelegungen entfernt</value>
-  </data>
-  <data name="NoMinimizationPossible" xml:space="preserve">
-    <value>Keine weitere Minimierung möglich</value>
-  </data>
-  <data name="Minimizing" xml:space="preserve">
-    <value>Minimiere...</value>
-  </data>
-  <data name="MinimizationNotPossible" xml:space="preserve">
-    <value>Problem ist nicht lösbar. Minimierung nicht möglich.</value>
-  </data>
-  <data name="CurrentMinimalProblem" xml:space="preserve">
-    <value>Minimales Problem ({0}): {1} Vorbelegungen\nAkutelles Problem: {2} Vorbelegungen</value>
-  </data>
-  <data name="NotFixable" xml:space="preserve">
-    <value>Da das aktuelle Problem nicht gültig ist, kann es nicht fixiert werden.</value>
-  </data>
-  <data name="RetrieveProblem" xml:space="preserve">
-    <value>Lade Problem...</value>
-  </data>
-  <data name="ProblemRetrieved" xml:space="preserve">
-    <value>Problem geladen</value>
-  </data>
-  <data name="Loading" xml:space="preserve">
-    <value>Lade Problem von sudoku.pi-c-it.de...</value>
+  <data name="Plural" xml:space="preserve">
+    <value>en</value>
   </data>
   <data name="SudokuOfTheDayNotLoaded" xml:space="preserve">
     <value>Das "Sudoku des Tages" konnte leider nicht geladen werden!</value>
   </data>
+  <data name="Easy" xml:space="preserve">
+    <value>Leicht</value>
+  </data>
+  <data name="Cellinfo" xml:space="preserve">
+    <value>Information für Feld in Zeile {0}, Spalte {1}{2}:</value>
+  </data>
+  <data name="Hard" xml:space="preserve">
+    <value>Schwer</value>
+  </data>
+  <data name="CurrentMinimalProblem" xml:space="preserve">
+    <value>Minimales Problem ({0}): {1} Vorbelegungen\nAkutelles Problem: {2} Vorbelegungen</value>
+  </data>
+  <data name="LoadingFiles" xml:space="preserve">
+    <value>Lade Sudoku Probleme...</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="watchHandCandidates" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\watchHandCandidates.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Bereit</value>
+  </data>
+  <data name="Filename" xml:space="preserve">
+    <value>Originalproblem gespeichert unter:</value>
+  </data>
+  <data name="OutOfBounds" xml:space="preserve">
+    <value>Sie müssen eine Nummer zwischen 1 und {0} in Zeile {1}, Spalte {2} eingeben.</value>
+  </data>
+  <data name="SaveNotPossible" xml:space="preserve">
+    <value>Sichern des Problems nicht möglich!</value>
+  </data>
+  <data name="InvalidNumber" xml:space="preserve">
+    <value>Sie müssen eine Zahl in Zeile {0}, Spalte {1} eingeben.</value>
+  </data>
+  <data name="OneProblem" xml:space="preserve">
+    <value>Das generierte Problem </value>
+  </data>
+  <data name="UnsavedChanges" xml:space="preserve">
+    <value>Das aktuelle Problem wurde noch nicht gesichert. Wollen Sie es speichern?</value>
+  </data>
   <data name="SudokuOfTheDayInfo" xml:space="preserve">
     <value>Das Sudoku des Tages ist {0}</value>
   </data>
-  <data name="EnterValues" xml:space="preserve">
-    <value>Bitte geben Sie alle Vorgaben (z. B. von einem Problem aus Ihrer Tageszeitung) ein und klicken anschließend auf "Problem|Spiel starten".</value>
+  <data name="NoMinimizationPossible" xml:space="preserve">
+    <value>Keine weitere Minimierung möglich</value>
   </data>
-  <data name="ReadOnly" xml:space="preserve">
-    <value>Schreibgeschützt</value>
+  <data name="SolutionTime" xml:space="preserve">
+    <value>Lösungszeit: </value>
   </data>
-  <data name="IncorrectTries" xml:space="preserve">
-    <value>Anzahl ungültiger Versuche: </value>
+  <data name="SudokuError" xml:space="preserve">
+    <value>Sudoku Fehler</value>
   </data>
-  <data name="TwitterNotPossible" xml:space="preserve">
-    <value>Kein valides Problem, es kann daher nicht getwittert werden</value>
+  <data name="Description" xml:space="preserve">
+    <value>Löst und erstellt Sudoku Probleme\nSowohl klassische 9*9 Sudokus als auch X-Sudokus werden unterstützt</value>
+  </data>
+  <data name="CandidatesNotShown" xml:space="preserve">
+    <value>Da die Option "Mögliche Werte anzeigen" aktiviert ist, werden Kandidaten nicht angezeigt. Option "Mögliche Werte anzeigen" ausschalten?</value>
+  </data>
+  <data name="VersionHistory" xml:space="preserve">
+    <value>https://sudoku.pi-c-it.de/index.php/de/versionshistorie</value>
+  </data>
+  <data name="FilterString" xml:space="preserve">
+    <value>Sudoku Probleme (*{0}) | *{0}</value>
+  </data>
+  <data name="SolutionOne" xml:space="preserve">
+    <value>Lösung #1</value>
+  </data>
+  <data name="Problem" xml:space="preserve">
+    <value>#{0}</value>
+  </data>
+  <data name="IndirectBlocks" xml:space="preserve">
+    <value>Zusätzliche indirekte Blockaden: </value>
+  </data>
+  <data name="GeneratingStatus" xml:space="preserve">
+    <value>Probleme bisher analysiert: {0:n0}</value>
+  </data>
+  <data name="Not" xml:space="preserve">
+    <value> nicht  </value>
+  </data>
+  <data name="ProblemsLoaded" xml:space="preserve">
+    <value>{0} von {1} Problemen geladen</value>
+  </data>
+  <data name="SolutionsSoFar" xml:space="preserve">
+    <value>Lösungen bisher: {0:n0}</value>
+  </data>
+  <data name="NeededTime" xml:space="preserve">
+    <value>Benötigte Zeit: </value>
+  </data>
+  <data name="Solution" xml:space="preserve">
+    <value>Lösung</value>
+  </data>
+  <data name="HTMLFrame" xml:space="preserve">
+    <value>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;&lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de"&gt;&lt;head&gt;&lt;meta http-equiv="content-type" content="text/html; charset=utf-8" /&gt;&lt;meta name="robots" content="index, follow" /&gt;&lt;meta name="keywords" content="Sudoku, pi-c-it" /&gt;&lt;link rel="home" type="text/html" title="home:pi-c-it" href="https://www.pi-c-it.de" /&gt;&lt;link rel="author" title="Contact" href="mailto:kontakt%40pi-c-it.de?subject=pi-c-it%20Sudoku" /&gt;&lt;link rel="copyright" title="pi-c-it" href="https://sudoku.pi-c-it.de/index.php/de/impressum" /&gt;&lt;link rel="shortcut icon" href="https://sudoku.pi-c-it.de/images/Sudoku/icon.ico" type="image/ico"/&gt;&lt;link rel="stylesheet" href="http://sudoku.pi-c-it.de/templates/eximium/css/sudoku-game.css" type="text/css" /&gt;&lt;style type="text/css"&gt;body{{font-family: Helvetica,Arial,sans-serif;line-height: 2.5em;margin: 5px 5px 5px 5px;font-size: 12px;color: #333;}}a:link, a:visited{{text-decoration: none;font-weight: normal;}}a:hover{{background-color:black;color:white;font-weight: normal;}}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;div class="tableheading"&gt;&lt;a href="https://sudoku.pi-c-it.de/index.php?lang=de"&gt;pi-c-it Sudoku&lt;/a&gt;&lt;/div&gt;&lt;div align="center"&gt;{0}&lt;/div&gt;&lt;div align="center"&gt;&lt;h2&gt;{1}&lt;/h2&gt;{2}&lt;/div&gt;&lt;div align="center"&gt;&lt;table border="0" width="75%"&gt;&lt;tr&gt;&lt;td align="left" valign="center" width="40%"&gt;{3}&lt;/td&gt;&lt;td align="center" width="20%"&gt;&lt;img src="http://sudoku.pi-c-it.de/images/Sudoku/Logo.jpg" width="40" height="40"&gt;&lt;/td&gt;&lt;td align="right" valign="center" width="40%"&gt;{4}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;</value>
+  </data>
+  <data name="NotFixable" xml:space="preserve">
+    <value>Da das aktuelle Problem nicht gültig ist, kann es nicht fixiert werden.</value>
+  </data>
+  <data name="picit" xml:space="preserve">
+    <value>IT Beratung &amp;&amp; Entwicklung</value>
+  </data>
+  <data name="FilledCells" xml:space="preserve">
+    <value>Belegte Felder: </value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version </value>
+  </data>
+  <data name="Intermediate" xml:space="preserve">
+    <value>Durchschnittlich</value>
   </data>
   <data name="TwitterText" xml:space="preserve">
     <value>%40CPichl%20Tolles%20%23{0}Sudoku%20Problem:%20{1}&amp;url=https://sudoku.pi-c-it.de</value>
   </data>
+  <data name="Resources_de_DE_Designer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources.de-DE.Designer.cs;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="RetrieveProblem" xml:space="preserve">
+    <value>Lade Problem...</value>
+  </data>
+  <data name="digitCandidates" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\digitCandidates.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="GeneratedProblems" xml:space="preserve">
+    <value>Bisher neu generierte Probleme: {0} (von {1})</value>
+  </data>
+  <data name="Interrupt" xml:space="preserve">
+    <value>Abgebrochen!\nVergangen: {0}\nDurchgänge: {1:n0}</value>
+  </data>
+  <data name="NewProblemGenerated" xml:space="preserve">
+    <value>Neues Problem generiert! ({0})\nProblem hat {1:n0} vorbelegte Felder\nProbleme analysiert: {2:n0}\nBenötigte Durchgänge: {3:n0}</value>
+  </data>
+  <data name="PrintCandidates" xml:space="preserve">
+    <value>Drucken der Kandidaten anstelle der möglichen Werte?</value>
+  </data>
+  <data name="InvalidSudokuFile" xml:space="preserve">
+    <value>Die Datei {0} enthält kein gültiges Sudoku-Problem</value>
+  </data>
+  <data name="HTMLTemplateX" xml:space="preserve">
+    <value>&lt;table class="grid"&gt;&lt;tr class="grid"&gt;&lt;td class="normal lightdark"&gt;{00}&lt;/td&gt;&lt;td class="normal"&gt;{01}&lt;/td&gt;&lt;td class="rightedge"&gt;{02}&lt;/td&gt;&lt;td class="normal dark"&gt;{03}&lt;/td&gt;&lt;td class="normal dark"&gt;{04}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{05}&lt;/td&gt;&lt;td class="normal"&gt;{06}&lt;/td&gt;&lt;td class="normal"&gt;{07}&lt;/td&gt;&lt;td class="rightedge lightdark"&gt;{08}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal"&gt;{09}&lt;/td&gt;&lt;td class="normal lightdark"&gt;{10}&lt;/td&gt;&lt;td class="rightedge"&gt;{11}&lt;/td&gt;&lt;td class="normal dark"&gt;{12}&lt;/td&gt;&lt;td class="normal dark"&gt;{13}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{14}&lt;/td&gt;&lt;td class="normal"&gt;{15}&lt;/td&gt;&lt;td class="normal lightdark"&gt;{16}&lt;/td&gt;&lt;td class="rightedge"&gt;{17}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="bottomedge"&gt;{18}&lt;/td&gt;&lt;td class="bottomedge"&gt;{19}&lt;/td&gt;&lt;td class="bottomright lightdark"&gt;{20}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{21}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{22}&lt;/td&gt;&lt;td class="bottomright dark"&gt;{23}&lt;/td&gt;&lt;td class="bottomedge lightdark"&gt;{24}&lt;/td&gt;&lt;td class="bottomedge"&gt;{25}&lt;/td&gt;&lt;td class="bottomright"&gt;{26}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal dark"&gt;{27}&lt;/td&gt;&lt;td class="normal dark"&gt;{28}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{29}&lt;/td&gt;&lt;td class="normal lightdark"&gt;{30}&lt;/td&gt;&lt;td class="normal"&gt;{31}&lt;/td&gt;&lt;td class="rightedge lightdark"&gt;{32}&lt;/td&gt;&lt;td class="normal dark"&gt;{33}&lt;/td&gt;&lt;td class="normal dark"&gt;{34}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{35}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal dark"&gt;{36}&lt;/td&gt;&lt;td class="normal dark"&gt;{37}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{38}&lt;/td&gt;&lt;td class="normal"&gt;{39}&lt;/td&gt;&lt;td class="normal lightdark"&gt;{40}&lt;/td&gt;&lt;td class="rightedge"&gt;{41}&lt;/td&gt;&lt;td class="normal dark"&gt;{42}&lt;/td&gt;&lt;td class="normal dark"&gt;{43}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{44}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="bottomedge dark"&gt;{45}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{46}&lt;/td&gt;&lt;td class="bottomright dark"&gt;{47}&lt;/td&gt;&lt;td class="bottomedge lightdark"&gt;{48}&lt;/td&gt;&lt;td class="bottomedge"&gt;{49}&lt;/td&gt;&lt;td class="bottomright lightdark"&gt;{50}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{51}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{52}&lt;/td&gt;&lt;td class="bottomright dark"&gt;{53}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal"&gt;{54}&lt;/td&gt;&lt;td class="normal"&gt;{55}&lt;/td&gt;&lt;td class="rightedge lightdark"&gt;{56}&lt;/td&gt;&lt;td class="normal dark"&gt;{57}&lt;/td&gt;&lt;td class="normal dark"&gt;{58}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{59}&lt;/td&gt;&lt;td class="normal lightdark"&gt;{60}&lt;/td&gt;&lt;td class="normal"&gt;{61}&lt;/td&gt;&lt;td class="rightedge"&gt;{62}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal"&gt;{63}&lt;/td&gt;&lt;td class="normal lightdark"&gt;{64}&lt;/td&gt;&lt;td class="rightedge"&gt;{65}&lt;/td&gt;&lt;td class="normal dark"&gt;{66}&lt;/td&gt;&lt;td class="normal dark"&gt;{67}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{68}&lt;/td&gt;&lt;td class="normal"&gt;{69}&lt;/td&gt;&lt;td class="normal lightdark"&gt;{70}&lt;/td&gt;&lt;td class="rightedge"&gt;{71}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="bottomedge lightdark"&gt;{72}&lt;/td&gt;&lt;td class="bottomedge"&gt;{73}&lt;/td&gt;&lt;td class="bottomright"&gt;{74}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{75}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{76}&lt;/td&gt;&lt;td class="bottomright dark"&gt;{77}&lt;/td&gt;&lt;td class="bottomedge"&gt;{78}&lt;/td&gt;&lt;td class="bottomedge"&gt;{79}&lt;/td&gt;&lt;td class="bottomright lightdark"&gt;{80}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</value>
+  </data>
+  <data name="Classic" xml:space="preserve">
+    <value>klassisches </value>
+  </data>
+  <data name="InvalidSize" xml:space="preserve">
+    <value>Die Papiergröße ist zu klein für die gewählte Druckgröße</value>
+  </data>
+  <data name="TimeNeeded" xml:space="preserve">
+    <value>Benötigte Zeit:</value>
+  </data>
+  <data name="Minimized" xml:space="preserve">
+    <value>{0} Vorbelegungen entfernt</value>
+  </data>
+  <data name="HTMLTemplate" xml:space="preserve">
+    <value>&lt;table class="grid"&gt;&lt;tr class="grid"&gt;&lt;td class="normal"&gt;{00}&lt;/td&gt;&lt;td class="normal"&gt;{01}&lt;/td&gt;&lt;td class="rightedge"&gt;{02}&lt;/td&gt;&lt;td class="normal dark"&gt;{03}&lt;/td&gt;&lt;td class="normal dark"&gt;{04}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{05}&lt;/td&gt;&lt;td class="normal"&gt;{06}&lt;/td&gt;&lt;td class="normal"&gt;{07}&lt;/td&gt;&lt;td class="rightedge"&gt;{08}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal"&gt;{09}&lt;/td&gt;&lt;td class="normal"&gt;{10}&lt;/td&gt;&lt;td class="rightedge"&gt;{11}&lt;/td&gt;&lt;td class="normal dark"&gt;{12}&lt;/td&gt;&lt;td class="normal dark"&gt;{13}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{14}&lt;/td&gt;&lt;td class="normal"&gt;{15}&lt;/td&gt;&lt;td class="normal"&gt;{16}&lt;/td&gt;&lt;td class="rightedge"&gt;{17}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="bottomedge"&gt;{18}&lt;/td&gt;&lt;td class="bottomedge"&gt;{19}&lt;/td&gt;&lt;td class="bottomright"&gt;{20}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{21}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{22}&lt;/td&gt;&lt;td class="bottomright dark"&gt;{23}&lt;/td&gt;&lt;td class="bottomedge"&gt;{24}&lt;/td&gt;&lt;td class="bottomedge"&gt;{25}&lt;/td&gt;&lt;td class="bottomright"&gt;{26}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal dark"&gt;{27}&lt;/td&gt;&lt;td class="normal dark"&gt;{28}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{29}&lt;/td&gt;&lt;td class="normal"&gt;{30}&lt;/td&gt;&lt;td class="normal"&gt;{31}&lt;/td&gt;&lt;td class="rightedge"&gt;{32}&lt;/td&gt;&lt;td class="normal dark"&gt;{33}&lt;/td&gt;&lt;td class="normal dark"&gt;{34}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{35}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal dark"&gt;{36}&lt;/td&gt;&lt;td class="normal dark"&gt;{37}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{38}&lt;/td&gt;&lt;td class="normal"&gt;{39}&lt;/td&gt;&lt;td class="normal"&gt;{40}&lt;/td&gt;&lt;td class="rightedge"&gt;{41}&lt;/td&gt;&lt;td class="normal dark"&gt;{42}&lt;/td&gt;&lt;td class="normal dark"&gt;{43}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{44}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="bottomedge dark"&gt;{45}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{46}&lt;/td&gt;&lt;td class="bottomright dark"&gt;{47}&lt;/td&gt;&lt;td class="bottomedge"&gt;{48}&lt;/td&gt;&lt;td class="bottomedge"&gt;{49}&lt;/td&gt;&lt;td class="bottomright"&gt;{50}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{51}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{52}&lt;/td&gt;&lt;td class="bottomright dark"&gt;{53}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal"&gt;{54}&lt;/td&gt;&lt;td class="normal"&gt;{55}&lt;/td&gt;&lt;td class="rightedge"&gt;{56}&lt;/td&gt;&lt;td class="normal dark"&gt;{57}&lt;/td&gt;&lt;td class="normal dark"&gt;{58}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{59}&lt;/td&gt;&lt;td class="normal"&gt;{60}&lt;/td&gt;&lt;td class="normal"&gt;{61}&lt;/td&gt;&lt;td class="rightedge"&gt;{62}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="normal"&gt;{63}&lt;/td&gt;&lt;td class="normal"&gt;{64}&lt;/td&gt;&lt;td class="rightedge"&gt;{65}&lt;/td&gt;&lt;td class="normal dark"&gt;{66}&lt;/td&gt;&lt;td class="normal dark"&gt;{67}&lt;/td&gt;&lt;td class="rightedge dark"&gt;{68}&lt;/td&gt;&lt;td class="normal"&gt;{69}&lt;/td&gt;&lt;td class="normal"&gt;{70}&lt;/td&gt;&lt;td class="rightedge"&gt;{71}&lt;/td&gt;&lt;/tr&gt;&lt;tr class="grid"&gt;&lt;td class="bottomedge"&gt;{72}&lt;/td&gt;&lt;td class="bottomedge"&gt;{73}&lt;/td&gt;&lt;td class="bottomright"&gt;{74}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{75}&lt;/td&gt;&lt;td class="bottomedge dark"&gt;{76}&lt;/td&gt;&lt;td class="bottomright dark"&gt;{77}&lt;/td&gt;&lt;td class="bottomedge"&gt;{78}&lt;/td&gt;&lt;td class="bottomedge"&gt;{79}&lt;/td&gt;&lt;td class="bottomright"&gt;{80}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;</value>
+  </data>
+  <data name="Minimizing" xml:space="preserve">
+    <value>Minimiere...</value>
+  </data>
+  <data name="ExportNotPossible" xml:space="preserve">
+    <value>Exportieren des Problems als HTML nicht möglich!</value>
+  </data>
+  <data name="DefiniteCells" xml:space="preserve">
+    <value>Eindeutige Felder:</value>
+  </data>
+  <data name="IncorrectTries" xml:space="preserve">
+    <value>Anzahl ungültiger Versuche: </value>
+  </data>
+  <data name="NoHints" xml:space="preserve">
+    <value>Das Problem hat keine eindeutig belegbaren Zellen</value>
+  </data>
+  <data name="PrintNotPossible" xml:space="preserve">
+    <value>Drucken des Problems nicht möglich!</value>
+  </data>
+  <data name="PublishFailed" xml:space="preserve">
+    <value>Das Veröffentlichen ist leider fehlgeschlagen. Bitte speichern Sie das Problem und senden es dann per EMail an {0}</value>
+  </data>
   <data name="TwitterURL" xml:space="preserve">
     <value>https://twitter.com/intent/tweet?text=</value>
+  </data>
+  <data name="SudokuProblem" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\Problem.jpg;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AtLeast" xml:space="preserve">
+    <value> mindestens eine </value>
+  </data>
+  <data name="Resources_de_DE" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources.de-DE.resx;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Lade Problem von sudoku.pi-c-it.de...</value>
+  </data>
+  <data name="NeededPasses" xml:space="preserve">
+    <value>Benötigte Durchgänge: </value>
+  </data>
+  <data name="MinimizationNotPossible" xml:space="preserve">
+    <value>Problem ist nicht lösbar. Minimierung nicht möglich.</value>
+  </data>
+  <data name="CellValue" xml:space="preserve">
+    <value>Wert: </value>
+  </data>
+  <data name="NotPrinted" xml:space="preserve">
+    <value>Das Problem konnte nicht gedruckt werden:</value>
+  </data>
+  <data name="OneOrMoreProblems" xml:space="preserve">
+    <value>Mindestens eins der generierten Probleme </value>
+  </data>
+  <data name="CheckingStatus" xml:space="preserve">
+    <value>Durchgänge bisher: {0:n0}</value>
+  </data>
+  <data name="SolutionsFound" xml:space="preserve">
+    <value>Lösung{0} gefunden!</value>
+  </data>
+  <data name="ProblemInfo" xml:space="preserve">
+    <value>Das Problem hat\n{0} vorbelegte Felder\n{1} berechnete Felder\nes verbleiben {2} Felder</value>
+  </data>
+  <data name="Publish" xml:space="preserve">
+    <value>ist extrem schwer. Möchten Sie das Problem auf der Sudoku-Homepage veröffentlichen?</value>
+  </data>
+  <data name="PublishOK" xml:space="preserve">
+    <value>{0} Probleme auf der Sudoku-Homepage veröffentlicht. Danke!</value>
+  </data>
+  <data name="TitleNotResolvable" xml:space="preserve">
+    <value>Nicht lösbar!</value>
+  </data>
+  <data name="SeverityLevelError" xml:space="preserve">
+    <value>Mindestens ein Schwierigkeitsgrad muss ausgewählt sein!</value>
+  </data>
+  <data name="ProblemSolved" xml:space="preserve">
+    <value>Problem gelöst!</value>
+  </data>
+  <data name="Congratulations" xml:space="preserve">
+    <value>Gratulation!</value>
+  </data>
+  <data name="NewProblems" xml:space="preserve">
+    <value>{0} neue Probleme generiert, starte Ausdruck...</value>
+  </data>
+  <data name="NotResolvable" xml:space="preserve">
+    <value>Problem ist nicht lösbar!</value>
+  </data>
+  <data name="ReadOnly" xml:space="preserve">
+    <value>Schreibgeschützt</value>
+  </data>
+  <data name="ValidationStatus" xml:space="preserve">
+    <value>Problem ist ein formal gültiges {0}Sudoku.</value>
+  </data>
+  <data name="CheckResult" xml:space="preserve">
+    <value>Problem ({0}Sudoku) hat{1}Lösung.</value>
+  </data>
+  <data name="ProblemRetrieved" xml:space="preserve">
+    <value>Problem geladen</value>
+  </data>
+  <data name="ProblemNotSolved" xml:space="preserve">
+    <value>Problem wurde nicht korrekt gelöst!</value>
+  </data>
+  <data name="Homepage" xml:space="preserve">
+    <value>https://sudoku.pi-c-it.de/index.php/de/</value>
   </data>
 </root>

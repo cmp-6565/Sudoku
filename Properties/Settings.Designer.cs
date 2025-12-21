@@ -12,7 +12,7 @@ namespace Sudoku.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.10.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -158,18 +158,6 @@ namespace Sudoku.Properties {
         public int Trivial {
             get {
                 return ((int)(this["Trivial"]));
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("8")]
-        public int Constrast {
-            get {
-                return ((int)(this["Constrast"]));
-            }
-            set {
-                this["Constrast"] = value;
             }
         }
         
@@ -659,6 +647,18 @@ namespace Sudoku.Properties {
             }
             set {
                 this["AutoPauseLag"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        public int Contrast {
+            get {
+                return ((int)(this["Contrast"]));
+            }
+            set {
+                this["Contrast"] = value;
             }
         }
     }

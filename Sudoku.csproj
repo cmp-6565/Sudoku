@@ -11,13 +11,13 @@
     <RootNamespace>Sudoku</RootNamespace>
     <AssemblyName>Sudoku</AssemblyName>
     <GenerateManifests>true</GenerateManifests>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
     <ManifestCertificateThumbprint>7DF59F09CEAB0B30AF0FDCC15EA56FCBEFF973F3</ManifestCertificateThumbprint>
     <ManifestKeyFile>cp.pfx</ManifestKeyFile>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <StartupObject>Sudoku.Program</StartupObject>
     <ApplicationIcon>Problem.ico</ApplicationIcon>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>cp.pfx</AssemblyOriginatorKeyFile>
     <SccProjectName>
     </SccProjectName>
