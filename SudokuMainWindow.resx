@@ -1,0 +1,1718 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="SudokuTable.ColumnHeadersHeight" type="System.Int32, mscorlib">
+    <value>25</value>
+  </data>
+  <data name="Column1.HeaderText" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="Column1.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="Column2.HeaderText" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="Column2.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="Column3.HeaderText" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="Column3.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="Column4.HeaderText" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="Column4.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="Column5.HeaderText" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="Column5.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="Column6.HeaderText" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="Column6.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="Column7.HeaderText" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="Column7.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="Column8.HeaderText" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="Column8.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <data name="Column9.HeaderText" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="Column9.Width" type="System.Int32, mscorlib">
+    <value>30</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="SudokuTable.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 41</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="SudokuTable.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>5, 5, 5, 5</value>
+  </data>
+  <data name="SudokuTable.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
+    <value>None</value>
+  </data>
+  <data name="SudokuTable.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 271</value>
+  </data>
+  <data name="SudokuTable.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="SudokuTable.Text" xml:space="preserve">
+    <value>Sudoku</value>
+  </data>
+  <data name="&gt;&gt;SudokuTable.Name" xml:space="preserve">
+    <value>SudokuTable</value>
+  </data>
+  <data name="&gt;&gt;SudokuTable.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;SudokuTable.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;SudokuTable.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="status.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Left</value>
+  </data>
+  <data name="status.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="status.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="status.Location" type="System.Drawing.Point, System.Drawing">
+    <value>11, 323</value>
+  </data>
+  <data name="status.Size" type="System.Drawing.Size, System.Drawing">
+    <value>0, 13</value>
+  </data>
+  <data name="status.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;status.Name" xml:space="preserve">
+    <value>status</value>
+  </data>
+  <data name="&gt;&gt;status.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;status.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;status.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="next.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="next.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="next.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="next.Location" type="System.Drawing.Point, System.Drawing">
+    <value>254, 325</value>
+  </data>
+  <data name="next.Size" type="System.Drawing.Size, System.Drawing">
+    <value>24, 23</value>
+  </data>
+  <data name="next.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="next.Text" xml:space="preserve">
+    <value>&gt;</value>
+  </data>
+  <data name="&gt;&gt;next.Name" xml:space="preserve">
+    <value>next</value>
+  </data>
+  <data name="&gt;&gt;next.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;next.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;next.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="prior.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Right</value>
+  </data>
+  <data name="prior.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="prior.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="prior.Location" type="System.Drawing.Point, System.Drawing">
+    <value>222, 325</value>
+  </data>
+  <data name="prior.Size" type="System.Drawing.Size, System.Drawing">
+    <value>24, 23</value>
+  </data>
+  <data name="prior.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="prior.Text" xml:space="preserve">
+    <value>&lt;</value>
+  </data>
+  <data name="&gt;&gt;prior.Name" xml:space="preserve">
+    <value>prior</value>
+  </data>
+  <data name="&gt;&gt;prior.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;prior.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;prior.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <metadata name="solutionTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>131, 22</value>
+  </metadata>
+  <metadata name="sudokuMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>2, 2</value>
+  </metadata>
+  <data name="newNormalSudoku.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+N</value>
+  </data>
+  <data name="newNormalSudoku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>254, 22</value>
+  </data>
+  <data name="newNormalSudoku.Text" xml:space="preserve">
+    <value>&amp;Classic Sudoku</value>
+  </data>
+  <data name="newXSudoku.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+Umschalttaste+N</value>
+  </data>
+  <data name="newXSudoku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>254, 22</value>
+  </data>
+  <data name="newXSudoku.Text" xml:space="preserve">
+    <value>&amp;X-Sudoku</value>
+  </data>
+  <data name="toolStripSeparator13.Size" type="System.Drawing.Size, System.Drawing">
+    <value>251, 6</value>
+  </data>
+  <data name="sudokuOfTheDayToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>254, 22</value>
+  </data>
+  <data name="sudokuOfTheDayToolStripMenuItem1.Text" xml:space="preserve">
+    <value>&amp;Sudoku of the Day</value>
+  </data>
+  <data name="newItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="newItem.Text" xml:space="preserve">
+    <value>&amp;New</value>
+  </data>
+  <data name="open.ShortcutKeyDisplayString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="open.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+O</value>
+  </data>
+  <data name="open.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="open.Text" xml:space="preserve">
+    <value>&amp;Open...</value>
+  </data>
+  <data name="save.ShortcutKeyDisplayString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="save.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+S</value>
+  </data>
+  <data name="save.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="save.Text" xml:space="preserve">
+    <value>&amp;Save...</value>
+  </data>
+  <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 6</value>
+  </data>
+  <data name="twitter.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="twitter.Text" xml:space="preserve">
+    <value>&amp;Twitter Problem...</value>
+  </data>
+  <data name="export.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="export.Text" xml:space="preserve">
+    <value>E&amp;xport as HTML...</value>
+  </data>
+  <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 6</value>
+  </data>
+  <data name="print.ShortcutKeyDisplayString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="print.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+P</value>
+  </data>
+  <data name="print.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="print.Text" xml:space="preserve">
+    <value>&amp;Print...</value>
+  </data>
+  <data name="newBooklet.Size" type="System.Drawing.Size, System.Drawing">
+    <value>162, 22</value>
+  </data>
+  <data name="newBooklet.Text" xml:space="preserve">
+    <value>&amp;New...</value>
+  </data>
+  <data name="existingBooklet.Size" type="System.Drawing.Size, System.Drawing">
+    <value>162, 22</value>
+  </data>
+  <data name="existingBooklet.Text" xml:space="preserve">
+    <value>&amp;Load Problems...</value>
+  </data>
+  <data name="generateBooklet.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="generateBooklet.Text" xml:space="preserve">
+    <value>&amp;Generate Booklet</value>
+  </data>
+  <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
+    <value>163, 6</value>
+  </data>
+  <data name="exit.ShortcutKeyDisplayString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="exit.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Alt+F4</value>
+  </data>
+  <data name="exit.Size" type="System.Drawing.Size, System.Drawing">
+    <value>166, 22</value>
+  </data>
+  <data name="exit.Text" xml:space="preserve">
+    <value>&amp;Exit</value>
+  </data>
+  <data name="file.Size" type="System.Drawing.Size, System.Drawing">
+    <value>37, 20</value>
+  </data>
+  <data name="file.Text" xml:space="preserve">
+    <value>&amp;File</value>
+  </data>
+  <data name="generateNormalSudoku.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F3</value>
+  </data>
+  <data name="generateNormalSudoku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 22</value>
+  </data>
+  <data name="generateNormalSudoku.Text" xml:space="preserve">
+    <value>&amp;Classic Sudoku</value>
+  </data>
+  <data name="generateXSudoku.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Umschalttaste+F3</value>
+  </data>
+  <data name="generateXSudoku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 22</value>
+  </data>
+  <data name="generateXSudoku.Text" xml:space="preserve">
+    <value>&amp;X-Sudoku</value>
+  </data>
+  <data name="generate.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="generate.Text" xml:space="preserve">
+    <value>&amp;Generate</value>
+  </data>
+  <data name="solve.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F4</value>
+  </data>
+  <data name="solve.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="solve.Text" xml:space="preserve">
+    <value>&amp;Solve</value>
+  </data>
+  <data name="mimimalAllocation.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F9</value>
+  </data>
+  <data name="mimimalAllocation.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="mimimalAllocation.Text" xml:space="preserve">
+    <value>&amp;Find Minimal Allocation</value>
+  </data>
+  <data name="definiteValues.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F5</value>
+  </data>
+  <data name="definiteValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="definiteValues.Text" xml:space="preserve">
+    <value>Show &amp;Definite Values</value>
+  </data>
+  <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
+    <value>268, 6</value>
+  </data>
+  <data name="validate.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F6</value>
+  </data>
+  <data name="validate.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="validate.Text" xml:space="preserve">
+    <value>&amp;Validate</value>
+  </data>
+  <data name="check.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F7</value>
+  </data>
+  <data name="check.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="check.Text" xml:space="preserve">
+    <value>&amp;Check</value>
+  </data>
+  <data name="info.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F8</value>
+  </data>
+  <data name="info.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="info.Text" xml:space="preserve">
+    <value>&amp;Info</value>
+  </data>
+  <data name="EditComment.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="EditComment.Text" xml:space="preserve">
+    <value>&amp;Edit Comment</value>
+  </data>
+  <data name="toolStripSeparator11.Size" type="System.Drawing.Size, System.Drawing">
+    <value>268, 6</value>
+  </data>
+  <data name="startSolveProblem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="startSolveProblem.Text" xml:space="preserve">
+    <value>Start Game</value>
+  </data>
+  <data name="fixCurrentValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="fixCurrentValues.Text" xml:space="preserve">
+    <value>Fi&amp;x Current Values</value>
+  </data>
+  <data name="releaseCurrentValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="releaseCurrentValues.Text" xml:space="preserve">
+    <value>Release Current Values</value>
+  </data>
+  <data name="toolStripSeparator9.Size" type="System.Drawing.Size, System.Drawing">
+    <value>268, 6</value>
+  </data>
+  <data name="reset.ShortcutKeyDisplayString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="reset.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+F10</value>
+  </data>
+  <data name="reset.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="reset.Text" xml:space="preserve">
+    <value>&amp;Reset</value>
+  </data>
+  <data name="clearCandidates.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Umschalttaste+F10</value>
+  </data>
+  <data name="clearCandidates.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="clearCandidates.Text" xml:space="preserve">
+    <value>C&amp;lear Candidates</value>
+  </data>
+  <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
+    <value>268, 6</value>
+  </data>
+  <data name="abort.ShortcutKeyDisplayString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="abort.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+F4</value>
+  </data>
+  <data name="abort.Size" type="System.Drawing.Size, System.Drawing">
+    <value>271, 22</value>
+  </data>
+  <data name="abort.Text" xml:space="preserve">
+    <value>&amp;Abort</value>
+  </data>
+  <data name="sudokuProblem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>64, 20</value>
+  </data>
+  <data name="sudokuProblem.Text" xml:space="preserve">
+    <value>&amp;Problem</value>
+  </data>
+  <data name="undo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+Z</value>
+  </data>
+  <data name="undo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="undo.Text" xml:space="preserve">
+    <value>&amp;Undo</value>
+  </data>
+  <data name="toolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 6</value>
+  </data>
+  <data name="debug.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="debug.Text" xml:space="preserve">
+    <value>&amp;Track</value>
+  </data>
+  <data name="findallSolutions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="findallSolutions.Text" xml:space="preserve">
+    <value>&amp;Find all Solutions</value>
+  </data>
+  <data name="showPossibleValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="showPossibleValues.Text" xml:space="preserve">
+    <value>&amp;Show Possible Values</value>
+  </data>
+  <data name="autoCheck.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="autoCheck.Text" xml:space="preserve">
+    <value>&amp;Auto Check</value>
+  </data>
+  <data name="markNeighbors.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="markNeighbors.Text" xml:space="preserve">
+    <value>&amp;Mark Neighbors</value>
+  </data>
+  <data name="toolStripSeparator10.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 6</value>
+  </data>
+  <data name="pause.ShortcutKeyDisplayString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="pause.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="pause.Text" xml:space="preserve">
+    <value>&amp;Pause</value>
+  </data>
+  <data name="resetTimer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="resetTimer.Text" xml:space="preserve">
+    <value>&amp;Reset Timer</value>
+  </data>
+  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 6</value>
+  </data>
+  <data name="sudokuOptionsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="sudokuOptionsToolStripMenuItem.Text" xml:space="preserve">
+    <value>Sudoku &amp;Options...</value>
+  </data>
+  <data name="options.Size" type="System.Drawing.Size, System.Drawing">
+    <value>61, 20</value>
+  </data>
+  <data name="options.Text" xml:space="preserve">
+    <value>&amp;Options</value>
+  </data>
+  <data name="showCellInfo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>F1</value>
+  </data>
+  <data name="showCellInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 22</value>
+  </data>
+  <data name="showCellInfo.Text" xml:space="preserve">
+    <value>Show Cell Info</value>
+  </data>
+  <data name="showHints.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
+    <value>Strg+F1</value>
+  </data>
+  <data name="showHints.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 22</value>
+  </data>
+  <data name="showHints.Text" xml:space="preserve">
+    <value>Show &amp;Hints</value>
+  </data>
+  <data name="toolStripSeparator7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>179, 6</value>
+  </data>
+  <data name="visitHomepage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 22</value>
+  </data>
+  <data name="visitHomepage.Text" xml:space="preserve">
+    <value>&amp;Sudoku Homepage</value>
+  </data>
+  <data name="versionHistory.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 22</value>
+  </data>
+  <data name="versionHistory.Text" xml:space="preserve">
+    <value>&amp;Version History</value>
+  </data>
+  <data name="aboutSudoku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 22</value>
+  </data>
+  <data name="aboutSudoku.Text" xml:space="preserve">
+    <value>&amp;About Sudoku...</value>
+  </data>
+  <data name="help.Size" type="System.Drawing.Size, System.Drawing">
+    <value>44, 20</value>
+  </data>
+  <data name="help.Text" xml:space="preserve">
+    <value>&amp;Help</value>
+  </data>
+  <data name="sudokuMenu.Location" type="System.Drawing.Point, System.Drawing">
+    <value>2, 2</value>
+  </data>
+  <data name="sudokuMenu.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 24</value>
+  </data>
+  <data name="sudokuMenu.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="sudokuMenu.Text" xml:space="preserve">
+    <value>menuStrip1</value>
+  </data>
+  <data name="&gt;&gt;sudokuMenu.Name" xml:space="preserve">
+    <value>sudokuMenu</value>
+  </data>
+  <data name="&gt;&gt;sudokuMenu.Type" xml:space="preserve">
+    <value>System.Windows.Forms.MenuStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;sudokuMenu.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;sudokuMenu.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <metadata name="saveSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>255, 17</value>
+  </metadata>
+  <data name="saveSudokuDialog.Filter" xml:space="preserve">
+    <value>Sudoku Problems (*.sudoku) | *.sudoku</value>
+  </data>
+  <data name="saveSudokuDialog.Title" xml:space="preserve">
+    <value>Save Sudoku Problem</value>
+  </data>
+  <metadata name="openSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>400, 17</value>
+  </metadata>
+  <data name="openSudokuDialog.Filter" xml:space="preserve">
+    <value>Sudoku Problems (*.sudoku) |*.sudoku</value>
+  </data>
+  <data name="openSudokuDialog.Title" xml:space="preserve">
+    <value>Open Sudoku Problem</value>
+  </data>
+  <metadata name="sudokuStatusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>2, 409</value>
+  </metadata>
+  <data name="sudokuStatusBarText.Size" type="System.Drawing.Size, System.Drawing">
+    <value>39, 17</value>
+  </data>
+  <data name="sudokuStatusBarText.Text" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="sudokuStatusBar.Location" type="System.Drawing.Point, System.Drawing">
+    <value>2, 409</value>
+  </data>
+  <data name="sudokuStatusBar.Size" type="System.Drawing.Size, System.Drawing">
+    <value>283, 22</value>
+  </data>
+  <data name="sudokuStatusBar.TabIndex" type="System.Int32, mscorlib">
+    <value>12</value>
+  </data>
+  <data name="sudokuStatusBar.Text" xml:space="preserve">
+    <value>sudokuStatusBar</value>
+  </data>
+  <data name="&gt;&gt;sudokuStatusBar.Name" xml:space="preserve">
+    <value>sudokuStatusBar</value>
+  </data>
+  <data name="&gt;&gt;sudokuStatusBar.Type" xml:space="preserve">
+    <value>System.Windows.Forms.StatusStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;sudokuStatusBar.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;sudokuStatusBar.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <metadata name="printSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>661, 17</value>
+  </metadata>
+  <metadata name="printSudoku.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>546, 17</value>
+  </metadata>
+  <metadata name="selectBookletDirectory.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>811, 4</value>
+  </metadata>
+  <data name="selectBookletDirectory.SelectedPath" xml:space="preserve">
+    <value>C:\Dokumente und Einstellungen\Clemens\Desktop</value>
+  </data>
+  <metadata name="solvingTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>983, 3</value>
+  </metadata>
+  <metadata name="autoPauseTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>1119, 3</value>
+  </metadata>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>98</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>287, 433</value>
+  </data>
+  <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAkAMDAQAAEABABoBgAAlgAAACAgEAABAAQA6AIAAP4GAAAQEBAAAQAEACgBAADmCQAAMDAAAAEA
+        CACoDgAADgsAACAgAAABAAgAqAgAALYZAAAQEAAAAQAIAGgFAABeIgAAMDAAAAEAIACoJQAAxicAACAg
+        AAABACAAqBAAAG5NAAAQEAAAAQAgAGgEAAAWXgAAKAAAADAAAABgAAAAAQAEAAAAAABABgAAAAAAAAAA
+        AAAQAAAAEAAAAAAAAAAAAIAAAIAAAACAgACAAAAAgACAAICAAADAwMAAgICAAAAA/wAA/wAAAP//AP8A
+        AAD/AP8A//8AAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiINYiDWIOIiDiIg4SIOIiINYg0g4
+        iAAId3d3d3d3d4d3d3d3d3d4d3d3d3d3eIAH9/9///f//4//9///f/94//f/////9xAH93//////9493
+        9/////94////f3//94AH//9///f//39/////f/94//9/f/f/94AI9/d/f3f394f393/3d/d4f39/f39/
+        d4AI/39/9/f/94//d/f/f/94//d//3f/dyAH//9///f394//f///f394//f/f/f394AH///////393//
+        9///f394//9/f3/391AH//9///f3/4///////394////f//394AI9/d/f3f3949/d//3f3+I9/d/93f/
+        d4AHf39/9/d/94/3939/d/94//d/f3f3+IAH//9//////4//f///f/94//f/////9zAH93////f/93//
+        //j///94//////f/94AH9/9///f/94//9/f/f/94//9//3//94AId3eHd3h3eId3eHd3h3eId3h3d3h3
+        eIAId3eHd3d3d4d3d3d3h3eId3eHd3d3eIAH//////f/939/f/f///93//////f/94AH//9///f//49/
+        9/f/f/94//9//3//94AH////////93//////f/94////////+IAHd3d3d3d/d4d3d3d3d/d4d3d3f3d3
+        94AI//9///f/94//f/////94//9//3//+IAH//9///f/93//9///f394//////f/94AH////d////493
+        9///f394//9//3//94AH//9///f//4//////f/94//f/////94AHd/d39/d/d49/d39/f3+I9/9/f3d3
+        +IAH//9//3f/94//d//3f/94/3d//3//dzAH//9///f/93////f/f/94////f/f/94AH/////////4//
+        9/f/f/94//9/f///94AH//9///f/94////////93/////3//94AIiIiHiIh4eIiIiIiIiIeIiIiIiHiI
+        iIAHd3eHd3h3eId3h3d3h3eId3eHd4h3eIAI//9///f393//9///f/94////////94AH//////f393//
+        9/////93//9///f/94AH//9////3/4//////f/94////////94AIf3d393d/d4f3d393d/eId3d/d3d3
+        eIAH//9///f/94//9///f/94//d//3//91AH93////f3/49//////393////////94AH9/9////49393
+        9///f394//9///f/9zAH//////f//4//////f/94////////94AI93d3d3f3d493d3d/d3d4d3d393d3
+        d2AI//9///f/94//f///f/94//9//3f/94AH//9///f//49/9///f/94//f/f///9xAI//9///f/939/
+        9///f394////f/f/94AH//9///f/949/f///f394//9//3//94AId3eHd3h3eId3eHd3h3eId3h4d3h3
+        eIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////8AAAAAAA///gAAAAAAB//+AAAAAAAH//4AA
+        AAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB
+        //+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AA
+        AAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB
+        //+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AA
+        AAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB
+        //+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf////////////8oAAAAIAAAAEAA
+        AAABAAQAAAAAAMACAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAAgAAAgAAAAICAAIAAAACAAIAAgIAAAMDA
+        wACAgIAAAAD/AAD/AAAA//8A/wAAAP8A/wD//wAA////AAAAAAAAAAAAAAAAAAAAAAAIiIiIiAiIiIiI
+        iIiIiIgAB/9/9/+P/3/3/4/3//f3gA9/////f3////+P//f//4AHf39394939/d/h/d/d/eAB/9///9/
+        /3/3/4/3//f/gA////f3j////3+P//f/d4AH/3///3//f/f/j/f/9/+AB39/93+Pf3/3f4f39/f3gA9/
+        f/f/j/93//+P///3/4AH/////3////f/j/f///+AB4eHiHeIeIh4d4h4eHh4gAf/f///j/////+P///3
+        /4AP///3/39/9/f/j/f///+AB/d39/d393f394f39/d3gAf///f/j///9/+P9//3/4AP//f3/39///9/
+        j/////+AB/d/9/+Pd393/4939/f3gAf/f/f/j/////+P///3/4AP/////3//d/f/j/f39/+AB/9/9/+P
+        /////4//////gAeIiIiIiIiIiIiIiIiIiAAH////93//f/f/j/f///+AD/9//39//////4////f/gAd/
+        f3f3h3f393+H9/f3d4AH/3///3//f/f/j/f///+AD3//9/d/f///94////f/gAf3f/f3d3d/d/+Pd/f3
+        fzAH/3/3/4////f/j/f///+AD/////9/f///94//9/f/gAd/d/d/j39393+H9/f394AAAAAAAAAAAAAA
+        AAAAAAAA/////4AAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAA
+        AAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAA
+        AAGAAAABgAAAAf////8oAAAAEAAAACAAAAABAAQAAAAAAAABAAAAAAAAAAAAABAAAAAQAAAAAAAAAAAA
+        gAAAgAAAAICAAIAAAACAAIAAgIAAAMDAwACAgIAAAAD/AAD/AAAA//8A/wAAAP8A/wD//wAA////AAiI
+        iIiIiIiHf//3f/9/9/h/9/f/f3f3+H9/9//3f//4f//39/9/9/h3d3d3d3d3+H/39/f/f/f4f//39/d3
+        //h/d/f/f3/3+H//9/f/f3/4d3d4d3eHd3h//3///3//+H9/939/d//4f3939/d39/h///f//3//+Hd3
+        d3d3d3d3gAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA
+        //8AAP//AAD//ygAAAAwAAAAYAAAAAEACAAAAAAAgA4AAAAAAAAAAAAAAAEAAAABAAAAAAAAsLK0ALCz
+        tACoq6wAqausAHx9fQB9fX0Ak5WWAJOWlwBZXF4AWV1fAK6wsgCvsbIAr7CwAK6wsQB6enoAent7AHh4
+        eAB4eXkAn6KkAJ+jpQBeYmQAX2NlAKGjpQCjo6QAvLy8AL29vQDOzs4Az8/PAO7u7gDv7+8Aurq6ALu7
+        uwCioqIAoqOjAKOjowCGhoYAh4eHAISEhACFhYUAlJSUAJWVlQCdoKEAnqGiAHJycgBzc3MAfn5+AH9/
+        fwCIiIgAiYmJAGBkZgBhZWcAYGRlAJaWlgCWl5cAl5eXAKKkpQCjpqcAjo6OAI6OjwCPj48AqqqqAKqr
+        qwCrq6sAWl5gAFxfYQCVmJkAl5qbANra2gDb29sA3t7eAN/f3wDc3NwA3d3dAJ6engCfn58AyMjIAMnJ
+        yQCmpqYAp6enAKioqACpqakA8PDwAPHx8QCurq4Ar6+vAJiYmACYmZkAmZmZAJKSkgCSkpMAk5OTAJCQ
+        kACQkZEAkZGRAJqamgCam5sAm5ubAIyMjACMjY0AjY2NAKCgoACgoKEAoaGhAGtwcgBucnQAioqKAOjo
+        6ADp6ekAxsbGAMfHxwC0tLQAtbW1AMDAwADBwcEAysrKAMvLywDMzMwAzc3NALKysgCzs7MApKSkAKWl
+        pQDs7OwA7e3tAPLy8gDz8/MArKysAKysrQCsra0Ara2tAIGBgQCAgYIAg4ODAJycnACcnJ0AnZ2dAMTE
+        xADFxcUA4ODgAOHh4QC+vr4Av7+/APb29gD39/cA9PT0APX19QDCwsIAw8PDALCwsACwsbEAsbGxALi4
+        uAC5ubkA5OTkAOXl5QDW1tYA19fXALa2tgC3t7cAcHBwAPj4+AD5+fkA0NDQANHR0QB5enoA0tLSANPT
+        0wDU1NQA1dXVAJSWlwChoqIA4uLiAOPj4wB1dXUA/Pz8AP39/QCoqqsApKanAK+yswCNjo4AYmZoAGRo
+        agBoaWkA2NjYANnZ2QDq6uoA6+vrAObm5gDn5+cA+vr6APv7+wCCg4QAgIWHAP7+/gD///8AT1JUAIuM
+        jQCrrKwAk5OUAJmbnACanZ4Acnd5ALK0tQCGh4gAp6mqAGpucAAAAAAAfIGDAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAz8/Pz8/P
+        z8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8+1QEBAQEBAQEBAQEBAFmk0
+        QEBAQEBAQEBAQEBAzsEyQEBAQEBAQEBAQEBAtc/Pz0NtbW1xUW1tbXJQbW1tPQ9tbW2ZlW1tbZRObW1t
+        KRFtbW2eeG1tbXBvbW1tVrXPzwLDvb+QRMPDw6G4w8PDRIjCrK8drcPDw7+pw8PDGVvCw8O7vMKSw2y9
+        w8LCiUDPzwKwgkeQRMPDw6G4w8PDRIi+l7wdrcPDw7+cw8PDGVvDw8O7vMOjsGy9w8LCiUDPz7PCjL6Q
+        RMPDw6G4w8PDRIjCuKEdrcPDw7+cw8PDGVvDw8O7vK+kkmy9w8PDiUDPz8i8vLxHiry8vIuUvLy8ijq8
+        vLyddry8vK1yvLy8PSe8vLyoo7y8vKekvLy8l0DPzzm6urqtTLq6uptuurq6TV66urpFpLq6ur2Jurq6
+        giW6urq4qLq6upypurq6cEDPzwLCw8OQRMPDw6G4wqeQRIjDw8MdrcPDw7+csES/GVvDw8O7vMKMwmy9
+        r7iviUDPzwLDw8OQRMPDw6G4wqZTRIjDw8MdrcPDw7+crx9+GVvDw8O7vJJ3bGy9kXl+iUDPzw7Dw8OQ
+        RMPDw6G4wqy/RIjDw8MdrcPDw7+csEi+GVvDw8O7vLCLsGy9sEewiUDPzwebm5tGiZubm0eTm5ubiWSb
+        m5ucdZubm6xxm5ubUSabm5unHJubm6Sjm5ubl0DPzxe7u7uaTbu7u7xMu7u7c167u7tIpru7u2uKu7u7
+        VDC7u7u5qbu7u52cu7u7nkDPzwLDmqKQRMPDw6G4w8PDRIjDw8MdrcJ9sL+cw8PDGVvDw8O7vMPDw2y9
+        w8PCiUDPz7PDjWuQRMPDw6G4w8PDRIjDw8MdraFWfb+cw8PDGVvDw8O7vMPDw2y9w8PDiUDPz7HDnZKQ
+        RMPDw6G4w8PDRIjDw8MdrcKbsL+cw8PDGsfCw8O7vMPDw2y9w8PDiUHPzwiZmZlvS5mZmXCImZmZSyyZ
+        mZmCepmZmZ+GmZmZXBKZmZk/T5mZmT1RmZmZPGjPzxOOjY2YIY2NjZlnjY2NI66NjY13UY2NjSBljY2N
+        XBCNjY1Vf42NjVSCjY2NW7bPzwLDw8OQRMPDw6G4w8PDRIiwRKIdrcJHr7+cw8PDGVvDw8O7vMPDw2y9
+        w8PDiUDPzwLDw8OQRMPDw6G4w8PDRIjCp7odrY93rL+cw8PDGVvDw8O7vMPDw2y9w8PDiUDPzwLCwsOQ
+        ucLDw6G4w8PCRIjCi68drcKssL+cwsPDGVnDw8O7vMPDwmy9w8PDiUDPzyqpnJwcn5ycnKNwnJycnyap
+        nJxujZycnKZ4nJycSqWcnJyKcpycqZSTnJypekDPzwy/v79+nL+/v5Kpv7+/nWG/v7+6R7+/v5Cmv7+/
+        H1y/v7+9rL+/v7yav7+/ckDPzwLDw8OQRLBIv6G4w8PDRIjDj78drcPDw7+cwri+GVvDw8O7vMPDw2y9
+        w8PDiUDPzwLDw8OQRMKouqG4w8PDRIiiebsdrcPDw7+cwnbCGVvDw8O7vMPDw2y9w8PDiUDPzwLDw8OQ
+        RMJJvqG4w8PDRIjCfL8drcPDw7+cwrvCGVvDw8O7vMPDw2y9w8PDiUDPz7Ktra1Ik62trUlxra2tk2Kt
+        ra2oc62trUeNra2sUIWtra2kdq2trRwbra2tVUDPzwMdHR29dB0dHWtzHR0ddVsdHR1GqB0dHbpMHR0d
+        lTEdHR1FnR0dHUS4HR0dn0DPzwLCw8OQucPDw6G4w8PCRIjDw8MdrbC5ob+pwsPDGVvDw8O6vL+jomy9
+        w8PCiUDPzwLDw8OQRMPDw6G4w8PDRIjDw8Mdra+ffb+cwsPDGVvDw8O7vK92vmy9w8PCiUDPz8vDw8OQ
+        RMPDw6G4w8PDRIjDw8MdrcKMvr+cw8PDjjfDw8O7vMKawmy9w8PDiTPPzxRLX18og19fXzUvN19fJreH
+        X19iJF9fXzYuX19fzMBKX19jMF9fVmpiX19fBdDPz8mYcHCVYXBwcJdfcHBwhi2ecHBRZ3BwcHhWcHBw
+        OxCfcHBPeXBwcE56cHBwZBXPzzjDw8OQRMPDw6G4wq2vRIjDw8MdrcPDw7+cw8PDGVvCw8O7vMPDw2y9
+        w8PCiQnPzwHDw8OQRMPDw6G4r4KsRIjDw8MdrcPDw7+cw8PDGVvDw8O7vMPDw2y9w8PDiUDPzwLCw8OQ
+        RMLDw6G4wou/RIjDwsIdrcPDw7+cw8PDGVvDw8O7vMPDw2y9w8PDiUDPzyucnJyjn5ycnKSenJycmCac
+        nJxMjpycnKdvnJycSwWcnJxtk5ycnImUnJycekDPzwu+vr59nL6+vpGovr6+nF++vr5sR76+vo+mvr6+
+        mVy+vr68rL6+vputvr6+ckDPzwLCuJGQRMPDw6G4wqSSRIjDSL4drcPDw7+pwnu+GVvDw8O7vMPDw2y9
+        w8PDiUDPzwLCpqyQRMPDw6G4sHq9RIiilawdrcPDw7+pvmVSGVnDw8O7vMPDw2y9w8PDiUDPz7PCfK+Q
+        RMPDw6G4wnuvRIjCfK8drcPDw7+cwpKwGVzDw8O7vMPDw2y9w8PDiUDPz6q5ubmnH7m5uaiYubm5HyS5
+        ubl0crm5uZyeubm5Zwa5ublMibm5uW5tubm5T0DPzwSQkJBSp5CQkFOmkJCQqFiQkJC9SJCQkJEckJCQ
+        nzyQkJCaR5CQkKyMkJCQjkDPz7PDw8OQRMPDw6G4w8PDRIiwRKIdrcPDw7+cwh7DGVvDw8O7vMKpsGy9
+        w8PDiUDPzwTDw8OQRMPDw6G4w8PDRIjCn1MdrcPDw7+cwnSPGTzDw8O7vMJ1wmy9w8PDiQrPz83Dw8OQ
+        RMPDw6G4w8PDRIjCi74drcPDw7+psEeQGTzDw8O7vMJ7w2y9w8PCicTPz0KWDQ0+Vw0NDcZaDQ0NV6AN
+        DQ0YYA0NDYFdDQ0NtIQ9DQ1mh3+ADSKrDQ0NxcrPz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/P
+        z8/Pz8/Pz8/Pz8/Pz8/Pz8/P///////////AAAAAAAP//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AA
+        AAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB
+        //+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AA
+        AAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB
+        //+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AA
+        AAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH//4AAAAAAAf//gAAAAAAB
+        //+AAAAAAAH//4AAAAAAAf//gAAAAAAB//+AAAAAAAH/////////////KAAAACAAAABAAAAAAQAIAAAA
+        AACACAAAAAAAAAAAAAAAAQAAAAEAAAAAAADJysoAycrLANjY2ADY2NkAc3R0AHN0dQCWl5cAl5eXAF5f
+        XwBfX18AQ0VGAERFRQBmZmYAZmdnAJycnACcnZ0AyMjIAMnJyQCqqqoAq6urAPDw8ADx8fEAxMTEAMXF
+        xQCUlJQAlZWVAHx8fAB9fX0AioqKAIuLiwDMzMwAzM3NAM3NzQDo6OgA6enpAICAgACCgoIAfn5+AH9/
+        fwDQ0NAA0dHRAGRkZABkZWUAZWVlAJ2enwCNjY0Ajo6OAOLi4gDj4+MA0tLSAJiYmACampoA8vLyAPPz
+        8wDOzs4Az8/PAO3t7QDv7+8AwMDAAMLDwwDm5uYA5+fnANzc3ADd3d0ASktMAEtMTABNTk4A2traANrb
+        2wDb29sAiYmJAPb29gD39/cA9PT0APX19QBYWFgAWltbANTU1ADX19cApqamAKenpwBpamoAa2xsAGxt
+        bgDKysoAy8vLAN7e3gDe398A39/fAPj4+AD5+fkAXF1dAF1eXgCVlpYAcHBwAODg4ADh4eEA2dnaANna
+        2gDHx8cA+vr6APv7+wDk5OQA5eXlAKioqAD8/PwA/f39AKSkpAD+/v4A////AHt7ewCHh4cAk5OTAGVm
+        ZgDd3t4AW1xcAKKiogCio6QAw8TEAGBgYABjY2QAZ2doANrb3ACFh4kAx8fIAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn58
+        eg5cDg5cDg5CVHoqCQ4OXA4OQQUOXSwODVwODgt+flg9bWFubmFubhRlZ0kibm5hbm4eam5nZktrMG5t
+        LH5+cx9rYW5uYW5uFFtWSSJubmFubh5qbmdmT2owbm4sfn53MDARMDARMDAzVzA/ODAwETAwG2AwVlkw
+        YRIwMHR+fnNra2Bra2BlSxNba0g+a2tgW1seZmsxZUlqYUlmLH5+c25uYW5uYUpEFGVuSSJubmFhMB5q
+        bmdmO2UwMjEsfn5iZWVAZWVAZVppSGU2aGVlQFtaR1plYElaW1laZSp+fgFoaFZoaFZoaDQwaFkpaGhW
+        aGgcZ2g3MGhnH2hoXH5+czhtYW5uYW5uFGVuSSI3W2Fubh5qbmdmbmswbm4sfn5zPm1hbm1hbm4UZW5J
+        IjptYW5uLmpuZ2ZuazBubVJ+fnZRUXFRUXFRUV9sUHUzUVFxUFEKUVEabFFQGVFQQ35+WG5uYW5uYW5u
+        FGVZSSJgWmFubh5qbmdmbmswbm4sfn5zbW1hbm5hbm0UZWFJIldJYW1uHmpuZ2ZuazBubSx+fn1hYWRh
+        YWRhYQhAYUY3YWFkYWFvWWFVV2FgEWFhdH5+WG5uYTVlYW5uFGVbSSJubmFJSh5qbmdmbmswbm4sfn5Y
+        bm5hIiJhbm4UWxhJIm5uYTU5HmpuZ2ZuazBubix+fiAiIjciIjciIg9oIjBOIiI3IiInPiIoPSI+OCIi
+        XX5+BElJRklJRElJUDZJFTBLSUZJSXBLSVdKS0g/SUl5fn5zbm5hbm5hbm4UZW5JIlZIYW1uHmpuZ2Y3
+        ajBubXJ+fntbWz9bW0BbW2lLWzVnFVo/W1teSVtgSBZaV1tbBn5+LS8vJi8vJi8veC8vHSUvLyYvL0wH
+        LyQuLy8nLy8Mfn5Fbm1hbm5hSkAUZW5JIm5uYW5uHmpuZ2ZuazBubSx+fnNubmFtbmE2IxRlbUkibm5h
+        bm4eam5nZm5rMG5uLH5+fWFhZGFhZGFhCEBhRDdhYWRhYW9ZYVVXYWARYWFNfn5zPW1hbm5hSiMUZWhJ
+        Im5uYUk6HmpuZ2ZuazBubix+fnNEbWFubmEVRBRbKEkibm5hOj0eam5nZm5rMG5uLH5+PGFhZGFhZGFh
+        CEBhRjdhYWRhYW9ZYVVXYWARYWFNfn5zbm5hbm5hbm4UZUlJIm5uYWttHmpuZ2ZLazBubix+fmNubWFu
+        bmFubhRlF0kibm5hOjAeam5nZgNrMG5tK35+AmdnVWdnVWdnEGBhVylnZ1UwMC4wZyFhZzFWZ2dTfn5+
+        fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+/////4AAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAA
+        AAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAA
+        AAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAf////8oAAAAEAAAACAAAAABAAgAAAAAAEAF
+        AAAAAAAAAAAAAAABAAAAAQAAAAAAAIaKjACHiowAwsbIAMPGyAC+w8UAv8PGAIOGiACDh4kAhYiKAIWJ
+        iwDIzM4AyM3PAKKiogCjo6MAyMjIAMnJyQDBwcEAwsLCALq6ugC7u7sA6OjoAOnp6QD8/PwA/f39AMnO
+        0ADLztAA7u7uAO/v7wDg4OAA4eHhALi4uAC5ubkA0tLSANPT0wDBx8oAyMzNAMrNzwDm5uYA5+fnANHR
+        0QD5+fkA+/v7APLy8gDz8/MA7OzsAO3t7QDk5OQA5eXlAOrq6gDr6+sA/v7+AP///wDMzMwAz8/PAPDw
+        8ADx8fEA4uLiAOPj4wDb29sA39/fAISIiQCGiYsAy9DSAM7S1ADP1NYAxMTEAMbGxgCzt7kAtrq7AMjL
+        zQD39/cApauuAK6urgCdnp4AxMjJAJqgogAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAE0CCD0BCAEJPQEBPQEIAUxBMjc3NCEnLDc0Qjg4HDM+Czc5OS5D
+        LTA5Gx86LjkbCD8XGxs3KCk4Gy4SHDIuMT4MJi8vKw8bOzorEzA3LysIBTVDQyJJNkNDIQ4PKEMhB0Ez
+        NzczIS0vLTNCOBg3Mz4ZNzweN0MyMDkyHzobOTcIPywdHSwQORYwLRQnKzAsPUAqLS0qNkc6MSoRGy0t
+        Kj4GQh8gQg0RIB9CShMRH0IIQDM3NzIiKiw3NEI4GDczPhkWOTkVQyYwOTEfOhs5NwgLJzk5OkMeMDkm
+        HzobOTcIQDM3NzQhMSw3LEI4ODczCiMaSwMaRSRLAyVEBEZLGkiAAP//AAD//wAA//8AAP//AAD//wAA
+        //8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//KAAAADAAAABgAAAAAQAgAAAA
+        AACAJQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAA
+        AAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAAEAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAA
+        AAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAUAAAADAAAABgAAAAYAAAAGAAAABgAAAAYAAAAGAAAABgAA
+        AAYAAAAGAAAABgAAAAYAAAAGAAAABgAAAAYAAAACAAAAAAAAAAIBAQE1AQEBggEBAYwBAQGMAQEBjAEB
+        AYwBAQGMAQEBjAEBAYwBAQGMAQEBjAEBAYwBAQGMAQEBjAEBAYYBAQFzAQEBhQEBAYwBAQGMAQEBjAEB
+        AYwBAQGMAQEBjAEBAYwBAQGMAQEBjAEBAYwBAQGMAQEBjAEBAXgBAQFcAQEBhAEBAYwBAQGMAQEBjAEB
+        AYwBAQGMAQEBjAEBAYwBAQGMAQEBjAEBAYwBAQGMAQEBjAEBAYIAAAA0AAAAAgAAAAaCgoKvxsbG/8bG
+        xv/Gxsb/wMDA/6mpqf/Gxsb/xsbG/8bGxv/BwcH/qKio/8bGxv/Gxsb/xsbG/6qqqv96enr+xsbG/8bG
+        xv/Gxsb/ubm5/7CwsP/Gxsb/xsbG/8bGxv/Dw8P/pqam/8bGxv/Gxsb/xsbG/5WVlft0dHTyxsbG/8bG
+        xv/Gxsb/tra2/7Ozs//Gxsb/xsbG/8bGxv+1tbX/tLS0/8bGxv/Gxsb/xsbG/5iYmP8BAQGCAAAABgAA
+        AAampqaw/////+fn5//7+/v/9/f3/9ra2v/////////////////4+Pj/2NjY/////////////////9ra
+        2v+dnZ3//v7+/+Li4v/8/Pz/7u7u/+Pj4//////////////////7+/v/1dXV/////////////////7y8
+        vP+SkpL5/v7+////////////6+vr/+bm5v/+/v7/9fX1///////p6en/5+fn///////+/v7//v7+/8TE
+        xP8BAQGMAAAABgAAAAampqaw/f39/62trf/f39//9/f3/9ra2v/////////////////4+Pj/2NjY////
+        /////////////9ra2v+dnZ3/+vr6/7Gxsf/m5ub/7u7u/+Pj4//////////////////7+/v/1tbW////
+        /////////////7y8vP+SkpL5////////////////6+vr/+bm5v//////0NDQ//39/f/p6en/5+fn////
+        ///+/v7//v7+/8TExP8BAQGMAAAABgAAAAalpaWx/v7+/+Hh4f/6+vr/9/f3/9ra2v//////////////
+        ///4+Pj/2NjY/////////////////9ra2v+dnZ3//v7+/9jY2P/4+Pj/7u7u/+Pj4///////////////
+        ///7+/v/1tbW/////////////////7y8vP+SkpL5////////////////6+vr/+bm5v/8/Pz/0dHR//X1
+        9f/p6en/5+fn/////////////////8TExP8BAQGMAAAABgAAAAmKioq/5ubm/+bm5v/m5ub/39/f/8XF
+        xf/m5ub/5ubm/+bm5v/g4OD/w8PD/+bm5v/m5ub/5ubm/8XFxf+Ojo7/5ubm/+bm5v/m5ub/19fX/83N
+        zf/m5ub/5ubm/+bm5v/j4+P/wcHB/+bm5v/m5ub/5ubm/6qqqv+EhIT55ubm/+bm5v/m5ub/1NTU/9DQ
+        0P/m5ub/5ubm/+bm5v/T09P/0dHR/+bm5v/m5ub/5ubm/7Gxsf8BAQGMAAAABgAAAAeVlZW16urq/+rq
+        6v/q6ur/4+Pj/8jIyP/q6ur/6urq/+rq6v/l5eX/x8fH/+rq6v/q6ur/6urq/8nJyf+RkZH/6urq/+rq
+        6v/q6ur/29vb/9HR0f/q6ur/6urq/+rq6v/n5+f/xMTE/+rq6v/q6ur/6urq/62trf+Ghob56urq/+rq
+        6v/q6ur/2NjY/9TU1P/q6ur/6urq/+rq6v/W1tb/1dXV/+rq6v/q6ur/6urq/7W1tf8BAQGMAAAABgAA
+        AAampqaw/v7+////////////9/f3/9ra2v/////////////////4+Pj/2NjY//7+/v/T09P/9/f3/9ra
+        2v+dnZ3/////////////////7u7u/+Pj4//////////////////7+/v/1tbW//39/f/a2tr/+/v7/7y8
+        vP+SkpL5////////////////6+vr/+bm5v/+/v7/4eHh//7+/v/p6en/5+fn//z8/P/Y2Nj//Pz8/8TE
+        xP8BAQGMAAAABgAAAAampqaw////////////////9/f3/9ra2v/////////////////4+Pj/2NjY//7+
+        /v/S0tL/8fHx/9ra2v+dnZ3/////////////////7u7u/+Pj4//////////////////7+/v/1tbW//z8
+        /P+6urr/8/Pz/7y8vP+SkpL5////////////////6+vr/+bm5v/19fX/srKy/+np6f/p6en/5+fn//T0
+        9P+kpKT/8/Pz/8TExP8BAQGMAAAABgAAAAijo6Oz////////////////9/f3/9ra2v//////////////
+        ///4+Pj/2NjY//7+/v/i4uL/+/v7/9ra2v+dnZ3/////////////////7u7u/+Pj4///////////////
+        ///7+/v/1tbW//39/f/c3Nz/+vr6/7y8vP+SkpL5////////////////6+vr/+bm5v/9/f3/4ODg//39
+        /f/p6en/5+fn//39/f/f39///f39/8TExP8BAQGMAAAABgAAAB+FhYXG5eXl/+Xl5f/l5eX/3t7e/8TE
+        xP/l5eX/5eXl/+Xl5f/f39//wsLC/+Xl5f/l5eX/5eXl/8TExP+NjY3/5eXl/+Xl5f/l5eX/1tbW/8zM
+        zP/l5eX/5eXl/+Xl5f/i4uL/wMDA/+Xl5f/l5eX/5eXl/6mpqf+Dg4P55eXl/+Xl5f/l5eX/09PT/8/P
+        z//l5eX/5eXl/+Xl5f/R0dH/0NDQ/+Xl5f/l5eX/5eXl/7Gxsf8BAQGMAAAABgAAAA6Tk5O46+vr/+vr
+        6//r6+v/5OTk/8nJyf/r6+v/6+vr/+vr6//m5ub/yMjI/+vr6//r6+v/6+vr/8rKyv+RkZH/6+vr/+vr
+        6//r6+v/3Nzc/9LS0v/r6+v/6+vr/+vr6//o6Oj/xcXF/+vr6//r6+v/6+vr/66urv+Hh4f56+vr/+vr
+        6//r6+v/2dnZ/9XV1f/r6+v/6+vr/+vr6//X19f/1tbW/+vr6//r6+v/6+vr/7a2tv8BAQGMAAAABgAA
+        AAampqaw/////+Tk5P/5+fn/9/f3/9ra2v/////////////////4+Pj/2NjY/////////////////9ra
+        2v+dnZ3/////////////////7u7u/+Pj4//+/v7/8vLy//39/f/7+/v/1tbW/////////////////7y8
+        vP+SkpL5////////////////6+vr/+bm5v/////////////////p6en/5+fn/////////////v7+/8TE
+        xP8BAQGMAAAABgAAAAelpaWx/////76+vv/o6Oj/9/f3/9ra2v/////////////////4+Pj/2NjY////
+        /////////////9ra2v+dnZ3/////////////////7u7u/+Pj4//4+Pj/mJiY//Ly8v/7+/v/1tbW////
+        /////////////7y8vP+SkpL5////////////////6+vr/+bm5v/////////////////p6en/5+fn////
+        /////////////8TExP8BAQGMAAAABgAAABKdnZ27/////9fX1//19fX/9/f3/9ra2v//////////////
+        ///4+Pj/2NjY/////////////////9ra2v+dnZ3/////////////////7u7u/+Pj4//+/v7/5eXl//39
+        /f/7+/v/1tbW/////////////////729vf6SkpL3/v7+////////////6+vr/+bm5v//////////////
+        ///p6en/5+fn/////////////////8TExP8BAQGKAAAABgAAAAp7e3uuubm5/rm5uf+5ubn/tLS0/5+f
+        n/+5ubn/ubm5/7m5uf+1tbX/nZ2d/7m5uf+5ubn/ubm5/5+fn/9ycnL/ubm5/7m5uf+5ubn/ra2t/6Wl
+        pf+5ubn/ubm5/7m5uf+3t7f/nJyc/7m5uf+5ubn/ubm5/46OjvZxcXHpubm5/rm5uf+5ubn/q6ur/6en
+        p/+5ubn/ubm5/7m5uf+qqqr/qamp/7m5uf+5ubn/ubm5/4+Pj/4BAQF2AAAABQAAAAWIiIihv7+//r6+
+        vv++vr7/uLi4/6Kiov++vr7/vr6+/76+vv+5ubn/oaGh/76+vv++vr7/vr6+/6Ojo/91dXX/vr6+/76+
+        vv++vr7/srKy/6mpqf++vr7/vr6+/76+vv+7u7v/oKCg/76+vv++vr7/vr6+/4+Pj/p0dHTqvr6+/r6+
+        vv++vr7/r6+v/6ysrP++vr7/vr6+/76+vv+urq7/ra2t/76+vv++vr7/vr6+/5OTk/4BAQF/AAAABQAA
+        AAampqaw////////////////9/f3/9ra2v/////////////////4+Pj/2NjY/////////////////9ra
+        2v+dnZ3//f39/9ra2v/5+fn/7u7u/+Pj4//+/v7/39/f//z8/P/7+/v/1tbW/////////////////7y8
+        vP+SkpL5////////////////6+vr/+bm5v/////////////////p6en/5+fn/////////////////8TE
+        xP8BAQGMAAAABgAAAAampqaw////////////////9/f3/9ra2v/////////////////4+Pj/2NjY////
+        /////////////9ra2v+dnZ3//v7+/9PT0//q6ur/7u7u/+Pj4//29vb/srKy/+Li4v/7+/v/1tbW////
+        /////////////7y8vP+SkpL5////////////////6+vr/+bm5v/////////////////p6en/5+fn////
+        /////////////8TExP8BAQGMAAAABgAAAAampqaw/v7+//7+/v//////9/f3/9nZ2f/+/v7/////////
+        ///4+Pj/2NjY/////////////v7+/9ra2v+dnZ3//v7+/+Dg4P/8/Pz/7u7u/+Pj4//+/v7/4uLi//39
+        /f/7+/v/1tbW//7+/v///////////7y8vP+RkZH6////////////////6+vr/+bm5v////////////7+
+        /v/p6en/5+fn/////////////////8TExP8BAQGMAAAABgAAAAaLi4uw1dXV/9bW1v/W1tb/z8/P/7e3
+        t//W1tb/1tbW/9bW1v/Q0ND/tbW1/9bW1v/W1tb/1tbW/7e3t/+EhIT/1dXV/9bW1v/W1tb/x8fH/76+
+        vv/W1tb/1tbW/9bW1v/S0tL/s7Oz/9bW1v/W1tb/1tbW/56env95eXn81tbW/9bW1v/W1tb/xcXF/8HB
+        wf/W1tb/1tbW/9XV1f/Dw8P/wsLC/9bW1v/W1tb/1dXV/6Wlpf8BAQGMAAAABgAAAAakpKSw+/v7//v7
+        +//7+/v/8/Pz/9bW1v/7+/v/+/v7//v7+//19fX/1dXV//v7+//7+/v/+/v7/9fX1/+bm5v/+/v7//v7
+        +//7+/v/6urq/9/f3//7+/v/+/v7//v7+//39/f/0tLS//v7+//7+/v/+/v7/7q6uv+Pj4/6+/v7//v7
+        +//7+/v/5+fn/+Li4v/7+/v/+/v7//v7+//m5ub/5OTk//v7+//7+/v/+/v7/8HBwf8BAQGMAAAABgAA
+        AAampqaw////////////////9/f3/9ra2v/9/f3/3Nzc//v7+//4+Pj/2NjY/////////////////9ra
+        2v+dnZ3///////b29v/7+/v/7u7u/+Pj4//////////////////7+/v/1tbW//7+/v/Y2Nj/+vr6/7y8
+        vP+SkpL5////////////////6+vr/+bm5v/////////////////p6en/5+fn/////////////////8TE
+        xP8BAQGMAAAABgAAAAampqaw////////////////9/f3/9ra2v/+/v7/1NTU/+rq6v/4+Pj/2NjY////
+        /////////////9ra2v+dnZ3/+fn5/6SkpP/r6+v/7u7u/+Pj4//////////////////7+/v/1tbW//7+
+        /v/Nzc3//v7+/7y8vP+SkpL5////////////////6+vr/+bm5v/////////////////p6en/5+fn////
+        /////////////8TExP8BAQGMAAAABgAAAAampqaw////////////////9/f3/9ra2v/+/v7/3d3d//r6
+        +v/4+Pj/2NjY/////////////////9ra2v+dnZ3//v7+/+3t7f/7+/v/7u7u/+Pj4///////////////
+        ///7+/v/1tbW//7+/v/r6+v//v7+/7y8vP+SkpL5////////////////6+vr/+bm5v//////////////
+        ///p6en/5+fn/////////////////8TExP8BAQGMAAAABgAAAAaUlJSw4+Pj/+Pj4//j4+P/3Nzc/8LC
+        wv/j4+P/4+Pj/+Pj4//d3d3/wMDA/+Pj4//j4+P/4+Pj/8LCwv+MjIz/4+Pj/+Pj4//j4+P/1NTU/8rK
+        yv/j4+P/4+Pj/+Pj4//f39//vr6+/+Pj4//j4+P/4uLi/6ioqP+CgoL54+Pj/+Pj4//j4+P/0dHR/83N
+        zf/j4+P/4+Pj/+Pj4//Pz8//zs7O/+Pj4//j4+P/4+Pj/6+vr/8BAQGMAAAABgAAAAabm5uw7u7u/+7u
+        7v/u7u7/5+fn/8vLy//u7u7/7u7u/+7u7v/o6Oj/ysrK/+7u7v/u7u7/7u7u/8zMzP+Tk5P/7u7u/+7u
+        7v/u7u7/3t7e/9TU1P/u7u7/7u7u/+7u7v/q6ur/yMjI/+7u7v/u7u7/7u7u/7CwsP+IiIj57u7u/+7u
+        7v/u7u7/29vb/9fX1//u7u7/7u7u/+7u7v/a2tr/2NjY/+7u7v/u7u7/7u7u/7e3t/8BAQGMAAAABgAA
+        AAampqaw/v7+////////////9/f3/9nZ2f/////////////////4+Pj/2NjY/////////////v7+/9ra
+        2v+dnZ3/////////////////7u7u/+Pj4//9/f3/2dnZ//j4+P/7+/v/1dXV//7+/v///////////7y8
+        vP+SkpL5////////////////6urq/+bm5v/7+/v/0NDQ//n5+f/p6en/5+fn/////////////v7+/8TE
+        xP8BAQGMAAAABgAAAAampqaw////////////////9/f3/9ra2v/////////////////4+Pj/2NjY////
+        /////////////9ra2v+dnZ3/////////////////7u7u/+Pj4//8/Pz/t7e3//Ly8v/7+/v/1tbW//7+
+        /v///////////7y8vP+SkpL5////////////////6+vr/+bm5v/8/Pz/zc3N//r6+v/p6en/5+fn////
+        /////////v7+/8TExP8BAQGMAAAABgAAAAaoqKiv////////////////9/f3/9ra2v//////////////
+        ///4+Pj/2NjY/////////////////9ra2v+dnZ3/////////////////7u7u/+Pj4//+/v7/4eHh//r6
+        +v/7+/v/1tbW/////////////////7+/v/uVlZXz////////////////6+vr/+bm5v/+/v7/5OTk//7+
+        /v/p6en/5+fn/////////////////8TExP8BAQGDAAAABgAAAAN9fX2JnZ2d8pmZmfmZmZn5k5OT+oGB
+        gfyZmZn5mZmZ+ZmZmfmVlZX6f39//peXl/yZmZn5mZmZ+YODg/piYmLum5ub9pmZmfmZmZn5jIyM/YaG
+        hv2ZmZn5mZmZ+ZmZmfmWlpb6fn5+/ZmZmfmZmZn5mZmZ+X5+fuBtbW3EnJyc85mZmfmZmZn5jIyM+4iI
+        iPyZmZn5mZmZ+ZiYmPuKior8i4uL+ZmZmfmZmZn5mZmZ+Xl5efMBAQFhAAAABAAAAAeAgICiuLi4+7W1
+        tf+1tbX/sLCw/5ubm/+1tbX/tbW1/7W1tf+xsbH/mpqa/7W1tf+1tbX/tbW1/5ycnP5ycnL6tra2/bW1
+        tf+1tbX/qamp/6Ghof+1tbX/tbW1/7W1tf+zs7P/mJiY/7W1tf+1tbX/tbW1/4yMjPRxcXHjt7e3/LW1
+        tf+1tbX/p6en/6SkpP+1tbX/tbW1/7W1tf+mpqb/paWl/7W1tf+1tbX/tbW1/42NjfwBAQGHAAAACAAA
+        AAmXl5fC////////////////9/f3/9ra2v/////////////////4+Pj/2NjY//7+/v/j4+P//Pz8/9ra
+        2v+dnZ3/////////////////7u7u/+Pj4//////////////////7+/v/1tbW/////////////////7y8
+        vP+SkpL5/v7+////////////6+vr/+bm5v/////////////////p6en/5+fn/////////////v7+/8TE
+        xP8BAQGOAAAABgAAAAampqax////////////////9/f3/9ra2v/////////////////4+Pj/2NjY//z8
+        /P+tra3/4uLi/9ra2v+dnZ3/////////////////7u7u/+Pj4//////////////////7+/v/1tbW////
+        /////////////7y8vP+SkpL5////////////////6+vr/+bm5v/////////////////p6en/5+fn////
+        /////////////8TExP8BAQGMAAAABgAAAAampqaw/v7+////////////9/f3/9ra2v/+/v7/////////
+        ///4+Pj/2NjY//7+/v/g4OD/+/v7/9ra2v+dnZ3///////7+/v/+/v7/7u7u/+Pj4///////////////
+        ///7+/v/1tbW/////////////////7y8vP+SkpL5////////////////6+vr/+bm5v//////////////
+        ///p6en/5+fn/////////////////8TExP8BAQGMAAAABgAAAAaMjIyw1tbW/9bW1v/W1tb/0NDQ/7e3
+        t//W1tb/1tbW/9bW1v/R0dH/tra2/9bW1v/W1tb/1tbW/7i4uP+EhIT/1tbW/9bW1v/W1tb/yMjI/7+/
+        v//W1tb/1tbW/9bW1v/T09P/tLS0/9bW1v/W1tb/1tbW/5+fn/97e3v51tbW/9bW1v/W1tb/xsbG/8LC
+        wv/W1tb/1tbW/9bW1v/ExMT/w8PD/9bW1v/W1tb/1tbW/6Wlpf8BAQGMAAAABgAAAAajo6Ow+vr6//r6
+        +v/6+vr/8vLy/9bW1v/6+vr/+vr6//r6+v/09PT/1NTU//r6+v/6+vr/+vr6/9bW1v+ampr/+vr6//r6
+        +v/6+vr/6enp/9/f3//6+vr/+vr6//r6+v/29vb/0tLS//r6+v/6+vr/+vr6/7m5uf+Pj4/5+vr6//r6
+        +v/6+vr/5ubm/+Li4v/6+vr/+vr6//r6+v/l5eX/4+Pj//r6+v/6+vr/+vr6/8HBwf8BAQGMAAAABgAA
+        AAampqaw/v7+/9jY2P/09PT/9/f3/9ra2v/////////////////4+Pj/2NjY//7+/v/R0dH/9fX1/9ra
+        2v+dnZ3//////9zc3P/6+vr/7u7u/+Pj4//////////////////7+/v/1dXV//7+/v/s7Oz/+vr6/7y8
+        vP+SkpL5////////////////6+vr/+bm5v/////////////////p6en/5+fn/////////////////8TE
+        xP8BAQGMAAAABgAAAAampqaw/v7+/9LS0v/i4uL/9/f3/9ra2v/////////////////4+Pj/2NjY//39
+        /f+lpaX/5+fn/9ra2v+dnZ3/+fn5/7CwsP/i4uL/7u7u/+Pj4//////////////////7+/v/1dXV//r6
+        +v+goKD/8PDw/7y8vP+RkZH6////////////////6+vr/+bm5v/////////////////p6en/5+fn////
+        /////////////8TExP8BAQGMAAAABgAAAAalpaWx/v7+/+3t7f/8/Pz/9/f3/9ra2v//////////////
+        ///4+Pj/2NjY//7+/v/s7Oz//Pz8/9ra2v+dnZ3//v7+/+3t7f/8/Pz/7u7u/+Pj4///////////////
+        ///7+/v/1tbW//7+/v/19fX//f39/7y8vP+QkJD8////////////////6+vr/+bm5v//////////////
+        ///p6en/5+fn/////////////////8TExP8BAQGMAAAABgAAAAmDg4O/2dnZ/9nZ2f/Z2dn/09PT/7q6
+        uv/Z2dn/2dnZ/9nZ2f/U1NT/uLi4/9nZ2f/Z2dn/2dnZ/7q6uv+Ghob/2dnZ/9nZ2f/Z2dn/y8vL/8HB
+        wf/Z2dn/2dnZ/9nZ2f/W1tb/tra2/9nZ2f/Z2dn/2dnZ/6Ghof98fHz62dnZ/9nZ2f/Z2dn/yMjI/8TE
+        xP/Z2dn/2dnZ/9nZ2f/Hx8f/xsbG/9nZ2f/Z2dn/2dnZ/6enp/8BAQGMAAAABgAAAAednZ229/f3//f3
+        9//39/f/8PDw/9PT0//39/f/9/f3//f39//x8fH/0tLS//f39//39/f/9/f3/9TU1P+ZmZn/9/f3//f3
+        9//39/f/5+fn/9zc3P/39/f/9/f3//f39//09PT/z8/P//f39//39/f/9/f3/7e3t/+Ojo759/f3//f3
+        9//39/f/5OTk/9/f3//39/f/9/f3//f39//i4uL/4eHh//f39//39/f/9/f3/7+/v/8BAQGMAAAABgAA
+        AAalpaWx////////////////9/f3/9ra2v/////////////////4+Pj/2NjY/////////////////9ra
+        2v+dnZ3//f39/9ra2v/5+fn/7u7u/+Pj4//////////////////7+/v/1tbW//7+/v/v7+///////7y8
+        vP+SkpL5////////////////6+vr/+bm5v/+/v7/1dXV//39/f/p6en/5+fn/////////////////8TE
+        xP8BAQGMAAAABgAAAAmenp66////////////////9/f3/9ra2v/////////////////4+Pj/2NjY////
+        /////////////9ra2v+dnZ3//v7+/7e3t//x8fH/7u7u/+Pj4//////////////////7+/v/1tbW//7+
+        /v/Ly8v/9vb2/7y8vP+Pj4/9////////////////6+vr/+bm5v/+/v7/zMzM//7+/v/p6en/5+fn////
+        /////////////8TExP8BAQGNAAAABgAAAAicnJy7////////////////9/f3/9ra2v//////////////
+        ///4+Pj/2NjY/////////////////9ra2v+dnZ3//v7+/+Dg4P/6+vr/7u7u/+Pj4///////////////
+        ///7+/v/1dXV//39/f/f39//9/f3/7y8vP+Pj4/+////////////////6+vr/+bm5v/+/v7/7Ozs////
+        ///p6en/5+fn/////////////v7+/8TExP8BAQGaAAAACiUlJQ12dnaerq6u6K2treitra3oqKio6JSU
+        lOitra3ora2t6K2treipqanpj4+P8K2tremtra3ora2t6JSUlOhpaWnsra2t6K2treitra3ooKCg65eX
+        l+2tra3ora2t6K2treiqqqrpjY2N762treitra3ora2t6IWFheBubm7MqKio762tremtra3onZ2d7JmZ
+        me2qqqrtqqqq7K2treifn5/onp6e6K2treitra3ora2t6IaGhugBAQFtAAAACElJSQgcHBwSAAAAFgAA
+        ABYAAAAWAAAAFgAAABYAAAAWAAAAFgAAABYAAAAYAAAAIwAAABgAAAAWAAAAFgAAABgAAAAiAAAAGAAA
+        ABYAAAAWAAAAHAAAACEAAAAXAAAAFgAAABYAAAAZAAAAIwAAABgAAAAWAAAAFgAAABUAAAARAAAAIwAA
+        ABkAAAAWAAAAHQAAACAAAAAeAAAAHwAAABcAAAAWAAAAFgAAABYAAAAWAAAAFgAAABUAAAAJAAAAAIAA
+        AAAAAf//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA
+        //8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAA
+        AAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA
+        //8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAA
+        AAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA
+        //8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAAAAAAAP//AAAAAAAA//8AAAAAAAD//wAA
+        AAAAAP//AAAAAAAA//8AAAAAAAH//ygAAAAgAAAAQAAAAAEAIAAAAAAAgBAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAEQAAACMAAAAjAAAAIwAAACMAAAAjAAAAIwAAACMAAAAjAAAAIQAAAB4AAAAjAAAAIwAA
+        ACMAAAAjAAAAIwAAACMAAAAjAAAAIwAAABwAAAAcAAAAIwAAACMAAAAjAAAAIwAAACMAAAAjAAAAIwAA
+        ACMAAAAcAAAAAgAAAANnZ2evYGBg7WBgYO5VVVXuYGBg7mBgYO5VVVXuYGBg7mBgYO5BQUHrYmJi5GBg
+        YO1dXV3uV1dX7mBgYO5gYGDuVVVV7mBgYO5gYGDuODg43mZmZt1gYGDuVlZW7l5eXu5gYGDuX19f7lVV
+        Ve5gYGDuYGBg7iYmJtAAAAAcAAAABOHh4eXm5ub//v7+/+Hh4f///////////+Hh4f///////////6ur
+        q//6+vr/5OTk//f39//o6Oj////////////h4eH///////////+Li4v//Pz8///////k5OT/+/v7//X1
+        9f/9/f3/4uLi///////+/v7/Xl5e7gAAACMAAAAE4ODg5czMzP/9/f3/4eHh////////////4eHh////
+        ////////q6ur//n5+f/Ly8v/9/f3/+jo6P///////////+Hh4f///////////4uLi//8/Pz//////+Tk
+        5P/7+/v/19fX//z8/P/i4uL///////////9eXl7uAAAAIwAAAAjDw8Pr4uLi/+Li4v/IyMj/4uLi/+Li
+        4v/IyMj/4uLi/+Li4v+YmJj/3t7e/+Li4v/c3Nz/z8/P/+Li4v/i4uL/yMjI/+Li4v/i4uL/fHx8/+Dg
+        4P/i4uL/y8vL/9/f3//i4uL/4eHh/8nJyf/i4uL/4uLi/1RUVO4AAAAjAAAABODg4OX9/f3//f39/+Dg
+        4P/9/f3//f39/+Dg4P/6+vr/9fX1/6qqqv/5+fn//f39//b29v/n5+f//f39//39/f/g4OD/+fn5//n5
+        +f+Li4v/+/v7//39/f/j4+P/+vr6//f39//8/Pz/4eHh//f39//7+/v/Xl5e7gAAACMAAAAE4ODg5f//
+        ////////4eHh////////////4eHh//T09P/a2tr/q6ur//r6+v//////9/f3/+jo6P///////////+Hh
+        4f/h4eH/4uLi/4uLi//8/Pz//////+Tk5P/7+/v/wMDA//r6+v/i4uL/0tLS/+Pj4/9eXl7uAAAAIwAA
+        ABLb29vn+vr6//r6+v/d3d3/+vr6//r6+v/d3d3/+vr6//j4+P+oqKj/9vb2//r6+v/z8/P/5eXl//r6
+        +v/6+vr/3d3d//n5+f/4+Pj/iYmJ//j4+P/6+vr/4ODg//f39//4+Pj/+fn5/9/f3//4+Pj/+vr6/11d
+        Xe4AAAAjAAAADcrKyubl5eX/5eXl/8vLy//l5eX/5eXl/8vLy//l5eX/5eXl/5qamv/i4uL/5eXl/9/f
+        3//R0dH/5eXl/+Xl5f/Ly8v/5eXl/+Xl5f99fX3/5OTk/+Xl5f/Ozs7/4uLi/+Xl5f/k5OT/zMzM/+Xl
+        5f/l5eX/VVVV7gAAACMAAAAE4ODg5c/Pz//+/v7/4eHh////////////4eHh////////////q6ur//r6
+        +v//////9/f3/+jo6P/Ozs7/+fn5/+Hh4f///////////4uLi//8/Pz//////+Tk5P/7+/v///////39
+        /f/i4uL///////////9eXl7uAAAAIwAAAA/g4ODm5+fn//7+/v/h4eH///////7+/v/h4eH/////////
+        //+rq6v/+vr6///////39/f/6Ojo/+/v7//+/v7/4eHh////////////jY2N/Pz8/P//////5OTk//v7
+        +////////f39/+Li4v///////v7+/2BgYOgAAAAgAAAAA5ycnNinp6f/p6en/5OTk/+np6f/p6en/5OT
+        k/+np6f/p6en/3BwcP+kpKT/pqam/6Kiov+YmJj/p6en/6enp/+Tk5P/pqam/6enp/9dXV35p6en/Ken
+        p/+VlZX/pKSk/6enp/+mpqb/lJSU/6enp/+mpqb/QEBA5gAAAB8AAAAE4eHh5f//////////4eHh////
+        ////////4eHh////////////q6ur//r6+v/f39//9/f3/+jo6P/g4OD/+Pj4/+Hh4f///////////4uL
+        i//8/Pz//////+Tk5P/7+/v///////39/f/i4uL///////////9eXl7uAAAAIwAAAATg4ODl/v7+//7+
+        /v/h4eH////////////h4eH///////7+/v+rq6v/+vr6/+Hh4f/39/f/6Ojo/97e3v/39/f/4eHh//7+
+        /v//////i4uL//z8/P//////5OTk//v7+////////f39/+Li4v///////v7+/15eXu4AAAAjAAAABMfH
+        x+Xh4eH/4eHh/8fHx//h4eH/4eHh/8fHx//h4eH/4eHh/5eXl//d3d3/4eHh/9vb2//Ozs7/4eHh/+Hh
+        4f/Hx8f/4eHh/+Hh4f97e3v/39/f/+Hh4f/Kysr/3t7e/+Hh4f/g4OD/yMjI/+Hh4f/h4eH/VFRU7gAA
+        ACMAAAAE4eHh5f//////////4eHh//Ly8v/6+vr/4eHh////////////q6ur//r6+v/5+fn/9/f3/+jo
+        6P///////////+Hh4f/39/f/9PT0/4uLi//8/Pz//////+Tk5P/7+/v///////39/f/i4uL/////////
+        //9eXl7uAAAAIwAAAATh4eHl///////////h4eH/6Ojo/+jo6P/h4eH///////////+rq6v/+fn5/8XF
+        xf/39/f/6Ojo////////////4eHh//Ly8v/t7e3/i4uL//z8/P//////5OTk//v7+////////f39/+Li
+        4v///////////15eXu4AAAAjAAAABM3NzeXo6Oj/6Ojo/87Ozv/o6Oj/6Ojo/87Ozv/o6Oj/6Ojo/5yc
+        nP/l5eX/6Ojo/+Li4v/U1NT/6Ojo/+jo6P/Ozs7/6Ojo/+jo6P9/f3//5+fn/+jo6P/Q0ND/5ubm/+jo
+        6P/n5+f/z8/P/+jo6P/o6Oj/VlZW7gAAACMAAAAE2tra5ff39//39/f/29vb//f39//39/f/2tra//f3
+        9//39/f/pqam//Pz8//39/f/8PDw/+Li4v/19fX/9/f3/9vb2//39/f/9/f3/4eHh//19fX/9/f3/97e
+        3v/09PT/9fX1//b29v/c3Nz/9/f3//f39/9cXFzuAAAAIwAAAATg4ODl///////////h4eH/////////
+        ///h4eH///////////+rq6v/+vr6///////39/f/6Ojo/8vLy//29vb/4eHh//7+/v//////i4uL//z8
+        /P//////5OTk//v7+//Ozs7//Pz8/+Li4v///////v7+/15eXu0AAAAjAAAAAt3d3eT5+fn/+fn5/9zc
+        3P/5+fn/+fn5/93d3f/5+fn/+fn5/6ioqP319fX/+fn5//Ly8v/k5OT/8PDw//j4+P/c3Nz/+fn5//n5
+        +f+SkpLu9/f3//n5+f/g4OD/9vb2//Hx8f/4+Pj/3t7e//n5+f/5+fn/ZWVl2QAAABsAAAAEkZGRx46O
+        jv6Ojo7/fn5+/46Ojv+Ojo7/fn5+/46Ojv+Ojo7/YGBg/o6OjvyOjo7/ioqK/4KCgv+Ojo7/jo6O/35+
+        fv+Ojo7/jo6O/1JSUvKUlJTyjo6O/4CAgP+NjY3/jo6O/46Ojv9/f3//jo6O/46Ojv82NjbmAAAAIwAA
+        AAfc3Nzq//////7+/v/h4eH////////////h4eH/9PT0/93d3f+rq6v/+vr6///////39/f/6Ojo////
+        ////////4eHh////////////i4uL//z8/P//////5OTk//v7+////////f39/+Li4v///////v7+/15e
+        Xu4AAAAjAAAABODg4OX//////////+Hh4f/+/v7//////+Hh4f/z8/P/6enp/6urq//6+vr//v7+//f3
+        9//o6Oj////////////h4eH///////////+Li4v//Pz8///////k5OT/+/v7///////9/f3/4uLi////
+        ////////Xl5e7gAAACMAAAAEx8fH5eHh4f/h4eH/x8fH/+Hh4f/h4eH/x8fH/+Hh4f/h4eH/l5eX/93d
+        3f/h4eH/2tra/87Ozv/h4eH/4eHh/8fHx//h4eH/4eHh/3t7e//f39//4eHh/8rKyv/e3t7/4eHh/+Dg
+        4P/IyMj/4eHh/+Hh4f9TU1PuAAAAIwAAAATg4ODl5ubm//7+/v/h4eH////////////h4eH/9PT0/+np
+        6f+rq6v/+vr6/+Xl5f/39/f/6Ojo////////////4eHh//f39//v7+//i4uL//z8/P//////5OTk//v7
+        +////////f39/+Li4v///////////15eXu4AAAAjAAAABODg4OXa2tr//v7+/+Hh4f///////////+Hh
+        4f/w8PD/2tra/6urq//5+fn/0NDQ//f39//o6Oj////////////h4eH/7+/v/+bm5v+Li4v//Pz8////
+        ///k5OT/+/v7///////9/f3/4uLi////////////Xl5e7gAAACMAAAAIwsLC6+Hh4f/h4eH/x8fH/+Hh
+        4f/h4eH/x8fH/+Hh4f/h4eH/l5eX/93d3f/h4eH/29vb/87Ozv/h4eH/4eHh/8fHx//h4eH/4eHh/3t7
+        e//f39//4eHh/8rKyv/e3t7/4eHh/+Dg4P/IyMj/4eHh/+Hh4f9TU1PuAAAAIwAAAATg4ODl////////
+        ///h4eH////////////h4eH///////////+rq6v/+vr6//f39//39/f/6Ojo////////////4eHh//39
+        /f/+/v7/i4uL//z8/P//////5OTk//v7+//19fX//f39/+Li4v///////////15eXu4AAAAjAAAACNvb
+        2+v//////v7+/+Hh4f///////////+Hh4f///////////6urq//6+vr/xMTE//f39//o6Oj/////////
+        ///h4eH/7+/v/+Li4v+Li4v//Pz8///////k5OT/+/v7/9jY2P/9/f3/4uLi///////+/v7/Xl5e7wAA
+        ACUAAAAFysrK5eTk5P/k5OT/ysrK/+Tk5P/k5OT/ysrK/+Tk5P/k5OT/nJyc+uDg4P/h4eH/3t7e/9HR
+        0f/k5OT/5OTk/8rKyv/i4uL/4uLi/4iIiOvi4uL/5OTk/83Nzf/h4eH/5OTk/+Pj4//Ly8v/5OTk/+Tk
+        5P9cXFzbAAAAIV5eXgkTExMWFBQUGhQUFBoSEhIaFBQUGhQUFBoNDQ0jExMTGxQUFBoKCgoiEhISHBQU
+        FBoSEhIcDg4OIhQUFBoUFBQaDQ0NIxMTExoUFBQaDAwMFg8PDyITExMbDg4OIhISEhwPDw8jFBQUGhIS
+        EhoUFBQaFBQUGgoKChIAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAoAAAAEAAAACAAAAABACAAAAAAAEAEAAAAAAAAAAAAAAAA
+        AAAAAAAAWVlZMlFRUYtMTEyMTU1NjFFRUYxGRkaGUFBQi05OToxNTU2MUVFRjEVFRX9NTU2MUVFRjExM
+        TIxRUVGMHBwcRNnZ2Xbr6+v/8PDw//Dw8P//////0tLS/+fn5//z8/P/8PDw///////ExMT/8fHx//Hx
+        8f/v7+///v7+/1BQUIzIyMh58PDw/+Li4v/i4uL/7e3t/8bGxv/s7Oz/5eXl/+Li4v/u7u7/uLi4/+Pj
+        4//t7e3/4uLi/+7u7v9MTEyM0NDQevz8/P/u7u7/7u7u//Dw8P/R0dH/+fn5//Hx8f/u7u7/7e3t/8LC
+        wv/v7+//6+vr/+3t7f/q6ur/UFBQjMrKynnm5ub/5OTk/+Tk5P/y8vL/yMjI/+7u7v/b29v/4+Pj//Ly
+        8v+6urr/5eXl//Dw8P/k5OT/8vLy/0xMTIy0tLR2zMzM/8bGxv/Gxsb/09PT/66urv/Pz8//xsbG/8bG
+        xv/S0tL/o6Oj/cjIyP/R0dH/xsbG/9LS0v9FRUWG2dnZdv7+/v/w8PD/8PDw//7+/v/S0tL/7Ozs/+Tk
+        5P/s7Oz//v7+/8TExP/x8fH//f39//Dw8P/+/v7/UFBQjMzMzHbw8PD/39/f/+Hh4f/w8PD/xsbG/+vr
+        6//l5eX/4uLi/+vr6/+4uLj/4+Pj/+7u7v/i4uL/8PDw/0xMTIzQ0NB28/Pz/+Dg4P/g4OD/8/Pz/8nJ
+        yf/i4uL/6enp/+Xl5f/s7Oz/u7u7/+fn5//y8vL/5eXl//Pz8/9NTU2M1tbWdvv7+//s7Oz/7Ozs//v7
+        +//Pz8//9/f3/+Pj4//q6ur/+/v7/8HBwf/u7u7/7Ozs/+zs7P/7+/v/T09Pi7S0tG7ExMT+uLi4/7m5
+        uf/ExMT/oqKi/sHBwf+5ubn/uLi4/8TExP+cnJz1urq6/8HBwf+4uLj/xMTE/0JCQoLV1dV4/v7+//Dw
+        8P/w8PD/6+vr/9PT0//7+/v/8/Pz//Dw8P//////xMTE//Hx8f/9/f3/8PDw//7+/v9QUFCMzMzMdunp
+        6f/i4uL/4uLi/+jo6P/Gxsb/5ubm/+Xl5f/i4uL/6urq/7i4uP/j4+P/7u7u/+Li4v/w8PD/TExMjMjI
+        yHnn5+f/4uLi/+Li4v/j4+P/xsbG/+Hh4f/l5eX/4uLi/+bm5v+4uLj/4+Pj/+7u7v/i4uL/8PDw/0xM
+        TIzV1dV5/v7+//Dw8P/w8PD//////9LS0v/q6ur/8/Pz//Dw8P/z8/P/xMTE//Hx8f/x8fH/8PDw//7+
+        /v9QUFCNr6+vQ87Ozo7CwsKOv7+/kM7Ozo6pqamPycnJj8LCwpC/v7+QzMzMjqOjo4rAwMCQyMjIkcLC
+        wo7Ozs6OSUlJRQAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA
+        //8AAP//AAD//wAA//8=
+</value>
+  </data>
+  <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>2, 2, 2, 2</value>
+  </data>
+  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
+    <value>CenterScreen</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Sudoku</value>
+  </data>
+  <data name="&gt;&gt;Column1.Name" xml:space="preserve">
+    <value>Column1</value>
+  </data>
+  <data name="&gt;&gt;Column1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Column2.Name" xml:space="preserve">
+    <value>Column2</value>
+  </data>
+  <data name="&gt;&gt;Column2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Column3.Name" xml:space="preserve">
+    <value>Column3</value>
+  </data>
+  <data name="&gt;&gt;Column3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Column4.Name" xml:space="preserve">
+    <value>Column4</value>
+  </data>
+  <data name="&gt;&gt;Column4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Column5.Name" xml:space="preserve">
+    <value>Column5</value>
+  </data>
+  <data name="&gt;&gt;Column5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Column6.Name" xml:space="preserve">
+    <value>Column6</value>
+  </data>
+  <data name="&gt;&gt;Column6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Column7.Name" xml:space="preserve">
+    <value>Column7</value>
+  </data>
+  <data name="&gt;&gt;Column7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Column8.Name" xml:space="preserve">
+    <value>Column8</value>
+  </data>
+  <data name="&gt;&gt;Column8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;Column9.Name" xml:space="preserve">
+    <value>Column9</value>
+  </data>
+  <data name="&gt;&gt;Column9.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;solutionTimer.Name" xml:space="preserve">
+    <value>solutionTimer</value>
+  </data>
+  <data name="&gt;&gt;solutionTimer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;file.Name" xml:space="preserve">
+    <value>file</value>
+  </data>
+  <data name="&gt;&gt;file.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;newItem.Name" xml:space="preserve">
+    <value>newItem</value>
+  </data>
+  <data name="&gt;&gt;newItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;newNormalSudoku.Name" xml:space="preserve">
+    <value>newNormalSudoku</value>
+  </data>
+  <data name="&gt;&gt;newNormalSudoku.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;newXSudoku.Name" xml:space="preserve">
+    <value>newXSudoku</value>
+  </data>
+  <data name="&gt;&gt;newXSudoku.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator13.Name" xml:space="preserve">
+    <value>toolStripSeparator13</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator13.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;sudokuOfTheDayToolStripMenuItem1.Name" xml:space="preserve">
+    <value>sudokuOfTheDayToolStripMenuItem1</value>
+  </data>
+  <data name="&gt;&gt;sudokuOfTheDayToolStripMenuItem1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;open.Name" xml:space="preserve">
+    <value>open</value>
+  </data>
+  <data name="&gt;&gt;open.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;save.Name" xml:space="preserve">
+    <value>save</value>
+  </data>
+  <data name="&gt;&gt;save.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Name" xml:space="preserve">
+    <value>toolStripSeparator2</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;twitter.Name" xml:space="preserve">
+    <value>twitter</value>
+  </data>
+  <data name="&gt;&gt;twitter.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;export.Name" xml:space="preserve">
+    <value>export</value>
+  </data>
+  <data name="&gt;&gt;export.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator1.Name" xml:space="preserve">
+    <value>toolStripSeparator1</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;print.Name" xml:space="preserve">
+    <value>print</value>
+  </data>
+  <data name="&gt;&gt;print.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;generateBooklet.Name" xml:space="preserve">
+    <value>generateBooklet</value>
+  </data>
+  <data name="&gt;&gt;generateBooklet.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;newBooklet.Name" xml:space="preserve">
+    <value>newBooklet</value>
+  </data>
+  <data name="&gt;&gt;newBooklet.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;existingBooklet.Name" xml:space="preserve">
+    <value>existingBooklet</value>
+  </data>
+  <data name="&gt;&gt;existingBooklet.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator5.Name" xml:space="preserve">
+    <value>toolStripSeparator5</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;exit.Name" xml:space="preserve">
+    <value>exit</value>
+  </data>
+  <data name="&gt;&gt;exit.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;sudokuProblem.Name" xml:space="preserve">
+    <value>sudokuProblem</value>
+  </data>
+  <data name="&gt;&gt;sudokuProblem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;generate.Name" xml:space="preserve">
+    <value>generate</value>
+  </data>
+  <data name="&gt;&gt;generate.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;generateNormalSudoku.Name" xml:space="preserve">
+    <value>generateNormalSudoku</value>
+  </data>
+  <data name="&gt;&gt;generateNormalSudoku.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;generateXSudoku.Name" xml:space="preserve">
+    <value>generateXSudoku</value>
+  </data>
+  <data name="&gt;&gt;generateXSudoku.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;solve.Name" xml:space="preserve">
+    <value>solve</value>
+  </data>
+  <data name="&gt;&gt;solve.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mimimalAllocation.Name" xml:space="preserve">
+    <value>mimimalAllocation</value>
+  </data>
+  <data name="&gt;&gt;mimimalAllocation.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;definiteValues.Name" xml:space="preserve">
+    <value>definiteValues</value>
+  </data>
+  <data name="&gt;&gt;definiteValues.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator3.Name" xml:space="preserve">
+    <value>toolStripSeparator3</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;validate.Name" xml:space="preserve">
+    <value>validate</value>
+  </data>
+  <data name="&gt;&gt;validate.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;check.Name" xml:space="preserve">
+    <value>check</value>
+  </data>
+  <data name="&gt;&gt;check.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;info.Name" xml:space="preserve">
+    <value>info</value>
+  </data>
+  <data name="&gt;&gt;info.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;EditComment.Name" xml:space="preserve">
+    <value>EditComment</value>
+  </data>
+  <data name="&gt;&gt;EditComment.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator11.Name" xml:space="preserve">
+    <value>toolStripSeparator11</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator11.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;startSolveProblem.Name" xml:space="preserve">
+    <value>startSolveProblem</value>
+  </data>
+  <data name="&gt;&gt;startSolveProblem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;fixCurrentValues.Name" xml:space="preserve">
+    <value>fixCurrentValues</value>
+  </data>
+  <data name="&gt;&gt;fixCurrentValues.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;releaseCurrentValues.Name" xml:space="preserve">
+    <value>releaseCurrentValues</value>
+  </data>
+  <data name="&gt;&gt;releaseCurrentValues.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator9.Name" xml:space="preserve">
+    <value>toolStripSeparator9</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator9.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;reset.Name" xml:space="preserve">
+    <value>reset</value>
+  </data>
+  <data name="&gt;&gt;reset.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;clearCandidates.Name" xml:space="preserve">
+    <value>clearCandidates</value>
+  </data>
+  <data name="&gt;&gt;clearCandidates.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Name" xml:space="preserve">
+    <value>toolStripSeparator4</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;abort.Name" xml:space="preserve">
+    <value>abort</value>
+  </data>
+  <data name="&gt;&gt;abort.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;options.Name" xml:space="preserve">
+    <value>options</value>
+  </data>
+  <data name="&gt;&gt;options.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;undo.Name" xml:space="preserve">
+    <value>undo</value>
+  </data>
+  <data name="&gt;&gt;undo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator8.Name" xml:space="preserve">
+    <value>toolStripSeparator8</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator8.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;debug.Name" xml:space="preserve">
+    <value>debug</value>
+  </data>
+  <data name="&gt;&gt;debug.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;findallSolutions.Name" xml:space="preserve">
+    <value>findallSolutions</value>
+  </data>
+  <data name="&gt;&gt;findallSolutions.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;showPossibleValues.Name" xml:space="preserve">
+    <value>showPossibleValues</value>
+  </data>
+  <data name="&gt;&gt;showPossibleValues.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;autoCheck.Name" xml:space="preserve">
+    <value>autoCheck</value>
+  </data>
+  <data name="&gt;&gt;autoCheck.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;markNeighbors.Name" xml:space="preserve">
+    <value>markNeighbors</value>
+  </data>
+  <data name="&gt;&gt;markNeighbors.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator10.Name" xml:space="preserve">
+    <value>toolStripSeparator10</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator10.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pause.Name" xml:space="preserve">
+    <value>pause</value>
+  </data>
+  <data name="&gt;&gt;pause.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;resetTimer.Name" xml:space="preserve">
+    <value>resetTimer</value>
+  </data>
+  <data name="&gt;&gt;resetTimer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator6.Name" xml:space="preserve">
+    <value>toolStripSeparator6</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator6.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;sudokuOptionsToolStripMenuItem.Name" xml:space="preserve">
+    <value>sudokuOptionsToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;sudokuOptionsToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;help.Name" xml:space="preserve">
+    <value>help</value>
+  </data>
+  <data name="&gt;&gt;help.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;showCellInfo.Name" xml:space="preserve">
+    <value>showCellInfo</value>
+  </data>
+  <data name="&gt;&gt;showCellInfo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;showHints.Name" xml:space="preserve">
+    <value>showHints</value>
+  </data>
+  <data name="&gt;&gt;showHints.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator7.Name" xml:space="preserve">
+    <value>toolStripSeparator7</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator7.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;visitHomepage.Name" xml:space="preserve">
+    <value>visitHomepage</value>
+  </data>
+  <data name="&gt;&gt;visitHomepage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;versionHistory.Name" xml:space="preserve">
+    <value>versionHistory</value>
+  </data>
+  <data name="&gt;&gt;versionHistory.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;aboutSudoku.Name" xml:space="preserve">
+    <value>aboutSudoku</value>
+  </data>
+  <data name="&gt;&gt;aboutSudoku.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;saveSudokuDialog.Name" xml:space="preserve">
+    <value>saveSudokuDialog</value>
+  </data>
+  <data name="&gt;&gt;saveSudokuDialog.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SaveFileDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;openSudokuDialog.Name" xml:space="preserve">
+    <value>openSudokuDialog</value>
+  </data>
+  <data name="&gt;&gt;openSudokuDialog.Type" xml:space="preserve">
+    <value>System.Windows.Forms.OpenFileDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;sudokuStatusBarText.Name" xml:space="preserve">
+    <value>sudokuStatusBarText</value>
+  </data>
+  <data name="&gt;&gt;sudokuStatusBarText.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;printSudokuDialog.Name" xml:space="preserve">
+    <value>printSudokuDialog</value>
+  </data>
+  <data name="&gt;&gt;printSudokuDialog.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PrintDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;printSudoku.Name" xml:space="preserve">
+    <value>printSudoku</value>
+  </data>
+  <data name="&gt;&gt;printSudoku.Type" xml:space="preserve">
+    <value>System.Drawing.Printing.PrintDocument, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="&gt;&gt;selectBookletDirectory.Name" xml:space="preserve">
+    <value>selectBookletDirectory</value>
+  </data>
+  <data name="&gt;&gt;selectBookletDirectory.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FolderBrowserDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;solvingTimer.Name" xml:space="preserve">
+    <value>solvingTimer</value>
+  </data>
+  <data name="&gt;&gt;solvingTimer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;autoPauseTimer.Name" xml:space="preserve">
+    <value>autoPauseTimer</value>
+  </data>
+  <data name="&gt;&gt;autoPauseTimer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>SudokuForm</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>

@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="cancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>258, 362</value>
+  </data>
+  <data name="cancel.Text" xml:space="preserve">
+    <value>&amp;Abbruch</value>
+  </data>
+  <data name="ok.Location" type="System.Drawing.Point, System.Drawing">
+    <value>339, 362</value>
+  </data>
+  <data name="bookletSizeNew.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 34</value>
+  </data>
+  <data name="labelBookletSizeNew.Location" type="System.Drawing.Point, System.Drawing">
+    <value>5, 16</value>
+  </data>
+  <data name="labelBookletSizeNew.Size" type="System.Drawing.Size, System.Drawing">
+    <value>80, 13</value>
+  </data>
+  <data name="labelBookletSizeNew.Text" xml:space="preserve">
+    <value>Neue Probleme</value>
+  </data>
+  <data name="printSolutions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 17</value>
+  </data>
+  <data name="printSolutions.Text" xml:space="preserve">
+    <value>&amp;Lösungen ausdrucken</value>
+  </data>
+  <data name="labelMinValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>249, 13</value>
+  </data>
+  <data name="labelMinValues.Text" xml:space="preserve">
+    <value>&amp;Min. Anzahl von Vorbelegungen in gen. Problemen:</value>
+  </data>
+  <data name="autoSaveBooklet.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 255</value>
+  </data>
+  <data name="autoSaveBooklet.Size" type="System.Drawing.Size, System.Drawing">
+    <value>238, 17</value>
+  </data>
+  <data name="autoSaveBooklet.Text" xml:space="preserve">
+    <value>A&amp;utomatisches Speichern von Problemheften</value>
+  </data>
+  <data name="labelBaseDirectory.Location" type="System.Drawing.Point, System.Drawing">
+    <value>5, 275</value>
+  </data>
+  <data name="labelBaseDirectory.Size" type="System.Drawing.Size, System.Drawing">
+    <value>98, 13</value>
+  </data>
+  <data name="labelBaseDirectory.Text" xml:space="preserve">
+    <value>Problem&amp;verzeichnis</value>
+  </data>
+  <data name="problemDirectory.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 291</value>
+  </data>
+  <data name="directorySelect.Location" type="System.Drawing.Point, System.Drawing">
+    <value>366, 289</value>
+  </data>
+  <data name="printHints.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 17</value>
+  </data>
+  <data name="printHints.Text" xml:space="preserve">
+    <value>&amp;Mögliche Werte ausdrucken</value>
+  </data>
+  <data name="autoPauseLag.Location" type="System.Drawing.Point, System.Drawing">
+    <value>142, 175</value>
+  </data>
+  <data name="autoPause.Size" type="System.Drawing.Size, System.Drawing">
+    <value>133, 17</value>
+  </data>
+  <data name="autoPause.Text" xml:space="preserve">
+    <value>Automatisch pausieren</value>
+  </data>
+  <data name="saveState.Size" type="System.Drawing.Size, System.Drawing">
+    <value>93, 17</value>
+  </data>
+  <data name="saveState.Text" xml:space="preserve">
+    <value>Status sichern</value>
+  </data>
+  <data name="useDigits.Size" type="System.Drawing.Size, System.Drawing">
+    <value>55, 17</value>
+  </data>
+  <data name="useDigits.Text" xml:space="preserve">
+    <value>Ziffern</value>
+  </data>
+  <data name="useWatchHands.Size" type="System.Drawing.Size, System.Drawing">
+    <value>101, 17</value>
+  </data>
+  <data name="useWatchHands.Text" xml:space="preserve">
+    <value>Uhrzeigerstriche</value>
+  </data>
+  <data name="groupBox1.Text" xml:space="preserve">
+    <value>Mögliche Werte</value>
+  </data>
+  <data name="hideWhenMinimized.Size" type="System.Drawing.Size, System.Drawing">
+    <value>157, 17</value>
+  </data>
+  <data name="hideWhenMinimized.Text" xml:space="preserve">
+    <value>Ausblenden, wenn minimiert</value>
+  </data>
+  <data name="largeRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 17</value>
+  </data>
+  <data name="largeRB.Text" xml:space="preserve">
+    <value>Groß</value>
+  </data>
+  <data name="mediumRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 17</value>
+  </data>
+  <data name="mediumRB.Text" xml:space="preserve">
+    <value>Mittel</value>
+  </data>
+  <data name="smallRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 17</value>
+  </data>
+  <data name="smallRB.Text" xml:space="preserve">
+    <value>Klein</value>
+  </data>
+  <data name="sizeGroupBox.Text" xml:space="preserve">
+    <value>&amp;Größe</value>
+  </data>
+  <data name="labelLanguage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>47, 13</value>
+  </data>
+  <data name="labelLanguage.Text" xml:space="preserve">
+    <value>&amp;Sprache</value>
+  </data>
+  <data name="labelConstrast.Text" xml:space="preserve">
+    <value>&amp;Kontrast</value>
+  </data>
+  <data name="layoutPage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>397, 322</value>
+  </data>
+  <data name="layoutPage.Text" xml:space="preserve">
+    <value>Anzeige</value>
+  </data>
+  <data name="printInternalSeverity.Size" type="System.Drawing.Size, System.Drawing">
+    <value>216, 17</value>
+  </data>
+  <data name="printInternalSeverity.Text" xml:space="preserve">
+    <value>&amp;Internen Schwierigkeitsgrad ausdrucken</value>
+  </data>
+  <data name="xSudokuConstrastLabel.Text" xml:space="preserve">
+    <value>&amp;Kontrast für X-Sudokus</value>
+  </data>
+  <data name="solutionSmall.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 17</value>
+  </data>
+  <data name="solutionSmall.Text" xml:space="preserve">
+    <value>Klein</value>
+  </data>
+  <data name="solutionPrintSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>152, 62</value>
+  </data>
+  <data name="solutionPrintSize.Text" xml:space="preserve">
+    <value>Größe-Lösung</value>
+  </data>
+  <data name="tiny.Size" type="System.Drawing.Size, System.Drawing">
+    <value>57, 17</value>
+  </data>
+  <data name="tiny.Text" xml:space="preserve">
+    <value>Winzig</value>
+  </data>
+  <data name="small.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 17</value>
+  </data>
+  <data name="small.Text" xml:space="preserve">
+    <value>Klein</value>
+  </data>
+  <data name="large.Size" type="System.Drawing.Size, System.Drawing">
+    <value>48, 17</value>
+  </data>
+  <data name="large.Text" xml:space="preserve">
+    <value>Groß</value>
+  </data>
+  <data name="problemPrintSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 113</value>
+  </data>
+  <data name="problemPrintSize.Text" xml:space="preserve">
+    <value>Größe-Problem</value>
+  </data>
+  <data name="printPage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>397, 322</value>
+  </data>
+  <data name="printPage.Text" xml:space="preserve">
+    <value>Drucken</value>
+  </data>
+  <data name="precalculatedProblems.Size" type="System.Drawing.Size, System.Drawing">
+    <value>178, 17</value>
+  </data>
+  <data name="precalculatedProblems.Text" xml:space="preserve">
+    <value>Vorberechnete Probleme nutzen</value>
+  </data>
+  <data name="generateMinimalProblems.Size" type="System.Drawing.Size, System.Drawing">
+    <value>167, 17</value>
+  </data>
+  <data name="generateMinimalProblems.Text" xml:space="preserve">
+    <value>Minimale Probleme generieren</value>
+  </data>
+  <data name="selectSeverityLevel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>78, 17</value>
+  </data>
+  <data name="selectSeverityLevel.Text" xml:space="preserve">
+    <value>Auswählen</value>
+  </data>
+  <data name="xSudoku.Location" type="System.Drawing.Point, System.Drawing">
+    <value>83, 19</value>
+  </data>
+  <data name="normalSudoku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 17</value>
+  </data>
+  <data name="normalSudoku.Text" xml:space="preserve">
+    <value>Normal </value>
+  </data>
+  <data name="type.Text" xml:space="preserve">
+    <value>Sudoku Typen in Problemheften</value>
+  </data>
+  <data name="hard.Location" type="System.Drawing.Point, System.Drawing">
+    <value>186, 19</value>
+  </data>
+  <data name="hard.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 17</value>
+  </data>
+  <data name="hard.Text" xml:space="preserve">
+    <value>Schwer</value>
+  </data>
+  <data name="intermediate.Location" type="System.Drawing.Point, System.Drawing">
+    <value>83, 19</value>
+  </data>
+  <data name="intermediate.Size" type="System.Drawing.Size, System.Drawing">
+    <value>102, 17</value>
+  </data>
+  <data name="intermediate.Text" xml:space="preserve">
+    <value>Durchschnittlich</value>
+  </data>
+  <data name="easy.Size" type="System.Drawing.Size, System.Drawing">
+    <value>55, 17</value>
+  </data>
+  <data name="easy.Text" xml:space="preserve">
+    <value>Leicht</value>
+  </data>
+  <data name="severity.Text" xml:space="preserve">
+    <value>Schwierigkeitsgrad</value>
+  </data>
+  <data name="unlimited.Size" type="System.Drawing.Size, System.Drawing">
+    <value>91, 17</value>
+  </data>
+  <data name="unlimited.Text" xml:space="preserve">
+    <value>unbeschränkt</value>
+  </data>
+  <data name="bookletSizeExisting.Location" type="System.Drawing.Point, System.Drawing">
+    <value>240, 34</value>
+  </data>
+  <data name="labelBookletSizeExisting.Size" type="System.Drawing.Size, System.Drawing">
+    <value>111, 13</value>
+  </data>
+  <data name="labelBookletSizeExisting.Text" xml:space="preserve">
+    <value>Existierende Probleme</value>
+  </data>
+  <data name="bookletSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 178</value>
+  </data>
+  <data name="bookletSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>349, 66</value>
+  </data>
+  <data name="bookletSize.Text" xml:space="preserve">
+    <value>Problemheftumfang</value>
+  </data>
+  <data name="generatePage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>397, 322</value>
+  </data>
+  <data name="generatePage.Text" xml:space="preserve">
+    <value>Generieren</value>
+  </data>
+  <data name="optionsTab.Size" type="System.Drawing.Size, System.Drawing">
+    <value>405, 351</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>423, 389</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Sudoku Optionen</value>
+  </data>
+</root>
