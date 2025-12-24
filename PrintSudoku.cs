@@ -184,10 +184,10 @@ namespace Sudoku
 
         private void LoadProblemFilenames(DirectoryInfo directoryInfo, List<String> filenames)
         {
-            sudokuStatusBarText.Text=String.Format(Resources.LoadingFiles);
+            sudokuStatusBarText.Text=String.Format(cultureInfo, Resources.LoadingFiles);
             sudokuStatusBar.Update();
 
-            Application.DoEvents();
+            // avoid Application.DoEvents(); — respect cooperative cancellation
             if(abortRequested) return;
 
             foreach(FileInfo fileInfo in directoryInfo.GetFiles())
@@ -228,7 +228,9 @@ namespace Sudoku
                             Math.DivRem(printParameters.Problems.Count/10, 25, out remainder);
                             sudokuStatusBarText.Text=Resources.LoadingFiles.PadRight(Resources.LoadingFiles.Length+remainder, '.');
                             sudokuStatusBar.Update();
-                            Application.DoEvents();
+
+                            // cooperative cancellation check instead of Application.DoEvents
+                            if(abortRequested) break;
                         }
                     }
                 }
