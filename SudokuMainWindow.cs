@@ -1087,25 +1087,24 @@ namespace Sudoku
 
             // Wait a short time for solver thread to stop cooperatively
             int waited = 0;
-            const int waitStep = 50;
+            const int waitStep = 50; // ms
             const int maxWait = 5000; // ms
             while(problem.Solver != null && problem.Solver.IsAlive && waited < maxWait)
             {
-                Application.DoEvents();
+                try { Application.DoEvents(); } catch { }
                 Thread.Sleep(waitStep);
                 waited += waitStep;
             }
 
-            // If still alive after waiting, mark as aborted (best-effort); do not call Thread.Abort unless absolutely necessary
+            // If still alive after waiting, try a short Join as a last resort
             if(problem.Solver != null && problem.Solver.IsAlive)
             {
-                // last resort: try to join with a short timeout
                 try { problem.Solver.Join(500); } catch { }
             }
 
+            // Mark as aborted and refresh UI state
             problem.Aborted = true;
             abortRequested = true;
-
             try { DisplayValues(problem.Matrix); } catch { }
         }
 
@@ -2145,4 +2144,4 @@ namespace Sudoku
             applicationExiting=!e.Cancel;
         }
     }
-}
+}}
