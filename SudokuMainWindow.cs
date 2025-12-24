@@ -1073,14 +1073,40 @@ namespace Sudoku
 
         private void AbortThread()
         {
-            if(!abortRequested && problem.Solver != null && problem.Solver.IsAlive)
+            if(problem == null) return;
+
+            // Request cooperative cancellation
+            try
             {
-                problem.Solver.Abort();
-                problem.Solver.Join();
+                problem.Cancel();
             }
-            problem.Aborted=true;
-            DisplayValues(problem.Matrix);
-            abortRequested=true;
+            catch
+            {
+                // ignore
+            }
+
+            // Wait a short time for solver thread to stop cooperatively
+            int waited = 0;
+            const int waitStep = 50;
+            const int maxWait = 5000; // ms
+            while(problem.Solver != null && problem.Solver.IsAlive && waited < maxWait)
+            {
+                Application.DoEvents();
+                Thread.Sleep(waitStep);
+                waited += waitStep;
+            }
+
+            // If still alive after waiting, mark as aborted (best-effort); do not call Thread.Abort unless absolutely necessary
+            if(problem.Solver != null && problem.Solver.IsAlive)
+            {
+                // last resort: try to join with a short timeout
+                try { problem.Solver.Join(500); } catch { }
+            }
+
+            problem.Aborted = true;
+            abortRequested = true;
+
+            try { DisplayValues(problem.Matrix); } catch { }
         }
 
         // Dialogs

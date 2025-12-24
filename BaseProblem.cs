@@ -22,6 +22,7 @@ namespace Sudoku
         private Boolean problemSolved=false;
         private Boolean aborted=false;
         private Thread thread=null;
+        private CancellationTokenSource cancellationTokenSource;
         private float severityLevel=float.NaN;
         private String filename=String.Empty;
         private String comment=String.Empty;
@@ -375,10 +376,31 @@ namespace Sudoku
             }
             if(!Resolvable()) return;
 
+            // prepare cancellation token source for this run
+            if(cancellationTokenSource != null)
+            {
+                try { cancellationTokenSource.Dispose(); } catch { }
+            }
+            cancellationTokenSource = new CancellationTokenSource();
+
             thread=new Thread(new ThreadStart(Solve));
             thread.Start();
 
             return;
+        }
+
+        /// <summary>
+        /// Request cooperative cancellation of the running solver/minimizer.
+        /// </summary>
+        public void Cancel()
+        {
+            aborted = true;
+            try
+            {
+                if(cancellationTokenSource != null && !cancellationTokenSource.IsCancellationRequested)
+                    cancellationTokenSource.Cancel();
+            }
+            catch { }
         }
 
         private void Solve()
@@ -386,8 +408,10 @@ namespace Sudoku
             Thread.CurrentThread.CurrentUICulture=new CultureInfo(Settings.Default.DisplayLanguage);
             try
             {
-                aborted=false;
+                // do not reset 'aborted' here; it may be set by Cancel()
                 nVarValues=Matrix.nVariableValues;
+                // If cancellation requested before start, abort early
+                if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
                 Solve(0);
             }
             catch(ThreadAbortException)
