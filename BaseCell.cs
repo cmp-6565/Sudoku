@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Sudoku
 {
@@ -35,6 +34,7 @@ namespace Sudoku
 
         public static bool operator ==(BaseCell op1, BaseCell op2)
         {
+            if (ReferenceEquals(op1, op2)) return true;
             if (op1 is null || op2 is null) return false;
             return op1.Row == op2.Row && op1.Col == op2.Col;
         }
@@ -43,7 +43,7 @@ namespace Sudoku
         public static bool operator >(BaseCell op1, BaseCell op2) => op1.GetHashCode() > op2.GetHashCode();
         public static bool operator <(BaseCell op1, BaseCell op2) => op1.GetHashCode() < op2.GetHashCode();
 
-        public override bool Equals(object obj) => this == (BaseCell)obj;
+        public override bool Equals(object obj) => this == (obj as BaseCell);
         public override int GetHashCode() => Row * SudokuForm.SudokuSize + Col;
 
         public byte CellValue
@@ -138,8 +138,7 @@ namespace Sudoku
             enabledMask = 0;
             for (int i = 1; i <= SudokuForm.SudokuSize; i++)
             {
-                if (directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i);
-                else possibleValuesCount--;
+                if (directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i); else possibleValuesCount--;
             }
             enabledMaskInitialized = true;
             definitiveValue = Values.Undefined;
