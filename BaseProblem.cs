@@ -208,7 +208,23 @@ namespace Sudoku
 
         public BaseMatrix CloneMatrix()
         {
-            BaseMatrix dest=(BaseMatrix)Matrix.Clone();
+            // Create a new matrix instance of the same runtime type and copy values efficiently
+            var dest = (BaseMatrix)Activator.CreateInstance(matrix.GetType());
+
+            // Initialize destination matrix (constructor already did Init on cells)
+            // Copy cell values and fixed/computed flags without using BinaryFormatter
+            for (int row = 0; row < SudokuForm.SudokuSize; row++)
+            {
+                for (int col = 0; col < SudokuForm.SudokuSize; col++)
+                {
+                    byte v = Matrix.GetValue(row, col);
+                    bool isFixed = Matrix.FixedValue(row, col);
+                    // Use SetValue on destination to apply blocks correctly
+                    dest.SetValue(row, col, v, isFixed);
+                    // preserve ComputedValue flag
+                    if (Matrix.ComputedValue(row, col)) dest.Cell(row, col).ComputedValue = true;
+                }
+            }
 
             return dest;
         }

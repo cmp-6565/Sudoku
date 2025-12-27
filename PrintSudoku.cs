@@ -472,10 +472,10 @@ namespace Sudoku
             float xStart=0, xEnd=0, yStart=0, yEnd=0;
 
             for(int i=1; i<=SudokuForm.SudokuSize; i++)
-                if((!showCandidates&&(value.Enabled(i)||value.DefinitiveValue==i))||(showCandidates&&(value.Candiates[i]||value.ExclusionCandiates[i])))
+                if((!showCandidates&&(value.Enabled(i)||value.DefinitiveValue==i))||(showCandidates&&(value.GetCandidateMask(i, false)||value.GetCandidateMask(i, true))))
                 {
                     if(i==5)
-                        g.FillEllipse(showCandidates ? (value.Candiates[i] ? PrintParameters.GreenSolidBrush: PrintParameters.RedSolidBrush): PrintParameters.SolidBrush, rf.X+rf.Width/2, rf.Y+rf.Height/2, diameter, diameter);
+                        g.FillEllipse(showCandidates ? (value.GetCandidateMask(i, false) ? PrintParameters.GreenSolidBrush: PrintParameters.RedSolidBrush): PrintParameters.SolidBrush, rf.X+rf.Width/2, rf.Y+rf.Height/2, diameter, diameter);
                     else
                     {
                         switch(i)
@@ -517,7 +517,7 @@ namespace Sudoku
                             yEnd=rf.Y+rf.Height;
                             break;
                         }
-                        g.DrawLine(showCandidates ? (value.Candiates[i] ? PrintParameters.GreenTinySolidLine: PrintParameters.RedTinySolidLine): PrintParameters.TinySolidLine, xStart, yStart, xEnd, yEnd);
+                        g.DrawLine(showCandidates ? (value.GetCandidateMask(i, false) ? PrintParameters.GreenTinySolidLine: PrintParameters.RedTinySolidLine): PrintParameters.TinySolidLine, xStart, yStart, xEnd, yEnd);
                     }
                 }
         }
@@ -535,7 +535,7 @@ namespace Sudoku
             SolidBrush exclusionCandidateBrush=new SolidBrush(Color.Red);
 
             for(int i=1; i<=SudokuForm.SudokuSize; i++)
-                if((!showCandidates&&(value.Enabled(i)||value.DefinitiveValue==i))||(showCandidates&&(value.Candiates[i]||value.ExclusionCandiates[i])))
+                if((!showCandidates&&(value.Enabled(i)||value.DefinitiveValue==i))||(showCandidates&&(value.GetCandidateMask(i, false)||value.GetCandidateMask(i, true))))
                 {
                     switch(i)
                     {
@@ -574,7 +574,7 @@ namespace Sudoku
                         y=rf.Y+rf.Height-(printFont.SizeInPoints*1.75f);
                         break;
                     }
-                    g.DrawString(i.ToString(), printFont, showCandidates ? (value.Candiates[i] ? candidateBrush: exclusionCandidateBrush): normalBrush, x, y);
+                    g.DrawString(i.ToString(), printFont, showCandidates ? (value.GetCandidateMask(i, false) ? candidateBrush: exclusionCandidateBrush): normalBrush, x, y);
                 }
         }
 

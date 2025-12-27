@@ -18,6 +18,12 @@ namespace Sudoku
         private int definitiveCalculatorCounter=0;
         private Boolean setPredefinedValues=true;
 
+        // thread-local pooled lookup for BlockOtherCells to avoid per-call allocations and locks
+        [ThreadStatic]
+        private static bool[] threadEnabledLookup;
+        [ThreadStatic]
+        private static List<int> threadEnabledIndices;
+
         public event EventHandler<BaseCell> CellChanged;
         protected virtual void OnCellChanged(BaseCell v)
         {
@@ -163,24 +169,16 @@ namespace Sudoku
 
         public Boolean GetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
         {
-            if(exclusionCandidate)
-                return Cell(row, col).ExclusionCandiates[candidate];
-            else
-                return Cell(row, col).Candiates[candidate];
+            // use mask-based access to avoid constructing arrays
+            BaseCell c = Cell(row, col);
+            return c.GetCandidateMask(candidate, exclusionCandidate);
         }
 
         public void SetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
         {
-            if(exclusionCandidate)
-            {
-                Cell(row, col).ExclusionCandiates[candidate]=!Cell(row, col).ExclusionCandiates[candidate];
-                Cell(row, col).Candiates[candidate]=false;
-            }
-            else
-            {
-                Cell(row, col).Candiates[candidate]=!Cell(row, col).Candiates[candidate];
-                Cell(row, col).ExclusionCandiates[candidate]=false;
-            }
+            // toggle candidate using mask API
+            BaseCell c = Cell(row, col);
+            c.ToggleCandidateMask(candidate, exclusionCandidate);
         }
 
         public Boolean HasCandidates()
@@ -188,14 +186,14 @@ namespace Sudoku
             for(int row=0; row<SudokuForm.SudokuSize; row++)
                 for(int col=0; col<SudokuForm.SudokuSize; col++)
                     for(int candidate=1; candidate<SudokuForm.SudokuSize+1; candidate++)
-                        if(Cell(row, col).Candiates[candidate]||Cell(row, col).ExclusionCandiates[candidate]) return true;
+                        if(Cell(row, col).GetCandidateMask(candidate, false) || Cell(row, col).GetCandidateMask(candidate, true)) return true;
 
             return false;
         }
 
         public override void SetValue(int row, int col, byte value, Boolean fixedValue)
         {
-            if(((value<1||value>SudokuForm.SudokuSize)&&value!=Values.Undefined)||row<0||col<0||row>SudokuForm.SudokuSize||col>SudokuForm.SudokuSize)
+            if(((value < 1 || value > SudokuForm.SudokuSize) && value != Values.Undefined) || row<0 || col<0 || row > SudokuForm.SudokuSize || col>SudokuForm.SudokuSize)
                 throw new InvalidSudokuValueException();
 
             if(Cell(row, col).FixedValue!=fixedValue)
@@ -309,16 +307,31 @@ namespace Sudoku
 
         public List<BaseCell> GetObviousCells(Boolean reset)
         {
-            List<BaseCell> values=new List<BaseCell>();
-
             if(reset) ResetIndirectBlocks();
 
-            foreach(BaseCell cell in this)
-                if(cell.nPossibleValues==1)
-                    values.Add(cell);
+            // use pooled list to avoid allocations
+            List<BaseCell> values = threadLocalObviousList;
+            if(values == null)
+            {
+                values = new List<BaseCell>(SudokuForm.TotalCellCount);
+                threadLocalObviousList = values;
+            }
+            else
+                values.Clear();
 
-            return values;
+            // iterate the flat cells list to avoid 2D indexing overhead
+            for(int i = 0; i < cells.Count; i++)
+            {
+                var cell = cells[i];
+                if(cell.nPossibleValues == 1) values.Add(cell);
+            }
+
+            // return a copy to preserve pool state for caller modifications
+            return new List<BaseCell>(values);
         }
+
+        [ThreadStatic]
+        private static List<BaseCell> threadLocalObviousList;
 
         private Boolean FillObviousCells(Boolean reset)
         {
@@ -417,53 +430,104 @@ namespace Sudoku
         protected virtual Boolean BlockOtherCells(List<BaseCell> enabledCells, int block)
         {
             Boolean rc=false;
-            Boolean proceed=true;
             Boolean definitive=enabledCells.Count==1;
-            BaseCell[] neighborCells;
 
             if(definitive)
             {
                 rc=enabledCells[0].DefinitiveValue==Values.Undefined;
                 enabledCells[0].DefinitiveValue=(byte)block;
             }
-            else
-                foreach(BaseCell cell in enabledCells) proceed&=enabledCells[0].Row==cell.Row;
-            if(proceed)
+
+            int size = SudokuForm.SudokuSize;
+            int total = SudokuForm.TotalCellCount;
+
+            // Use thread-local pooled bool[] and index list for membership checks (lock-free)
+            bool[] enabledLookup = threadEnabledLookup;
+            List<int> enabledIndices = threadEnabledIndices;
+            if(enabledLookup==null || enabledLookup.Length < total)
             {
-                neighborCells=Rows[enabledCells[0].Row];
-                foreach(BaseCell cell in neighborCells)
-                    if(!enabledCells.Contains(cell))
-                    {
-                        rc|=cell.Enabled(block);
-                        cell.SetBlock(block, false, false);
-                    }
+                enabledLookup = new bool[total];
+                threadEnabledLookup = enabledLookup;
+            }
+            if(enabledIndices==null)
+            {
+                enabledIndices = new List<int>(32);
+                threadEnabledIndices = enabledIndices;
+            }
+            enabledIndices.Clear();
+
+            // mark enabled cells in pooled lookup and compute row/col/rect sameness
+            BaseCell first = enabledCells[0];
+            int baseRow = first.Row;
+            int baseCol = first.Col;
+            int baseRectIndex = first.StartRow + ((first.StartCol / SudokuForm.RectSize) % SudokuForm.RectSize);
+            bool allSameRow = true;
+            bool allSameCol = true;
+            bool allSameRect = true;
+
+            for(int i=0;i<enabledCells.Count;i++)
+            {
+                var c = enabledCells[i];
+                int idx = c.Row*size + c.Col;
+                if(!enabledLookup[idx])
+                {
+                    enabledLookup[idx] = true;
+                    enabledIndices.Add(idx);
+                }
+                if(c.Row != baseRow) allSameRow = false;
+                if(c.Col != baseCol) allSameCol = false;
+                if(!(c.StartRow == first.StartRow && (c.StartCol / SudokuForm.RectSize) == (first.StartCol / SudokuForm.RectSize))) allSameRect = false;
             }
 
-            proceed=true;
-            if(!definitive) foreach(BaseCell cell in enabledCells) proceed&=enabledCells[0].Col==cell.Col;
-            if(proceed)
+            // If all candidates lie in the same row, eliminate from that row
+            if(allSameRow)
             {
-                neighborCells=Cols[enabledCells[0].Col];
-                foreach(BaseCell cell in neighborCells)
-                    if(!enabledCells.Contains(cell))
+                var neighborCells = Rows[baseRow];
+                for(int i=0;i<neighborCells.Length;i++)
+                {
+                    var cell = neighborCells[i];
+                    int idx = cell.Row*size + cell.Col;
+                    if(!enabledLookup[idx])
                     {
-                        rc|=cell.Enabled(block);
-                        cell.SetBlock(block, false, false);
+                        rc |= cell.TrySetBlock(block, false, false);
                     }
+                }
             }
 
-            proceed=true;
-            if(!definitive) foreach(BaseCell cell in enabledCells) proceed&=enabledCells[0].SameRectangle(cell);
-            if(proceed)
+            // If all candidates lie in the same column, eliminate from that column
+            if(!definitive && allSameCol) // original logic skipped column-check when definitive=true
             {
-                neighborCells=Rectangles[enabledCells[0].StartRow+((enabledCells[0].StartCol/SudokuForm.RectSize)%SudokuForm.RectSize)];
-                foreach(BaseCell cell in neighborCells)
-                    if(!enabledCells.Contains(cell))
+                var neighborCells = Cols[baseCol];
+                for(int i=0;i<neighborCells.Length;i++)
+                {
+                    var cell = neighborCells[i];
+                    int idx = cell.Row*size + cell.Col;
+                    if(!enabledLookup[idx])
                     {
-                        rc|=cell.Enabled(block);
-                        cell.SetBlock(block, false, false);
+                        rc |= cell.TrySetBlock(block, false, false);
                     }
+                }
             }
+
+            // If all candidates lie in the same rectangle, eliminate from that rectangle
+            if(!definitive && allSameRect)
+            {
+                var neighborCells = Rectangles[baseRectIndex];
+                for(int i=0;i<neighborCells.Length;i++)
+                {
+                    var cell = neighborCells[i];
+                    int idx = cell.Row*size + cell.Col;
+                    if(!enabledLookup[idx])
+                    {
+                        rc |= cell.TrySetBlock(block, false, false);
+                    }
+                }
+            }
+
+            // clear marks
+            for(int i=0;i<enabledIndices.Count;i++)
+                enabledLookup[enabledIndices[i]] = false;
+            enabledIndices.Clear();
 
             return rc;
         }

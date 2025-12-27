@@ -108,6 +108,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -249,6 +250,7 @@
       <DependentUpon>SeverityLevelDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Solution.cs" />
+    <Compile Include="Sudoku.Tests\MaskTests.cs" />
     <Compile Include="SudokuMainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -264,6 +266,7 @@
     <Compile Include="Values.cs" />
     <Compile Include="XSudokuMatrix.cs" />
     <Compile Include="XSudokuProblem.cs" />
+    <None Include="Sudoku.Tests\Sudoku.Tests.csproj" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
