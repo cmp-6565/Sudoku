@@ -25,6 +25,8 @@ namespace Sudoku
 
         public abstract Boolean ComputedValue(int row, int col);
 
+        public abstract Boolean ReadOnly(int row, int col);
+
         public abstract void Init();
 
         public object Clone()

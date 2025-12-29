@@ -196,16 +196,16 @@ namespace Sudoku
             if(((value < 1 || value > SudokuForm.SudokuSize) && value != Values.Undefined) || row<0 || col<0 || row > SudokuForm.SudokuSize || col>SudokuForm.SudokuSize)
                 throw new InvalidSudokuValueException();
 
-            if(Cell(row, col).FixedValue!=fixedValue)
-                nVarValues=fixedValue ? nVarValues-1: nVarValues+1;
+            if(Cell(row, col).FixedValue != fixedValue)
+                nVarValues=fixedValue? nVarValues-1: nVarValues+1;
 
             Cell(row, col).FixedValue=fixedValue;
             Cell(row, col).ComputedValue=false;
-            if(GetValue(row, col)!=value)
+            if(GetValue(row, col) != value)
             {
                 lock(this)
                 {
-                    if(SetPredefinedValues&&value==Values.Undefined) ResetIndirectBlocks();
+                    if(SetPredefinedValues && value == Values.Undefined) ResetIndirectBlocks();
                     Cell(row, col).CellValue=value;
                     if(SetPredefinedValues) SearchDefiniteValues(true);
                 }
@@ -228,6 +228,11 @@ namespace Sudoku
         public override Boolean ComputedValue(int row, int col)
         {
             return Cell(row, col).ComputedValue;
+        }
+
+        public override Boolean ReadOnly(int row, int col)
+        {
+            return Cell(row, col).ReadOnly;
         }
 
         public override void Init()
@@ -253,9 +258,12 @@ namespace Sudoku
         public void Reset()
         {
             SetPredefinedValues=false;
-            for(int row=0; row<SudokuForm.SudokuSize; row++)
-                for(int col=0; col<SudokuForm.SudokuSize; col++)
-                    if(!FixedValue(row, col)||ComputedValue(row, col)) SetValue(row, col, Values.Undefined, false);
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
+                    if(!FixedValue(row, col) || ComputedValue(row, col))
+                        SetValue(row, col, Values.Undefined, false);
+                    else
+                        Cell(row, col).ReadOnly = true;
             ResetIndirectBlocks();
             SetPredefinedValues=true;
         }

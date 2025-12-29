@@ -192,10 +192,10 @@ namespace Sudoku
             SudokuTable[row, col].Style.BackColor=(obfuscated? gray: ((problem is XSudokuProblem) && (row == col || row+col == SudokuSize-1)? lightGray: Color.White));
             SudokuTable[row, col].Style.ForeColor=(obfuscated? textColor: Color.Black);
             SudokuTable[row, col].Style.SelectionBackColor=System.Drawing.SystemColors.AppWorkspace;
-            if(problem.Matrix.Cell(row, col).CellValue == 0)
+            if(problem.Matrix.Cell(row, col).CellValue == Values.Undefined)
             {
                 SudokuTable[col, row].Value="";
-                problem.Matrix.Cell(row, col).ReadOnly=false;
+                problem.Matrix.Cell(row, col).ReadOnly = false;
             }
         }
 

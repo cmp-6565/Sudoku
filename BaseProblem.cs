@@ -222,7 +222,8 @@ namespace Sudoku
                     // Use SetValue on destination to apply blocks correctly
                     dest.SetValue(row, col, v, isFixed);
                     // preserve ComputedValue flag
-                    if (Matrix.ComputedValue(row, col)) dest.Cell(row, col).ComputedValue = true;
+                    dest.Cell(row, col).ComputedValue = Matrix.ComputedValue(row, col);
+                    dest.Cell(row, col).ReadOnly= Matrix.ReadOnly(row, col);
                 }
             }
 

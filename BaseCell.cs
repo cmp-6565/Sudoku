@@ -119,6 +119,7 @@ namespace Sudoku
             DefinitiveValue = Values.Undefined;
             FixedValue = false;
             ComputedValue = false;
+            ReadOnly = false;
         }
 
         public void InitCandidates() { candidatesMask = 0; exclusionCandidatesMask = 0; enabledMaskInitialized = false; }
@@ -192,14 +193,20 @@ namespace Sudoku
         {
             if (oldValue != Values.Undefined)
             {
-                if (direct) SetBlock(oldValue, true, direct);
-                else for (int i = 1; i < SudokuForm.SudokuSize + 1; i++) SetBlock(i, true, direct);
+                if (direct) 
+                    SetBlock(oldValue, true, direct);
+                else
+                    for (int i=1; i < SudokuForm.SudokuSize+1; i++)
+                        SetBlock(i, true, direct);
                 EnableNeighbors(oldValue, direct);
             }
             if (newValue != Values.Undefined)
             {
-                if (direct) SetBlock(newValue, false, direct);
-                else for (int i = 1; i < SudokuForm.SudokuSize + 1; i++) SetBlock(i, false, direct);
+                if (direct) 
+                    SetBlock(newValue, false, direct);
+                else
+                    for (int i=1; i < SudokuForm.SudokuSize+1; i++) 
+                        SetBlock(i, false, direct);
                 DisableNeighbors(newValue, direct);
             }
         }
