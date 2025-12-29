@@ -26,8 +26,6 @@ namespace Sudoku
         // cached helpers
         private static byte[] popcountCache;
         private static int[] lowbitIndex;
-        [ThreadStatic] private static bool[] threadCommonLookup;
-        [ThreadStatic] private static List<int> threadCommonIndices;
 
         public abstract bool Up();
         public abstract bool Down();
@@ -165,14 +163,22 @@ namespace Sudoku
 
         private static int PopCount(int v)
         {
+            // 16-bit lookup table population count (lazy initialized)
             if (popcountCache == null)
             {
-                int size = 1 << 10;
-                popcountCache = new byte[size];
-                for (int i = 0; i < size; i++) { int tmp = i; byte c = 0; while (tmp != 0) { tmp &= (tmp - 1); c++; } popcountCache[i] = c; }
+                // initialize table for 0..65535
+                popcountCache = new byte[1 << 16];
+                for (int i = 0; i < popcountCache.Length; i++)
+                {
+                    int x = i;
+                    x = x - ((x >> 1) & 0x5555);
+                    x = (x & 0x3333) + ((x >> 2) & 0x3333);
+                    x = (x + (x >> 4)) & 0x0F0F;
+                    popcountCache[i] = (byte)((x * 0x0101) >> 8);
+                }
             }
-            if (v >= 0 && v < popcountCache.Length) return popcountCache[v];
-            int t = v; int cnt = 0; while (t != 0) { t &= (t - 1); cnt++; } return cnt;
+            uint ux = (uint)v;
+            return popcountCache[ux & 0xFFFF] + popcountCache[(ux >> 16) & 0xFFFF];
         }
 
         private byte GetDefiniteValue()
@@ -291,67 +297,144 @@ namespace Sudoku
         private bool FindNakedCombination(BaseCell[] neighborCells)
         {
             bool rc = false;
-            if (CellValue == Values.Undefined && nPossibleValues > 1 && nPossibleValues < 8)
-            {
-                int count = nPossibleValues;
-                int allowedMask = 0;
-                int emask = GetEnabledMask();
-                for (int v = 1; v <= SudokuForm.SudokuSize; v++) if ((emask & (1 << v)) != 0) allowedMask |= (1 << v);
-                if (allowedMask == 0) return false;
 
-                int nlen = neighborCells.Length;
-                int[] neighborMasks = new int[nlen];
-                byte[] neighborCounts = new byte[nlen];
+            // fast guards
+            if (CellValue != Values.Undefined) return false;
+            int count = nPossibleValues;
+            if (count <= 1 || count >= 8) return false;
+
+            int allowedMask = GetEnabledMask();
+            if (allowedMask == 0) return false;
+
+            int nlen = neighborCells.Length;
+
+            // rent buffers from ArrayPool
+            var intPool = System.Buffers.ArrayPool<int>.Shared;
+            var bytePool = System.Buffers.ArrayPool<byte>.Shared;
+            var cellPool = System.Buffers.ArrayPool<BaseCell>.Shared;
+
+            int[] threadNeighborMasks = intPool.Rent(nlen);
+            byte[] threadNeighborCounts = bytePool.Rent(nlen);
+            BaseCell[] threadCandidateArr = cellPool.Rent(SudokuForm.SudokuSize);
+            try
+            {
+                // initialize
+                for (int i = 0; i < nlen; i++) { threadNeighborMasks[i] = 0; threadNeighborCounts[i] = 0; }
+
+                // collect neighbor masks and popcounts into rented arrays
                 for (int ni = 0; ni < nlen; ni++)
                 {
                     var nc = neighborCells[ni];
-                    if (nc.CellValue == Values.Undefined) { int nm = nc.GetEnabledMask(); neighborMasks[ni] = nm; neighborCounts[ni] = (byte)PopCount(nm); }
-                    else { neighborMasks[ni] = 0; neighborCounts[ni] = 0; }
+                    if (nc.CellValue == Values.Undefined)
+                    {
+                        int nm = nc.GetEnabledMask();
+                        threadNeighborMasks[ni] = nm;
+                        threadNeighborCounts[ni] = (byte)PopCount(nm);
+                    }
+                    else
+                    {
+                        threadNeighborMasks[ni] = 0;
+                        threadNeighborCounts[ni] = 0;
+                    }
                 }
 
-                BaseCell[] candidateNeighborsArr = new BaseCell[SudokuForm.SudokuSize];
+                // cheap early rejects: not enough candidate cells or insufficient union bits
+                int cheapCandidateCount = 0;
+                int unionMasks = 0;
+                for (int ni = 0; ni < nlen; ni++)
+                {
+                    int nm = threadNeighborMasks[ni];
+                    if (threadNeighborCounts[ni] == 0) continue;
+                    if ((nm & ~allowedMask) != 0) continue;
+                    cheapCandidateCount++;
+                    unionMasks |= nm;
+                }
+                if (cheapCandidateCount < count) return false;
+                if (PopCount(unionMasks) < count) return false;
+
+                // collect candidate neighbor cells (masks subset of allowed and popcount <= count)
                 int candidateCount = 0;
-                for (int ni = 0; ni < nlen; ni++) if (neighborCounts[ni] > 0)
+                for (int ni = 0; ni < nlen; ni++)
                 {
-                    int neighborMask = neighborMasks[ni];
-                    if (neighborCounts[ni] <= count && (neighborMask & ~allowedMask) == 0) candidateNeighborsArr[candidateCount++] = neighborCells[ni];
+                    if (threadNeighborCounts[ni] == 0) continue;
+                    int nm = threadNeighborMasks[ni];
+                    if (threadNeighborCounts[ni] <= count && (nm & ~allowedMask) == 0)
+                        threadCandidateArr[candidateCount++] = neighborCells[ni];
                 }
 
-                if (candidateCount == count && candidateCount > 0)
-                {
-                    int total = SudokuForm.TotalCellCount;
-                    if (threadCommonLookup == null || threadCommonLookup.Length < total) { threadCommonLookup = new bool[total]; threadCommonIndices = new List<int>(32); }
-                    threadCommonIndices.Clear();
+                if (candidateCount != count || candidateCount == 0) return false;
 
-                    for (int ci = 0; ci < candidateCount; ci++) { var c = candidateNeighborsArr[ci]; int idx = c.Row * SudokuForm.SudokuSize + c.Col; if (!threadCommonLookup[idx]) { threadCommonLookup[idx] = true; threadCommonIndices.Add(idx); } }
+                // mark candidate cells using a rented int array
+                int total = SudokuForm.TotalCellCount;
+                int[] threadCommonStamp = intPool.Rent(total);
+                try
+                {
+                    Array.Clear(threadCommonStamp, 0, total);
+                    for (int ci = 0; ci < candidateCount; ci++)
+                    {
+                        var c = threadCandidateArr[ci];
+                        int idx = c.Row * SudokuForm.SudokuSize + c.Col;
+                        threadCommonStamp[idx] = 1;
+                    }
 
                     for (int ni = 0; ni < nlen; ni++)
                     {
                         BaseCell updateCell = neighborCells[ni];
-                        if (updateCell == this || updateCell.CellValue != Values.Undefined) continue;
+                        if (updateCell == this) continue;
+                        if (updateCell.CellValue != Values.Undefined) continue;
                         int uidx = updateCell.Row * SudokuForm.SudokuSize + updateCell.Col;
-                        if (threadCommonLookup[uidx]) continue;
+                        if (threadCommonStamp[uidx] != 0) continue;
+                        // quick check: use cached neighbor mask collected earlier to skip TryDisableMask
+                        int updateMask = threadNeighborMasks[ni];
+                        if ((updateMask & allowedMask) == 0) continue;
                         if (updateCell.TryDisableMask(allowedMask, false)) rc = true;
                     }
-
-                    for (int i = 0; i < threadCommonIndices.Count; i++) threadCommonLookup[threadCommonIndices[i]] = false;
-                    threadCommonIndices.Clear();
+                }
+                finally
+                {
+                    intPool.Return(threadCommonStamp, true);
                 }
             }
+            finally
+            {
+                // return rented arrays
+                intPool.Return(threadNeighborMasks, true);
+                bytePool.Return(threadNeighborCounts, true);
+                cellPool.Return(threadCandidateArr, true);
+            }
+
             return rc;
         }
 
         protected virtual List<BaseCell> GetCommonNeighbors(List<BaseCell> candidateNeighbors, BaseCell[] neighborCells)
         {
             int total = SudokuForm.TotalCellCount;
-            if (threadCommonLookup == null || threadCommonLookup.Length < total) { threadCommonLookup = new bool[total]; threadCommonIndices = new List<int>(32); }
-            threadCommonIndices.Clear();
-            foreach (BaseCell c in candidateNeighbors) { int idx = c.Row * SudokuForm.SudokuSize + c.Col; if (!threadCommonLookup[idx]) { threadCommonLookup[idx] = true; threadCommonIndices.Add(idx); } }
-            List<BaseCell> commonNeighbors = new List<BaseCell>();
-            foreach (BaseCell cell in neighborCells) if (cell != this && cell.CellValue == Values.Undefined && !threadCommonLookup[cell.Row * SudokuForm.SudokuSize + cell.Col]) commonNeighbors.Add(cell);
-            for (int i = 0; i < threadCommonIndices.Count; i++) threadCommonLookup[threadCommonIndices[i]] = false;
-            threadCommonIndices.Clear();
-            return commonNeighbors;
+            // rent stamp array
+            var intPool2 = System.Buffers.ArrayPool<int>.Shared;
+            int[] stamp = intPool2.Rent(total);
+            try
+            {
+                Array.Clear(stamp, 0, total);
+                foreach (BaseCell c in candidateNeighbors)
+                {
+                    int idx = c.Row * SudokuForm.SudokuSize + c.Col;
+                    stamp[idx] = 1;
+                }
+
+                List<BaseCell> commonNeighbors = new List<BaseCell>();
+                foreach (BaseCell cell in neighborCells)
+                {
+                    if (cell == this || cell.CellValue != Values.Undefined) continue;
+                    int idx = cell.Row * SudokuForm.SudokuSize + cell.Col;
+                    if (stamp[idx] == 0) commonNeighbors.Add(cell);
+                }
+
+                return commonNeighbors;
+            }
+            finally
+            {
+                intPool2.Return(stamp, true);
+            }
         }
 
         public bool CommonNeighbor(BaseCell neighbor) { bool common = false; foreach (BaseCell cell in Neighbors) common = (cell == neighbor || common); return common; }
