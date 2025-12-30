@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 
 using Sudoku.Properties;
 
@@ -21,7 +22,7 @@ namespace Sudoku
         private Boolean checkWellDefined=false;
         private Boolean problemSolved=false;
         private Boolean aborted=false;
-        private Thread thread=null;
+        private Task solverTask=null;
         private CancellationTokenSource cancellationTokenSource;
         private float severityLevel=float.NaN;
         private String filename=String.Empty;
@@ -103,9 +104,9 @@ namespace Sudoku
             set { numSolutions=value; }
         }
 
-        public Thread Solver
+        public Task SolverTask
         {
-            get { return thread; }
+            get { return solverTask; }
         }
 
         public Boolean ProblemSolved
@@ -362,6 +363,17 @@ namespace Sudoku
 
         public void FindSolutions(UInt64 maxSolutions)
         {
+            // keep synchronous API: start async work and return immediately
+            solverTask = FindSolutionsAsync(maxSolutions);
+        }
+
+        internal Task WaitForSolverAsync()
+        {
+            return solverTask ?? Task.CompletedTask;
+        }
+
+        public Task FindSolutionsAsync(UInt64 maxSolutions)
+        {
             preparing=true;
             findAll=(maxSolutions == UInt64.MaxValue);
             checkWellDefined=(maxSolutions == 2);
@@ -378,7 +390,10 @@ namespace Sudoku
             }
             catch(ArgumentException)
             {
-                return; // Not resolvable
+                preparing=false;
+                // Not resolvable
+                solverTask = Task.CompletedTask;
+                return solverTask;
             }
             finally
             {
@@ -389,9 +404,14 @@ namespace Sudoku
             {
                 problemSolved=true;
                 SaveResult();
-                return;
+                solverTask = Task.CompletedTask;
+                return solverTask;
             }
-            if(!Resolvable()) return;
+            if(!Resolvable())
+            {
+                solverTask = Task.CompletedTask;
+                return solverTask;
+            }
 
             // prepare cancellation token source for this run
             if(cancellationTokenSource != null)
@@ -399,11 +419,25 @@ namespace Sudoku
                 try { cancellationTokenSource.Dispose(); } catch { }
             }
             cancellationTokenSource = new CancellationTokenSource();
+            var token = cancellationTokenSource.Token;
 
-            thread=new Thread(new ThreadStart(Solve));
-            thread.Start();
+            solverTask = Task.Run(() =>
+            {
+                Thread.CurrentThread.CurrentUICulture=new CultureInfo(Settings.Default.DisplayLanguage);
+                try
+                {
+                    nVarValues=Matrix.nVariableValues;
+                    if(token.IsCancellationRequested) { aborted = true; return; }
+                    Solve(0);
+                }
+                catch(Exception)
+                {
+                    // preserve previous behavior: surface exceptions to caller via Task
+                    throw;
+                }
+            }, token);
 
-            return;
+            return solverTask;
         }
 
         /// <summary>
@@ -447,7 +481,7 @@ namespace Sudoku
             {
                 minimalProblem.severityLevel=float.NaN; // force recalculation of Severity Level
                 minimalProblem.FindSolutions(2);
-                if(minimalProblem.Solver != null) minimalProblem.Solver.Join();
+                if(minimalProblem.SolverTask != null) minimalProblem.SolverTask.GetAwaiter().GetResult();
                 return (minimalProblem.nSolutions == 1 ? minimalProblem: null);
             }
             else
@@ -502,7 +536,7 @@ namespace Sudoku
                     {
                         if(aborted) return null;
                         FindSolutions(2);
-                        if(Solver != null) Solver.Join();
+                        if(SolverTask != null) SolverTask.GetAwaiter().GetResult();
                         if(nSolutions == 1)
                             candiates.Add(source[i]);
                     }
@@ -544,11 +578,28 @@ namespace Sudoku
             return count;
         }
 
-        public event EventHandler Progress;
+        internal sealed class ProgressEventArgs: EventArgs
+        {
+            public ProgressEventArgs(Int64 passCount, Int64 totalPassCount, Int32 numSolutions, Boolean preparing)
+            {
+                PassCount=passCount;
+                TotalPassCount=totalPassCount;
+                NumSolutions=numSolutions;
+                Preparing=preparing;
+            }
+
+            public Int64 PassCount { get; private set; }
+            public Int64 TotalPassCount { get; private set; }
+            public Int32 NumSolutions { get; private set; }
+            public Boolean Preparing { get; private set; }
+        }
+
+        public event EventHandler<ProgressEventArgs> Progress;
         protected virtual void OnProgress()
         {
-            EventHandler handler = Progress;
-            if (handler != null) handler(this, EventArgs.Empty);
+            var handler = Progress;
+            if(handler != null)
+                handler(this, new ProgressEventArgs(passCount, totalPassCount, numSolutions, preparing));
         }
 
         private void Solve(int current)

@@ -51,8 +51,10 @@ namespace Sudoku
             DisplayValues(problem.Matrix);
             StartDetachedProcess(new System.EventHandler(DisplaySolvingProcess), Resources.Thinking, 2, true);
 
-            if(problem.Solver!=null)
-                problem.Solver.Join();
+            if(problem.SolverTask != null)
+            {
+                try { problem.SolverTask.Wait(); } catch { }
+            }
 
             ResetDetachedProcess();
             ResetTexts();
@@ -215,8 +217,10 @@ namespace Sudoku
                     {
                         bookletProblem.FindSolutions(2);
 
-                        if(bookletProblem.Solver!=null)
-                            bookletProblem.Solver.Join();
+                        if(bookletProblem.SolverTask != null)
+                        {
+                            try { bookletProblem.SolverTask.Wait(); } catch { }
+                        }
 
                         if(bookletProblem.nSolutions==1)
                         {
@@ -268,8 +272,9 @@ namespace Sudoku
                             {
                                 bookletProblem.FindSolutions(2);
 
-                                if(bookletProblem.Solver != null)
-                                    bookletProblem.Solver.Join();
+                                // legacy Thread-based solver removed
+                                // if(bookletProblem.Solver != null)
+                                //     bookletProblem.Solver.Join();
 
                                 if(bookletProblem.nSolutions == 1)
                                 {

@@ -1062,40 +1062,8 @@ namespace Sudoku
 
         private void AbortThread()
         {
-            if(problem == null) return;
-
-            // Request cooperative cancellation
-            try
-            {
-                problem.Cancel();
-            }
-            catch
-            {
-                // ignore
-            }
-
-            // Wait a short time for solver thread to stop cooperatively
-            int waited = 0;
-            const int waitStep = 50;
-            const int maxWait = 5000; // ms
-            while(problem.Solver != null && problem.Solver.IsAlive && waited < maxWait)
-            {
-                Application.DoEvents();
-                Thread.Sleep(waitStep);
-                waited += waitStep;
-            }
-
-            // If still alive after waiting, mark as aborted (best-effort); do not call Thread.Abort unless absolutely necessary
-            if(problem.Solver != null && problem.Solver.IsAlive)
-            {
-                // last resort: try to join with a short timeout
-                try { problem.Solver.Join(500); } catch { }
-            }
-
-            problem.Aborted = true;
-            abortRequested = true;
-
-            try { DisplayValues(problem.Matrix); } catch { }
+            abortRequested=true;
+            try { problem.Cancel(); } catch { }
         }
 
         // Dialogs
@@ -1616,7 +1584,7 @@ namespace Sudoku
 
         private void DisplayGeneratingProcess(object sender, EventArgs e)
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
                 GenerationStatus();
@@ -1624,7 +1592,10 @@ namespace Sudoku
                 return;
             }
 
-            if(problem.Solver != null) problem.Solver.Join();
+            if(problem.SolverTask != null)
+            {
+                try { problem.SolverTask.Wait(); } catch { }
+            }
 
             solutionTimer.Stop();
             solutionTimer.Dispose();
@@ -1666,11 +1637,15 @@ namespace Sudoku
 
         private void DisplayCheckingProcess(object sender, EventArgs e)
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
+
+                var pe = e as BaseProblem.ProgressEventArgs;
+                var totalPasses = pe != null ? pe.TotalPassCount : problem.TotalPassCounter;
+
                 status.Text =
-                    String.Format(cultureInfo, Resources.CheckingStatus, problem.TotalPassCounter)+Environment.NewLine +
+                    String.Format(cultureInfo, Resources.CheckingStatus, totalPasses)+Environment.NewLine +
                     Resources.TimeElapsed+(DateTime.Now-computingStart).ToString();
                 status.Update();
             }
@@ -1693,12 +1668,17 @@ namespace Sudoku
 
         private void DisplaySolvingProcess(object sender, EventArgs e)
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
+
+                var pe = e as BaseProblem.ProgressEventArgs;
+                var totalPasses = pe != null ? pe.TotalPassCount : problem.TotalPassCounter;
+                var solutionsSoFar = pe != null ? pe.NumSolutions : problem.nSolutions;
+
                 status.Text =
-                    (findallSolutions.Checked? String.Format(cultureInfo, Resources.SolutionsSoFar, problem.nSolutions)+Environment.NewLine: String.Empty) +
-                    String.Format(cultureInfo, Resources.CheckingStatus, problem.TotalPassCounter) +
+                    (findallSolutions.Checked? String.Format(cultureInfo, Resources.SolutionsSoFar, solutionsSoFar)+Environment.NewLine: String.Empty) +
+                    String.Format(cultureInfo, Resources.CheckingStatus, totalPasses) +
                     Environment.NewLine +
                     Resources.TimeElapsed+(DateTime.Now-computingStart).ToString();
                 status.Update();
