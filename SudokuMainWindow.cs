@@ -280,71 +280,60 @@ namespace Sudoku
         /// </returns>
         private Boolean SyncProblemWithGUI(Boolean silent)
         {
-            int row, col;
-            String value=String.Empty;
-            Boolean error=false;
-
             Text=ProductName;
             SudokuTable.EndEdit();
             mouseWheelEditing=false;
 
-            BaseProblem tmp=problem.Clone();
-            for(row=0; row < SudokuSize; row++)
-                for(col=0; col < SudokuSize; col++)
-                    if(SudokuTable[col, row].Value != null)
-                    {
-                        try
-                        {
-                            value=((string)SudokuTable[col, row].Value).Trim();
-                            SetValue(tmp, row, col, value.Length > 0? Convert.ToByte(value, cultureInfo): Values.Undefined);
-                            SudokuTable[col, row].ErrorText=String.Empty;
-                        }
-                        catch(FormatException)
-                        {
-                            SudokuTable[col, row].ErrorText=String.Format(cultureInfo, Resources.InvalidNumber, row+1, col+1);
-                            error=true;
-                        }
-                        catch(InvalidSudokuValueException)
-                        {
-                            SudokuTable[col, row].ErrorText=String.Format(cultureInfo, Resources.OutOfBounds, SudokuSize, row+1, col+1);
-                            error=true;
-                        }
-                        catch(ArgumentException)
-                        {
-                            if(Settings.Default.AutoCheck) SudokuTable[col, row].ErrorText=String.Format(cultureInfo, Resources.InvalidValue, value, row+1, col+1);
-                            incorrectTries++;
-                            error=true;
-                        }
-                        catch
-                        {
-                            SetValue(tmp, row, col, Values.Undefined);
-                            SudokuTable[col, row].ErrorText=String.Empty;
-                        }
+            // Marshal UI grid to string[,] with minimal processing
+            string[,] grid=new string[SudokuForm.SudokuSize, SudokuForm.SudokuSize];
+            for(int row=0; row<SudokuForm.SudokuSize; row++)
+                for(int col=0; col<SudokuForm.SudokuSize; col++)
+                    grid[row, col]=SudokuTable[col, row].Value as string;
 
-                        if(!silent && error)
-                        {
-                            status.Text=String.Empty;
-                            hideValues=false;
-                            MessageBox.Show(SudokuTable[col, row].ErrorText, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                            hideValues=true;
-                            return false;
-                        }
-                    }
-
-            if(error)
+            bool ok=SyncHelper.TrySyncGrid(problem, grid, cultureInfo, autoCheck.Checked, ref incorrectTries, out var syncedProblem);
+            if(!ok)
             {
                 status.Text=String.Empty;
+
+                // On error, mark cells lazily (only when failure) and optionally show message
+                string firstError=null;
+                for(int row=0; row<SudokuForm.SudokuSize; row++)
+                    for(int col=0; col<SudokuForm.SudokuSize; col++)
+                        SudokuTable[col, row].ErrorText=String.Empty;
+
+                for(int row=0; row<SudokuForm.SudokuSize; row++)
+                {
+                    for(int col=0; col<SudokuForm.SudokuSize; col++)
+                    {
+                        string raw=grid[row, col];
+                        if(raw==null) continue;
+                        string value=raw.Trim();
+                        if(value.Length==0) continue;
+
+                        byte parsed;
+                        bool parseOk=byte.TryParse(value, NumberStyles.Integer, cultureInfo, out parsed) && parsed>=1 && parsed<=SudokuForm.SudokuSize;
+                        if(!parseOk)
+                        {
+                            string msg=String.Format(cultureInfo, Resources.InvalidValue, value, row+1, col+1);
+                            SudokuTable[col, row].ErrorText=msg;
+                            if(firstError==null) firstError=msg;
+                        }
+                    }
+                }
+
+                if(!silent && firstError!=null)
+                {
+                    hideValues=false;
+                    MessageBox.Show(firstError, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    hideValues=true;
+                }
                 return false;
             }
-            else
-            {
-                problem=tmp.Clone();
-                ResetTexts();
 
-                if(Settings.Default.ShowHints) SudokuTable.Refresh();
-
-                return true;
-            }
+            problem=syncedProblem;
+            ResetTexts();
+            if(Settings.Default.ShowHints) SudokuTable.Refresh();
+            return true;
         }
 
         /// <summary>
