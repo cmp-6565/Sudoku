@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("BenchmarkSuite1")]
+[assembly: InternalsVisibleTo("Sudoku.Tests")]
+// keep tests out of build for now
+// [assembly: InternalsVisibleTo("Sudoku.Tests")]
 
 namespace Sudoku
 {

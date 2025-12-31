@@ -192,10 +192,10 @@ namespace Sudoku
             SudokuTable[row, col].Style.BackColor=(obfuscated? gray: ((problem is XSudokuProblem) && (row == col || row+col == SudokuSize-1)? lightGray: Color.White));
             SudokuTable[row, col].Style.ForeColor=(obfuscated? textColor: Color.Black);
             SudokuTable[row, col].Style.SelectionBackColor=System.Drawing.SystemColors.AppWorkspace;
-            if(problem.Matrix.Cell(row, col).CellValue == 0)
+            if(problem.Matrix.Cell(row, col).CellValue == Values.Undefined)
             {
                 SudokuTable[col, row].Value="";
-                problem.Matrix.Cell(row, col).ReadOnly=false;
+                problem.Matrix.Cell(row, col).ReadOnly = false;
             }
         }
 
@@ -280,71 +280,60 @@ namespace Sudoku
         /// </returns>
         private Boolean SyncProblemWithGUI(Boolean silent)
         {
-            int row, col;
-            String value=String.Empty;
-            Boolean error=false;
-
             Text=ProductName;
             SudokuTable.EndEdit();
             mouseWheelEditing=false;
 
-            BaseProblem tmp=problem.Clone();
-            for(row=0; row < SudokuSize; row++)
-                for(col=0; col < SudokuSize; col++)
-                    if(SudokuTable[col, row].Value != null)
-                    {
-                        try
-                        {
-                            value=((string)SudokuTable[col, row].Value).Trim();
-                            SetValue(tmp, row, col, value.Length > 0? Convert.ToByte(value, cultureInfo): Values.Undefined);
-                            SudokuTable[col, row].ErrorText=String.Empty;
-                        }
-                        catch(FormatException)
-                        {
-                            SudokuTable[col, row].ErrorText=String.Format(cultureInfo, Resources.InvalidNumber, row+1, col+1);
-                            error=true;
-                        }
-                        catch(InvalidSudokuValueException)
-                        {
-                            SudokuTable[col, row].ErrorText=String.Format(cultureInfo, Resources.OutOfBounds, SudokuSize, row+1, col+1);
-                            error=true;
-                        }
-                        catch(ArgumentException)
-                        {
-                            if(Settings.Default.AutoCheck) SudokuTable[col, row].ErrorText=String.Format(cultureInfo, Resources.InvalidValue, value, row+1, col+1);
-                            incorrectTries++;
-                            error=true;
-                        }
-                        catch
-                        {
-                            SetValue(tmp, row, col, Values.Undefined);
-                            SudokuTable[col, row].ErrorText=String.Empty;
-                        }
+            // Marshal UI grid to string[,] with minimal processing
+            string[,] grid=new string[SudokuForm.SudokuSize, SudokuForm.SudokuSize];
+            for(int row=0; row<SudokuForm.SudokuSize; row++)
+                for(int col=0; col<SudokuForm.SudokuSize; col++)
+                    grid[row, col]=SudokuTable[col, row].Value as string;
 
-                        if(!silent && error)
-                        {
-                            status.Text=String.Empty;
-                            hideValues=false;
-                            MessageBox.Show(SudokuTable[col, row].ErrorText, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                            hideValues=true;
-                            return false;
-                        }
-                    }
-
-            if(error)
+            bool ok=SyncHelper.TrySyncGrid(problem, grid, cultureInfo, autoCheck.Checked, ref incorrectTries, out var syncedProblem);
+            if(!ok)
             {
                 status.Text=String.Empty;
+
+                // On error, mark cells lazily (only when failure) and optionally show message
+                string firstError=null;
+                for(int row=0; row<SudokuForm.SudokuSize; row++)
+                    for(int col=0; col<SudokuForm.SudokuSize; col++)
+                        SudokuTable[col, row].ErrorText=String.Empty;
+
+                for(int row=0; row<SudokuForm.SudokuSize; row++)
+                {
+                    for(int col=0; col<SudokuForm.SudokuSize; col++)
+                    {
+                        string raw=grid[row, col];
+                        if(raw==null) continue;
+                        string value=raw.Trim();
+                        if(value.Length==0) continue;
+
+                        byte parsed;
+                        bool parseOk=byte.TryParse(value, NumberStyles.Integer, cultureInfo, out parsed) && parsed>=1 && parsed<=SudokuForm.SudokuSize;
+                        if(!parseOk)
+                        {
+                            string msg=String.Format(cultureInfo, Resources.InvalidValue, value, row+1, col+1);
+                            SudokuTable[col, row].ErrorText=msg;
+                            if(firstError==null) firstError=msg;
+                        }
+                    }
+                }
+
+                if(!silent && firstError!=null)
+                {
+                    hideValues=false;
+                    MessageBox.Show(firstError, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    hideValues=true;
+                }
                 return false;
             }
-            else
-            {
-                problem=tmp.Clone();
-                ResetTexts();
 
-                if(Settings.Default.ShowHints) SudokuTable.Refresh();
-
-                return true;
-            }
+            problem=syncedProblem;
+            ResetTexts();
+            if(Settings.Default.ShowHints) SudokuTable.Refresh();
+            return true;
         }
 
         /// <summary>
@@ -1073,40 +1062,8 @@ namespace Sudoku
 
         private void AbortThread()
         {
-            if(problem == null) return;
-
-            // Request cooperative cancellation
-            try
-            {
-                problem.Cancel();
-            }
-            catch
-            {
-                // ignore
-            }
-
-            // Wait a short time for solver thread to stop cooperatively
-            int waited = 0;
-            const int waitStep = 50;
-            const int maxWait = 5000; // ms
-            while(problem.Solver != null && problem.Solver.IsAlive && waited < maxWait)
-            {
-                Application.DoEvents();
-                Thread.Sleep(waitStep);
-                waited += waitStep;
-            }
-
-            // If still alive after waiting, mark as aborted (best-effort); do not call Thread.Abort unless absolutely necessary
-            if(problem.Solver != null && problem.Solver.IsAlive)
-            {
-                // last resort: try to join with a short timeout
-                try { problem.Solver.Join(500); } catch { }
-            }
-
-            problem.Aborted = true;
-            abortRequested = true;
-
-            try { DisplayValues(problem.Matrix); } catch { }
+            abortRequested=true;
+            try { problem.Cancel(); } catch { }
         }
 
         // Dialogs
@@ -1627,7 +1584,7 @@ namespace Sudoku
 
         private void DisplayGeneratingProcess(object sender, EventArgs e)
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
                 GenerationStatus();
@@ -1635,7 +1592,10 @@ namespace Sudoku
                 return;
             }
 
-            if(problem.Solver != null) problem.Solver.Join();
+            if(problem.SolverTask != null)
+            {
+                try { problem.SolverTask.Wait(); } catch { }
+            }
 
             solutionTimer.Stop();
             solutionTimer.Dispose();
@@ -1677,11 +1637,15 @@ namespace Sudoku
 
         private void DisplayCheckingProcess(object sender, EventArgs e)
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
+
+                var pe = e as BaseProblem.ProgressEventArgs;
+                var totalPasses = pe != null ? pe.TotalPassCount : problem.TotalPassCounter;
+
                 status.Text =
-                    String.Format(cultureInfo, Resources.CheckingStatus, problem.TotalPassCounter)+Environment.NewLine +
+                    String.Format(cultureInfo, Resources.CheckingStatus, totalPasses)+Environment.NewLine +
                     Resources.TimeElapsed+(DateTime.Now-computingStart).ToString();
                 status.Update();
             }
@@ -1704,12 +1668,17 @@ namespace Sudoku
 
         private void DisplaySolvingProcess(object sender, EventArgs e)
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
+
+                var pe = e as BaseProblem.ProgressEventArgs;
+                var totalPasses = pe != null ? pe.TotalPassCount : problem.TotalPassCounter;
+                var solutionsSoFar = pe != null ? pe.NumSolutions : problem.nSolutions;
+
                 status.Text =
-                    (findallSolutions.Checked? String.Format(cultureInfo, Resources.SolutionsSoFar, problem.nSolutions)+Environment.NewLine: String.Empty) +
-                    String.Format(cultureInfo, Resources.CheckingStatus, problem.TotalPassCounter) +
+                    (findallSolutions.Checked? String.Format(cultureInfo, Resources.SolutionsSoFar, solutionsSoFar)+Environment.NewLine: String.Empty) +
+                    String.Format(cultureInfo, Resources.CheckingStatus, totalPasses) +
                     Environment.NewLine +
                     Resources.TimeElapsed+(DateTime.Now-computingStart).ToString();
                 status.Update();

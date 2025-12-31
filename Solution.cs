@@ -37,6 +37,11 @@ namespace Sudoku
             return false;
         }
 
+        public override Boolean ReadOnly(int row, int col)
+        {
+            return true;
+        }
+
         public override void Init()
         {
             int row, col;
