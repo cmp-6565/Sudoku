@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Properties;
@@ -39,12 +40,15 @@ namespace Sudoku
         private OptionsDialog optionsDialog=null;
         private Boolean mouseWheelEditing=false;
         private Boolean usePrecalculatedProblem=false;
-        // private Boolean enterInitialValues=true;
         private int severityLevel=0;
         private int incorrectTries=0;
         private Boolean valuesVisible=true;
         private Boolean hideValues=true;
-        Color gray;
+
+        // Neue Felder für den asynchronen Solver
+        private SudokuSolver activeSolver;
+        private Task activeSolverTask;
+        private CancellationTokenSource solverCts; Color gray;
         Color lightGray;
         Color green;
         Color lightGreen;
@@ -110,6 +114,18 @@ namespace Sudoku
             catch(Exception) { }
         }
 
+        private void AbortThread()
+        {
+            abortRequested=true;
+            
+            // Breche den aktiven Solver ab, falls vorhanden
+            if (solverCts != null && !solverCts.IsCancellationRequested)
+            {
+                solverCts.Cancel();
+            }
+
+            try { problem.Cancel(); } catch { }
+        }
         private void FocusLost(object sender, EventArgs e)
         {
             if(SudokuTable.Enabled && hideValues && Settings.Default.AutoPause)
@@ -513,13 +529,17 @@ namespace Sudoku
         /// </summary>
         private void GenerationStatus()
         {
+            // Verwende den PassCount vom aktiven Solver, falls dieser läuft
+            long currentPasses = (activeSolver != null && activeSolverTask != null && !activeSolverTask.IsCompleted)
+                ? activeSolver.TotalPassCount
+                : problem.TotalPassCounter;
+
             status.Text =
-                (usePrecalculatedProblem? String.Format(cultureInfo, Resources.RetrieveProblem):
-                    (generationParameters.GenerateBooklet? String.Format(cultureInfo, Resources.GeneratedProblems, generationParameters.CurrentProblem, Settings.Default.BookletSizeNew)+Environment.NewLine: String.Empty) +
-                    String.Format(cultureInfo, Resources.GeneratingStatus, generationParameters.CheckedProblems)+Environment.NewLine+String.Format(cultureInfo, Resources.CheckingStatus, generationParameters.TotalPasses+problem.TotalPassCounter) +
+                (usePrecalculatedProblem ? String.Format(cultureInfo, Resources.RetrieveProblem) :
+                    (generationParameters.GenerateBooklet ? String.Format(cultureInfo, Resources.GeneratedProblems, generationParameters.CurrentProblem, Settings.Default.BookletSizeNew) + Environment.NewLine : String.Empty) +
+                    String.Format(cultureInfo, Resources.GeneratingStatus, generationParameters.CheckedProblems) + Environment.NewLine + String.Format(cultureInfo, Resources.CheckingStatus, generationParameters.TotalPasses + currentPasses) +
                     Environment.NewLine +
-                    Resources.PreAllocatedValues+generationParameters.PreAllocatedValues.ToString(cultureInfo)); /* +", "+
-                    Resources.ComplexityLevel+SeverityLevel(problem); */
+                    Resources.PreAllocatedValues + generationParameters.PreAllocatedValues.ToString(cultureInfo));
             status.Update();
         }
 
@@ -631,6 +651,20 @@ namespace Sudoku
             ResetUndoStack();
 
             if(debug.Checked) problem.Matrix.CellChanged+=HandleCellChanged;
+
+            /* Moved to StartDetachedProcess()
+            // Initialisiere CancellationTokenSource
+            if (solverCts != null)
+            {
+                solverCts.Dispose();
+            }
+            solverCts = new CancellationTokenSource();
+
+            // Erstelle und starte den Solver
+            activeSolver = new SudokuSolver(problem);
+            activeSolverTask = activeSolver.FindSolutionsAsync(findallSolutions.Checked ? UInt64.MaxValue : 1, solverCts.Token);
+            */
+
             StartDetachedProcess(new System.EventHandler(DisplaySolvingProcess), Resources.Thinking, findallSolutions.Checked? UInt64.MaxValue: 1, true);
         }
 
@@ -978,7 +1012,6 @@ namespace Sudoku
                     try
                     {
                         SetValue(problem, generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue);
-
                         problem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly=true;
                         DisplayValue(generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue);
 
@@ -1047,7 +1080,26 @@ namespace Sudoku
             solutionTimer.Interval=10;
             solutionTimer.Start();
             computingStart=DateTime.Now;
-            problem.FindSolutions(numSolutions);
+
+            // Initialisiere CancellationTokenSource
+            if(solverCts != null)
+            {
+                solverCts.Dispose();
+            }
+            solverCts = new CancellationTokenSource();
+
+            // Erstelle und starte den Solver
+            activeSolver = new SudokuSolver(problem);
+            activeSolverTask = activeSolver.FindSolutionsAsync(findallSolutions.Checked ? UInt64.MaxValue : 1, solverCts.Token);
+
+            /*
+            // WICHTIG: Wenn wir den neuen Solver nutzen (activeSolverTask ist gesetzt), 
+            // rufen wir NICHT den alten Solver auf.
+            if(activeSolverTask == null) 
+            {
+                problem.FindSolutions(numSolutions);
+            }
+            */
             tick(null, null);
         }
 
@@ -1058,12 +1110,6 @@ namespace Sudoku
             solvingTimer.Stop();
             if(debug.Checked) problem.Matrix.CellChanged-=HandleCellChanged;
             EnableGUI();
-        }
-
-        private void AbortThread()
-        {
-            abortRequested=true;
-            try { problem.Cancel(); } catch { }
         }
 
         // Dialogs
@@ -1133,30 +1179,30 @@ namespace Sudoku
             ResetUndoStack();
         }
 
-        private Boolean Minimize(int maxSeverity)
+        private async Task<Boolean> MinimizeAsync(int maxSeverity)
         {
-            DateTime x=DateTime.Now;
-            String statusbarText=sudokuStatusBarText.Text;
-            BaseProblem minimizedProblem=null;
-            Boolean rc=false;
+            DateTime x = DateTime.Now;
+            String statusbarText = sudokuStatusBarText.Text;
+            BaseProblem minimizedProblem = null;
+            Boolean rc = false;
 
-            backup=problem.Clone();
-            sudokuStatusBarText.Text=Resources.Minimizing;
-            Cursor=Cursors.WaitCursor;
+            backup = problem.Clone();
+            sudokuStatusBarText.Text = Resources.Minimizing;
+            Cursor = Cursors.WaitCursor;
             DisableGUI();
-            Application.DoEvents();
+            // Application.DoEvents(); // Removed
 
-            problem.Minimizing+=HandleMinimizing;
-            problem.TestCell+=HandleOnTestCell;
-            problem.ResetCell+=HandleOnResetCell;
-            if((minimizedProblem=problem.Minimize(maxSeverity)) != null)
+            problem.Minimizing += HandleMinimizing;
+            problem.TestCell += HandleOnTestCell;
+            problem.ResetCell += HandleOnResetCell;
+            if((minimizedProblem = await problem.MinimizeAsync(maxSeverity)) != null)
             {
-                rc=true;
-                problem=minimizedProblem;
+                rc = true;
+                problem = minimizedProblem;
             }
-            problem.ResetCell-=HandleOnResetCell;
-            problem.TestCell-=HandleOnTestCell;
-            problem.Minimizing-=HandleMinimizing;
+            problem.ResetCell -= HandleOnResetCell;
+            problem.TestCell -= HandleOnTestCell;
+            problem.Minimizing -= HandleMinimizing;
             problem.ResetMatrix();
 
             UpdateGUI();
@@ -1164,9 +1210,9 @@ namespace Sudoku
             SetCellFont();
             ResetUndoStack();
             EnableGUI();
-            Cursor=Cursors.Default;
-            sudokuStatusBarText.Text=statusbarText;
-            Application.DoEvents();
+            Cursor = Cursors.Default;
+            sudokuStatusBarText.Text = statusbarText;
+            // Application.DoEvents(); // Removed
 
             return rc;
         }
@@ -1582,32 +1628,34 @@ namespace Sudoku
                 GenerationAborted();
         }
 
-        private void DisplayGeneratingProcess(object sender, EventArgs e)
+        private async void DisplayGeneratingProcess(object sender, EventArgs e)
         {
-            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
+            // Prüfen auf activeSolverTask statt problem.SolverTask
+            if(activeSolverTask != null && !activeSolverTask.IsCompleted)
             {
                 if(debug.Checked) SudokuTable.Update();
                 GenerationStatus();
-
-                return;
+                // return;
             }
 
-            if(problem.SolverTask != null)
+            if(activeSolverTask != null)
             {
-                try { problem.SolverTask.Wait(); } catch { }
+                try { await activeSolverTask; problem = activeSolver.Problem; } catch { }
             }
 
             solutionTimer.Stop();
             solutionTimer.Dispose();
 
-            generationParameters.Reset=(problem.nSolutions == 0);
-            generationParameters.TotalPasses+=problem.TotalPassCounter;
-            if(problem.nSolutions == 1 && !problem.Aborted)
+            // Zugriff auf Eigenschaften von activeSolver
+            generationParameters.Reset = (activeSolver.NumSolutions == 0);
+            generationParameters.TotalPasses += activeSolver.TotalPassCount;
+
+            if(activeSolver.NumSolutions == 1 && !activeSolver.Aborted)
             {
-                Boolean processProblem=true;
+                Boolean processProblem = true;
                 if(Settings.Default.GenerateMinimalProblems)
                 {
-                    if(SeverityLevelInt(problem) <= severityLevel) processProblem=Minimize(severityLevel);
+                    if(SeverityLevelInt(problem) <= severityLevel) processProblem = await MinimizeAsync(severityLevel);
                 }
                 else
                     FillCells();
@@ -1615,7 +1663,7 @@ namespace Sudoku
                 if(processProblem && (SeverityLevelInt(problem) & severityLevel) != 0)
                 {
                     problem.ResetMatrix();
-                    if(processProblem && (SeverityLevelInt(problem) & severityLevel) != 0) // I really don't why 'ResetMatrix decreases the severity, but it happens...
+                    if(processProblem && (SeverityLevelInt(problem) & severityLevel) != 0)
                     {
                         if(problem.IsTricky && !usePrecalculatedProblem) trickyProblems.Add(problem);
 
@@ -1637,79 +1685,86 @@ namespace Sudoku
 
         private void DisplayCheckingProcess(object sender, EventArgs e)
         {
-            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
+            // Prüfen auf activeSolverTask statt problem.SolverTask
+            if(activeSolverTask != null && !activeSolverTask.IsCompleted)
             {
                 if(debug.Checked) SudokuTable.Update();
 
-                var pe = e as BaseProblem.ProgressEventArgs;
-                var totalPasses = pe != null ? pe.TotalPassCount : problem.TotalPassCounter;
+                // Status vom activeSolver lesen
+                long totalPasses = activeSolver != null ? activeSolver.TotalPassCount : 0;
 
                 status.Text =
-                    String.Format(cultureInfo, Resources.CheckingStatus, totalPasses)+Environment.NewLine +
-                    Resources.TimeElapsed+(DateTime.Now-computingStart).ToString();
+                    String.Format(cultureInfo, Resources.CheckingStatus, totalPasses) + Environment.NewLine +
+                    Resources.TimeElapsed + (DateTime.Now - computingStart).ToString();
                 status.Update();
             }
             else
             {
                 ResetDetachedProcess();
-                status.Text=String.Empty;
-                if(!problem.Aborted)
-                {
-                    Boolean problemSolved=problem.ProblemSolved;
+                status.Text = String.Empty;
 
-                    problem=backup.Clone();
+                // Prüfen auf activeSolver.Aborted
+                if(activeSolver != null && !activeSolver.Aborted)
+                {
+                    // Prüfen auf activeSolver.ProblemSolved
+                    Boolean problemSolved = activeSolver.ProblemSolved;
+
+                    problem = backup.Clone();
                     DisplayValues(problem.Matrix);
-                    hideValues=false;
-                    MessageBox.Show(String.Format(cultureInfo, Resources.CheckResult, problem is XSudokuProblem? "X-": Resources.Classic, problemSolved? Resources.AtLeast: Resources.No), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    hideValues=true;
+                    hideValues = false;
+                    MessageBox.Show(String.Format(cultureInfo, Resources.CheckResult, problem is XSudokuProblem ? "X-" : Resources.Classic, problemSolved ? Resources.AtLeast : Resources.No), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    hideValues = true;
                 }
             }
         }
 
         private void DisplaySolvingProcess(object sender, EventArgs e)
         {
-            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
+            // Prüfen auf activeSolverTask statt problem.SolverTask
+            if(activeSolverTask != null && !activeSolverTask.IsCompleted)
             {
                 if(debug.Checked) SudokuTable.Update();
 
-                var pe = e as BaseProblem.ProgressEventArgs;
-                var totalPasses = pe != null ? pe.TotalPassCount : problem.TotalPassCounter;
-                var solutionsSoFar = pe != null ? pe.NumSolutions : problem.nSolutions;
+                // Status vom activeSolver lesen
+                long totalPasses = activeSolver.TotalPassCount;
+                int solutionsSoFar = problem.Solutions.Count;
 
                 status.Text =
-                    (findallSolutions.Checked? String.Format(cultureInfo, Resources.SolutionsSoFar, solutionsSoFar)+Environment.NewLine: String.Empty) +
+                    (findallSolutions.Checked ? String.Format(cultureInfo, Resources.SolutionsSoFar, solutionsSoFar) + Environment.NewLine : String.Empty) +
                     String.Format(cultureInfo, Resources.CheckingStatus, totalPasses) +
                     Environment.NewLine +
-                    Resources.TimeElapsed+(DateTime.Now-computingStart).ToString();
+                    Resources.TimeElapsed + (DateTime.Now - computingStart).ToString();
                 status.Update();
             }
             else
             {
-                if(problem.ProblemSolved)
+                // Task ist beendet
+                if(activeSolver != null && activeSolver.ProblemSolved)
                 {
-                    status.Text=Resources.ProblemSolved+Environment.NewLine+Resources.NeededTime+(DateTime.Now-computingStart).ToString()+(findallSolutions.Checked? Environment.NewLine+Resources.TotalNumberOfSolutions+problem.nSolutions.ToString("n0", cultureInfo): String.Empty)+Environment.NewLine+Resources.NeededPasses+problem.TotalPassCounter.ToString("n0", cultureInfo);
-                    currentSolution=-1;
+                    status.Text = Resources.ProblemSolved + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutions + problem.Solutions.Count.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + activeSolver.TotalPassCount.ToString("n0", cultureInfo);
+                    currentSolution = -1;
                     NextSolution();
                 }
-                else
-                    if(problem.Aborted)
+                else if(activeSolver != null && (activeSolver.Aborted || solverCts.IsCancellationRequested))
                 {
-                    if(problem.nSolutions > 0)
+                    if(problem.Solutions.Count > 0)
                     {
-                        status.Text=String.Format(cultureInfo, Resources.SolutionsFound, (problem.TotalPassCounter > 0? Resources.Plural: String.Empty))+Environment.NewLine+Resources.NeededTime+(DateTime.Now-computingStart).ToString()+(findallSolutions.Checked? Environment.NewLine+Resources.TotalNumberOfSolutionsSoFar+problem.nSolutions.ToString("n0", cultureInfo): String.Empty)+Environment.NewLine+Resources.NeededPasses+problem.TotalPassCounter.ToString("n0", cultureInfo);
-                        currentSolution=-1;
+                        status.Text = String.Format(cultureInfo, Resources.SolutionsFound, (activeSolver.TotalPassCount > 0 ? Resources.Plural : String.Empty)) + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutionsSoFar + problem.Solutions.Count.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + activeSolver.TotalPassCount.ToString("n0", cultureInfo);
+                        currentSolution = -1;
                         NextSolution();
                     }
                     else
-                        status.Text=String.Format(cultureInfo, Resources.Interrupt.Replace("\\n", Environment.NewLine), DateTime.Now-computingStart, problem.TotalPassCounter);
+                        status.Text = String.Format(cultureInfo, Resources.Interrupt.Replace("\\n", Environment.NewLine), DateTime.Now - computingStart, activeSolver.TotalPassCount);
                 }
                 else
-                    status.Text=Resources.NotResolvable+Environment.NewLine+Resources.NeededTime+(DateTime.Now-computingStart).ToString()+Environment.NewLine+Resources.NeededPasses+problem.TotalPassCounter.ToString("n0", cultureInfo);
+                {
+                    long passes = activeSolver != null ? activeSolver.TotalPassCount : 0;
+                    status.Text = Resources.NotResolvable + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + Environment.NewLine + Resources.NeededPasses + passes.ToString("n0", cultureInfo);
+                }
 
                 ResetDetachedProcess();
             }
         }
-
         // Menu handling
         private void EnableGUI(Boolean enable)
         {
@@ -2024,34 +2079,33 @@ namespace Sudoku
             Settings.Default.MarkNeighbors=markNeighbors.Checked;
         }
 
-        private void MinimizeClick(object sender, EventArgs e)
+        private async void MinimizeClick(object sender, EventArgs e)
         {
-            int before=problem.nValues;
-            Boolean dirty=problem.Dirty;
+            int before = problem.nValues;
+            Boolean dirty = problem.Dirty;
 
             if(!SyncProblemWithGUI(true))
             {
-                hideValues=false;
+                hideValues = false;
                 MessageBox.Show(Resources.MinimizationNotPossible);
-                hideValues=true;
+                hideValues = true;
                 return;
             }
 
+            await MinimizeAsync(int.MaxValue);
 
-            Minimize(int.MaxValue);
-
-            hideValues=false;
-            if(before-problem.nValues == 0)
+            hideValues = false;
+            if(before - problem.nValues == 0)
             {
                 MessageBox.Show(Resources.NoMinimizationPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                problem.Dirty=dirty;
+                problem.Dirty = dirty;
             }
             else
             {
-                MessageBox.Show(String.Format(Resources.Minimized, (before-problem.nValues).ToString()), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                problem.Dirty=true;
+                MessageBox.Show(String.Format(Resources.Minimized, (before - problem.nValues).ToString()), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                problem.Dirty = true;
             }
-            hideValues=true;
+            hideValues = true;
         }
 
         private void FixClick(object sender, EventArgs e)

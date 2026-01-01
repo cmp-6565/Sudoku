@@ -255,6 +255,7 @@
     </Compile>
     <Compile Include="Solution.cs" />
     <Compile Include="Sudoku.Tests\MaskTests.cs" />
+    <Compile Include="Sudoku.Tests\SudokuSolverTests.cs" />
     <Compile Include="SudokuMainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -266,6 +267,7 @@
     <Compile Include="BaseMatrix.cs" />
     <Compile Include="BaseCell.cs" />
     <Compile Include="Cell.cs" />
+    <Compile Include="SudokuSolver.cs" />
     <Compile Include="SyncHelper.cs" />
     <Compile Include="TrickyProblems.cs" />
     <Compile Include="Values.cs" />

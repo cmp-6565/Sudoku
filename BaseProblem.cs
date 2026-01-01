@@ -12,55 +12,55 @@ namespace Sudoku
 {
     internal abstract class BaseProblem: EventArgs, IComparable
     {
-        private Int32 numSolutions=0;
-        private Int64 totalPassCount=0;
-        private Int64 passCount=0;
-        private int nVarValues=0;
-        private Boolean findAll=false;
+        private Int32 numSolutions = 0;
+        private Int64 totalPassCount = 0;
+        private Int64 passCount = 0;
+        private int nVarValues = 0;
+        private Boolean findAll = false;
         protected BaseMatrix matrix;
         private List<Solution> solutions;
-        private Boolean checkWellDefined=false;
-        private Boolean problemSolved=false;
-        private Boolean aborted=false;
-        private Task solverTask=null;
+        private Boolean checkWellDefined = false;
+        private Boolean problemSolved = false;
+        private Boolean aborted = false;
+        private Task solverTask = null;
         private CancellationTokenSource cancellationTokenSource;
-        private float severityLevel=float.NaN;
-        private String filename=String.Empty;
-        private String comment=String.Empty;
-        private Boolean dirty=false;
-        private Boolean preparing=false;
+        private float severityLevel = float.NaN;
+        private String filename = String.Empty;
+        private String comment = String.Empty;
+        private Boolean dirty = false;
+        private Boolean preparing = false;
         private TimeSpan solvingTime;
         private BaseProblem minimalProblem;
 
-        private static byte ReadOnlyOffset=64;
-        public static Char ProblemIdentifier=' ';
+        private static byte ReadOnlyOffset = 64;
+        public static Char ProblemIdentifier = ' ';
         public virtual Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
 
         public event EventHandler<BaseProblem> Minimizing;
         protected virtual void OnMinimizing(BaseProblem p)
         {
-            EventHandler<BaseProblem> handler=Minimizing;
+            EventHandler<BaseProblem> handler = Minimizing;
             if(handler != null) handler(this, p);
         }
 
         public event EventHandler<BaseCell> TestCell;
         protected virtual void OnTestCell(BaseCell c)
         {
-            EventHandler<BaseCell> handler=TestCell;
+            EventHandler<BaseCell> handler = TestCell;
             if(handler != null) handler(this, c);
         }
 
         public event EventHandler<BaseCell> ResetCell;
         protected virtual void OnResetCell(BaseCell c)
         {
-            EventHandler<BaseCell> handler=ResetCell;
+            EventHandler<BaseCell> handler = ResetCell;
             if(handler != null) handler(this, c);
         }
 
         public BaseProblem()
         {
             createMatrix();
-            solutions=new List<Solution>();
+            solutions = new List<Solution>();
         }
 
         protected abstract void createMatrix();
@@ -95,13 +95,13 @@ namespace Sudoku
         public Int64 TotalPassCounter
         {
             get { return totalPassCount; }
-            set { totalPassCount=value; }
+            set { totalPassCount = value; }
         }
 
         public Int32 nSolutions
         {
             get { return numSolutions; }
-            set { numSolutions=value; }
+            set { numSolutions = value; }
         }
 
         public Task SolverTask
@@ -117,92 +117,92 @@ namespace Sudoku
         public Boolean Aborted
         {
             get { return aborted; }
-            set { aborted=value; }
+            set { aborted = value; }
         }
 
         public float SeverityLevel
         {
             get
             {
-                severityLevel=Matrix.SeverityLevel;
+                severityLevel = Matrix.SeverityLevel;
                 return severityLevel;
             }
-            set { severityLevel=value; }
+            set { severityLevel = value; }
         }
 
         public String SeverityLevelText
         {
-            get { return float.IsNaN(SeverityLevel) ? "-": (SeverityLevel > Settings.Default.Hard ? Resources.Hard: (SeverityLevel > Settings.Default.Intermediate ? Resources.Intermediate: (SeverityLevel > Settings.Default.Trivial ? Resources.Easy: Resources.Trivial))); }
+            get { return float.IsNaN(SeverityLevel) ? "-" : (SeverityLevel > Settings.Default.Hard ? Resources.Hard : (SeverityLevel > Settings.Default.Intermediate ? Resources.Intermediate : (SeverityLevel > Settings.Default.Trivial ? Resources.Easy : Resources.Trivial))); }
         }
 
         public int SeverityLevelInt
         {
-            get { return float.IsNaN(SeverityLevel) ? 0: (SeverityLevel > Settings.Default.Hard ? 8: (SeverityLevel > Settings.Default.Intermediate ? 4: (SeverityLevel > Settings.Default.Trivial ? 2: 1))); }
+            get { return float.IsNaN(SeverityLevel) ? 0 : (SeverityLevel > Settings.Default.Hard ? 8 : (SeverityLevel > Settings.Default.Intermediate ? 4 : (SeverityLevel > Settings.Default.Trivial ? 2 : 1))); }
         }
 
         public String Filename
         {
             get { return filename; }
-            set { filename=value; }
+            set { filename = value; }
         }
 
         public String Comment
         {
             get { return comment; }
-            set { comment=value; }
+            set { comment = value; }
         }
 
         public Boolean Dirty
         {
             get { return dirty; }
-            set { dirty=value; }
+            set { dirty = value; }
         }
 
         public Boolean Preparing
         {
             get { return preparing; }
-            set { preparing=value; }
+            set { preparing = value; }
         }
 
         public TimeSpan SolvingTime
         {
             get { return solvingTime; }
-            set { solvingTime=value; }
+            set { solvingTime = value; }
         }
 
         public int CompareTo(System.Object obj)
         {
             if(obj == null) return -1;
             BaseProblem tmpProblem;
-            if(!((tmpProblem=(BaseProblem)obj) is BaseProblem)) throw new ArgumentException(obj.ToString());
+            if(!((tmpProblem = (BaseProblem)obj) is BaseProblem)) throw new ArgumentException(obj.ToString());
 
             return SeverityLevel.CompareTo(tmpProblem.SeverityLevel);
         }
 
         public void ResetSolutions()
         {
-            solutions=new List<Solution>();
-            nSolutions=0;
-            problemSolved=false;
+            solutions = new List<Solution>();
+            nSolutions = 0;
+            problemSolved = false;
         }
 
         public BaseProblem Clone()
         {
             int i;
-            BaseProblem dest=CreateInstance();
-            dest.matrix=CloneMatrix();
+            BaseProblem dest = CreateInstance();
+            dest.matrix = CloneMatrix();
 
             dest.ResetSolutions();
-            dest.nSolutions=nSolutions;
-            for(i=0; i < nSolutions && i < Settings.Default.MaxSolutions; i++)
+            dest.nSolutions = nSolutions;
+            for(i = 0; i < nSolutions && i < Settings.Default.MaxSolutions; i++)
                 dest.Solutions.Add(Solutions[i]);
 
-            dest.severityLevel=SeverityLevel;
-            dest.problemSolved=ProblemSolved;
-            dest.Filename=Filename;
-            dest.Comment=Comment;
-            dest.Dirty=Dirty;
-            dest.SolvingTime=SolvingTime;
+            dest.severityLevel = SeverityLevel;
+            dest.problemSolved = ProblemSolved;
+            dest.Filename = Filename;
+            dest.Comment = Comment;
+            dest.Dirty = Dirty;
+            dest.SolvingTime = SolvingTime;
 
             return dest;
         }
@@ -214,9 +214,9 @@ namespace Sudoku
 
             // Initialize destination matrix (constructor already did Init on cells)
             // Copy cell values and fixed/computed flags without using BinaryFormatter
-            for (int row = 0; row < SudokuForm.SudokuSize; row++)
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
             {
-                for (int col = 0; col < SudokuForm.SudokuSize; col++)
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
                 {
                     byte v = Matrix.GetValue(row, col);
                     bool isFixed = Matrix.FixedValue(row, col);
@@ -224,7 +224,7 @@ namespace Sudoku
                     dest.SetValue(row, col, v, isFixed);
                     // preserve ComputedValue flag
                     dest.Cell(row, col).ComputedValue = Matrix.ComputedValue(row, col);
-                    dest.Cell(row, col).ReadOnly= Matrix.ReadOnly(row, col);
+                    dest.Cell(row, col).ReadOnly = Matrix.ReadOnly(row, col);
                 }
             }
 
@@ -233,12 +233,12 @@ namespace Sudoku
 
         public Solution CopyTo(ref Solution dest)
         {
-            dest=new Solution();
+            dest = new Solution();
             dest.Init();
-            dest.Counter=passCount;
+            dest.Counter = passCount;
 
-            for(int row=0; row < SudokuForm.SudokuSize; row++)
-                for(int col=0; col < SudokuForm.SudokuSize; col++)
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
                     dest.SetValue(row, col, Matrix.GetValue(row, col), true);
 
             return dest;
@@ -263,10 +263,10 @@ namespace Sudoku
         {
             if(numSolutions++ < Settings.Default.MaxSolutions)
             {
-                Solution solution=null;
+                Solution solution = null;
                 solutions.Add((Solution)CopyTo(ref solution));
             }
-            passCount=0;
+            passCount = 0;
         }
 
         public void PrepareMatrix()
@@ -304,15 +304,15 @@ namespace Sudoku
             if(GetValue(row, col) != value || FixedValue(row, col) != fix)
             {
                 Matrix.SetValue(row, col, value, fix);
-                severityLevel=float.NaN;
-                problemSolved=false;
-                filename=String.Empty;
+                severityLevel = float.NaN;
+                problemSolved = false;
+                filename = String.Empty;
             }
         }
 
         public void SetValue(int row, int col, byte value)
         {
-            dirty=dirty || (value != GetValue(row, col));
+            dirty = dirty || (value != GetValue(row, col));
             SetValue(row, col, value, value != Values.Undefined);
         }
 
@@ -323,22 +323,22 @@ namespace Sudoku
 
         private void ResetValue(int row, int col)
         {
-            float sv=severityLevel;
+            float sv = severityLevel;
 
-            dirty=dirty || (GetValue(row, col) != Values.Undefined);
+            dirty = dirty || (GetValue(row, col) != Values.Undefined);
             SetValue(row, col, Values.Undefined, false);
 
-            severityLevel=sv;
+            severityLevel = sv;
         }
 
         private void TryValue(int row, int col, byte value)
         {
-            float sv=severityLevel;
+            float sv = severityLevel;
 
-            dirty=dirty || (value != GetValue(row, col));
+            dirty = dirty || (value != GetValue(row, col));
             SetValue(row, col, value, true);
 
-            severityLevel=sv;
+            severityLevel = sv;
         }
 
         public BaseCell Cell(int row, int col)
@@ -374,35 +374,35 @@ namespace Sudoku
 
         public Task FindSolutionsAsync(UInt64 maxSolutions)
         {
-            preparing=true;
-            findAll=(maxSolutions == UInt64.MaxValue);
-            checkWellDefined=(maxSolutions == 2);
-            numSolutions=0;
-            passCount=0;
-            totalPassCount=0;
-            problemSolved=false;
+            preparing = true;
+            findAll = (maxSolutions == UInt64.MaxValue);
+            checkWellDefined = (maxSolutions == 2);
+            numSolutions = 0;
+            passCount = 0;
+            totalPassCount = 0;
+            problemSolved = false;
 
             ResetSolutions();
-            severityLevel=Matrix.SeverityLevel;
+            severityLevel = Matrix.SeverityLevel;
             try
             {
                 PrepareMatrix();
             }
             catch(ArgumentException)
             {
-                preparing=false;
+                preparing = false;
                 // Not resolvable
                 solverTask = Task.CompletedTask;
                 return solverTask;
             }
             finally
             {
-                preparing=false;
+                preparing = false;
             }
 
             if(Matrix.nVariableValues == 0)
             {
-                problemSolved=true;
+                problemSolved = true;
                 SaveResult();
                 solverTask = Task.CompletedTask;
                 return solverTask;
@@ -423,10 +423,10 @@ namespace Sudoku
 
             solverTask = Task.Run(() =>
             {
-                Thread.CurrentThread.CurrentUICulture=new CultureInfo(Settings.Default.DisplayLanguage);
+                Thread.CurrentThread.CurrentUICulture = new CultureInfo(Settings.Default.DisplayLanguage);
                 try
                 {
-                    nVarValues=Matrix.nVariableValues;
+                    nVarValues = Matrix.nVariableValues;
                     if(token.IsCancellationRequested) { aborted = true; return; }
                     Solve(0);
                 }
@@ -456,59 +456,50 @@ namespace Sudoku
 
         private void Solve()
         {
-            Thread.CurrentThread.CurrentUICulture=new CultureInfo(Settings.Default.DisplayLanguage);
-            try
-            {
-                // do not reset 'aborted' here; it may be set by Cancel()
-                nVarValues=Matrix.nVariableValues;
-                // If cancellation requested before start, abort early
-                if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
-                Solve(0);
-            }
-            catch(ThreadAbortException)
-            {
-                ResetMatrix();
-                aborted=true;
-            }
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(Settings.Default.DisplayLanguage);
+            // do not reset 'aborted' here; it may be set by Cancel()
+            nVarValues = Matrix.nVariableValues;
+            // If cancellation requested before start, abort early
+            if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+            Solve(0);
         }
 
-        public BaseProblem Minimize(int maxSeverity)
+        public async Task<BaseProblem> MinimizeAsync(int maxSeverity)
         {
             ResetMatrix();
 
-            minimalProblem=Clone();
-            if(Minimize(GetCandidates(Matrix.Cells, 0), maxSeverity))
+            minimalProblem = Clone();
+            if(await MinimizeAsync(await GetCandidatesAsync(Matrix.Cells, 0), maxSeverity))
             {
-                minimalProblem.severityLevel=float.NaN; // force recalculation of Severity Level
-                minimalProblem.FindSolutions(2);
-                if(minimalProblem.SolverTask != null) minimalProblem.SolverTask.GetAwaiter().GetResult();
-                return (minimalProblem.nSolutions == 1 ? minimalProblem: null);
+                minimalProblem.severityLevel = float.NaN; // force recalculation of Severity Level
+                await minimalProblem.FindSolutionsAsync(2);
+                return (minimalProblem.nSolutions == 1 ? minimalProblem : null);
             }
             else
                 return null;
         }
-
-        private Boolean Minimize(List<BaseCell> candidates, int maxSeverity)
+                
+        private async Task<Boolean> MinimizeAsync(List<BaseCell> candidates, int maxSeverity)
         {
             if(candidates == null) return true;
 
-            int start=0;
+            int start = 0;
             foreach(BaseCell cell in candidates)
             {
                 if(aborted) return false;
                 if(SeverityLevelInt > maxSeverity) return false;
 
-                if(nValues-(candidates.Count-start) < minimalProblem.nValues)
+                if(nValues - (candidates.Count - start) < minimalProblem.nValues)
                 {
-                    byte cellValue=cell.CellValue;
+                    byte cellValue = cell.CellValue;
                     SetValue(cell, Values.Undefined);
 
                     ResetMatrix();
-                    if(nValues < minimalProblem.nValues) minimalProblem=Clone();
+                    if(nValues < minimalProblem.nValues) minimalProblem = Clone();
 
                     // OnTestCell(cell);
                     OnMinimizing(minimalProblem);
-                    if(!Minimize(GetCandidates(candidates, ++start), maxSeverity)) return false;
+                    if(!await MinimizeAsync(await GetCandidatesAsync(candidates, ++start), maxSeverity)) return false;
                     // OnResetCell(cell);
 
                     ResetMatrix();
@@ -518,15 +509,15 @@ namespace Sudoku
             return true;
         }
 
-        private List<BaseCell> GetCandidates(List<BaseCell> source, int start)
+        private async Task<List<BaseCell>> GetCandidatesAsync(List<BaseCell> source, int start)
         {
-            List<BaseCell> candiates=new List<BaseCell>();
+            List<BaseCell> candiates = new List<BaseCell>();
 
-            for(int i=start; i < source.Count; i++)
+            for(int i = start; i < source.Count; i++)
             {
-                if(nValues-candiates.Count-(source.Count-i) > minimalProblem.nValues) return null;
+                if(nValues - candiates.Count - (source.Count - i) > minimalProblem.nValues) return null;
 
-                byte cellValue=source[i].CellValue;
+                byte cellValue = source[i].CellValue;
                 if(cellValue != Values.Undefined)
                 {
                     SetValue(source[i], Values.Undefined);
@@ -535,8 +526,7 @@ namespace Sudoku
                     else
                     {
                         if(aborted) return null;
-                        FindSolutions(2);
-                        if(SolverTask != null) SolverTask.GetAwaiter().GetResult();
+                        await FindSolutionsAsync(2);
                         if(nSolutions == 1)
                             candiates.Add(source[i]);
                     }
@@ -552,11 +542,11 @@ namespace Sudoku
 
         public virtual Boolean Resolvable()
         {
-            for(int row=0; row < SudokuForm.SudokuSize; row++)
-                for(int col=0; col < SudokuForm.SudokuSize; col++)
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
                     if(!Check(row, col)) return false;
 
-            for(int i=0; i < SudokuForm.SudokuSize; i++)
+            for(int i = 0; i < SudokuForm.SudokuSize; i++)
                 if(!BaseMatrix.Check(Matrix.Rows[i]) || !BaseMatrix.Check(Matrix.Cols[i]) || !BaseMatrix.Check(Matrix.Rectangles[i])) return false;
 
             return true;
@@ -565,14 +555,14 @@ namespace Sudoku
         public int NumDistinctValues()
         {
             int i, j;
-            int count=0;
-            Boolean[] exists=new Boolean[SudokuForm.SudokuSize+1];
+            int count = 0;
+            Boolean[] exists = new Boolean[SudokuForm.SudokuSize + 1];
 
-            for(i=0; i <= SudokuForm.SudokuSize; i++) exists[i]=false;
-            for(i=0; i < SudokuForm.SudokuSize; i++)
-                for(j=0; j < SudokuForm.SudokuSize; j++)
-                    exists[GetValue(i, j)]=true;
-            for(i=1; i <= SudokuForm.SudokuSize; i++)
+            for(i = 0; i <= SudokuForm.SudokuSize; i++) exists[i] = false;
+            for(i = 0; i < SudokuForm.SudokuSize; i++)
+                for(j = 0; j < SudokuForm.SudokuSize; j++)
+                    exists[GetValue(i, j)] = true;
+            for(i = 1; i <= SudokuForm.SudokuSize; i++)
                 if(exists[i]) count++;
 
             return count;
@@ -582,10 +572,10 @@ namespace Sudoku
         {
             public ProgressEventArgs(Int64 passCount, Int64 totalPassCount, Int32 numSolutions, Boolean preparing)
             {
-                PassCount=passCount;
-                TotalPassCount=totalPassCount;
-                NumSolutions=numSolutions;
-                Preparing=preparing;
+                PassCount = passCount;
+                TotalPassCount = totalPassCount;
+                NumSolutions = numSolutions;
+                Preparing = preparing;
             }
 
             public Int64 PassCount { get; private set; }
@@ -616,68 +606,68 @@ namespace Sudoku
             const int progressInterval = 1000; // iterations
             int innerIterations = 0;
 
-            if (currentValue.nPossibleValues > 0)
+            if(currentValue.nPossibleValues > 0)
             {
-                while (!problemSolved && ++value <= SudokuForm.SudokuSize)
+                while(!problemSolved && ++value <= SudokuForm.SudokuSize)
                 {
                     // cooperative cancellation check
-                    if (cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+                    if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
 
                     ResetValue(currentValue.Row, currentValue.Col);
-                    if (currentValue.Enabled(value))
+                    if(currentValue.Enabled(value))
                     {
                         try
                         {
                             TryValue(currentValue.Row, currentValue.Col, value);
                             currentValue.ComputedValue = true;
-                            if (current < nVarValues - 1 && Resolvable())
+                            if(current < nVarValues - 1 && Resolvable())
                                 Solve(current + 1);
                             else
                             {
-                                if (problemSolved = Solved()) SaveResult();
-                                if (findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
+                                if(problemSolved = Solved()) SaveResult();
+                                if(findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
                             }
                         }
-                        catch (ArgumentException)
+                        catch(ArgumentException)
                         {
                             // do nothing, the problem is not resolvable
                         }
                     }
 
                     // progress/cancellation throttling
-                    if (++innerIterations >= progressInterval)
+                    if(++innerIterations >= progressInterval)
                     {
                         innerIterations = 0;
                         OnProgress();
-                        if (cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+                        if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
                     }
                 }
             }
-            else if (currentValue.DefinitiveValue != Values.Undefined)
+            else if(currentValue.DefinitiveValue != Values.Undefined)
             {
-                if (cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+                if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
 
                 TryValue(currentValue.Row, currentValue.Col, currentValue.DefinitiveValue);
                 currentValue.ComputedValue = true;
-                if (current < nVarValues - 1 && Resolvable())
+                if(current < nVarValues - 1 && Resolvable())
                     Solve(current + 1);
                 else
                 {
-                    if (problemSolved = Solved()) SaveResult();
-                    if (findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
+                    if(problemSolved = Solved()) SaveResult();
+                    if(findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
                 }
             }
 
-            if (!problemSolved) ResetValue(currentValue.Row, currentValue.Col);
+            if(!problemSolved) ResetValue(currentValue.Row, currentValue.Col);
 
-            if ((findAll || checkWellDefined) && current == 0) problemSolved = (numSolutions > 0);
+            if((findAll || checkWellDefined) && current == 0) problemSolved = (numSolutions > 0);
         }
 
         private Boolean Solved()
         {
             int i, j;
-            for(i=0; i < SudokuForm.SudokuSize; i++)
-                for(j=0; j < SudokuForm.SudokuSize; j++)
+            for(i = 0; i < SudokuForm.SudokuSize; i++)
+                for(j = 0; j < SudokuForm.SudokuSize; j++)
                     if(GetValue(i, j) == Values.Undefined || !Check(i, j)) return false;
 
             return true;
@@ -694,11 +684,11 @@ namespace Sudoku
 
             try
             {
-                sw=new StreamWriter(file);
+                sw = new StreamWriter(file);
                 sw.Write(Serialize());
                 sw.Close();
-                Filename=file;
-                Dirty=false;
+                Filename = file;
+                Dirty = false;
             }
             catch(Exception) { throw; }
             return;
@@ -707,99 +697,99 @@ namespace Sudoku
         public void SaveToHTMLFile(String file)
         {
             StreamWriter sw;
-            Char[] problem=Serialize().ToCharArray();
-            int offset=(int)'0'+ReadOnlyOffset;
+            Char[] problem = Serialize().ToCharArray();
+            int offset = (int)'0' + ReadOnlyOffset;
 
             try
             {
-                sw=new StreamWriter(file);
+                sw = new StreamWriter(file);
                 sw.Write(
                     String.Format(Resources.HTMLFrame,
                         String.Format(
-                            problem[00] == SudokuProblem.ProblemIdentifier ? Resources.HTMLTemplate: Resources.HTMLTemplateX,
-                            problem[01] == '0' ? "&nbsp;": problem[01] > '9' ? (problem[01]-offset).ToString(): problem[01].ToString(),
-                            problem[02] == '0' ? "&nbsp;": problem[02] > '9' ? (problem[02]-offset).ToString(): problem[02].ToString(),
-                            problem[03] == '0' ? "&nbsp;": problem[03] > '9' ? (problem[03]-offset).ToString(): problem[03].ToString(),
-                            problem[04] == '0' ? "&nbsp;": problem[04] > '9' ? (problem[04]-offset).ToString(): problem[04].ToString(),
-                            problem[05] == '0' ? "&nbsp;": problem[05] > '9' ? (problem[05]-offset).ToString(): problem[05].ToString(),
-                            problem[06] == '0' ? "&nbsp;": problem[06] > '9' ? (problem[06]-offset).ToString(): problem[06].ToString(),
-                            problem[07] == '0' ? "&nbsp;": problem[07] > '9' ? (problem[07]-offset).ToString(): problem[07].ToString(),
-                            problem[08] == '0' ? "&nbsp;": problem[08] > '9' ? (problem[08]-offset).ToString(): problem[08].ToString(),
-                            problem[09] == '0' ? "&nbsp;": problem[09] > '9' ? (problem[09]-offset).ToString(): problem[09].ToString(),
-                            problem[10] == '0' ? "&nbsp;": problem[10] > '9' ? (problem[10]-offset).ToString(): problem[10].ToString(),
-                            problem[11] == '0' ? "&nbsp;": problem[11] > '9' ? (problem[11]-offset).ToString(): problem[11].ToString(),
-                            problem[12] == '0' ? "&nbsp;": problem[12] > '9' ? (problem[12]-offset).ToString(): problem[12].ToString(),
-                            problem[13] == '0' ? "&nbsp;": problem[13] > '9' ? (problem[13]-offset).ToString(): problem[13].ToString(),
-                            problem[14] == '0' ? "&nbsp;": problem[14] > '9' ? (problem[14]-offset).ToString(): problem[14].ToString(),
-                            problem[15] == '0' ? "&nbsp;": problem[15] > '9' ? (problem[15]-offset).ToString(): problem[15].ToString(),
-                            problem[16] == '0' ? "&nbsp;": problem[16] > '9' ? (problem[16]-offset).ToString(): problem[16].ToString(),
-                            problem[17] == '0' ? "&nbsp;": problem[17] > '9' ? (problem[17]-offset).ToString(): problem[17].ToString(),
-                            problem[18] == '0' ? "&nbsp;": problem[18] > '9' ? (problem[18]-offset).ToString(): problem[18].ToString(),
-                            problem[19] == '0' ? "&nbsp;": problem[19] > '9' ? (problem[19]-offset).ToString(): problem[19].ToString(),
-                            problem[20] == '0' ? "&nbsp;": problem[20] > '9' ? (problem[20]-offset).ToString(): problem[20].ToString(),
-                            problem[21] == '0' ? "&nbsp;": problem[21] > '9' ? (problem[21]-offset).ToString(): problem[21].ToString(),
-                            problem[22] == '0' ? "&nbsp;": problem[22] > '9' ? (problem[22]-offset).ToString(): problem[22].ToString(),
-                            problem[23] == '0' ? "&nbsp;": problem[23] > '9' ? (problem[23]-offset).ToString(): problem[23].ToString(),
-                            problem[24] == '0' ? "&nbsp;": problem[24] > '9' ? (problem[24]-offset).ToString(): problem[24].ToString(),
-                            problem[25] == '0' ? "&nbsp;": problem[25] > '9' ? (problem[25]-offset).ToString(): problem[25].ToString(),
-                            problem[26] == '0' ? "&nbsp;": problem[26] > '9' ? (problem[26]-offset).ToString(): problem[26].ToString(),
-                            problem[27] == '0' ? "&nbsp;": problem[27] > '9' ? (problem[27]-offset).ToString(): problem[27].ToString(),
-                            problem[28] == '0' ? "&nbsp;": problem[28] > '9' ? (problem[28]-offset).ToString(): problem[28].ToString(),
-                            problem[29] == '0' ? "&nbsp;": problem[29] > '9' ? (problem[29]-offset).ToString(): problem[29].ToString(),
-                            problem[30] == '0' ? "&nbsp;": problem[30] > '9' ? (problem[30]-offset).ToString(): problem[30].ToString(),
-                            problem[31] == '0' ? "&nbsp;": problem[31] > '9' ? (problem[31]-offset).ToString(): problem[31].ToString(),
-                            problem[32] == '0' ? "&nbsp;": problem[32] > '9' ? (problem[32]-offset).ToString(): problem[32].ToString(),
-                            problem[33] == '0' ? "&nbsp;": problem[33] > '9' ? (problem[33]-offset).ToString(): problem[33].ToString(),
-                            problem[34] == '0' ? "&nbsp;": problem[34] > '9' ? (problem[34]-offset).ToString(): problem[34].ToString(),
-                            problem[35] == '0' ? "&nbsp;": problem[35] > '9' ? (problem[35]-offset).ToString(): problem[35].ToString(),
-                            problem[36] == '0' ? "&nbsp;": problem[36] > '9' ? (problem[36]-offset).ToString(): problem[36].ToString(),
-                            problem[37] == '0' ? "&nbsp;": problem[37] > '9' ? (problem[37]-offset).ToString(): problem[37].ToString(),
-                            problem[38] == '0' ? "&nbsp;": problem[38] > '9' ? (problem[38]-offset).ToString(): problem[38].ToString(),
-                            problem[39] == '0' ? "&nbsp;": problem[39] > '9' ? (problem[39]-offset).ToString(): problem[39].ToString(),
-                            problem[40] == '0' ? "&nbsp;": problem[40] > '9' ? (problem[40]-offset).ToString(): problem[40].ToString(),
-                            problem[41] == '0' ? "&nbsp;": problem[41] > '9' ? (problem[41]-offset).ToString(): problem[41].ToString(),
-                            problem[42] == '0' ? "&nbsp;": problem[42] > '9' ? (problem[42]-offset).ToString(): problem[42].ToString(),
-                            problem[43] == '0' ? "&nbsp;": problem[43] > '9' ? (problem[43]-offset).ToString(): problem[43].ToString(),
-                            problem[44] == '0' ? "&nbsp;": problem[44] > '9' ? (problem[44]-offset).ToString(): problem[44].ToString(),
-                            problem[45] == '0' ? "&nbsp;": problem[45] > '9' ? (problem[45]-offset).ToString(): problem[45].ToString(),
-                            problem[46] == '0' ? "&nbsp;": problem[46] > '9' ? (problem[46]-offset).ToString(): problem[46].ToString(),
-                            problem[47] == '0' ? "&nbsp;": problem[47] > '9' ? (problem[47]-offset).ToString(): problem[47].ToString(),
-                            problem[48] == '0' ? "&nbsp;": problem[48] > '9' ? (problem[48]-offset).ToString(): problem[48].ToString(),
-                            problem[49] == '0' ? "&nbsp;": problem[49] > '9' ? (problem[49]-offset).ToString(): problem[49].ToString(),
-                            problem[50] == '0' ? "&nbsp;": problem[50] > '9' ? (problem[50]-offset).ToString(): problem[50].ToString(),
-                            problem[51] == '0' ? "&nbsp;": problem[51] > '9' ? (problem[51]-offset).ToString(): problem[51].ToString(),
-                            problem[52] == '0' ? "&nbsp;": problem[52] > '9' ? (problem[52]-offset).ToString(): problem[52].ToString(),
-                            problem[53] == '0' ? "&nbsp;": problem[53] > '9' ? (problem[53]-offset).ToString(): problem[53].ToString(),
-                            problem[54] == '0' ? "&nbsp;": problem[54] > '9' ? (problem[54]-offset).ToString(): problem[54].ToString(),
-                            problem[55] == '0' ? "&nbsp;": problem[55] > '9' ? (problem[55]-offset).ToString(): problem[55].ToString(),
-                            problem[56] == '0' ? "&nbsp;": problem[56] > '9' ? (problem[56]-offset).ToString(): problem[56].ToString(),
-                            problem[57] == '0' ? "&nbsp;": problem[57] > '9' ? (problem[57]-offset).ToString(): problem[57].ToString(),
-                            problem[58] == '0' ? "&nbsp;": problem[58] > '9' ? (problem[58]-offset).ToString(): problem[58].ToString(),
-                            problem[59] == '0' ? "&nbsp;": problem[59] > '9' ? (problem[59]-offset).ToString(): problem[59].ToString(),
-                            problem[60] == '0' ? "&nbsp;": problem[60] > '9' ? (problem[60]-offset).ToString(): problem[60].ToString(),
-                            problem[61] == '0' ? "&nbsp;": problem[61] > '9' ? (problem[61]-offset).ToString(): problem[61].ToString(),
-                            problem[62] == '0' ? "&nbsp;": problem[62] > '9' ? (problem[62]-offset).ToString(): problem[62].ToString(),
-                            problem[63] == '0' ? "&nbsp;": problem[63] > '9' ? (problem[63]-offset).ToString(): problem[63].ToString(),
-                            problem[64] == '0' ? "&nbsp;": problem[64] > '9' ? (problem[64]-offset).ToString(): problem[64].ToString(),
-                            problem[65] == '0' ? "&nbsp;": problem[65] > '9' ? (problem[65]-offset).ToString(): problem[65].ToString(),
-                            problem[66] == '0' ? "&nbsp;": problem[66] > '9' ? (problem[66]-offset).ToString(): problem[66].ToString(),
-                            problem[67] == '0' ? "&nbsp;": problem[67] > '9' ? (problem[67]-offset).ToString(): problem[67].ToString(),
-                            problem[68] == '0' ? "&nbsp;": problem[68] > '9' ? (problem[68]-offset).ToString(): problem[68].ToString(),
-                            problem[69] == '0' ? "&nbsp;": problem[69] > '9' ? (problem[69]-offset).ToString(): problem[69].ToString(),
-                            problem[70] == '0' ? "&nbsp;": problem[70] > '9' ? (problem[70]-offset).ToString(): problem[70].ToString(),
-                            problem[71] == '0' ? "&nbsp;": problem[71] > '9' ? (problem[71]-offset).ToString(): problem[71].ToString(),
-                            problem[72] == '0' ? "&nbsp;": problem[72] > '9' ? (problem[72]-offset).ToString(): problem[72].ToString(),
-                            problem[73] == '0' ? "&nbsp;": problem[73] > '9' ? (problem[73]-offset).ToString(): problem[73].ToString(),
-                            problem[74] == '0' ? "&nbsp;": problem[74] > '9' ? (problem[74]-offset).ToString(): problem[74].ToString(),
-                            problem[75] == '0' ? "&nbsp;": problem[75] > '9' ? (problem[75]-offset).ToString(): problem[75].ToString(),
-                            problem[76] == '0' ? "&nbsp;": problem[76] > '9' ? (problem[76]-offset).ToString(): problem[76].ToString(),
-                            problem[77] == '0' ? "&nbsp;": problem[77] > '9' ? (problem[77]-offset).ToString(): problem[77].ToString(),
-                            problem[78] == '0' ? "&nbsp;": problem[78] > '9' ? (problem[78]-offset).ToString(): problem[78].ToString(),
-                            problem[79] == '0' ? "&nbsp;": problem[79] > '9' ? (problem[79]-offset).ToString(): problem[79].ToString(),
-                            problem[80] == '0' ? "&nbsp;": problem[80] > '9' ? (problem[80]-offset).ToString(): problem[80].ToString(),
-                            problem[81] == '0' ? "&nbsp;": problem[81] > '9' ? (problem[81]-offset).ToString(): problem[81].ToString()),
+                            problem[00] == SudokuProblem.ProblemIdentifier ? Resources.HTMLTemplate : Resources.HTMLTemplateX,
+                            problem[01] == '0' ? "&nbsp;" : problem[01] > '9' ? (problem[01] - offset).ToString() : problem[01].ToString(),
+                            problem[02] == '0' ? "&nbsp;" : problem[02] > '9' ? (problem[02] - offset).ToString() : problem[02].ToString(),
+                            problem[03] == '0' ? "&nbsp;" : problem[03] > '9' ? (problem[03] - offset).ToString() : problem[03].ToString(),
+                            problem[04] == '0' ? "&nbsp;" : problem[04] > '9' ? (problem[04] - offset).ToString() : problem[04].ToString(),
+                            problem[05] == '0' ? "&nbsp;" : problem[05] > '9' ? (problem[05] - offset).ToString() : problem[05].ToString(),
+                            problem[06] == '0' ? "&nbsp;" : problem[06] > '9' ? (problem[06] - offset).ToString() : problem[06].ToString(),
+                            problem[07] == '0' ? "&nbsp;" : problem[07] > '9' ? (problem[07] - offset).ToString() : problem[07].ToString(),
+                            problem[08] == '0' ? "&nbsp;" : problem[08] > '9' ? (problem[08] - offset).ToString() : problem[08].ToString(),
+                            problem[09] == '0' ? "&nbsp;" : problem[09] > '9' ? (problem[09] - offset).ToString() : problem[09].ToString(),
+                            problem[10] == '0' ? "&nbsp;" : problem[10] > '9' ? (problem[10] - offset).ToString() : problem[10].ToString(),
+                            problem[11] == '0' ? "&nbsp;" : problem[11] > '9' ? (problem[11] - offset).ToString() : problem[11].ToString(),
+                            problem[12] == '0' ? "&nbsp;" : problem[12] > '9' ? (problem[12] - offset).ToString() : problem[12].ToString(),
+                            problem[13] == '0' ? "&nbsp;" : problem[13] > '9' ? (problem[13] - offset).ToString() : problem[13].ToString(),
+                            problem[14] == '0' ? "&nbsp;" : problem[14] > '9' ? (problem[14] - offset).ToString() : problem[14].ToString(),
+                            problem[15] == '0' ? "&nbsp;" : problem[15] > '9' ? (problem[15] - offset).ToString() : problem[15].ToString(),
+                            problem[16] == '0' ? "&nbsp;" : problem[16] > '9' ? (problem[16] - offset).ToString() : problem[16].ToString(),
+                            problem[17] == '0' ? "&nbsp;" : problem[17] > '9' ? (problem[17] - offset).ToString() : problem[17].ToString(),
+                            problem[18] == '0' ? "&nbsp;" : problem[18] > '9' ? (problem[18] - offset).ToString() : problem[18].ToString(),
+                            problem[19] == '0' ? "&nbsp;" : problem[19] > '9' ? (problem[19] - offset).ToString() : problem[19].ToString(),
+                            problem[20] == '0' ? "&nbsp;" : problem[20] > '9' ? (problem[20] - offset).ToString() : problem[20].ToString(),
+                            problem[21] == '0' ? "&nbsp;" : problem[21] > '9' ? (problem[21] - offset).ToString() : problem[21].ToString(),
+                            problem[22] == '0' ? "&nbsp;" : problem[22] > '9' ? (problem[22] - offset).ToString() : problem[22].ToString(),
+                            problem[23] == '0' ? "&nbsp;" : problem[23] > '9' ? (problem[23] - offset).ToString() : problem[23].ToString(),
+                            problem[24] == '0' ? "&nbsp;" : problem[24] > '9' ? (problem[24] - offset).ToString() : problem[24].ToString(),
+                            problem[25] == '0' ? "&nbsp;" : problem[25] > '9' ? (problem[25] - offset).ToString() : problem[25].ToString(),
+                            problem[26] == '0' ? "&nbsp;" : problem[26] > '9' ? (problem[26] - offset).ToString() : problem[26].ToString(),
+                            problem[27] == '0' ? "&nbsp;" : problem[27] > '9' ? (problem[27] - offset).ToString() : problem[27].ToString(),
+                            problem[28] == '0' ? "&nbsp;" : problem[28] > '9' ? (problem[28] - offset).ToString() : problem[28].ToString(),
+                            problem[29] == '0' ? "&nbsp;" : problem[29] > '9' ? (problem[29] - offset).ToString() : problem[29].ToString(),
+                            problem[30] == '0' ? "&nbsp;" : problem[30] > '9' ? (problem[30] - offset).ToString() : problem[30].ToString(),
+                            problem[31] == '0' ? "&nbsp;" : problem[31] > '9' ? (problem[31] - offset).ToString() : problem[31].ToString(),
+                            problem[32] == '0' ? "&nbsp;" : problem[32] > '9' ? (problem[32] - offset).ToString() : problem[32].ToString(),
+                            problem[33] == '0' ? "&nbsp;" : problem[33] > '9' ? (problem[33] - offset).ToString() : problem[33].ToString(),
+                            problem[34] == '0' ? "&nbsp;" : problem[34] > '9' ? (problem[34] - offset).ToString() : problem[34].ToString(),
+                            problem[35] == '0' ? "&nbsp;" : problem[35] > '9' ? (problem[35] - offset).ToString() : problem[35].ToString(),
+                            problem[36] == '0' ? "&nbsp;" : problem[36] > '9' ? (problem[36] - offset).ToString() : problem[36].ToString(),
+                            problem[37] == '0' ? "&nbsp;" : problem[37] > '9' ? (problem[37] - offset).ToString() : problem[37].ToString(),
+                            problem[38] == '0' ? "&nbsp;" : problem[38] > '9' ? (problem[38] - offset).ToString() : problem[38].ToString(),
+                            problem[39] == '0' ? "&nbsp;" : problem[39] > '9' ? (problem[39] - offset).ToString() : problem[39].ToString(),
+                            problem[40] == '0' ? "&nbsp;" : problem[40] > '9' ? (problem[40] - offset).ToString() : problem[40].ToString(),
+                            problem[41] == '0' ? "&nbsp;" : problem[41] > '9' ? (problem[41] - offset).ToString() : problem[41].ToString(),
+                            problem[42] == '0' ? "&nbsp;" : problem[42] > '9' ? (problem[42] - offset).ToString() : problem[42].ToString(),
+                            problem[43] == '0' ? "&nbsp;" : problem[43] > '9' ? (problem[43] - offset).ToString() : problem[43].ToString(),
+                            problem[44] == '0' ? "&nbsp;" : problem[44] > '9' ? (problem[44] - offset).ToString() : problem[44].ToString(),
+                            problem[45] == '0' ? "&nbsp;" : problem[45] > '9' ? (problem[45] - offset).ToString() : problem[45].ToString(),
+                            problem[46] == '0' ? "&nbsp;" : problem[46] > '9' ? (problem[46] - offset).ToString() : problem[46].ToString(),
+                            problem[47] == '0' ? "&nbsp;" : problem[47] > '9' ? (problem[47] - offset).ToString() : problem[47].ToString(),
+                            problem[48] == '0' ? "&nbsp;" : problem[48] > '9' ? (problem[48] - offset).ToString() : problem[48].ToString(),
+                            problem[49] == '0' ? "&nbsp;" : problem[49] > '9' ? (problem[49] - offset).ToString() : problem[49].ToString(),
+                            problem[50] == '0' ? "&nbsp;" : problem[50] > '9' ? (problem[50] - offset).ToString() : problem[50].ToString(),
+                            problem[51] == '0' ? "&nbsp;" : problem[51] > '9' ? (problem[51] - offset).ToString() : problem[51].ToString(),
+                            problem[52] == '0' ? "&nbsp;" : problem[52] > '9' ? (problem[52] - offset).ToString() : problem[52].ToString(),
+                            problem[53] == '0' ? "&nbsp;" : problem[53] > '9' ? (problem[53] - offset).ToString() : problem[53].ToString(),
+                            problem[54] == '0' ? "&nbsp;" : problem[54] > '9' ? (problem[54] - offset).ToString() : problem[54].ToString(),
+                            problem[55] == '0' ? "&nbsp;" : problem[55] > '9' ? (problem[55] - offset).ToString() : problem[55].ToString(),
+                            problem[56] == '0' ? "&nbsp;" : problem[56] > '9' ? (problem[56] - offset).ToString() : problem[56].ToString(),
+                            problem[57] == '0' ? "&nbsp;" : problem[57] > '9' ? (problem[57] - offset).ToString() : problem[57].ToString(),
+                            problem[58] == '0' ? "&nbsp;" : problem[58] > '9' ? (problem[58] - offset).ToString() : problem[58].ToString(),
+                            problem[59] == '0' ? "&nbsp;" : problem[59] > '9' ? (problem[59] - offset).ToString() : problem[59].ToString(),
+                            problem[60] == '0' ? "&nbsp;" : problem[60] > '9' ? (problem[60] - offset).ToString() : problem[60].ToString(),
+                            problem[61] == '0' ? "&nbsp;" : problem[61] > '9' ? (problem[61] - offset).ToString() : problem[61].ToString(),
+                            problem[62] == '0' ? "&nbsp;" : problem[62] > '9' ? (problem[62] - offset).ToString() : problem[62].ToString(),
+                            problem[63] == '0' ? "&nbsp;" : problem[63] > '9' ? (problem[63] - offset).ToString() : problem[63].ToString(),
+                            problem[64] == '0' ? "&nbsp;" : problem[64] > '9' ? (problem[64] - offset).ToString() : problem[64].ToString(),
+                            problem[65] == '0' ? "&nbsp;" : problem[65] > '9' ? (problem[65] - offset).ToString() : problem[65].ToString(),
+                            problem[66] == '0' ? "&nbsp;" : problem[66] > '9' ? (problem[66] - offset).ToString() : problem[66].ToString(),
+                            problem[67] == '0' ? "&nbsp;" : problem[67] > '9' ? (problem[67] - offset).ToString() : problem[67].ToString(),
+                            problem[68] == '0' ? "&nbsp;" : problem[68] > '9' ? (problem[68] - offset).ToString() : problem[68].ToString(),
+                            problem[69] == '0' ? "&nbsp;" : problem[69] > '9' ? (problem[69] - offset).ToString() : problem[69].ToString(),
+                            problem[70] == '0' ? "&nbsp;" : problem[70] > '9' ? (problem[70] - offset).ToString() : problem[70].ToString(),
+                            problem[71] == '0' ? "&nbsp;" : problem[71] > '9' ? (problem[71] - offset).ToString() : problem[71].ToString(),
+                            problem[72] == '0' ? "&nbsp;" : problem[72] > '9' ? (problem[72] - offset).ToString() : problem[72].ToString(),
+                            problem[73] == '0' ? "&nbsp;" : problem[73] > '9' ? (problem[73] - offset).ToString() : problem[73].ToString(),
+                            problem[74] == '0' ? "&nbsp;" : problem[74] > '9' ? (problem[74] - offset).ToString() : problem[74].ToString(),
+                            problem[75] == '0' ? "&nbsp;" : problem[75] > '9' ? (problem[75] - offset).ToString() : problem[75].ToString(),
+                            problem[76] == '0' ? "&nbsp;" : problem[76] > '9' ? (problem[76] - offset).ToString() : problem[76].ToString(),
+                            problem[77] == '0' ? "&nbsp;" : problem[77] > '9' ? (problem[77] - offset).ToString() : problem[77].ToString(),
+                            problem[78] == '0' ? "&nbsp;" : problem[78] > '9' ? (problem[78] - offset).ToString() : problem[78].ToString(),
+                            problem[79] == '0' ? "&nbsp;" : problem[79] > '9' ? (problem[79] - offset).ToString() : problem[79].ToString(),
+                            problem[80] == '0' ? "&nbsp;" : problem[80] > '9' ? (problem[80] - offset).ToString() : problem[80].ToString(),
+                            problem[81] == '0' ? "&nbsp;" : problem[81] > '9' ? (problem[81] - offset).ToString() : problem[81].ToString()),
                         SeverityLevelText,
-                        String.IsNullOrEmpty(Comment) ? "": Comment,
+                        String.IsNullOrEmpty(Comment) ? "" : Comment,
                         DateTime.Now.ToString("yyyy.MM.dd", new CultureInfo(Settings.Default.DisplayLanguage)),
                         AssemblyInfo.AssemblyCopyright
                     ));
@@ -809,41 +799,41 @@ namespace Sudoku
             return;
         }
 
-        public String Serialize(Boolean includeROFlag=true)
+        public String Serialize(Boolean includeROFlag = true)
         {
             String serializedProblem;
-            byte offset=(byte)'0';
+            byte offset = (byte)'0';
 
-            serializedProblem=SudokuTypeIdentifier.ToString();
-            for(int i=0; i < SudokuForm.SudokuSize; i++)
-                for(int j=0; j < SudokuForm.SudokuSize; j++)
-                    serializedProblem += (char)(GetValue(i, j)+(Matrix.Cell(i, j).ReadOnly && includeROFlag ? ReadOnlyOffset: 0)+offset);
+            serializedProblem = SudokuTypeIdentifier.ToString();
+            for(int i = 0; i < SudokuForm.SudokuSize; i++)
+                for(int j = 0; j < SudokuForm.SudokuSize; j++)
+                    serializedProblem += (char)(GetValue(i, j) + (Matrix.Cell(i, j).ReadOnly && includeROFlag ? ReadOnlyOffset : 0) + offset);
             serializedProblem += SolvingTime.ToString().PadRight(16, '0');
             serializedProblem += Comment;
             if(matrix.HasCandidates())
-                serializedProblem += (Environment.NewLine+SerializeCandiates(false)+Environment.NewLine+SerializeCandiates(true));
+                serializedProblem += (Environment.NewLine + SerializeCandiates(false) + Environment.NewLine + SerializeCandiates(true));
 
             return serializedProblem;
         }
 
         private String SerializeCandiates(Boolean exclusionCandidate)
         {
-            Byte oneCandidate=64;
-            Byte bit=0;
-            String serializedCandidates="";
+            Byte oneCandidate = 64;
+            Byte bit = 0;
+            String serializedCandidates = "";
 
-            for(int row=0; row < SudokuForm.SudokuSize; row++)
-                for(int col=0; col < SudokuForm.SudokuSize; col++)
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
                 {
-                    for(int candidate=1; candidate <= SudokuForm.SudokuSize; candidate++)
+                    for(int candidate = 1; candidate <= SudokuForm.SudokuSize; candidate++)
                     {
                         if(GetCandidate(row, col, candidate, exclusionCandidate))
                             oneCandidate += (Byte)(1 << bit);
                         if(++bit > 5)
                         {
                             serializedCandidates += (Char)oneCandidate;
-                            oneCandidate=64;
-                            bit=0;
+                            oneCandidate = 64;
+                            bit = 0;
                         }
                     }
                 }
@@ -854,25 +844,25 @@ namespace Sudoku
         private void DeserializeCandidates(String candidates, Boolean exclusionCandidates)
         {
             Char oneCandidate;
-            int candidate=1;
-            int row=0;
-            int col=0;
+            int candidate = 1;
+            int row = 0;
+            int col = 0;
 
             if(candidates == null) return;
 
-            for(int i=0; i < candidates.Length; i++)
+            for(int i = 0; i < candidates.Length; i++)
             {
-                oneCandidate=candidates[i];
-                for(int bit=0; bit < 6; bit++)
+                oneCandidate = candidates[i];
+                for(int bit = 0; bit < 6; bit++)
                 {
                     if((oneCandidate & (1 << bit)) > 0)
                         SetCandidate(row, col, candidate, exclusionCandidates);
                     if(++candidate > SudokuForm.SudokuSize)
                     {
-                        candidate=1;
+                        candidate = 1;
                         if(++col >= SudokuForm.SudokuSize)
                         {
-                            col=0;
+                            col = 0;
                             if(++row >= SudokuForm.SudokuSize)
                                 return;
                         }
@@ -895,11 +885,11 @@ namespace Sudoku
         private Boolean Load(String URL)
         {
             Matrix.Init();
-            WebClient client=new WebClient();
+            WebClient client = new WebClient();
             try
             {
-                client.Encoding=System.Text.Encoding.UTF8;
-                String sudoku=client.UploadString(URL, "POST", new String(SudokuTypeIdentifier, 1)).Trim();
+                client.Encoding = System.Text.Encoding.UTF8;
+                String sudoku = client.UploadString(URL, "POST", new String(SudokuTypeIdentifier, 1)).Trim();
                 if(sudoku.IndexOf("ERROR") != 0)
                 {
                     InitProblem(sudoku.ToCharArray(), "".ToCharArray(), "");
@@ -927,8 +917,8 @@ namespace Sudoku
 
             try
             {
-                char[] values=new char[SudokuForm.TotalCellCount];
-                char[] elapsedTime=new char[16];
+                char[] values = new char[SudokuForm.TotalCellCount];
+                char[] elapsedTime = new char[16];
 
                 sr.Read(values, 0, values.Length);
                 sr.Read(elapsedTime, 0, elapsedTime.Length);
@@ -942,27 +932,27 @@ namespace Sudoku
         {
             try
             {
-                byte offset=(byte)'0';
-                byte v=0;
+                byte offset = (byte)'0';
+                byte v = 0;
 
                 if(!TimeSpan.TryParse(new String(elapsedTime), out solvingTime))
-                    solvingTime=TimeSpan.Zero;
-                if((Comment=initialComment) == null) // for compability reasons
-                    Comment=String.Empty;
+                    solvingTime = TimeSpan.Zero;
+                if((Comment = initialComment) == null) // for compability reasons
+                    Comment = String.Empty;
 
-                Matrix.SetPredefinedValues=false;
-                for(int i=0; i < SudokuForm.SudokuSize; i++)
-                    for(int j=0; j < SudokuForm.SudokuSize; j++)
+                Matrix.SetPredefinedValues = false;
+                for(int i = 0; i < SudokuForm.SudokuSize; i++)
+                    for(int j = 0; j < SudokuForm.SudokuSize; j++)
                     {
-                        v=Convert.ToByte(values[i * SudokuForm.SudokuSize+j]-offset);
+                        v = Convert.ToByte(values[i * SudokuForm.SudokuSize + j] - offset);
                         if(v >= ReadOnlyOffset)
                         {
-                            Matrix.Cell(i, j).ReadOnly=(v > ReadOnlyOffset);
+                            Matrix.Cell(i, j).ReadOnly = (v > ReadOnlyOffset);
                             v -= ReadOnlyOffset;
                         }
                         SetValue(i, j, v);
                     }
-                Matrix.SetPredefinedValues=true;
+                Matrix.SetPredefinedValues = true;
             }
             catch(Exception) { throw; }
         }
