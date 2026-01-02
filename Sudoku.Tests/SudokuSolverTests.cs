@@ -43,11 +43,11 @@ namespace Sudoku.Tests
         {
             // Arrange
             var problem = CreateProblemFromArray(_simplePuzzle);
-            var solver = new SudokuSolver(problem);
             var cts = new CancellationTokenSource();
+            var solver = new SudokuSolver(problem, 1, cts.Token);
 
             // Act
-            await solver.FindSolutionsAsync(1, cts.Token);
+            await solver.Solve;
 
             // Assert
             Assert.IsTrue(solver.ProblemSolved, "Der Solver sollte das Problem als gelöst markieren.");
@@ -60,7 +60,8 @@ namespace Sudoku.Tests
         {
             // Arrange
             var problem = CreateProblemFromArray(_solvedPuzzle);
-            var solver = new SudokuSolver(problem);
+            var cts = new CancellationTokenSource();
+            var solver = new SudokuSolver(problem, 1, cts.Token);
 
             // Act
             // Zugriff auf die private Methode 'IsSolved' via Reflection
@@ -80,9 +81,10 @@ namespace Sudoku.Tests
             // Wir manipulieren das Gitter, um es ungültig zu machen (Duplikat in der ersten Zeile)
             // Setze Zelle (0, 1) auf den Wert von Zelle (0, 0)
             byte val = problem.GetValue(0, 0);
-            problem.SetValue(0, 1, val); 
+            problem.SetValue(0, 1, val);
 
-            var solver = new SudokuSolver(problem);
+            var cts = new CancellationTokenSource();
+            var solver = new SudokuSolver(problem, 1, cts.Token);
 
             // Act
             MethodInfo isSolvedMethod = typeof(SudokuSolver).GetMethod("IsSolved", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -101,7 +103,8 @@ namespace Sudoku.Tests
             // Wir entfernen einen Wert (setzen ihn auf Undefined/0)
             problem.SetValue(0, 0, 0); // 0 entspricht Values.Undefined
 
-            var solver = new SudokuSolver(problem);
+            var cts = new CancellationTokenSource();
+            var solver = new SudokuSolver(problem, 1, cts.Token);
 
             // Act
             MethodInfo isSolvedMethod = typeof(SudokuSolver).GetMethod("IsSolved", BindingFlags.NonPublic | BindingFlags.Instance);
