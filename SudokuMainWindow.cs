@@ -106,7 +106,7 @@ namespace Sudoku
             generationParameters=new GenerationParameters();
             printParameters=new PrintParameters();
             trickyProblems=new TrickyProblems();
-            CheckVersion();
+             CheckVersion();
             try
             {
                 String fn=AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0];
