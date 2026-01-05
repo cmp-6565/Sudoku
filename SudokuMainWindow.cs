@@ -24,8 +24,6 @@ namespace Sudoku
         private BaseProblem backup;
         private TrickyProblems trickyProblems;
         private PrintParameters printParameters;
-        private DateTime computingStart;
-        private DateTime interactiveStart;
         private GenerationParameters generationParameters;
         private int currentSolution=0;
         private Font normalDisplayFont;
@@ -43,7 +41,6 @@ namespace Sudoku
         private int severityLevel=0;
         private int incorrectTries=0;
         private Boolean valuesVisible=true;
-        private Boolean hideValues=true;
         private String statusBarText = "";
 
         // Neue Felder für den asynchronen Solver
@@ -68,9 +65,6 @@ namespace Sudoku
             InitializeComponent();
             SudokuTable.MouseWheel+=new MouseEventHandler(MouseWheelHandler);
             SudokuTable.Rows.Add(SudokuSize);
-            solutionTimer.Interval=1000;
-            solvingTimer.Interval=1000;
-            autoPauseTimer.Interval=Convert.ToInt32(Settings.Default.AutoPauseLag)*1000;
 
             fontSizes=Settings.Default.FontSizes.Split('|');
             normalDisplayFont=new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size-1]), FontStyle.Regular);
@@ -100,13 +94,10 @@ namespace Sudoku
             FormatTable();
             EnableGUI();
 
-            Deactivate+=new EventHandler(FocusLost);
-            Activated+=new EventHandler(FocusGotten);
-
             generationParameters=new GenerationParameters();
             printParameters=new PrintParameters();
             trickyProblems=new TrickyProblems();
-             CheckVersion();
+            CheckVersion();
             try
             {
                 String fn=AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0];
@@ -140,16 +131,6 @@ namespace Sudoku
             }
             solverCts = null;
             activeSolver = null;
-        }
-        private void FocusLost(object sender, EventArgs e)
-        {
-            if(SudokuTable.Enabled && hideValues && Settings.Default.AutoPause)
-                autoPauseTimer.Start();
-        }
-
-        private void FocusGotten(object sender, EventArgs e)
-        {
-            autoPauseTimer.Stop();
         }
 
         /// <summary>
@@ -354,9 +335,7 @@ namespace Sudoku
 
                 if(!silent && firstError!=null)
                 {
-                    hideValues=false;
                     MessageBox.Show(firstError, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                    hideValues=true;
                 }
                 return false;
             }
@@ -407,16 +386,11 @@ namespace Sudoku
 
             if(!silent && count == TotalCellCount)
             {
-                solvingTimer.Stop();
-
-                TimeSpan ts=DateTime.Now-interactiveStart;
-                hideValues=false;
                 MessageBox.Show(
                     inputOK?
-                        Resources.Congratulations+Environment.NewLine+Resources.ProblemSolved+Environment.NewLine+Resources.TimeNeeded+String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", ts.Days*24+ts.Hours, ts.Minutes, ts.Seconds)+Environment.NewLine+Resources.IncorrectTries+String.Format(cultureInfo, "{0}", incorrectTries):
+                        Resources.Congratulations+Environment.NewLine+Resources.ProblemSolved+Environment.NewLine+Environment.NewLine+Resources.IncorrectTries+String.Format(cultureInfo, "{0}", incorrectTries):
                         Resources.ProblemNotSolved,
                     ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                hideValues=true;
                 sudokuStatusBarText.Text=Resources.Ready;
             }
         }
@@ -564,7 +538,7 @@ namespace Sudoku
             DisplayValues(problem.Matrix);
             status.Text=String.Empty;
             prior.Enabled=next.Enabled=false;
-            if(!solvingTimer.Enabled) sudokuStatusBarText.Text=Resources.Ready;
+            sudokuStatusBarText.Text=Resources.Ready;
             Text=ProductName;
         }
 
@@ -575,8 +549,6 @@ namespace Sudoku
         {
             undoStack=new Stack<CoreValue>();
             undo.Enabled=false;
-            solvingTimer.Stop();
-            interactiveStart=DateTime.MinValue;
             problem.Dirty=false;
         }
 
@@ -611,9 +583,7 @@ namespace Sudoku
         {
             if(readOnly && !SyncProblemWithGUI(true))
             {
-                hideValues=false;
                 MessageBox.Show(Resources.NotFixable);
-                hideValues=true;
                 return;
             }
             for(int row=0; row < SudokuSize; row++)
@@ -636,9 +606,7 @@ namespace Sudoku
             backup = CreateNewProblem(xSudoku);
             if(!(generationParameters.GenerateBooklet=(nProblems != 1)))
             {
-                hideValues=false;
                 severityLevel=GetSeverity();
-                hideValues=true;
             }
             else
                 severityLevel=Settings.Default.SeverityLevel;
@@ -702,9 +670,7 @@ namespace Sudoku
 
             if(values.Count == 0)
             {
-                hideValues=false;
                 MessageBox.Show(Resources.NoHints);
-                hideValues=true;
                 return;
             }
 
@@ -764,9 +730,7 @@ namespace Sudoku
                 problemInfo+=Environment.NewLine+Resources.Filename+Environment.NewLine+problem.Filename;
             if(!String.IsNullOrEmpty(problem.Comment))
                 problemInfo+=Environment.NewLine+problem.Comment;
-            hideValues=false;
             MessageBox.Show(problemInfo, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            hideValues=true;
             problem.Dirty=modified;
         }
 
@@ -804,9 +768,7 @@ namespace Sudoku
                 Environment.NewLine+String.Format(cultureInfo, Resources.IndirectBlocks) +
                 (indirectBlockedCells.Length == 0? Resources.None: indirectBlockedCells);
 
-            hideValues=false;
             MessageBox.Show(cellInfo);
-            hideValues=true;
 
             return;
         }
@@ -815,7 +777,6 @@ namespace Sudoku
         {
             if(trickyProblems.Empty) return;
 
-            hideValues=false;
             if(MessageBox.Show((generationParameters.GenerateBooklet? Resources.OneOrMoreProblems: Resources.OneProblem)+Resources.Publish, ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 if(trickyProblems.Publish())
@@ -823,16 +784,13 @@ namespace Sudoku
                 else
                     MessageBox.Show(String.Format(Resources.PublishFailed, Settings.Default.MailAddress));
             }
-            hideValues=true;
         }
 
         private void CheckProblem()
         {
             CancelSolving();
             if(!SyncProblemWithGUI(false)) return;
-            hideValues=false;
             MessageBox.Show(problem.Resolvable()? String.Format(cultureInfo, Resources.ValidationStatus, problem is XSudokuProblem? "X-": Resources.Classic): Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            hideValues=true;
         }
 
         private void ValidateProblem()
@@ -842,7 +800,6 @@ namespace Sudoku
             CancelSolving();
             backup = problem.Clone();
             StartDetachedProcess(DisplayCheckingProcess, Resources.Checking, 1, true);
-            solvingTimer.Start();
         }
 
         private void ResetProblem()
@@ -900,9 +857,7 @@ namespace Sudoku
             BaseProblem sudokuProblem=CreateNewProblem(xSudoku);
             Boolean loadResult;
 
-            hideValues=false;
             loadResult=sudokuProblem.Load();
-            hideValues=true;
             if(loadResult)
                 return sudokuProblem;
             else
@@ -1073,13 +1028,6 @@ namespace Sudoku
             }
         }
 
-        private void tick(object sender, EventArgs e)
-        {
-            TimeSpan ts=DateTime.Now-computingStart;
-            sudokuStatusBarText.Text=String.Format(cultureInfo, statusBarText, ts.Hours*3600+ts.Minutes*60+ts.Seconds);
-            sudokuStatusBar.Update();
-        }
-
         // Threading
         private void StartDetachedProcess(SudokuAction action, String statusBarText, UInt64 numSolutions, Boolean initStatus)
         {
@@ -1093,13 +1041,6 @@ namespace Sudoku
                 status.Update();
             }
             this.statusBarText=statusBarText;
-
-            solutionTimer.Dispose();
-            solutionTimer=new System.Windows.Forms.Timer(components);
-            solutionTimer.Tick+=new EventHandler(tick);
-            solutionTimer.Interval=10;
-            solutionTimer.Start();
-            computingStart=DateTime.Now;
 
             // Erstelle und starte den Solver
             InitializeCancellationToken();
@@ -1119,8 +1060,6 @@ namespace Sudoku
         {
             CancelSolving();
             sudokuStatusBarText.Text=Resources.Ready;
-            solutionTimer.Stop();
-            solvingTimer.Stop();
             if(debug.Checked) problem.Matrix.CellChanged-=HandleCellChanged;
             EnableGUI();
         }
@@ -1133,9 +1072,7 @@ namespace Sudoku
 
             if(problem.Dirty && FilledCells() != TotalCellCount)
             {
-                hideValues=false;
                 dialogResult=MessageBox.Show(Resources.UnsavedChanges, ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-                hideValues=true;
                 if(dialogResult == DialogResult.Yes)
                     rc=SaveProblem();
                 else
@@ -1151,10 +1088,8 @@ namespace Sudoku
                 openSudokuDialog.InitialDirectory=Settings.Default.ProblemDirectory;
                 openSudokuDialog.DefaultExt="*"+Settings.Default.DefaultFileExtension;
                 openSudokuDialog.Filter=String.Format(cultureInfo, Resources.FilterString, Settings.Default.DefaultFileExtension);
-                hideValues=false;
                 if(openSudokuDialog.ShowDialog() == DialogResult.OK)
                     LoadProblem(openSudokuDialog.FileName);
-                hideValues=true;
             }
         }
 
@@ -1162,7 +1097,6 @@ namespace Sudoku
         {
             BaseProblem tmp=problem.Clone();
 
-            hideValues=false;
             try
             {
                 problem=CreateProblemFromFile(filename);
@@ -1182,7 +1116,6 @@ namespace Sudoku
                 MessageBox.Show(Resources.OpenFailed+Environment.NewLine+e.Message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 problem=tmp.Clone();
             }
-            hideValues=true;
 
             backup=problem.Clone();
 
@@ -1239,15 +1172,11 @@ namespace Sudoku
             Boolean returnCode=true;
             try
             {
-                if(solvingTimer.Enabled)
-                    problem.SolvingTime=DateTime.Now-interactiveStart;
                 problem.SaveToFile(filename);
             }
             catch(Exception e)
             {
-                hideValues=false;
                 MessageBox.Show(Resources.SaveFailed+Environment.NewLine+e.Message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                hideValues=true;
                 returnCode=false;
             }
             return returnCode;
@@ -1262,9 +1191,7 @@ namespace Sudoku
             }
             catch(Exception e)
             {
-                hideValues=false;
                 MessageBox.Show(Resources.SaveFailed+Environment.NewLine+e.Message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                hideValues=true;
                 returnCode=false;
             }
             return returnCode;
@@ -1274,9 +1201,7 @@ namespace Sudoku
         {
             if(!SyncProblemWithGUI(true))
             {
-                hideValues=false;
                 MessageBox.Show(Resources.InvalidProblem+Environment.NewLine+Resources.SaveNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                hideValues=true;
                 return false;
             }
 
@@ -1290,9 +1215,7 @@ namespace Sudoku
         {
             if(!SyncProblemWithGUI(true))
             {
-                hideValues=false;
                 MessageBox.Show(Resources.InvalidProblem+Environment.NewLine+Resources.ExportNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                hideValues=true;
                 return false;
             }
 
@@ -1306,9 +1229,7 @@ namespace Sudoku
         {
             if(!SyncProblemWithGUI(true))
             {
-                hideValues=false;
                 MessageBox.Show(Resources.InvalidProblem+Environment.NewLine+Resources.TwitterNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                hideValues=true;
                 return false;
             }
 
@@ -1325,9 +1246,7 @@ namespace Sudoku
             saveSudokuDialog.DefaultExt="*"+Extension;
             saveSudokuDialog.Filter=String.Format(cultureInfo, Resources.FilterString, Extension);
             saveSudokuDialog.FileName="Problem-"+DateTime.Now.ToString("yyyy.MM.dd-hh-mm", cultureInfo);
-            hideValues=false;
             result=saveSudokuDialog.ShowDialog();
-            hideValues=true;
             return result;
         }
 
@@ -1380,13 +1299,6 @@ namespace Sudoku
         {
             if(sender is DataGridView)
             {
-                if(!solvingTimer.Enabled)
-                {
-                    problem.SolvingTime=TimeSpan.Zero;
-                    solvingTimer.Start();
-                    interactiveStart=DateTime.Now-problem.SolvingTime;
-                }
-
                 DataGridView dgv=(DataGridView)sender;
                 problem.SetValue(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex, Values.Undefined);
                 SetCellFont(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex);
@@ -1404,10 +1316,8 @@ namespace Sudoku
 
             if(sender is DataGridView && (Control.ModifierKeys == Keys.Control || Control.ModifierKeys == (Keys.Control | Keys.Shift)) && candidate > 0 && candidate <= SudokuSize)
             {
-                hideValues=false;
                 if(Settings.Default.ShowHints && MessageBox.Show(Resources.CandidatesNotShown, ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
                     showPossibleValues.Checked=Settings.Default.ShowHints=false;
-                hideValues=true;
 
                 DataGridView dgv=(DataGridView)sender;
                 if(!problem.Cell(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex).ReadOnly)
@@ -1484,12 +1394,6 @@ namespace Sudoku
             {
                 DisplayValues(problem.Matrix);
                 valuesVisible=true;
-                if(!solvingTimer.Enabled)
-                {
-                    problem.SolvingTime=TimeSpan.Zero;
-                    solvingTimer.Start();
-                    interactiveStart=DateTime.Now;
-                }
             }
         }
         private void CellEnter(object sender, DataGridViewCellEventArgs e)
@@ -1580,18 +1484,6 @@ namespace Sudoku
         }
 
         // Timer Events
-        private void SolvingTimerTick(object sender, EventArgs e)
-        {
-            TimeSpan ts=DateTime.Now-interactiveStart;
-            sudokuStatusBarText.Text=Resources.SolutionTime+String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", ts.Days*24+ts.Hours, ts.Minutes, ts.Seconds);
-        }
-
-        private void AutoPauseTick(object sender, EventArgs e)
-        {
-            if(WindowState != FormWindowState.Minimized) 
-                PauseClick(sender, e);
-        }
-
         private void GenerationSingleProblemFinished()
         {
             status.Text=usePrecalculatedProblem?
@@ -1661,9 +1553,6 @@ namespace Sudoku
 
             problem=activeSolver.Problem;
 
-            solutionTimer.Stop();
-            solutionTimer.Dispose();
-
             // Zugriff auf Eigenschaften von activeSolver
             generationParameters.Reset = (activeSolver.NumSolutions == 0);
             generationParameters.TotalPasses += activeSolver.TotalPassCount;
@@ -1709,11 +1598,9 @@ namespace Sudoku
                 if(debug.Checked) SudokuTable.Update();
 
                 // Status vom activeSolver lesen
-                long totalPasses = activeSolver != null ? activeSolver.TotalPassCount : 0;
+                long totalPasses = activeSolver != null? activeSolver.TotalPassCount: 0;
 
-                status.Text =
-                    String.Format(cultureInfo, Resources.CheckingStatus, totalPasses) + Environment.NewLine +
-                    Resources.TimeElapsed + (DateTime.Now - computingStart).ToString();
+                status.Text=String.Format(cultureInfo, Resources.CheckingStatus, totalPasses);
                 status.Update();
             }
             else
@@ -1729,9 +1616,7 @@ namespace Sudoku
 
                     problem = backup.Clone();
                     DisplayValues(problem.Matrix);
-                    hideValues = false;
                     MessageBox.Show(String.Format(cultureInfo, Resources.CheckResult, problem is XSudokuProblem ? "X-" : Resources.Classic, problemSolved ? Resources.AtLeast : Resources.No), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    hideValues = true;
                 }
             }
         }
@@ -1747,11 +1632,7 @@ namespace Sudoku
                 long totalPasses = activeSolver.TotalPassCount;
                 int solutionsSoFar = problem.Solutions.Count;
 
-                status.Text =
-                    (findallSolutions.Checked ? String.Format(cultureInfo, Resources.SolutionsSoFar, solutionsSoFar) + Environment.NewLine : String.Empty) +
-                    String.Format(cultureInfo, Resources.CheckingStatus, totalPasses) +
-                    Environment.NewLine +
-                    Resources.TimeElapsed + (DateTime.Now - computingStart).ToString();
+                status.Text=(findallSolutions.Checked? String.Format(cultureInfo, Resources.SolutionsSoFar, solutionsSoFar) + Environment.NewLine: String.Empty);
                 status.Update();
             }
             else
@@ -1759,7 +1640,7 @@ namespace Sudoku
                 // Task ist beendet
                 if(activeSolver != null && activeSolver.ProblemSolved)
                 {
-                    status.Text = Resources.ProblemSolved + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutions + problem.Solutions.Count.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + activeSolver.TotalPassCount.ToString("n0", cultureInfo);
+                    status.Text = Resources.ProblemSolved + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutions + problem.Solutions.Count.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + activeSolver.TotalPassCount.ToString("n0", cultureInfo);
                     currentSolution = -1;
                     NextSolution();
                 }
@@ -1767,17 +1648,17 @@ namespace Sudoku
                 {
                     if(problem.Solutions.Count > 0)
                     {
-                        status.Text = String.Format(cultureInfo, Resources.SolutionsFound, (activeSolver.TotalPassCount > 0 ? Resources.Plural : String.Empty)) + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutionsSoFar + problem.Solutions.Count.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + activeSolver.TotalPassCount.ToString("n0", cultureInfo);
+                        status.Text = String.Format(cultureInfo, Resources.SolutionsFound, (activeSolver.TotalPassCount > 0 ? Resources.Plural : String.Empty)) + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutionsSoFar + problem.Solutions.Count.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + activeSolver.TotalPassCount.ToString("n0", cultureInfo);
                         currentSolution = -1;
                         NextSolution();
                     }
                     else
-                        status.Text = String.Format(cultureInfo, Resources.Interrupt.Replace("\\n", Environment.NewLine), DateTime.Now - computingStart, activeSolver.TotalPassCount);
+                        status.Text = String.Format(cultureInfo, Resources.Interrupt.Replace("\\n", Environment.NewLine), activeSolver.TotalPassCount);
                 }
                 else
                 {
                     long passes = activeSolver != null ? activeSolver.TotalPassCount : 0;
-                    status.Text = Resources.NotResolvable + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + Environment.NewLine + Resources.NeededPasses + passes.ToString("n0", cultureInfo);
+                    status.Text = Resources.NotResolvable + Environment.NewLine + Resources.NeededPasses + passes.ToString("n0", cultureInfo);
                 }
 
                 ResetDetachedProcess();
@@ -1820,7 +1701,6 @@ namespace Sudoku
             }
             // special handling for the "Undo", the "Clear Candidates", and the "Reset Timer" menu items
             undo.Enabled=undoStack.Count > 0 && enable;
-            resetTimer.Enabled=solvingTimer.Enabled && enable;
             clearCandidates.Enabled=problem.HasCandidates() && enable;
 
             if(SudokuTable.Enabled=enable)
@@ -1834,16 +1714,13 @@ namespace Sudoku
 
         public void DisableGUI()
         {
-            solvingTimer.Stop();
             EnableGUI(false);
         }
 
         // Menu Entries
         private void AboutSudokuClick(object sender, EventArgs e)
         {
-            hideValues=false;
             new AboutSudoku().ShowDialog();
-            hideValues=true;
         }
 
         static private int GetSeverity()
@@ -1943,7 +1820,6 @@ namespace Sudoku
             optionsDialog=new OptionsDialog();
             optionsDialog.MinBookletSize=(generationParameters.GenerateBooklet? Math.Max(generationParameters.CurrentProblem+1, 2): 2);
 
-            hideValues=false;
             if(optionsDialog.ShowDialog() == DialogResult.OK)
             {
                 Thread.CurrentThread.CurrentUICulture=(cultureInfo=new System.Globalization.CultureInfo(Settings.Default.DisplayLanguage));
@@ -1962,11 +1838,9 @@ namespace Sudoku
                 textColor=Settings.Default.Contrast > 50? Color.White: Color.Black;
                 normalDisplayFont=new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size-1]), FontStyle.Regular);
                 boldDisplayFont=new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size-1]), FontStyle.Bold);
-                autoPauseTimer.Interval= Convert.ToInt32(Settings.Default.AutoPauseLag)*1000;
 
                 UpdateGUI();
             }
-            hideValues=true;
         }
 
         private void EditCommentClicked(object sender, EventArgs e)
@@ -2061,25 +1935,7 @@ namespace Sudoku
         private void ResetTimerClick(object sender, EventArgs e)
         {
             problem.SolvingTime=TimeSpan.Zero;
-            solvingTimer.Stop();
             sudokuStatusBarText.Text=Resources.Ready;
-        }
-
-        private void PauseClick(object sender, EventArgs e)
-        {
-            DateTime pauseStart=DateTime.Now;
-
-            solvingTimer.Stop();
-            problem.SolvingTime=DateTime.Now-interactiveStart;
-            sudokuStatusBarText.Text+=Resources.Paused;
-            autoPauseTimer.Stop();
-            HideCells();
-            hideValues=false;
-            MessageBox.Show("Click to continue");
-            hideValues=true;
-            solvingTimer.Start();
-            ShowValues();
-            interactiveStart+=(DateTime.Now-pauseStart);
         }
 
         private void HideCells()
@@ -2104,15 +1960,12 @@ namespace Sudoku
 
             if(!SyncProblemWithGUI(true))
             {
-                hideValues = false;
                 MessageBox.Show(Resources.MinimizationNotPossible);
-                hideValues = true;
                 return;
             }
 
             await MinimizeAsync(int.MaxValue);
 
-            hideValues = false;
             if(before - problem.nValues == 0)
             {
                 MessageBox.Show(Resources.NoMinimizationPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -2123,7 +1976,6 @@ namespace Sudoku
                 MessageBox.Show(String.Format(Resources.Minimized, (before - problem.nValues).ToString()), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 problem.Dirty = true;
             }
-            hideValues = true;
         }
 
         private void FixClick(object sender, EventArgs e)
@@ -2141,19 +1993,12 @@ namespace Sudoku
             System.Diagnostics.Process.Start(Resources.VersionHistory);
         }
 
-        private void OptionsMenuOpening(object sender, EventArgs e)
-        {
-            pause.Enabled=resetTimer.Enabled=solvingTimer.Enabled;
-        }
-
         private void SudokuOfTheDayClicked(object sender, EventArgs e)
         {
-            hideValues=false;
             if(SudokuOfTheDay())
                 MessageBox.Show(String.Format(Resources.SudokuOfTheDayInfo, problem.SeverityLevelText));
             else
                 MessageBox.Show(Resources.SudokuOfTheDayNotLoaded);
-            hideValues=true;
         }
 
         // Exit Sudoku
@@ -2165,7 +2010,6 @@ namespace Sudoku
             {
                 if(Settings.Default.AutoSaveState)
                 {
-                    if(solvingTimer.Enabled) problem.SolvingTime=DateTime.Now-interactiveStart;
                     Settings.Default.State=problem.Serialize();
                     Settings.Default.Save();
                 }
@@ -2175,9 +2019,7 @@ namespace Sudoku
                     Settings.Default.Save();
                     if(!SyncProblemWithGUI(true))
                     {
-                        hideValues=false;
                         e.Cancel=MessageBox.Show(Resources.CloseAnyway, ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No;
-                        hideValues=true;
                     }
                     else
                         e.Cancel=!UnsavedChanges();

@@ -142,13 +142,9 @@ namespace Sudoku
 
             if(selectBookletDirectory.ShowDialog()==DialogResult.OK)
             {
-                DateTime interactiveStartReset=DateTime.MinValue;
                 List<String> filenames=new List<string>();
 
                 DisableGUI();
-
-                if(solvingTimer.Enabled)
-                    interactiveStartReset=interactiveStart;
 
                 abortRequested=false;
                 LoadProblemFilenames(new DirectoryInfo(selectBookletDirectory.SelectedPath), filenames);
@@ -170,11 +166,7 @@ namespace Sudoku
                         }
                     }
                 }
-                if(interactiveStartReset!=DateTime.MinValue)
-                {
-                    interactiveStart=interactiveStartReset;
-                    solvingTimer.Start();
-                }
+
                 if(!applicationExiting)
                 {
                     CurrentStatus(true);

@@ -303,11 +303,8 @@
   <data name="&gt;&gt;prior.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="solutionTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>131, 22</value>
-  </metadata>
   <metadata name="sudokuMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>2, 2</value>
+    <value>157, 17</value>
   </metadata>
   <data name="newNormalSudoku.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Strg+N</value>
@@ -337,7 +334,7 @@
     <value>&amp;Sudoku of the Day</value>
   </data>
   <data name="newItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="newItem.Text" xml:space="preserve">
     <value>&amp;New</value>
@@ -349,7 +346,7 @@
     <value>Strg+O</value>
   </data>
   <data name="open.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="open.Text" xml:space="preserve">
     <value>&amp;Open...</value>
@@ -361,28 +358,28 @@
     <value>Strg+S</value>
   </data>
   <data name="save.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="save.Text" xml:space="preserve">
     <value>&amp;Save...</value>
   </data>
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>163, 6</value>
+    <value>164, 6</value>
   </data>
   <data name="twitter.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="twitter.Text" xml:space="preserve">
     <value>&amp;Twitter Problem...</value>
   </data>
   <data name="export.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="export.Text" xml:space="preserve">
     <value>E&amp;xport as HTML...</value>
   </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>163, 6</value>
+    <value>164, 6</value>
   </data>
   <data name="print.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
@@ -391,7 +388,7 @@
     <value>Strg+P</value>
   </data>
   <data name="print.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="print.Text" xml:space="preserve">
     <value>&amp;Print...</value>
@@ -409,13 +406,13 @@
     <value>&amp;Load Problems...</value>
   </data>
   <data name="generateBooklet.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="generateBooklet.Text" xml:space="preserve">
     <value>&amp;Generate Booklet</value>
   </data>
   <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>163, 6</value>
+    <value>164, 6</value>
   </data>
   <data name="exit.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
@@ -424,7 +421,7 @@
     <value>Alt+F4</value>
   </data>
   <data name="exit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="exit.Text" xml:space="preserve">
     <value>&amp;Exit</value>
@@ -633,24 +630,6 @@
   <data name="toolStripSeparator10.Size" type="System.Drawing.Size, System.Drawing">
     <value>182, 6</value>
   </data>
-  <data name="pause.ShortcutKeyDisplayString" xml:space="preserve">
-    <value />
-  </data>
-  <data name="pause.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
-  </data>
-  <data name="pause.Text" xml:space="preserve">
-    <value>&amp;Pause</value>
-  </data>
-  <data name="resetTimer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
-  </data>
-  <data name="resetTimer.Text" xml:space="preserve">
-    <value>&amp;Reset Timer</value>
-  </data>
-  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 6</value>
-  </data>
   <data name="sudokuOptionsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>185, 22</value>
   </data>
@@ -733,7 +712,7 @@
     <value>5</value>
   </data>
   <metadata name="saveSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>255, 17</value>
+    <value>453, 17</value>
   </metadata>
   <data name="saveSudokuDialog.Filter" xml:space="preserve">
     <value>Sudoku Problems (*.sudoku) | *.sudoku</value>
@@ -742,7 +721,7 @@
     <value>Save Sudoku Problem</value>
   </data>
   <metadata name="openSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>400, 17</value>
+    <value>604, 17</value>
   </metadata>
   <data name="openSudokuDialog.Filter" xml:space="preserve">
     <value>Sudoku Problems (*.sudoku) |*.sudoku</value>
@@ -751,7 +730,7 @@
     <value>Open Sudoku Problem</value>
   </data>
   <metadata name="sudokuStatusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>2, 409</value>
+    <value>1031, 17</value>
   </metadata>
   <data name="sudokuStatusBarText.Size" type="System.Drawing.Size, System.Drawing">
     <value>39, 17</value>
@@ -784,23 +763,17 @@
     <value>4</value>
   </data>
   <metadata name="printSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>661, 17</value>
+    <value>878, 17</value>
   </metadata>
   <metadata name="printSudoku.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>546, 17</value>
+    <value>759, 17</value>
   </metadata>
   <metadata name="selectBookletDirectory.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>811, 4</value>
+    <value>281, 17</value>
   </metadata>
   <data name="selectBookletDirectory.SelectedPath" xml:space="preserve">
     <value>C:\Dokumente und Einstellungen\Clemens\Desktop</value>
   </data>
-  <metadata name="solvingTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>983, 3</value>
-  </metadata>
-  <metadata name="autoPauseTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>1119, 3</value>
-  </metadata>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -1301,12 +1274,6 @@
   <data name="&gt;&gt;Column9.Type" xml:space="preserve">
     <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;solutionTimer.Name" xml:space="preserve">
-    <value>solutionTimer</value>
-  </data>
-  <data name="&gt;&gt;solutionTimer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;file.Name" xml:space="preserve">
     <value>file</value>
   </data>
@@ -1595,24 +1562,6 @@
   <data name="&gt;&gt;toolStripSeparator10.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;pause.Name" xml:space="preserve">
-    <value>pause</value>
-  </data>
-  <data name="&gt;&gt;pause.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;resetTimer.Name" xml:space="preserve">
-    <value>resetTimer</value>
-  </data>
-  <data name="&gt;&gt;resetTimer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator6.Name" xml:space="preserve">
-    <value>toolStripSeparator6</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator6.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;sudokuOptionsToolStripMenuItem.Name" xml:space="preserve">
     <value>sudokuOptionsToolStripMenuItem</value>
   </data>
@@ -1696,18 +1645,6 @@
   </data>
   <data name="&gt;&gt;selectBookletDirectory.Type" xml:space="preserve">
     <value>System.Windows.Forms.FolderBrowserDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;solvingTimer.Name" xml:space="preserve">
-    <value>solvingTimer</value>
-  </data>
-  <data name="&gt;&gt;solvingTimer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;autoPauseTimer.Name" xml:space="preserve">
-    <value>autoPauseTimer</value>
-  </data>
-  <data name="&gt;&gt;autoPauseTimer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>SudokuForm</value>
