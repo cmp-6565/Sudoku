@@ -44,6 +44,7 @@ namespace Sudoku
         private int incorrectTries=0;
         private Boolean valuesVisible=true;
         private Boolean hideValues=true;
+        private String statusBarText = "";
 
         // Neue Felder für den asynchronen Solver
         private SudokuSolver activeSolver;
@@ -54,6 +55,8 @@ namespace Sudoku
         Color green;
         Color lightGreen;
         Color textColor;
+
+        public delegate void SudokuAction();
 
         /// <summary>
         /// Constructor for the form, mainly used for defaulting some variables and initializing of the gui.
@@ -115,17 +118,28 @@ namespace Sudoku
             catch(Exception) { }
         }
 
-        private void AbortThread()
+        private void CancelSolving(Boolean abort)
         {
-            abortRequested=true;
-            
-            // Breche den aktiven Solver ab, falls vorhanden
-            if (solverCts != null && !solverCts.IsCancellationRequested)
-            {
-                solverCts.Cancel();
-            }
+            abortRequested = abort;
+            CancelSolving();
 
-            try { problem.Cancel(); } catch { }
+            if(abort) try { problem.Cancel(); } catch { }
+        }
+        private void CancelSolving()
+        {
+            if(solverCts != null && !solverCts.IsCancellationRequested)
+                solverCts.Cancel();
+
+            if(activeSolver != null)
+            {
+                try
+                {
+                    activeSolver.Cancel();
+                }
+                catch { }
+            }
+            solverCts = null;
+            activeSolver = null;
         }
         private void FocusLost(object sender, EventArgs e)
         {
@@ -618,7 +632,7 @@ namespace Sudoku
         // Main functions
         private void GenerateProblems(int nProblems, Boolean xSudoku)
         {
-            activeSolver=null;
+            CancelSolving();
             backup = CreateNewProblem(xSudoku);
             if(!(generationParameters.GenerateBooklet=(nProblems != 1)))
             {
@@ -636,7 +650,7 @@ namespace Sudoku
             trickyProblems.Clear();
             usePrecalculatedProblem=Settings.Default.UsePrecalculatedProblems;
             if(GenerateBaseProblem())
-                StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), (usePrecalculatedProblem? Resources.Loading: Resources.Generating), 2, true);
+                StartDetachedProcess(DisplayGeneratingProcess, (usePrecalculatedProblem? Resources.Loading: Resources.Generating), 2, true);
             else
                 GenerationAborted();
             EnableGUI();
@@ -644,7 +658,7 @@ namespace Sudoku
 
         private void SolveProblem()
         {
-            activeSolver = null;
+            CancelSolving();
             if(!PreCheck()) return;
 
             DisplayValues(problem.Matrix);
@@ -653,12 +667,12 @@ namespace Sudoku
 
             if(debug.Checked) problem.Matrix.CellChanged+=HandleCellChanged;
 
-            StartDetachedProcess(new System.EventHandler(DisplaySolvingProcess), Resources.Thinking, findallSolutions.Checked? UInt64.MaxValue: 1, true);
+            StartDetachedProcess(DisplaySolvingProcess, Resources.Thinking, findallSolutions.Checked? UInt64.MaxValue: 1, true);
         }
 
         private void ShowDefiniteValues()
         {
-            activeSolver = null;
+            CancelSolving();
             if(!PreCheck()) return;
 
             backup=problem.Clone();
@@ -672,6 +686,7 @@ namespace Sudoku
 
         private void Hints()
         {
+            CancelSolving();
             if(!PreCheck(true)) return;
 
             BaseProblem tmp=problem.Clone();
@@ -813,7 +828,7 @@ namespace Sudoku
 
         private void CheckProblem()
         {
-            activeSolver = null;
+            CancelSolving();
             if(!SyncProblemWithGUI(false)) return;
             hideValues=false;
             MessageBox.Show(problem.Resolvable()? String.Format(cultureInfo, Resources.ValidationStatus, problem is XSudokuProblem? "X-": Resources.Classic): Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -824,26 +839,28 @@ namespace Sudoku
         {
             if(!PreCheck(true)) return;
 
-            activeSolver = null;
+            CancelSolving();
             backup = problem.Clone();
-            StartDetachedProcess(new System.EventHandler(DisplayCheckingProcess), Resources.Checking, 1, true);
+            StartDetachedProcess(DisplayCheckingProcess, Resources.Checking, 1, true);
             solvingTimer.Start();
         }
 
         private void ResetProblem()
         {
-            problem=backup.Clone();
+            CancelSolving();
+            problem = backup.Clone();
             problem.ResetSolutions();
             ResetUndoStack();
             ResetTexts();
             for(int row=0; row < SudokuSize; row++)
                 for(int col=0; col < SudokuSize; col++)
                     SudokuTable[col, row].ErrorText=String.Empty;
-            activeSolver = null;
         }
 
         private BaseProblem CreateNewProblem(Boolean xSudoku)
         {
+            CancelSolving();
+
             if(xSudoku)
                 problem=new XSudokuProblem();
             else
@@ -855,7 +872,6 @@ namespace Sudoku
             ResetTexts();
             ResetMatrix();
             incorrectTries=0;
-            activeSolver = null;
 
             return problem;
         }
@@ -903,6 +919,7 @@ namespace Sudoku
             StreamReader sr=null;
             BaseProblem sudokuProblem=null;
 
+            CancelSolving();
             try
             {
                 Char sudokuType;
@@ -932,6 +949,8 @@ namespace Sudoku
         private BaseProblem RestoreProblemState()
         {
             Char sudokuType=(Char)Settings.Default.State[0];
+
+            CancelSolving();
             if(sudokuType != SudokuProblem.ProblemIdentifier && sudokuType != XSudokuProblem.ProblemIdentifier)
                 throw new InvalidDataException();
             problem=CreateNewProblem(sudokuType == XSudokuProblem.ProblemIdentifier);
@@ -978,10 +997,11 @@ namespace Sudoku
         {
             if(abortRequested) return false;
 
-            int counter=0;
+            int counter =0;
             int minPreAllocations=problem.Matrix.MinimumValues;
 
-            problem=backup.Clone();
+            CancelSolving();
+            problem = backup.Clone();
             if(usePrecalculatedProblem)
             {
                 BaseProblem tmpProblem=LoadProblem(problem is XSudokuProblem);
@@ -1053,33 +1073,39 @@ namespace Sudoku
             }
         }
 
+        private void tick(object sender, EventArgs e)
+        {
+            TimeSpan ts=DateTime.Now-computingStart;
+            sudokuStatusBarText.Text=String.Format(cultureInfo, statusBarText, ts.Hours*3600+ts.Minutes*60+ts.Seconds);
+            sudokuStatusBar.Update();
+        }
+
         // Threading
-        private void StartDetachedProcess(EventHandler tick, String statusBarText, UInt64 numSolutions, Boolean initStatus)
+        private void StartDetachedProcess(SudokuAction action, String statusBarText, UInt64 numSolutions, Boolean initStatus)
         {
             abortRequested=false;
             DisableGUI();
+            CancelSolving();
 
             if(initStatus)
             {
                 status.Text=String.Empty;
                 status.Update();
             }
-            sudokuStatusBarText.Text=statusBarText;
-            sudokuStatusBar.Update();
+            this.statusBarText=statusBarText;
 
             solutionTimer.Dispose();
             solutionTimer=new System.Windows.Forms.Timer(components);
-            solutionTimer.Tick+=new System.EventHandler(tick);
+            solutionTimer.Tick+=new EventHandler(tick);
             solutionTimer.Interval=10;
             solutionTimer.Start();
             computingStart=DateTime.Now;
 
-            InitializeCancellationToken();
-
             // Erstelle und starte den Solver
-            activeSolver = new SudokuSolver(problem, findallSolutions.Checked ? UInt64.MaxValue : 1, solverCts.Token);
+            InitializeCancellationToken();
+            activeSolver = new SudokuSolver(problem, findallSolutions.Checked? UInt64.MaxValue: 1, solverCts.Token);
 
-            tick(null, null);
+            action();
         }
 
         private void InitializeCancellationToken()
@@ -1091,6 +1117,7 @@ namespace Sudoku
 
         private void ResetDetachedProcess()
         {
+            CancelSolving();
             sudokuStatusBarText.Text=Resources.Ready;
             solutionTimer.Stop();
             solvingTimer.Stop();
@@ -1176,6 +1203,7 @@ namespace Sudoku
             sudokuStatusBarText.Text = Resources.Minimizing;
             Cursor = Cursors.WaitCursor;
             DisableGUI();
+            CancelSolving();
 
             InitializeCancellationToken();
 
@@ -1573,7 +1601,7 @@ namespace Sudoku
             PublishTrickyProblems();
             ResetDetachedProcess();
             generationParameters=new GenerationParameters();
-            activeSolver=null;
+            CancelSolving();
         }
 
         private void GenerationBookletProblemFinished()
@@ -1589,7 +1617,7 @@ namespace Sudoku
                 backup=CreateNewProblem(generationParameters.NewSudokuType());
                 DisplayValues(problem.Matrix);
                 if(GenerateBaseProblem())
-                    StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), Resources.Generating, 2, false);
+                    StartDetachedProcess(DisplayGeneratingProcess, Resources.Generating, 2, false);
                 else
                     GenerationAborted();
             }
@@ -1603,7 +1631,7 @@ namespace Sudoku
                 problem.Dirty=false;
                 generationParameters=new GenerationParameters();
             }
-            activeSolver = null;
+            CancelSolving();
         }
 
         private void NextTry()
@@ -1611,7 +1639,7 @@ namespace Sudoku
             if(!problem.Aborted)
             {
                 if(GenerateBaseProblem())
-                    StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), Resources.Generating, 2, false);
+                    StartDetachedProcess(DisplayGeneratingProcess, Resources.Generating, 2, false);
                 else
                     GenerationAborted();
             }
@@ -1619,20 +1647,19 @@ namespace Sudoku
                 GenerationAborted();
         }
 
-        private async void DisplayGeneratingProcess(object sender, EventArgs e)
+        private async void DisplayGeneratingProcess()
         {
             // Prüfen auf activeSolverTask statt problem.SolverTask
             if(activeSolver != null && !activeSolver.IsCompleted)
             {
                 if(debug.Checked) SudokuTable.Update();
                 GenerationStatus();
-                // return;
+                try { await activeSolver.Solve; } catch { }
             }
+            if(activeSolver == null)
+                return;
 
-            if(activeSolver != null)
-            {
-                try { await activeSolver.Solve; problem = activeSolver.Problem; } catch { }
-            }
+            problem=activeSolver.Problem;
 
             solutionTimer.Stop();
             solutionTimer.Dispose();
@@ -1674,7 +1701,7 @@ namespace Sudoku
                 NextTry();
         }
 
-        private void DisplayCheckingProcess(object sender, EventArgs e)
+        private void DisplayCheckingProcess()
         {
             // Prüfen auf activeSolverTask statt problem.SolverTask
             if(activeSolver != null && !activeSolver.IsCompleted)
@@ -1709,7 +1736,7 @@ namespace Sudoku
             }
         }
 
-        private void DisplaySolvingProcess(object sender, EventArgs e)
+        private void DisplaySolvingProcess()
         {
             // Prüfen auf activeSolverTask statt problem.SolverTask
             if(activeSolver != null && !activeSolver.IsCompleted)
@@ -1957,7 +1984,7 @@ namespace Sudoku
 
         private void AbortClick(object sender, EventArgs e)
         {
-            lock(this) AbortThread();
+            lock(this) CancelSolving(true);
         }
 
         private void PrintClick(object sender, EventArgs e)
@@ -2132,7 +2159,7 @@ namespace Sudoku
         // Exit Sudoku
         private void ExitSudoku(object sender, FormClosingEventArgs e)
         {
-            AbortThread();
+            CancelSolving();
 
             if(e.CloseReason != CloseReason.TaskManagerClosing && e.CloseReason != CloseReason.WindowsShutDown)
             {

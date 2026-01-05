@@ -19,6 +19,7 @@ namespace Sudoku
         private int _numSolutions;
         private BaseProblem _minimalProblem;
         private Task _findSolutions;
+        private CancellationToken _cancellationToken;
 
         // Öffentliche Eigenschaften für den Status
         public bool ProblemSolved => _problemSolved;
@@ -34,29 +35,35 @@ namespace Sudoku
         public SudokuSolver(BaseProblem problem, UInt64 maxSolutions, CancellationToken token)
         {
             _problem = problem;
-            FindSolutions(maxSolutions, token);
+            _cancellationToken = token;
+            FindSolutions(maxSolutions);
         }
 
         public SudokuSolver(BaseProblem problem, int maxSeverity, CancellationToken token, IProgress<BaseProblem> progress = null)
         {
             _problem=problem;
-            _minimalProblem=Minimize(maxSeverity, token, progress);
+            _cancellationToken = token;
+            _minimalProblem = Minimize(maxSeverity, progress);
         }
 
-        private BaseProblem Minimize(int maxSeverity, CancellationToken token, IProgress<BaseProblem> progress = null)
+        public void Cancel()
         {
-            return _minimalProblem = MinimizeAsync(maxSeverity, token, progress).GetAwaiter().GetResult();
+            _aborted = true;
+            _findSolutions?.Wait(_cancellationToken);
+            _findSolutions.Dispose();
+            _findSolutions = null;
         }
-
-        private void FindSolutions(UInt64 maxSolutions, CancellationToken token)
+        private BaseProblem Minimize(int maxSeverity, IProgress<BaseProblem> progress = null)
         {
-            if(_findSolutions == null || _findSolutions.IsCompleted)
-            {
-                _findSolutions = FindSolutionsAsync(maxSolutions, token);
-            }
+            return _minimalProblem = MinimizeAsync(maxSeverity, progress).GetAwaiter().GetResult();
         }
 
-        private async Task FindSolutionsAsync(UInt64 maxSolutions, CancellationToken token)
+        private void FindSolutions(UInt64 maxSolutions)
+        {
+            _findSolutions = FindSolutionsAsync(maxSolutions);
+        }
+
+        private async Task FindSolutionsAsync(UInt64 maxSolutions)
         {
             _findAll = (maxSolutions == UInt64.MaxValue);
             _checkWellDefined = (maxSolutions == 2);
@@ -98,17 +105,17 @@ namespace Sudoku
                 try
                 {
                     _nVarValues = _problem.Matrix.nVariableValues;
-                    if(token.IsCancellationRequested) { _aborted = true; return; }
-                    SolveInternal(0, token);
+                    if(_cancellationToken.IsCancellationRequested) { _aborted = true; return; }
+                    SolveInternal(0);
                 }
                 catch(Exception)
                 {
                     throw;
                 }
-            }, token);
+            });
         }
 
-        private void SolveInternal(int current, CancellationToken token)
+        private void SolveInternal(int current)
         {
             // Zugriff auf die Matrix über die öffentliche Eigenschaft
             BaseCell currentValue = _problem.Matrix.Get(current);
@@ -117,18 +124,11 @@ namespace Sudoku
             PassCount++;
             TotalPassCount++;
 
-            // Periodische Prüfung auf Abbruch (z.B. alle 1000 Durchläufe)
-            if(PassCount % 1000 == 0 && token.IsCancellationRequested)
-            {
-                _aborted = true;
-                return;
-            }
-
             if(currentValue.nPossibleValues > 0)
             {
                 while(!_problemSolved && ++value <= SudokuForm.SudokuSize)
                 {
-                    if(token.IsCancellationRequested) { _aborted = true; return; }
+                    if(_cancellationToken.IsCancellationRequested) { _aborted = true; return; }
 
                     // Wert zurücksetzen (entspricht ResetValue in BaseProblem)
                     _problem.SetValue(currentValue.Row, currentValue.Col, Values.Undefined, false);
@@ -143,7 +143,7 @@ namespace Sudoku
 
                             if(current < _nVarValues - 1 && _problem.Resolvable())
                             {
-                                SolveInternal(current + 1, token);
+                                SolveInternal(current+1);
                             }
                             else
                             {
@@ -163,14 +163,14 @@ namespace Sudoku
             }
             else if(currentValue.DefinitiveValue != Values.Undefined)
             {
-                if(token.IsCancellationRequested) { _aborted = true; return; }
+                if(_cancellationToken.IsCancellationRequested) { _aborted = true; return; }
 
                 _problem.SetValue(currentValue.Row, currentValue.Col, currentValue.DefinitiveValue, true);
                 currentValue.ComputedValue = true;
 
                 if(current < _nVarValues - 1 && _problem.Resolvable())
                 {
-                    SolveInternal(current + 1, token);
+                    SolveInternal(current+1);
                 }
                 else
                 {
@@ -195,13 +195,9 @@ namespace Sudoku
         {
             // 1. Prüfen, ob alle Zellen gefüllt sind
             for(int row = 0; row < SudokuForm.SudokuSize; row++)
-            {
                 for(int col = 0; col < SudokuForm.SudokuSize; col++)
-                {
                     if(_problem.GetValue(row, col) == Values.Undefined)
                         return false;
-                }
-            }
 
             // 2. Prüfen der Regeln über das Problem-Objekt selbst
             // Dies stellt sicher, dass auch Varianten wie X-Sudoku korrekt validiert werden
@@ -220,20 +216,20 @@ namespace Sudoku
         }
 
         // --- Minimierungs-Logik ---
-        private async Task<BaseProblem> MinimizeAsync(int maxSeverity, CancellationToken token, IProgress<BaseProblem> progress = null)
+        private async Task<BaseProblem> MinimizeAsync(int maxSeverity, IProgress<BaseProblem> progress = null)
         {
             _problem.ResetMatrix();
             _minimalProblem = _problem.Clone();
 
             // Hole Kandidaten (Zellen, die entfernt werden könnten)
-            var candidates = await GetCandidatesAsync(_problem.Matrix.Cells, 0, token);
+            var candidates = await GetCandidatesAsync(_problem.Matrix.Cells, 0);
 
-            if (await MinimizeRecursiveAsync(candidates, maxSeverity, token, progress))
+            if (await MinimizeRecursiveAsync(candidates, maxSeverity,progress))
             {
                 _minimalProblem.SeverityLevel = float.NaN; // Neuberechnung erzwingen
                 
                 // Prüfen, ob das minimierte Problem eindeutig lösbar ist
-                var checkSolver = new SudokuSolver(_minimalProblem, 2, token);
+                var checkSolver = new SudokuSolver(_minimalProblem, 2, _cancellationToken);
                 await checkSolver.Solve;
                 
                 return (checkSolver.NumSolutions == 1 ? _minimalProblem : null);
@@ -244,14 +240,14 @@ namespace Sudoku
             }
         }
 
-        private async Task<bool> MinimizeRecursiveAsync(List<BaseCell> candidates, int maxSeverity, CancellationToken token, IProgress<BaseProblem> progress)
+        private async Task<bool> MinimizeRecursiveAsync(List<BaseCell> candidates, int maxSeverity, IProgress<BaseProblem> progress)
         {
             if (candidates == null) return true;
 
             int start = 0;
             foreach (BaseCell cell in candidates)
             {
-                if (token.IsCancellationRequested) { _aborted = true; return false; }
+                if (_cancellationToken.IsCancellationRequested) { _aborted = true; return false; }
                 if (_problem.SeverityLevelInt > maxSeverity) return false;
 
                 // Wenn das Entfernen dieser Zelle zu weniger Werten führt als das bisher beste Minimum
@@ -262,15 +258,13 @@ namespace Sudoku
 
                     _problem.ResetMatrix();
                     if (_problem.nValues < _minimalProblem.nValues)
-                    {
                         _minimalProblem = _problem.Clone();
-                    }
 
                     progress?.Report(_minimalProblem);
 
                     // Rekursiver Aufruf mit den verbleibenden Kandidaten
-                    var nextCandidates = await GetCandidatesAsync(candidates, ++start, token);
-                    if (!await MinimizeRecursiveAsync(nextCandidates, maxSeverity, token, progress)) return false;
+                    var nextCandidates = await GetCandidatesAsync(candidates, ++start);
+                    if (!await MinimizeRecursiveAsync(nextCandidates, maxSeverity, progress)) return false;
 
                     _problem.ResetMatrix();
                     _problem.SetValue(cell, cellValue);
@@ -279,7 +273,7 @@ namespace Sudoku
             return true;
         }
 
-        private async Task<List<BaseCell>> GetCandidatesAsync(List<BaseCell> source, int start, CancellationToken token)
+        private async Task<List<BaseCell>> GetCandidatesAsync(List<BaseCell> source, int start)
         {
             List<BaseCell> candidates = new List<BaseCell>();
 
@@ -300,10 +294,10 @@ namespace Sudoku
                     }
                     else
                     {
-                        if (token.IsCancellationRequested) { _aborted = true; return null; }
+                        if (_cancellationToken.IsCancellationRequested) { _aborted = true; return null; }
                         
                         // Prüfen, ob das Problem ohne diesen Wert immer noch eindeutig lösbar ist
-                        var checkSolver = new SudokuSolver(_problem, 2, token);
+                        var checkSolver = new SudokuSolver(_problem, 2, _cancellationToken);
                         await checkSolver.Solve;
                         
                         if (checkSolver.NumSolutions == 1)
@@ -315,7 +309,7 @@ namespace Sudoku
                     _problem.SetValue(source[i], cellValue);
                 }
 
-                if (token.IsCancellationRequested) { _aborted = true; return null; }
+                if (_cancellationToken.IsCancellationRequested) { _aborted = true; return null; }
             }
 
             return candidates;

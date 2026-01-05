@@ -286,7 +286,7 @@ namespace Sudoku
             SearchDefiniteValues(true);
 
             foreach(BaseCell cell in this)
-                if(cell.DefinitiveValue!=Values.Undefined)
+                if(cell.DefinitiveValue != Values.Undefined)
                 {
                     Byte definitiveValue=cell.DefinitiveValue;
                     cell.DefinitiveValue=Values.Undefined;
