@@ -112,6 +112,10 @@ namespace Sudoku
         private void CancelSolving(Boolean abort)
         {
             abortRequested = abort;
+            if(abort && solverCts != null) 
+            { 
+                solverCts.Cancel();
+            }
             CancelSolving();
 
             if(abort) try { problem.Cancel(); } catch { }
@@ -1858,7 +1862,7 @@ namespace Sudoku
 
         private void AbortClick(object sender, EventArgs e)
         {
-            lock(this) CancelSolving(true);
+            lock(this) { CancelSolving(true); EnableGUI(); }
         }
 
         private void PrintClick(object sender, EventArgs e)
