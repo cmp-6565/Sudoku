@@ -337,7 +337,7 @@
     <value>&amp;Sudoku of the Day</value>
   </data>
   <data name="newItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="newItem.Text" xml:space="preserve">
     <value>&amp;New</value>
@@ -349,7 +349,7 @@
     <value>Strg+O</value>
   </data>
   <data name="open.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="open.Text" xml:space="preserve">
     <value>&amp;Open...</value>
@@ -361,28 +361,28 @@
     <value>Strg+S</value>
   </data>
   <data name="save.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="save.Text" xml:space="preserve">
     <value>&amp;Save...</value>
   </data>
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>163, 6</value>
+    <value>164, 6</value>
   </data>
   <data name="twitter.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="twitter.Text" xml:space="preserve">
     <value>&amp;Twitter Problem...</value>
   </data>
   <data name="export.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="export.Text" xml:space="preserve">
     <value>E&amp;xport as HTML...</value>
   </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>163, 6</value>
+    <value>164, 6</value>
   </data>
   <data name="print.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
@@ -391,7 +391,7 @@
     <value>Strg+P</value>
   </data>
   <data name="print.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="print.Text" xml:space="preserve">
     <value>&amp;Print...</value>
@@ -409,13 +409,13 @@
     <value>&amp;Load Problems...</value>
   </data>
   <data name="generateBooklet.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="generateBooklet.Text" xml:space="preserve">
     <value>&amp;Generate Booklet</value>
   </data>
   <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>163, 6</value>
+    <value>164, 6</value>
   </data>
   <data name="exit.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
@@ -424,7 +424,7 @@
     <value>Alt+F4</value>
   </data>
   <data name="exit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>166, 22</value>
+    <value>167, 22</value>
   </data>
   <data name="exit.Text" xml:space="preserve">
     <value>&amp;Exit</value>

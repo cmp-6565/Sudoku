@@ -4,12 +4,14 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Properties;
 
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
 
 namespace Sudoku
@@ -42,11 +44,17 @@ namespace Sudoku
         private OptionsDialog optionsDialog=null;
         private Boolean mouseWheelEditing=false;
         private Boolean usePrecalculatedProblem=false;
-        // private Boolean enterInitialValues=true;
         private int severityLevel=0;
         private int incorrectTries=0;
         private Boolean valuesVisible=true;
         private Boolean hideValues=true;
+        // Für das Pause-Overlay
+        private Label pauseOverlay;
+        private DateTime pauseStartTimestamp;
+
+        // Für das Highlighting
+        private List<Point> currentlyHighlightedCells = new List<Point>();
+        private Color highlightColor = Color.Cyan; // Farbe für gleiche Zahlen
         Color gray;
         Color lightGray;
         Color green;
@@ -54,7 +62,6 @@ namespace Sudoku
         Color textColor;
 
         private delegate void PerformAction();
-
 
         /// <summary>
         /// Constructor for the form, mainly used for defaulting some variables and initializing of the gui.
@@ -64,6 +71,12 @@ namespace Sudoku
             Thread.CurrentThread.CurrentUICulture=(cultureInfo=new CultureInfo(Settings.Default.DisplayLanguage));
 
             InitializeComponent();
+
+            // 1. Double Buffering für flüssigeres Zeichnen aktivieren
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
+                null, SudokuTable, new object[] { true });
+
             SudokuTable.MouseWheel+=new MouseEventHandler(MouseWheelHandler);
             SudokuTable.Rows.Add(SudokuSize);
             solutionTimer.Interval=1000;
@@ -210,7 +223,9 @@ namespace Sudoku
             BaseCell[] neighbors=problem.Matrix.Cell(dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y).Neighbors;
             Boolean obfuscated;
 
-            obfuscated=((dgv.CurrentCellAddress.X / 3) % 2 == 1 && (dgv.CurrentCellAddress.Y / 3) % 2 == 0) || ((dgv.CurrentCellAddress.X / 3) % 2 == 0 && (dgv.CurrentCellAddress.Y / 3) % 2 == 1);
+            UpdateHighligts(dgv);
+
+            obfuscated = ((dgv.CurrentCellAddress.X / 3) % 2 == 1 && (dgv.CurrentCellAddress.Y / 3) % 2 == 0) || ((dgv.CurrentCellAddress.X / 3) % 2 == 0 && (dgv.CurrentCellAddress.Y / 3) % 2 == 1);
             SudokuTable[dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y].Style.BackColor=(obfuscated? green: lightGreen);
             SudokuTable[dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y].Style.SelectionBackColor=(obfuscated? Color.DarkGreen: Color.SeaGreen);
             foreach(BaseCell cell in neighbors)
@@ -385,14 +400,22 @@ namespace Sudoku
                 solvingTimer.Stop();
 
                 TimeSpan ts=DateTime.Now-interactiveStart;
-                hideValues=false;
-                MessageBox.Show(
-                    inputOK?
-                        Resources.Congratulations+Environment.NewLine+Resources.ProblemSolved+Environment.NewLine+Resources.TimeNeeded+String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", ts.Days*24+ts.Hours, ts.Minutes, ts.Seconds)+Environment.NewLine+Resources.IncorrectTries+String.Format(cultureInfo, "{0}", incorrectTries):
+
+                status.ForeColor = Color.Green;
+                status.Text += " - " + Resources.ProblemSolved;
+
+                System.Media.SystemSounds.Asterisk.Play();
+
+                hideValues = false;
+                MessageBox.Show(this, // 'this' als Owner für sauberes modales Verhalten
+                    inputOK ?
+                        Resources.Congratulations + Environment.NewLine + Resources.ProblemSolved/*...*/:
                         Resources.ProblemNotSolved,
                     ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                hideValues=true;
-                sudokuStatusBarText.Text=Resources.Ready;
+                hideValues = true;
+
+                status.ForeColor = Color.Black;
+                sudokuStatusBarText.Text = Resources.Ready;
             }
         }
 
@@ -784,6 +807,42 @@ namespace Sudoku
             return;
         }
 
+        private void InitializePauseOverlay()
+        {
+            if(pauseOverlay != null) return;
+
+            pauseOverlay = new Label();
+            pauseOverlay.Text = Resources.PausedMessage.Replace("\\n", Environment.NewLine);
+            pauseOverlay.TextAlign = ContentAlignment.MiddleCenter;
+            pauseOverlay.Dock = DockStyle.Fill;
+            // Halbtransparentes Weiß (Alpha=200)
+            pauseOverlay.BackColor = Color.FromArgb(200, 255, 255, 255);
+            pauseOverlay.ForeColor = Color.DarkSlateGray;
+            // Dynamische Schriftgröße basierend auf Formular
+            pauseOverlay.Font = new Font(this.Font.FontFamily, 24, FontStyle.Bold);
+            pauseOverlay.Visible = false;
+            pauseOverlay.Cursor = Cursors.Hand;
+
+            // Klick auf das Overlay setzt das Spiel fort
+            pauseOverlay.Click += (s, e) => ResumeGame();
+
+            this.Controls.Add(pauseOverlay);
+            pauseOverlay.BringToFront();
+        }
+
+        private void ResumeGame()
+        {
+            if(pauseOverlay != null) pauseOverlay.Visible = false;
+
+            solvingTimer.Start();
+            ShowValues();
+
+            // Zeitausgleich berechnen
+            TimeSpan pauseDuration = DateTime.Now - pauseStartTimestamp;
+            interactiveStart += pauseDuration;
+
+            sudokuStatusBarText.Text = sudokuStatusBarText.Text.Replace(Resources.Paused, "").Trim();
+        }
         private void PublishTrickyProblems()
         {
             if(trickyProblems.Empty) return;
@@ -1039,7 +1098,6 @@ namespace Sudoku
             }
         }
 
-        // Ersetzen Sie StartDetachedProcess durch eine asynchrone Methode
         private async void StartDetachedProcess(PerformAction action, String statusBarText, UInt64 numSolutions, Boolean initStatus)
         {
             abortRequested = false;
@@ -1058,49 +1116,16 @@ namespace Sudoku
             solutionTimer.Start();
             computingStart = DateTime.Now;
 
-            // Solver im Hintergrund starten (die native Methode startet ihren eigenen Thread, das ist okay)
             problem.FindSolutions(numSolutions);
 
             // Polling-Loop ersetzen Timer
             while((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
             {
-                // Status aktualisieren
-                // Hinweis: Hier könnte man DisplaySolvingProcess oder DisplayGeneratingProcess Logik integrieren
-                // oder delegieren. Um kompatibel zu bleiben, rufen wir den existierenden Handler auf.
-
-                // Den Event-Handler simulieren (oder besser: Logik extrahieren)
-                // Da wir hier schon im richtigen Kontext sind, brauchen wir kein "sender" fake
                 action();
-
                 await Task.Delay(10); // 10ms Intervall wie beim Timer
             }
 
-            // Fertig
-            action(); // Ein letztes Mal für das Endergebnis
-        }
-
-        // Threading
-        private void StartDetachedProcessX(EventHandler tick, String statusBarText, UInt64 numSolutions, Boolean initStatus)
-        {
-            abortRequested=false;
-            DisableGUI();
-
-            if(initStatus)
-            {
-                status.Text=String.Empty;
-                status.Update();
-            }
-            sudokuStatusBarText.Text=statusBarText;
-            sudokuStatusBar.Update();
-
-            solutionTimer.Dispose();
-            solutionTimer=new System.Windows.Forms.Timer(components);
-            solutionTimer.Tick+=new System.EventHandler(tick);
-            solutionTimer.Interval=10;
-            solutionTimer.Start();
-            computingStart=DateTime.Now;
-            problem.FindSolutions(numSolutions);
-            tick(null, null);
+            action(); 
         }
 
         private void ResetDetachedProcess()
@@ -1414,8 +1439,8 @@ namespace Sudoku
 
             if(Settings.Default.MarkNeighbors)
             {
-                DataGridView dgv=(DataGridView)sender;
-                BaseCell[] neighbors=problem.Matrix.Cell(dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y).Neighbors;
+                DataGridView dgv = (DataGridView)sender;
+                BaseCell[] neighbors = problem.Matrix.Cell(dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y).Neighbors;
 
                 FormatCell(dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y);
                 foreach(BaseCell cell in neighbors)
@@ -1440,42 +1465,42 @@ namespace Sudoku
         private void CellEnter(object sender, DataGridViewCellEventArgs e)
         {
             if(sender is DataGridView && problem != null && Settings.Default.MarkNeighbors)
-                MarkNeighbors((DataGridView)sender);
+            {
+                DataGridView dgv = (DataGridView)sender;
+
+                // Bestehende Nachbar-Logik
+                if(problem != null && Settings.Default.MarkNeighbors)
+                    MarkNeighbors(dgv);
+            }
             ShowValues();
         }
 
         private void HandleCellChanged(object sender, BaseCell v)
         {
-            // 1. UI-Update sicher auf den UI-Thread marshallen
+            // Update auf UI-Thread marshallen
             if(InvokeRequired)
             {
-                Invoke(new Action<object, BaseCell>(HandleCellChanged), sender, v);
+                // UI Update asynchron anstoßen (oder synchron mit Invoke, aber kurz)
+                Invoke(new Action(() =>
+                {
+                    DisplayValue(v.Row, v.Col, v.CellValue);
+                    // Update() erzwingt neuzeichnen - mit DoubleBuffer nun flackerfrei
+                    SudokuTable.Update();
+                }));
+
+                // WICHTIG: Sleep muss HIER (im Hintergrund-Thread) passieren, 
+                // NICHT im UI-Thread Block oben.
+                if(Settings.Default.TraceFrequence > 0)
+                {
+                    try { Thread.Sleep(Settings.Default.TraceFrequence); } catch { }
+                }
                 return;
             }
 
+            // Fallback falls direkt auf UI Thread gerufen
             DisplayValue(v.Row, v.Col, v.CellValue);
-
             SudokuTable.Update();
-
-            // HINWEIS: Thread.Sleep im UI-Thread friert die GUI ein.
-            // Die ursprüngliche Intention war wahrscheinlich, den Solver zu verlangsamen.
-            // Wenn diese Methode rekursiv via Invoke gerufen wird, wartet der BG-Thread auf den UI-Thread.
-            // Ein Sleep HIER verlangsamt also den Solver, friert aber auch die UI kurz ein.
-            // Das ist bei "Trace" oft akzeptiertes Verhalten für den visuellen Effekt.
-            // Ohne Sleep rast der Solver zu schnell.
-
-            if(Settings.Default.TraceFrequence > 0)
-            {
-                // Eine bessere Variante wäre ein 'await Task.Delay', aber dazu müsste der Event-Handler
-                // async sein und der Solver müsste darauf warten können (was er bei Events nicht tut).
-                // Daher ist hier ein kurzes synchrones Sleep oder besser: Verzicht darauf im UI-Thread oft der Kompromiss.
-
-                // Wir lassen DoEvents weg. Das Sleep lassen wir nur drin, wenn es absolut gewünscht ist,
-                // riskieren aber Ruckler ("Micro-Stuttering").
-                try { Thread.Sleep(Settings.Default.TraceFrequence); } catch { }
-            }
         }
-
         private void HandleOnTestCell(object sender, BaseCell cell)
         {
             if (InvokeRequired)
@@ -1599,7 +1624,9 @@ namespace Sudoku
                 if(await GenerateBaseProblem())
                     StartDetachedProcess(DisplayGeneratingProcess, Resources.Generating, 2, false);
                 else
+                {
                     GenerationAborted();
+                }
             }
             else
             {
@@ -2058,21 +2085,24 @@ namespace Sudoku
 
         private void PauseClick(object sender, EventArgs e)
         {
-            DateTime pauseStart=DateTime.Now;
+            // Overlay initialisieren, falls noch nicht geschehen
+            InitializePauseOverlay();
+
+            pauseStartTimestamp = DateTime.Now;
 
             solvingTimer.Stop();
-            problem.SolvingTime=DateTime.Now-interactiveStart;
-            sudokuStatusBarText.Text+=Resources.Paused;
+            problem.SolvingTime = DateTime.Now - interactiveStart;
+
+            if(!sudokuStatusBarText.Text.Contains(Resources.Paused))
+                sudokuStatusBarText.Text += Resources.Paused;
+
             autoPauseTimer.Stop();
             HideCells();
-            hideValues=false;
-            MessageBox.Show("Click to continue");
-            hideValues=true;
-            solvingTimer.Start();
-            ShowValues();
-            interactiveStart+=(DateTime.Now-pauseStart);
-        }
 
+            // Statt MessageBox nun das Overlay zeigen
+            pauseOverlay.Visible = true;
+            pauseOverlay.BringToFront();
+        }
         private void HideCells()
         {
             int row, col;
@@ -2083,8 +2113,44 @@ namespace Sudoku
             valuesVisible=false;
         }
 
+        private void UpdateHighligts(DataGridView dgv)
+        {
+            ClearHighlights();
+
+            if(dgv.CurrentCell == null || dgv.CurrentCell.Value == null) return;
+
+            string selectedValue = dgv.CurrentCell.Value.ToString();
+            if(string.IsNullOrWhiteSpace(selectedValue)) return;
+
+            int currentRow = dgv.CurrentCell.RowIndex;
+            int currentCol = dgv.CurrentCell.ColumnIndex;
+
+            for(int row = 0; row < SudokuSize; row++)
+            {
+                for(int col = 0; col < SudokuSize; col++)
+                {
+                    if(string.Equals(SudokuTable[col, row].Value as string, selectedValue))
+                    {
+                        // Hintergrund ändern und Position merken
+                        SudokuTable[col, row].Style.BackColor = highlightColor;
+                        currentlyHighlightedCells.Add(new Point(col, row)); // X=Col, Y=Row
+                    }
+                }
+            }
+        }
+
+        private void ClearHighlights()
+        {
+            foreach(Point p in currentlyHighlightedCells)
+            {
+                FormatCell(p.X, p.Y);
+            }
+            currentlyHighlightedCells.Clear();
+        }
         private void MarkNeighborsClicked(object sender, EventArgs e)
         {
+            if(!markNeighbors.Checked)
+                FormatTable();
             Settings.Default.MarkNeighbors=markNeighbors.Checked;
         }
 

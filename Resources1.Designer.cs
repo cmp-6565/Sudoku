@@ -701,6 +701,15 @@ namespace Sudoku {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Paused!\n\nClick to continue! ähnelt.
+        /// </summary>
+        internal static string PausedMessage {
+            get {
+                return ResourceManager.GetString("PausedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die IT Consulting &amp;&amp; Development ähnelt.
         /// </summary>
         internal static string picit {

@@ -475,4 +475,7 @@
   <data name="Homepage" xml:space="preserve">
     <value>https://sudoku.pi-c-it.de/index.php/de/</value>
   </data>
+  <data name="PausedMessage" xml:space="preserve">
+    <value>Pausiert!\n\nKlicken um Fortzusetzen!</value>
+  </data>
 </root>
