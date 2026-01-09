@@ -10,6 +10,8 @@ using System.Windows.Forms;
 
 using Sudoku.Properties;
 
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrackBar;
+
 namespace Sudoku
 {
     public enum SudokuPart { Row, Column, Block, UpDiagonal, DownDiagonal };
@@ -50,6 +52,9 @@ namespace Sudoku
         Color green;
         Color lightGreen;
         Color textColor;
+
+        private delegate void PerformAction();
+
 
         /// <summary>
         /// Constructor for the form, mainly used for defaulting some variables and initializing of the gui.
@@ -617,7 +622,7 @@ namespace Sudoku
             trickyProblems.Clear();
             usePrecalculatedProblem=Settings.Default.UsePrecalculatedProblems;
             if(await GenerateBaseProblem())
-                StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), (usePrecalculatedProblem? Resources.Loading: Resources.Generating), 2, true);
+                StartDetachedProcess(DisplayGeneratingProcess, (usePrecalculatedProblem? Resources.Loading: Resources.Generating), 2, true);
             else
                 GenerationAborted();
             EnableGUI();
@@ -632,7 +637,7 @@ namespace Sudoku
             ResetUndoStack();
 
             if(debug.Checked) problem.Matrix.CellChanged+=HandleCellChanged;
-            StartDetachedProcess(new System.EventHandler(DisplaySolvingProcess), Resources.Thinking, findallSolutions.Checked? UInt64.MaxValue: 1, true);
+            StartDetachedProcess(DisplaySolvingProcess, Resources.Thinking, findallSolutions.Checked? UInt64.MaxValue: 1, true);
         }
 
         private void ShowDefiniteValues()
@@ -807,7 +812,7 @@ namespace Sudoku
             if(!PreCheck(true)) return;
 
             backup=problem.Clone();
-            StartDetachedProcess(new System.EventHandler(DisplayCheckingProcess), Resources.Checking, 1, true);
+            StartDetachedProcess(DisplayCheckingProcess, Resources.Checking, 1, true);
             solvingTimer.Start();
         }
 
@@ -1035,7 +1040,7 @@ namespace Sudoku
         }
 
         // Ersetzen Sie StartDetachedProcess durch eine asynchrone Methode
-        private async void StartDetachedProcessAsync(String statusBarText, UInt64 numSolutions, Boolean initStatus)
+        private async void StartDetachedProcess(PerformAction action, String statusBarText, UInt64 numSolutions, Boolean initStatus)
         {
             abortRequested = false;
             DisableGUI();
@@ -1048,6 +1053,9 @@ namespace Sudoku
             sudokuStatusBarText.Text = statusBarText;
             sudokuStatusBar.Update();
 
+            solutionTimer.Dispose();
+            solutionTimer.Interval = 10;
+            solutionTimer.Start();
             computingStart = DateTime.Now;
 
             // Solver im Hintergrund starten (die native Methode startet ihren eigenen Thread, das ist okay)
@@ -1062,25 +1070,17 @@ namespace Sudoku
 
                 // Den Event-Handler simulieren (oder besser: Logik extrahieren)
                 // Da wir hier schon im richtigen Kontext sind, brauchen wir kein "sender" fake
-                UpdateProcessingStatus();
+                action();
 
                 await Task.Delay(10); // 10ms Intervall wie beim Timer
             }
 
             // Fertig
-            UpdateProcessingStatus(); // Ein letztes Mal für das Endergebnis
-        }
-
-        private void UpdateProcessingStatus()
-        {
-            // Logik aus DisplaySolvingProcess / DisplayGeneratingProcess hierher konsolidieren 
-            // oder situationsabhängig aufrufen.
-            // Aufgrund der unterschiedlichen Handler (Solving vs Generating) wäre es sauberer,
-            // StartDetachedProcessAsync ein Action<BaseProblem> UpdateDelegate mitzugeben.
+            action(); // Ein letztes Mal für das Endergebnis
         }
 
         // Threading
-        private void StartDetachedProcess(EventHandler tick, String statusBarText, UInt64 numSolutions, Boolean initStatus)
+        private void StartDetachedProcessX(EventHandler tick, String statusBarText, UInt64 numSolutions, Boolean initStatus)
         {
             abortRequested=false;
             DisableGUI();
@@ -1597,7 +1597,7 @@ namespace Sudoku
                 backup=CreateNewProblem(generationParameters.NewSudokuType());
                 DisplayValues(problem.Matrix);
                 if(await GenerateBaseProblem())
-                    StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), Resources.Generating, 2, false);
+                    StartDetachedProcess(DisplayGeneratingProcess, Resources.Generating, 2, false);
                 else
                     GenerationAborted();
             }
@@ -1618,7 +1618,7 @@ namespace Sudoku
             if(!problem.Aborted)
             {
                 if(await GenerateBaseProblem())
-                    StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), Resources.Generating, 2, false);
+                    StartDetachedProcess(DisplayGeneratingProcess, Resources.Generating, 2, false);
                 else
                     GenerationAborted();
             }
@@ -1626,7 +1626,7 @@ namespace Sudoku
                 GenerationAborted();
         }
 
-        private async void DisplayGeneratingProcess(object sender, EventArgs e)
+        private async void DisplayGeneratingProcess()
         {
             if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
             {
@@ -1676,7 +1676,7 @@ namespace Sudoku
                 NextTry();
         }
 
-        private void DisplayCheckingProcess(object sender, EventArgs e)
+        private void DisplayCheckingProcess()
         {
             if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
             {
@@ -1703,7 +1703,7 @@ namespace Sudoku
             }
         }
 
-        private void DisplaySolvingProcess(object sender, EventArgs e)
+        private void DisplaySolvingProcess()
         {
             if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
             {

@@ -49,7 +49,7 @@ namespace Sudoku
             BaseProblem tmp=problem.Clone();
 
             DisplayValues(problem.Matrix);
-            StartDetachedProcess(new System.EventHandler(DisplaySolvingProcess), Resources.Thinking, 2, true);
+            StartDetachedProcess(DisplaySolvingProcess, Resources.Thinking, 2, true);
 
             if(problem.Solver!=null)
                 problem.Solver.Join();
