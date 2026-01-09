@@ -16,8 +16,8 @@ namespace Sudoku
         private int currentProblem=0;
         private Boolean generateBooklet=false;
         private String baseDirectory=String.Empty;
-        // private Random rand=new Random(unchecked((int)DateTime.Now.Ticks));
-        private Random rand=new Random(1);
+        private Random rand=new Random(unchecked((int)DateTime.Now.Ticks));
+        // private Random rand=new Random(1);
 
         public String BaseDirectory
         {

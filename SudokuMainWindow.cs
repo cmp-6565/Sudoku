@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Properties;
@@ -597,7 +598,7 @@ namespace Sudoku
         }
 
         // Main functions
-        private void GenerateProblems(int nProblems, Boolean xSudoku)
+        private async void GenerateProblems(int nProblems, Boolean xSudoku)
         {
             backup=CreateNewProblem(xSudoku);
             if(!(generationParameters.GenerateBooklet=(nProblems != 1)))
@@ -615,7 +616,7 @@ namespace Sudoku
             DisableGUI();
             trickyProblems.Clear();
             usePrecalculatedProblem=Settings.Default.UsePrecalculatedProblems;
-            if(GenerateBaseProblem())
+            if(await GenerateBaseProblem())
                 StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), (usePrecalculatedProblem? Resources.Loading: Resources.Generating), 2, true);
             else
                 GenerationAborted();
@@ -647,65 +648,70 @@ namespace Sudoku
             status.Update();
         }
 
-        private void Hints()
+        private async void Hints()
         {
             if(!PreCheck(true)) return;
 
-            BaseProblem tmp=problem.Clone();
+            BaseProblem tmp = problem.Clone();
             int count;
-            Color hintColor=Color.Red;
+            Color hintColor = Color.Red;
 
-            List<BaseCell> values=problem.GetObviousCells();
+            List<BaseCell> values = problem.GetObviousCells();
             if(values.Count == 0)
             {
-                hintColor=Color.Orange;
-                values=problem.GetHints();
+                hintColor = Color.Orange;
+                values = problem.GetHints();
             }
 
             if(values.Count == 0)
             {
-                hideValues=false;
+                hideValues = false;
                 MessageBox.Show(Resources.NoHints);
-                hideValues=true;
+                hideValues = true;
                 return;
             }
 
-            DataGridViewSelectedCellCollection cells=SudokuTable.SelectedCells;
-            foreach(DataGridViewCell cell in cells) // Even though this should be only one single cell, one might never know if this changes any time...
-                cell.Selected=false;
+            DataGridViewSelectedCellCollection cells = SudokuTable.SelectedCells;
+            foreach(DataGridViewCell cell in cells)
+                cell.Selected = false;
 
             if(values.Count <= Settings.Default.MaxHints)
-                for(count=0; count < values.Count; count++)
-                    ShowHint(values[count], hintColor);
+                for(count = 0; count < values.Count; count++)
+                    await ShowHint(values[count], hintColor); // Await statt synchronem Aufruf
             else
             {
-                List<BaseCell> hints=new List<BaseCell>();
-                Random rand=new Random();
+                List<BaseCell> hints = new List<BaseCell>();
+                Random rand = new Random();
                 int index;
                 do
-                    if(!hints.Contains(values[(index=rand.Next(values.Count))]))
+                    if(!hints.Contains(values[(index = rand.Next(values.Count))]))
                         hints.Add(values[index]);
                 while(hints.Count < Settings.Default.MaxHints);
 
-                for(count=0; count < Settings.Default.MaxHints; count++)
-                    ShowHint(hints[count], hintColor);
+                for(count = 0; count < Settings.Default.MaxHints; count++)
+                    await ShowHint(hints[count], hintColor); // Await statt synchronem Aufruf
             }
 
             foreach(DataGridViewCell cell in cells)
-                cell.Selected=true;
+                cell.Selected = true;
             SudokuTable.Update();
 
-            problem=tmp.Clone();
+            problem = tmp.Clone();
         }
 
-        private void ShowHint(BaseCell hint, Color hintColor)
+        // Neue asynchrone Methode
+        private async Task ShowHint(BaseCell hint, Color hintColor)
         {
-            Color currentColor=SudokuTable[hint.Col, hint.Row].Style.BackColor;
-            SudokuTable[hint.Col, hint.Row].Style.BackColor=hintColor;
+            Color currentColor = SudokuTable[hint.Col, hint.Row].Style.BackColor;
+            SudokuTable[hint.Col, hint.Row].Style.BackColor = hintColor;
             SudokuTable.Update();
-            Thread.Sleep(500);
-            SudokuTable[hint.Col, hint.Row].Style.BackColor=currentColor;
+
+            // Ersetzt Thread.Sleep(500) durch nicht-blockierendes Warten
+            await Task.Delay(500);
+
+            SudokuTable[hint.Col, hint.Row].Style.BackColor = currentColor;
         }
+
 
         private void DisplayProblemInfo()
         {
@@ -947,19 +953,19 @@ namespace Sudoku
             Text=String.Format(cultureInfo, Resources.DisplaySolution, currentSolution+1, problem.Solutions[currentSolution].Counter);
         }
 
-        private Boolean GenerateBaseProblem()
+        private async Task<Boolean> GenerateBaseProblem()
         {
             if(abortRequested) return false;
 
-            int counter=0;
-            int minPreAllocations=problem.Matrix.MinimumValues;
+            int counter = 0;
+            int minPreAllocations = problem.Matrix.MinimumValues;
 
-            problem=backup.Clone();
+            problem = backup.Clone();
             if(usePrecalculatedProblem)
             {
-                BaseProblem tmpProblem=LoadProblem(problem is XSudokuProblem);
-                if(usePrecalculatedProblem=(tmpProblem != null))
-                    problem=tmpProblem;
+                BaseProblem tmpProblem = LoadProblem(problem is XSudokuProblem);
+                if(usePrecalculatedProblem = (tmpProblem != null))
+                    problem = tmpProblem;
             }
 
             if(!usePrecalculatedProblem)
@@ -970,7 +976,7 @@ namespace Sudoku
                     if(generationParameters.Reset)
                     {
                         SetValue(problem, generationParameters.Row, generationParameters.Col, Values.Undefined);
-                        problem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly=false;
+                        problem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = false;
                         DisplayValue(generationParameters.Row, generationParameters.Col, Values.Undefined);
                     }
 
@@ -979,28 +985,29 @@ namespace Sudoku
                     {
                         SetValue(problem, generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue);
 
-                        problem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly=true;
+                        problem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = true;
                         DisplayValue(generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue);
 
                         if(generationParameters.PreAllocatedValues >= minPreAllocations)
-                            generationParameters.CheckedProblems+=1;
-                        generationParameters.PreAllocatedValues=problem.nValues-problem.nComputedValues;
+                            generationParameters.CheckedProblems += 1;
+                        generationParameters.PreAllocatedValues = problem.nValues - problem.nComputedValues;
                         GenerationStatus();
-                        generationParameters.Reset=!problem.Resolvable();
+                        generationParameters.Reset = !problem.Resolvable();
                     }
                     catch(ArgumentException)
                     {
-                        generationParameters.Reset=true;
+                        generationParameters.Reset = true;
                     }
 
-                    if((counter % 10) == 0) Application.DoEvents();
-                } while(!abortRequested && (generationParameters.Reset || problem.NumDistinctValues() < SudokuForm.SudokuSize-1 || generationParameters.PreAllocatedValues < minPreAllocations));
+                    // Ersetzt DoEvents durch nicht-blockierendes Warten
+                    if((counter % 10) == 0) await Task.Delay(1);
+
+                } while(!abortRequested && (generationParameters.Reset || problem.NumDistinctValues() < SudokuForm.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
             }
-            backup=problem.Clone();
+            backup = problem.Clone();
 
             return !abortRequested;
         }
-
         private void FillCells()
         {
             problem.ResetMatrix();
@@ -1025,6 +1032,51 @@ namespace Sudoku
                     SetCellFont(generationParameters.Row, generationParameters.Col);
                 }
             }
+        }
+
+        // Ersetzen Sie StartDetachedProcess durch eine asynchrone Methode
+        private async void StartDetachedProcessAsync(String statusBarText, UInt64 numSolutions, Boolean initStatus)
+        {
+            abortRequested = false;
+            DisableGUI();
+
+            if(initStatus)
+            {
+                status.Text = String.Empty;
+                status.Update();
+            }
+            sudokuStatusBarText.Text = statusBarText;
+            sudokuStatusBar.Update();
+
+            computingStart = DateTime.Now;
+
+            // Solver im Hintergrund starten (die native Methode startet ihren eigenen Thread, das ist okay)
+            problem.FindSolutions(numSolutions);
+
+            // Polling-Loop ersetzen Timer
+            while((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            {
+                // Status aktualisieren
+                // Hinweis: Hier könnte man DisplaySolvingProcess oder DisplayGeneratingProcess Logik integrieren
+                // oder delegieren. Um kompatibel zu bleiben, rufen wir den existierenden Handler auf.
+
+                // Den Event-Handler simulieren (oder besser: Logik extrahieren)
+                // Da wir hier schon im richtigen Kontext sind, brauchen wir kein "sender" fake
+                UpdateProcessingStatus();
+
+                await Task.Delay(10); // 10ms Intervall wie beim Timer
+            }
+
+            // Fertig
+            UpdateProcessingStatus(); // Ein letztes Mal für das Endergebnis
+        }
+
+        private void UpdateProcessingStatus()
+        {
+            // Logik aus DisplaySolvingProcess / DisplayGeneratingProcess hierher konsolidieren 
+            // oder situationsabhängig aufrufen.
+            // Aufgrund der unterschiedlichen Handler (Solving vs Generating) wäre es sauberer,
+            // StartDetachedProcessAsync ein Action<BaseProblem> UpdateDelegate mitzugeben.
         }
 
         // Threading
@@ -1058,44 +1110,6 @@ namespace Sudoku
             solvingTimer.Stop();
             if(debug.Checked) problem.Matrix.CellChanged-=HandleCellChanged;
             EnableGUI();
-        }
-
-        private void AbortThread()
-        {
-            if(problem == null) return;
-
-            // Request cooperative cancellation
-            try
-            {
-                problem.Cancel();
-            }
-            catch
-            {
-                // ignore
-            }
-
-            // Wait a short time for solver thread to stop cooperatively
-            int waited = 0;
-            const int waitStep = 50;
-            const int maxWait = 5000; // ms
-            while(problem.Solver != null && problem.Solver.IsAlive && waited < maxWait)
-            {
-                Application.DoEvents();
-                Thread.Sleep(waitStep);
-                waited += waitStep;
-            }
-
-            // If still alive after waiting, mark as aborted (best-effort); do not call Thread.Abort unless absolutely necessary
-            if(problem.Solver != null && problem.Solver.IsAlive)
-            {
-                // last resort: try to join with a short timeout
-                try { problem.Solver.Join(500); } catch { }
-            }
-
-            problem.Aborted = true;
-            abortRequested = true;
-
-            try { DisplayValues(problem.Matrix); } catch { }
         }
 
         // Dialogs
@@ -1163,44 +1177,6 @@ namespace Sudoku
             DisplayValues(problem.Matrix);
             SetCellFont();
             ResetUndoStack();
-        }
-
-        private Boolean Minimize(int maxSeverity)
-        {
-            DateTime x=DateTime.Now;
-            String statusbarText=sudokuStatusBarText.Text;
-            BaseProblem minimizedProblem=null;
-            Boolean rc=false;
-
-            backup=problem.Clone();
-            sudokuStatusBarText.Text=Resources.Minimizing;
-            Cursor=Cursors.WaitCursor;
-            DisableGUI();
-            Application.DoEvents();
-
-            problem.Minimizing+=HandleMinimizing;
-            problem.TestCell+=HandleOnTestCell;
-            problem.ResetCell+=HandleOnResetCell;
-            if((minimizedProblem=problem.Minimize(maxSeverity)) != null)
-            {
-                rc=true;
-                problem=minimizedProblem;
-            }
-            problem.ResetCell-=HandleOnResetCell;
-            problem.TestCell-=HandleOnTestCell;
-            problem.Minimizing-=HandleMinimizing;
-            problem.ResetMatrix();
-
-            UpdateGUI();
-            DisplayValues(problem.Matrix);
-            SetCellFont();
-            ResetUndoStack();
-            EnableGUI();
-            Cursor=Cursors.Default;
-            sudokuStatusBarText.Text=statusbarText;
-            Application.DoEvents();
-
-            return rc;
         }
 
         private Boolean SaveProblem(String filename)
@@ -1470,31 +1446,67 @@ namespace Sudoku
 
         private void HandleCellChanged(object sender, BaseCell v)
         {
+            // 1. UI-Update sicher auf den UI-Thread marshallen
+            if(InvokeRequired)
+            {
+                Invoke(new Action<object, BaseCell>(HandleCellChanged), sender, v);
+                return;
+            }
+
             DisplayValue(v.Row, v.Col, v.CellValue);
-            try { Thread.Sleep(Settings.Default.TraceFrequence); }
-            catch(ThreadInterruptedException) { /* do nothing */ }
-            catch(Exception) { throw; }
-            Application.DoEvents();
+
+            SudokuTable.Update();
+
+            // HINWEIS: Thread.Sleep im UI-Thread friert die GUI ein.
+            // Die ursprüngliche Intention war wahrscheinlich, den Solver zu verlangsamen.
+            // Wenn diese Methode rekursiv via Invoke gerufen wird, wartet der BG-Thread auf den UI-Thread.
+            // Ein Sleep HIER verlangsamt also den Solver, friert aber auch die UI kurz ein.
+            // Das ist bei "Trace" oft akzeptiertes Verhalten für den visuellen Effekt.
+            // Ohne Sleep rast der Solver zu schnell.
+
+            if(Settings.Default.TraceFrequence > 0)
+            {
+                // Eine bessere Variante wäre ein 'await Task.Delay', aber dazu müsste der Event-Handler
+                // async sein und der Solver müsste darauf warten können (was er bei Events nicht tut).
+                // Daher ist hier ein kurzes synchrones Sleep oder besser: Verzicht darauf im UI-Thread oft der Kompromiss.
+
+                // Wir lassen DoEvents weg. Das Sleep lassen wir nur drin, wenn es absolut gewünscht ist,
+                // riskieren aber Ruckler ("Micro-Stuttering").
+                try { Thread.Sleep(Settings.Default.TraceFrequence); } catch { }
+            }
         }
 
         private void HandleOnTestCell(object sender, BaseCell cell)
         {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<object, BaseCell>(HandleOnTestCell), sender, cell);
+                return;
+            }
             SudokuTable[cell.Col, cell.Row].Style.Font=strikethroughFont;
             SudokuTable[cell.Col, cell.Row].Style.BackColor=Color.Coral;
         }
 
         private void HandleOnResetCell(object sender, BaseCell cell)
         {
+             if (InvokeRequired)
+            {
+                Invoke(new Action<object, BaseCell>(HandleOnResetCell), sender, cell);
+                return;
+            }
             SudokuTable[cell.Col, cell.Row].Style.Font=boldDisplayFont;
             FormatCell(cell.Col, cell.Row);
-            Application.DoEvents();
         }
 
         private void HandleMinimizing(object sender, BaseProblem minimalProblem)
         {
-            status.Text=String.Format(Resources.CurrentMinimalProblem, SeverityLevel(minimalProblem), minimalProblem.nValues, problem.nValues).Replace("\\n", Environment.NewLine);
+            if(InvokeRequired)
+            {
+                Invoke(new Action<object, BaseProblem>(HandleMinimizing), sender, minimalProblem);
+                return;
+            }
+            status.Text = String.Format(Resources.CurrentMinimalProblem, SeverityLevel(minimalProblem), minimalProblem.nValues, problem.nValues).Replace("\\n", Environment.NewLine);
             status.Update();
-            Application.DoEvents();
         }
 
         private void ShowCellHints(object sender, PaintEventArgs e)
@@ -1572,7 +1584,7 @@ namespace Sudoku
             generationParameters=new GenerationParameters();
         }
 
-        private void GenerationBookletProblemFinished()
+        private async void GenerationBookletProblemFinished()
         {
             printParameters.Problems.Add(problem);
             if(Settings.Default.AutoSaveBooklet)
@@ -1584,7 +1596,7 @@ namespace Sudoku
 
                 backup=CreateNewProblem(generationParameters.NewSudokuType());
                 DisplayValues(problem.Matrix);
-                if(GenerateBaseProblem())
+                if(await GenerateBaseProblem())
                     StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), Resources.Generating, 2, false);
                 else
                     GenerationAborted();
@@ -1601,11 +1613,11 @@ namespace Sudoku
             }
         }
 
-        private void NextTry()
+        private async void NextTry()
         {
             if(!problem.Aborted)
             {
-                if(GenerateBaseProblem())
+                if(await GenerateBaseProblem())
                     StartDetachedProcess(new System.EventHandler(DisplayGeneratingProcess), Resources.Generating, 2, false);
                 else
                     GenerationAborted();
@@ -1614,7 +1626,7 @@ namespace Sudoku
                 GenerationAborted();
         }
 
-        private void DisplayGeneratingProcess(object sender, EventArgs e)
+        private async void DisplayGeneratingProcess(object sender, EventArgs e)
         {
             if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
             {
@@ -1636,7 +1648,7 @@ namespace Sudoku
                 Boolean processProblem=true;
                 if(Settings.Default.GenerateMinimalProblems)
                 {
-                    if(SeverityLevelInt(problem) <= severityLevel) processProblem=Minimize(severityLevel);
+                    if(SeverityLevelInt(problem) <= severityLevel) processProblem=await Minimize(severityLevel);
                 }
                 else
                     FillCells();
@@ -1929,9 +1941,41 @@ namespace Sudoku
             }
         }
 
-        private void AbortClick(object sender, EventArgs e)
+        private async void AbortClick(object sender, EventArgs e)
         {
-            lock(this) AbortThread();
+            await AbortThread();
+        }
+
+        private async Task AbortThread()
+        {
+            if(problem == null) return;
+
+            try
+            {
+                problem.Cancel();
+            }
+            catch { /* ignore */ }
+
+            int waited = 0;
+            const int waitStep = 50;
+            const int maxWait = 5000;
+
+            // Asynchrones Polling statt DoEvents
+            while(problem.Solver != null && problem.Solver.IsAlive && waited < maxWait)
+            {
+                await Task.Delay(waitStep);
+                waited += waitStep;
+            }
+
+            if(problem.Solver != null && problem.Solver.IsAlive)
+            {
+                try { await Task.Run(() => problem.Solver.Join(500)); } catch { }
+            }
+
+            problem.Aborted = true;
+            abortRequested = true;
+
+            try { DisplayValues(problem.Matrix); } catch { }
         }
 
         private void PrintClick(object sender, EventArgs e)
@@ -2044,36 +2088,78 @@ namespace Sudoku
             Settings.Default.MarkNeighbors=markNeighbors.Checked;
         }
 
-        private void MinimizeClick(object sender, EventArgs e)
+        private async Task<Boolean> Minimize(int maxSeverity)
         {
-            int before=problem.nValues;
-            Boolean dirty=problem.Dirty;
+            DateTime x = DateTime.Now;
+            String statusbarText = sudokuStatusBarText.Text;
+            BaseProblem minimizedProblem = null;
+            Boolean rc = false;
+
+            backup = problem.Clone();
+            sudokuStatusBarText.Text = Resources.Minimizing;
+            Cursor = Cursors.WaitCursor;
+            DisableGUI();
+
+            // Berechnung in Hintergrund-Task auslagern
+            problem.Minimizing += HandleMinimizing;
+            problem.TestCell += HandleOnTestCell;
+            problem.ResetCell += HandleOnResetCell;
+
+            await Task.Run(() =>
+            {
+                minimizedProblem = problem.Minimize(maxSeverity);
+            });
+
+            if(minimizedProblem != null)
+            {
+                rc = true;
+                problem = minimizedProblem;
+            }
+            problem.ResetCell -= HandleOnResetCell;
+            problem.TestCell -= HandleOnTestCell;
+            problem.Minimizing -= HandleMinimizing;
+            problem.ResetMatrix();
+
+            UpdateGUI();
+            DisplayValues(problem.Matrix);
+            SetCellFont();
+            ResetUndoStack();
+            EnableGUI();
+            Cursor = Cursors.Default;
+            sudokuStatusBarText.Text = statusbarText;
+
+            return rc;
+        }
+
+        // Alter Wrapper für Kompatibilität, falls nötig, oder direkt ersetzen:
+        private async void MinimizeClick(object sender, EventArgs e)
+        {
+            int before = problem.nValues;
+            Boolean dirty = problem.Dirty;
 
             if(!SyncProblemWithGUI(true))
             {
-                hideValues=false;
+                hideValues = false;
                 MessageBox.Show(Resources.MinimizationNotPossible);
-                hideValues=true;
+                hideValues = true;
                 return;
             }
 
+            await Minimize(int.MaxValue);
 
-            Minimize(int.MaxValue);
-
-            hideValues=false;
-            if(before-problem.nValues == 0)
+            hideValues = false;
+            if(before - problem.nValues == 0)
             {
                 MessageBox.Show(Resources.NoMinimizationPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                problem.Dirty=dirty;
+                problem.Dirty = dirty;
             }
             else
             {
-                MessageBox.Show(String.Format(Resources.Minimized, (before-problem.nValues).ToString()), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                problem.Dirty=true;
+                MessageBox.Show(String.Format(Resources.Minimized, (before - problem.nValues).ToString()), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                problem.Dirty = true;
             }
-            hideValues=true;
+            hideValues = true;
         }
-
         private void FixClick(object sender, EventArgs e)
         {
             SetReadOnly(true);
@@ -2107,7 +2193,13 @@ namespace Sudoku
         // Exit Sudoku
         private void ExitSudoku(object sender, FormClosingEventArgs e)
         {
-            AbortThread();
+            // Synchroner Fallback für das Schließen der Anwendung
+            if(problem != null)
+            {
+                try { problem.Cancel(); } catch { }
+                if(problem.Solver != null && problem.Solver.IsAlive)
+                    try { problem.Solver.Join(2000); } catch { } // Einfaches Join statt DoEvents-Loop
+            }
 
             if(e.CloseReason != CloseReason.TaskManagerClosing && e.CloseReason != CloseReason.WindowsShutDown)
             {
