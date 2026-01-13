@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -48,6 +49,10 @@ namespace Sudoku
         private int incorrectTries=0;
         private Boolean valuesVisible=true;
         private Boolean hideValues=true;
+
+        // Kontextmenü Variable
+        private ContextMenuStrip cellContextMenu;
+
         // Für das Pause-Overlay
         private Label pauseOverlay;
         private DateTime pauseStartTimestamp;
@@ -72,7 +77,18 @@ namespace Sudoku
 
             InitializeComponent();
 
-            // 1. Double Buffering für flüssigeres Zeichnen aktivieren
+            sudokuMenu.Renderer = new FlatRenderer();
+
+            SudokuTable.BorderStyle = BorderStyle.None;
+            SudokuTable.BackgroundColor = Color.White;
+            SudokuTable.GridColor = Color.Gainsboro; // Dezenteres Gitter
+
+            SudokuTable.RowHeadersVisible = false;
+            SudokuTable.ColumnHeadersVisible = false;
+
+            SudokuTable.DefaultCellStyle.SelectionBackColor = Color.FromArgb(180, 210, 255);
+            SudokuTable.DefaultCellStyle.SelectionForeColor = Color.Black;
+            
             typeof(DataGridView).InvokeMember("DoubleBuffered",
                 BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
                 null, SudokuTable, new object[] { true });
@@ -117,6 +133,10 @@ namespace Sudoku
             generationParameters=new GenerationParameters();
             printParameters=new PrintParameters();
             trickyProblems=new TrickyProblems();
+
+            InitializeInputValidation();
+            InitializeCellContextMenu();
+
             CheckVersion();
             try
             {
@@ -307,9 +327,12 @@ namespace Sudoku
 
             // Marshal UI grid to string[,] with minimal processing
             string[,] grid=new string[SudokuForm.SudokuSize, SudokuForm.SudokuSize];
-            for(int row=0; row<SudokuForm.SudokuSize; row++)
-                for(int col=0; col<SudokuForm.SudokuSize; col++)
-                    grid[row, col]=SudokuTable[col, row].Value as string;
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
+                {
+                    SudokuTable[col, row].ErrorText = String.Empty;
+                    grid[row, col] = SudokuTable[col, row].Value as string;
+                }
 
             bool ok=SyncHelper.TrySyncGrid(problem, grid, cultureInfo, autoCheck.Checked, ref incorrectTries, out var syncedProblem);
             if(!ok)
@@ -318,9 +341,6 @@ namespace Sudoku
 
                 // On error, mark cells lazily (only when failure) and optionally show message
                 string firstError=null;
-                for(int row=0; row<SudokuForm.SudokuSize; row++)
-                    for(int col=0; col<SudokuForm.SudokuSize; col++)
-                        SudokuTable[col, row].ErrorText=String.Empty;
 
                 for(int row=0; row<SudokuForm.SudokuSize; row++)
                 {
@@ -1338,7 +1358,8 @@ namespace Sudoku
         private void BeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             if(sender is DataGridView)
-                PushOnUndoStack((DataGridView)sender);
+                if(!pencilMode.Checked && !((DataGridView)sender).CurrentCell.ReadOnly)
+                    PushOnUndoStack((DataGridView)sender);
         }
 
         private void EndEdit(object sender, DataGridViewCellEventArgs e)
@@ -1365,7 +1386,11 @@ namespace Sudoku
 
             CurrentStatus(false);
         }
-
+        public void TogglePencilModeClick(object sender, EventArgs e)
+        {
+            pencilMode.Checked = !pencilMode.Checked;
+            SudokuTable.Cursor = pencilMode.Checked? Cursors.Help: Cursors.Default;
+        }
         private new void KeyUp(object sender, KeyEventArgs e)
         {
             int candidate;
@@ -1392,14 +1417,48 @@ namespace Sudoku
 
         private void HandleSpecialChar(object sender, KeyEventArgs e)
         {
-            if(sender is DataGridView && e.KeyCode == Keys.Delete)
+            if(sender is DataGridView)
             {
-                DataGridView dgv=(DataGridView)sender;
-                if(!SudokuTable[dgv.CurrentCell.ColumnIndex, dgv.CurrentCell.RowIndex].ReadOnly)
+                if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Apps || e.KeyCode == Keys.Back)
                 {
-                    PushOnUndoStack(dgv);
-                    SudokuTable[dgv.CurrentCell.ColumnIndex, dgv.CurrentCell.RowIndex].Value="";
-                    CellEndEdit(sender);
+                    DataGridView dgv = (DataGridView)sender;
+                    if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
+                    {
+                        if(!SudokuTable[dgv.CurrentCell.ColumnIndex, dgv.CurrentCell.RowIndex].ReadOnly)
+                        {
+                            PushOnUndoStack(dgv);
+                            SudokuTable[dgv.CurrentCell.ColumnIndex, dgv.CurrentCell.RowIndex].Value = "";
+                            CellEndEdit(sender);
+                        }
+                    }
+                    else
+                    {
+                        HandleRightMouseButton(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex);
+                    }
+                }
+                else
+                {
+                    if(!pencilMode.Checked || e.Control || e.Alt) return;
+
+                    int value = -1;
+                    if(e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9) value = e.KeyCode - Keys.D0;
+                    else if(e.KeyCode >= Keys.NumPad1 && e.KeyCode <= Keys.NumPad9) value = e.KeyCode - Keys.NumPad0;
+
+                    if(value > 0)
+                    {
+                        DataGridViewCell current = SudokuTable.CurrentCell;
+                        if(current != null && !current.ReadOnly)
+                        {
+                            problem.SetCandidate(current.RowIndex, current.ColumnIndex, value, false);
+                            clearCandidates.Enabled = problem.HasCandidates();
+
+                            e.Handled = true;
+                            e.SuppressKeyPress = true;
+
+                            SudokuTable.InvalidateCell(current.ColumnIndex, current.RowIndex);
+                            SudokuTable.Refresh();
+                        }
+                    }
                 }
             }
         }
@@ -1468,7 +1527,6 @@ namespace Sudoku
             {
                 DataGridView dgv = (DataGridView)sender;
 
-                // Bestehende Nachbar-Logik
                 if(problem != null && Settings.Default.MarkNeighbors)
                     MarkNeighbors(dgv);
             }
@@ -1477,19 +1535,14 @@ namespace Sudoku
 
         private void HandleCellChanged(object sender, BaseCell v)
         {
-            // Update auf UI-Thread marshallen
             if(InvokeRequired)
             {
-                // UI Update asynchron anstoßen (oder synchron mit Invoke, aber kurz)
                 Invoke(new Action(() =>
                 {
                     DisplayValue(v.Row, v.Col, v.CellValue);
-                    // Update() erzwingt neuzeichnen - mit DoubleBuffer nun flackerfrei
                     SudokuTable.Update();
                 }));
 
-                // WICHTIG: Sleep muss HIER (im Hintergrund-Thread) passieren, 
-                // NICHT im UI-Thread Block oben.
                 if(Settings.Default.TraceFrequence > 0)
                 {
                     try { Thread.Sleep(Settings.Default.TraceFrequence); } catch { }
@@ -1497,7 +1550,6 @@ namespace Sudoku
                 return;
             }
 
-            // Fallback falls direkt auf UI Thread gerufen
             DisplayValue(v.Row, v.Col, v.CellValue);
             SudokuTable.Update();
         }
@@ -2236,6 +2288,88 @@ namespace Sudoku
             SetReadOnly(false);
         }
 
+        private void InitializeInputValidation()
+        {
+            // Event abonnieren, das feuert, wenn eine Zelle in den Editiermodus wechselt
+            SudokuTable.EditingControlShowing += EditingControl;
+        }
+
+        private void EditingControl(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            // Wir prüfen, ob das Control eine TextBox ist (Standard bei DataGridViewTextBoxColumn)
+            if(e.Control is System.Windows.Forms.TextBox textBox)
+            {
+                // Wichtig: Alten Handler entfernen, um Mehrfachaufrufe zu vermeiden
+                textBox.KeyPress -= CellKeyPressValidation;
+                textBox.KeyPress += CellKeyPressValidation;
+            }
+        }
+
+        private void CellKeyPressValidation(object sender, KeyPressEventArgs e)
+        {
+            // Erlaube nur Ziffern 1-9 und Steuertasten (wie Backspace)
+            // Blockiere '0', Buchstaben und Sonderzeichen
+            bool isValidDigit = char.IsDigit(e.KeyChar) && e.KeyChar != '0';
+            bool isControl = char.IsControl(e.KeyChar);
+
+            if(!isValidDigit && !isControl)
+            {
+                e.Handled = true; // Eingabe unterdrücken
+                System.Media.SystemSounds.Beep.Play(); // Optionales akustisches Feedback
+            }
+        }
+        private void InitializeCellContextMenu()
+        {
+            cellContextMenu = new ContextMenuStrip();
+
+            // Menüpunkt: Zelle leeren
+            var itemClear = cellContextMenu.Items.Add(Resources.ClearContent);
+            itemClear.Enabled=true;
+            itemClear.Click += (s, e) =>
+            {
+                if(SudokuTable.CurrentCell != null && !SudokuTable.CurrentCell.ReadOnly)
+                {
+                    // Nutzen der existierenden Logik via Undo-Stack
+                    PushOnUndoStack(SudokuTable);
+                    SudokuTable.CurrentCell.Value = "";
+                    CellEndEdit(SudokuTable);
+                }
+            };
+
+            // Menüpunkt: Als Kandidaten speichern (Beispiel für erweiterte Interaktion)
+            var itemCandidate = cellContextMenu.Items.Add(Resources.ClearCandidates);
+            itemCandidate.Enabled=true;
+            itemCandidate.Click += (s, e) =>
+            {
+                if(problem != null)
+                {
+                    problem.ResetCandidates(SudokuTable.CurrentCell.RowIndex, SudokuTable.CurrentCell.ColumnIndex);
+                    clearCandidates.Enabled = problem.HasCandidates();
+                    SudokuTable.Refresh();
+                }
+            };
+
+            // Menü zuweisen
+            SudokuTable.ContextMenuStrip = cellContextMenu;
+
+            // Selektion beim Rechtsklick korrigieren (Standard WinForms selektiert nicht bei Rechtsklick)
+            SudokuTable.CellMouseDown += CellMouseDown;
+        }
+
+        private void CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                HandleRightMouseButton(e.RowIndex, e.ColumnIndex);
+            }
+        }
+
+        private void HandleRightMouseButton(int row, int col) 
+        {
+            SudokuTable.CurrentCell = SudokuTable[col, row];
+            cellContextMenu.Items[0].Enabled = SudokuTable.CurrentCell.Value.ToString().Trim().Length != 0;
+            cellContextMenu.Items[1].Enabled = problem.HasCandidate(row, col);
+        }
         private void VersionHistoryClicked(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start(Resources.VersionHistory);

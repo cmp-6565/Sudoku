@@ -478,4 +478,10 @@
   <data name="PausedMessage" xml:space="preserve">
     <value>Paused!\n\nClick to continue!</value>
   </data>
+  <data name="ClearContent" xml:space="preserve">
+    <value>Clear Content</value>
+  </data>
+  <data name="ClearCandidates" xml:space="preserve">
+    <value>Clear Candidates</value>
+  </data>
 </root>

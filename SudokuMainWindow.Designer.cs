@@ -95,6 +95,7 @@ namespace Sudoku
             this.findallSolutions = new System.Windows.Forms.ToolStripMenuItem();
             this.showPossibleValues = new System.Windows.Forms.ToolStripMenuItem();
             this.autoCheck = new System.Windows.Forms.ToolStripMenuItem();
+            this.pencilMode = new System.Windows.Forms.ToolStripMenuItem();
             this.markNeighbors = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.pause = new System.Windows.Forms.ToolStripMenuItem();
@@ -586,6 +587,7 @@ namespace Sudoku
             this.findallSolutions,
             this.showPossibleValues,
             this.autoCheck,
+            this.pencilMode,
             this.markNeighbors,
             this.toolStripSeparator10,
             this.pause,
@@ -639,6 +641,13 @@ namespace Sudoku
             resources.ApplyResources(this.autoCheck, "autoCheck");
             this.autoCheck.Tag = "disable=1";
             this.autoCheck.Click += new System.EventHandler(this.AutoCheckClick);
+            // 
+            // pencilMode
+            // 
+            this.pencilMode.Name = "pencilMode";
+            resources.ApplyResources(this.pencilMode, "pencilMode");
+            this.pencilMode.Tag = "disable=1";
+            this.pencilMode.Click += new System.EventHandler(this.TogglePencilModeClick);
             // 
             // markNeighbors
             // 
@@ -907,5 +916,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem startSolveProblem;
         private System.Windows.Forms.ToolStripMenuItem twitter;
         private System.Windows.Forms.Timer autoPauseTimer;
+        private System.Windows.Forms.ToolStripMenuItem pencilMode;
     }
 }

@@ -208,26 +208,7 @@ namespace Sudoku
 
         public BaseMatrix CloneMatrix()
         {
-            // Create a new matrix instance of the same runtime type and copy values efficiently
-            var dest = (BaseMatrix)Activator.CreateInstance(matrix.GetType());
-
-            // Initialize destination matrix (constructor already did Init on cells)
-            // Copy cell values and fixed/computed flags without using BinaryFormatter
-            for (int row = 0; row < SudokuForm.SudokuSize; row++)
-            {
-                for (int col = 0; col < SudokuForm.SudokuSize; col++)
-                {
-                    byte v = Matrix.GetValue(row, col);
-                    bool isFixed = Matrix.FixedValue(row, col);
-                    // Use SetValue on destination to apply blocks correctly
-                    dest.SetValue(row, col, v, isFixed);
-                    // preserve ComputedValue flag
-                    dest.Cell(row, col).ComputedValue = Matrix.ComputedValue(row, col);
-                    dest.Cell(row, col).ReadOnly= Matrix.ReadOnly(row, col);
-                }
-            }
-
-            return dest;
+            return (BaseMatrix)Matrix.Clone();
         }
 
         public Solution CopyTo(ref Solution dest)
@@ -283,6 +264,11 @@ namespace Sudoku
             Matrix.ResetCandidates();
         }
 
+        public void ResetCandidates(int row, int col)
+        {
+            Matrix.ResetCandidates(row, col);
+        }
+
         public Boolean GetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
         {
             return Matrix.GetCandidate(row, col, candidate, exclusionCandidate);
@@ -296,6 +282,11 @@ namespace Sudoku
         public Boolean HasCandidates()
         {
             return Matrix.HasCandidates();
+        }
+
+        public Boolean HasCandidate(int row, int col)
+        {
+            return Matrix.HasCandidate(row, col);
         }
 
         public void SetValue(int row, int col, byte value, Boolean fix)
@@ -553,8 +544,6 @@ namespace Sudoku
 
         private void Solve(int current)
         {
-            // replaced Application.DoEvents() with periodic cooperative checks and progress callbacks
-
             BaseCell currentValue = Matrix.Get(current);
             byte value = 0;
 
@@ -833,12 +822,12 @@ namespace Sudoku
 
         public Boolean SudokuOfTheDay()
         {
-            return Load("https://sudoku.pi-c-it.de/misc/Precalculated%20Problems/sudokuOfTheDay.aspx");
+            return Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/SudokuOfTheDay.php");
         }
 
         public Boolean Load()
         {
-            return Load("https://sudoku.pi-c-it.de/misc/Precalculated%20Problems/load.aspx");
+            return Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/load.php");
         }
 
         private Boolean Load(String URL)

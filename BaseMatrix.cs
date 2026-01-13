@@ -189,6 +189,11 @@ namespace Sudoku
             return false;
         }
 
+        public Boolean HasCandidate(int row, int col)
+        {
+            return Cell(row, col).HasCandidate();
+        }
+
         public override void SetValue(int row, int col, byte value, Boolean fixedValue)
         {
             if(((value < 1 || value > SudokuForm.SudokuSize) && value != Values.Undefined) || row<0 || col<0 || row > SudokuForm.SudokuSize || col>SudokuForm.SudokuSize)
@@ -251,6 +256,11 @@ namespace Sudoku
         {
             foreach(BaseCell cell in this)
                 cell.InitCandidates();
+        }
+
+        public void ResetCandidates(int row, int col)
+        {
+            Cell(row, col).InitCandidates();
         }
 
         public void Reset()
@@ -378,14 +388,14 @@ namespace Sudoku
                         found|=HandleNakedCells(Rectangles[i]);
                     }
 
-                if(this is XSudokuMatrix&&(!found||deep))
+                if(this is XSudokuMatrix && (!found || deep))
                 {
                     found|=HandleNakedCells(GetDiagonal(SudokuPart.DownDiagonal));
                     found|=HandleIsolatedCells(GetDiagonal(SudokuPart.DownDiagonal));
                     found|=HandleNakedCells(GetDiagonal(SudokuPart.UpDiagonal));
                     found|=HandleIsolatedCells(GetDiagonal(SudokuPart.UpDiagonal));
                 }
-            } while(found&&deep);
+            } while(found && deep);
         }
 
         private Boolean HandleNakedCells(BaseCell[] part)
@@ -708,6 +718,36 @@ namespace Sudoku
                 }
                 return severityLevel;
             }
+        }
+        /// <summary>
+        /// Erstellt eine tiefe Kopie der Matrix inklusive aller Zellzustände.
+        /// </summary>
+        public new virtual BaseMatrix Clone()
+        {
+            // 1. Neue Instanz des exakt gleichen Laufzeittyps erstellen 
+            // (dadurch wird der Konstruktor ausgeführt und die Struktur/Nachbarn sauber initialisiert)
+            BaseMatrix clonedMatrix = (BaseMatrix)Activator.CreateInstance(this.GetType());
+
+            // 2. Interne Status-Felder der Matrix kopieren
+            // Da wir uns innerhalb der Klasse befinden, haben wir Zugriff auf private Felder der anderen Instanz.
+            clonedMatrix.sorted = this.sorted;
+            clonedMatrix.nVarValues = this.nVarValues;
+            clonedMatrix.severityLevel = this.severityLevel;
+            clonedMatrix.definitiveCalculatorCounter = this.definitiveCalculatorCounter;
+            clonedMatrix.setPredefinedValues = this.setPredefinedValues;
+
+            // 3. Zellinhalte effizient übertragen
+            // Wir iterieren über das Grid und nutzen BaseCell.CopyTo, um die Werte 
+            // in die bereits existierenden Zell-Objekte der neuen Matrix zu schreiben.
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+            {
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
+                {
+                    this.Matrix[row][col].CopyTo(clonedMatrix.Matrix[row][col]);
+                }
+            }
+
+            return clonedMatrix;
         }
     }
 }

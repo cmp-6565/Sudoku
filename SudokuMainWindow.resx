@@ -624,6 +624,15 @@
   <data name="autoCheck.Text" xml:space="preserve">
     <value>&amp;Auto Check</value>
   </data>
+  <data name="pencilMode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>185, 22</value>
+  </data>
+  <data name="pencilMode.Text" xml:space="preserve">
+    <value>Pencil &amp;Mode</value>
+  </data>
+  <data name="pencilMode.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="markNeighbors.Size" type="System.Drawing.Size, System.Drawing">
     <value>185, 22</value>
   </data>
@@ -1581,6 +1590,12 @@
     <value>autoCheck</value>
   </data>
   <data name="&gt;&gt;autoCheck.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pencilMode.Name" xml:space="preserve">
+    <value>pencilMode</value>
+  </data>
+  <data name="&gt;&gt;pencilMode.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;markNeighbors.Name" xml:space="preserve">

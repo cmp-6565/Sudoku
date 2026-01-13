@@ -317,6 +317,11 @@ namespace Sudoku
 
         public int GetEnabledMask() { EnsureEnabledMaskInitialized(); return enabledMask; }
 
+        public bool HasCandidate()
+        {
+            return candidatesMask != 0 || exclusionCandidatesMask != 0; 
+        }
+
         public bool GetCandidateMask(int candidate, bool exclusionCandidate)
         {
             if (candidate < 1 || candidate > SudokuForm.SudokuSize) return false;
@@ -469,5 +474,54 @@ namespace Sudoku
 
         public bool CommonNeighbor(BaseCell neighbor) { bool common = false; foreach (BaseCell cell in Neighbors) common = (cell == neighbor || common); return common; }
         public bool SameRectangle(BaseCell value) { return (Col >= value.StartCol && Col < value.StartCol + SudokuForm.RectSize && Row >= value.StartRow && Row < value.StartRow + SudokuForm.RectSize); }
+
+        /// <summary>
+        /// Kopiert den gesamten Zustand dieser Zelle effizient in eine Zielzelle.
+        /// Ideal für die Verwendung in BaseMatrix.CloneMatrix(), da Arrays wiederverwendet werden.
+        /// </summary>
+        /// <param name="target">Die bereits initialisierte Zielzelle.</param>
+        public void CopyTo(BaseCell target)
+        {
+            if(target == null) throw new ArgumentNullException(nameof(target));
+
+            // 1. Primitive Typen und Flags kopieren
+            target.definitiveValue = this.definitiveValue;
+            target.candidatesMask = this.candidatesMask;
+            target.exclusionCandidatesMask = this.exclusionCandidatesMask;
+            target.enabledMask = this.enabledMask;
+            target.enabledMaskInitialized = this.enabledMaskInitialized;
+            target.possibleValuesCount = this.possibleValuesCount;
+            target.fixedValue = this.fixedValue;
+            target.computedValue = this.computedValue;
+            target.readOnly = this.readOnly;
+
+            // 2. CoreValue Inhalte übertragen 
+            // Wichtig: Row/Col der Zielzelle nicht überschreiben, da diese positionsabhängig sind.
+            // coreValue ist private, aber innerhalb der Klasse zugreifbar.
+            target.coreValue.CellValue = this.coreValue.CellValue;
+            target.coreValue.UnformatedValue = this.coreValue.UnformatedValue;
+
+            // 3. Arrays mittels Block-Copy übertragen (High-Performance)
+            // Wir gehen davon aus, dass target durch Init() bereits passende Arrays besitzt.
+            if(this.directBlocks != null)
+            {
+                // Fallback, falls Target nicht initialisiert wäre (sollte in CloneMatrix nicht passieren)
+                if(target.directBlocks == null || target.directBlocks.Length != this.directBlocks.Length)
+                    target.directBlocks = (int[])this.directBlocks.Clone();
+                else
+                    Array.Copy(this.directBlocks, target.directBlocks, this.directBlocks.Length);
+            }
+
+            if(this.indirectBlocks != null)
+            {
+                if(target.indirectBlocks == null || target.indirectBlocks.Length != this.indirectBlocks.Length)
+                    target.indirectBlocks = (int[])this.indirectBlocks.Clone();
+                else
+                    Array.Copy(this.indirectBlocks, target.indirectBlocks, this.indirectBlocks.Length);
+            }
+
+            // Hinweis: 'neighbors' wird absichtlich NICHT kopiert, da die Zielzelle 
+            // ihre eigenen Referenzen auf die Zellen der NEUEN Matrix behalten muss.
+        }
     }
 }

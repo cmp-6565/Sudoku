@@ -138,6 +138,8 @@
     </Compile>
     <Compile Include="CoreValue.cs" />
     <Compile Include="DiagonalCell.cs" />
+    <Compile Include="FlatColorTable.cs" />
+    <Compile Include="FlatRenderer.cs" />
     <Compile Include="GenerationParameters.cs" />
     <Compile Include="InvalidSudokuValueException.cs" />
     <Compile Include="OptionsDialog.cs">
@@ -272,6 +274,7 @@
     <Compile Include="XSudokuMatrix.cs" />
     <Compile Include="XSudokuProblem.cs" />
     <None Include="Sudoku.Tests\Sudoku.Tests.csproj" />
+    <None Include="html\SudokuOfTheDay.php" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

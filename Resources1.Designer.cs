@@ -133,6 +133,24 @@ namespace Sudoku {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Clear Candidates ähnelt.
+        /// </summary>
+        internal static string ClearCandidates {
+            get {
+                return ResourceManager.GetString("ClearCandidates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Clear Content ähnelt.
+        /// </summary>
+        internal static string ClearContent {
+            get {
+                return ResourceManager.GetString("ClearContent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Current problem was modified but could not be saved since it is invalid. Close anyway? ähnelt.
         /// </summary>
         internal static string CloseAnyway {
