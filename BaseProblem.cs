@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
+using System.Threading.Tasks; // WICHTIG: Namespace hinzufügen
 
 using Sudoku.Properties;
 
@@ -21,8 +22,10 @@ namespace Sudoku
         private Boolean checkWellDefined=false;
         private Boolean problemSolved=false;
         private Boolean aborted=false;
-        private Thread thread=null;
+        
+        private Task solverTask=null;       
         private CancellationTokenSource cancellationTokenSource;
+
         private float severityLevel=float.NaN;
         private String filename=String.Empty;
         private String comment=String.Empty;
@@ -103,9 +106,9 @@ namespace Sudoku
             set { numSolutions=value; }
         }
 
-        public Thread Solver
+        public Task SolverTask
         {
-            get { return thread; }
+            get { return solverTask; }
         }
 
         public Boolean ProblemSolved
@@ -391,8 +394,7 @@ namespace Sudoku
             }
             cancellationTokenSource = new CancellationTokenSource();
 
-            thread=new Thread(new ThreadStart(Solve));
-            thread.Start();
+            solverTask = Task.Run(() => Solve(), cancellationTokenSource.Token);
 
             return;
         }
@@ -411,6 +413,8 @@ namespace Sudoku
             catch { }
         }
 
+        // ÄNDERUNG 4: Solve Wrapper bereinigen
+        // ThreadAbortException ist obsolet, da Tasks kooperativ abbrechen
         private void Solve()
         {
             Thread.CurrentThread.CurrentUICulture=new CultureInfo(Settings.Default.DisplayLanguage);
@@ -420,10 +424,12 @@ namespace Sudoku
                 nVarValues=Matrix.nVariableValues;
                 // If cancellation requested before start, abort early
                 if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+                
                 Solve(0);
             }
-            catch(ThreadAbortException)
+            catch(Exception)
             {
+                // Allgemeiner Catch für Abbruch oder unerwartete Fehler
                 ResetMatrix();
                 aborted=true;
             }
@@ -438,7 +444,10 @@ namespace Sudoku
             {
                 minimalProblem.severityLevel=float.NaN; // force recalculation of Severity Level
                 minimalProblem.FindSolutions(2);
-                if(minimalProblem.Solver != null) minimalProblem.Solver.Join();
+                
+                // NEU: Task warten
+                if(minimalProblem.SolverTask != null) minimalProblem.SolverTask.Wait();
+                
                 return (minimalProblem.nSolutions == 1 ? minimalProblem: null);
             }
             else
@@ -493,7 +502,10 @@ namespace Sudoku
                     {
                         if(aborted) return null;
                         FindSolutions(2);
-                        if(Solver != null) Solver.Join();
+                        
+                        // NEU: Task warten
+                        if(SolverTask != null) SolverTask.Wait();
+                        
                         if(nSolutions == 1)
                             candiates.Add(source[i]);
                     }
@@ -506,7 +518,7 @@ namespace Sudoku
 
             return candiates;
         }
-
+        
         public virtual Boolean Resolvable()
         {
             for(int row=0; row < SudokuForm.SudokuSize; row++)
@@ -561,14 +573,13 @@ namespace Sudoku
                     // cooperative cancellation check
                     if (cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
 
-                    ResetValue(currentValue.Row, currentValue.Col);
                     if (currentValue.Enabled(value))
                     {
                         try
                         {
                             TryValue(currentValue.Row, currentValue.Col, value);
                             currentValue.ComputedValue = true;
-                            if (current < nVarValues - 1 && Resolvable())
+                            if (current < nVarValues - 1)
                                 Solve(current + 1);
                             else
                             {
@@ -605,8 +616,6 @@ namespace Sudoku
                     if (findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
                 }
             }
-
-            if (!problemSolved) ResetValue(currentValue.Row, currentValue.Col);
 
             if ((findAll || checkWellDefined) && current == 0) problemSolved = (numSolutions > 0);
         }
@@ -827,7 +836,7 @@ namespace Sudoku
 
         public Boolean Load()
         {
-            return Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/load.php");
+            return Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/Load.php");
         }
 
         private Boolean Load(String URL)

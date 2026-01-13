@@ -1044,6 +1044,9 @@ namespace Sudoku
             int counter = 0;
             int minPreAllocations = problem.Matrix.MinimumValues;
 
+            // Stopwatch für präzises Time-Slicing statt starrer Counter
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
             problem = backup.Clone();
             if(usePrecalculatedProblem)
             {
@@ -1075,7 +1078,7 @@ namespace Sudoku
                         if(generationParameters.PreAllocatedValues >= minPreAllocations)
                             generationParameters.CheckedProblems += 1;
                         generationParameters.PreAllocatedValues = problem.nValues - problem.nComputedValues;
-                        GenerationStatus();
+
                         generationParameters.Reset = !problem.Resolvable();
                     }
                     catch(ArgumentException)
@@ -1083,11 +1086,26 @@ namespace Sudoku
                         generationParameters.Reset = true;
                     }
 
-                    // Ersetzt DoEvents durch nicht-blockierendes Warten
-                    if((counter % 10) == 0) await Task.Delay(1);
+                    // OPTIMIERUNG: UI-Updates und Pausen drastisch reduziert
+                    // Nur alle 100 Schritte prüfen, um CPU-Cycles zu sparen
+                    if((counter % 100) == 0)
+                    {
+                        // Status-Text update ist teuer, daher nur periodisch
+                        GenerationStatus();
+
+                        // Nur warten, wenn mehr als 50ms vergangen sind (hält UI flüssig, bremst aber nicht unnötig)
+                        if(stopwatch.ElapsedMilliseconds > 50)
+                        {
+                            await Task.Delay(1);
+                            stopwatch.Restart();
+                        }
+                    }
 
                 } while(!abortRequested && (generationParameters.Reset || problem.NumDistinctValues() < SudokuForm.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
             }
+
+            // Finales Status-Update, damit der letzte Stand sichtbar ist
+            GenerationStatus();
             backup = problem.Clone();
 
             return !abortRequested;
@@ -1139,7 +1157,7 @@ namespace Sudoku
             problem.FindSolutions(numSolutions);
 
             // Polling-Loop ersetzen Timer
-            while((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            while((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 action();
                 await Task.Delay(10); // 10ms Intervall wie beim Timer
@@ -1707,7 +1725,7 @@ namespace Sudoku
 
         private async void DisplayGeneratingProcess()
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
                 GenerationStatus();
@@ -1715,7 +1733,8 @@ namespace Sudoku
                 return;
             }
 
-            if(problem.Solver != null) problem.Solver.Join();
+            if(problem.SolverTask != null && !problem.SolverTask.IsCompleted)
+                problem.SolverTask.Wait();
 
             solutionTimer.Stop();
             solutionTimer.Dispose();
@@ -1757,7 +1776,7 @@ namespace Sudoku
 
         private void DisplayCheckingProcess()
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
                 status.Text =
@@ -1784,7 +1803,7 @@ namespace Sudoku
 
         private void DisplaySolvingProcess()
         {
-            if((problem.Solver != null && problem.Solver.IsAlive) || problem.Preparing)
+            if((problem.SolverTask != null && !problem.SolverTask.IsCompleted) || problem.Preparing)
             {
                 if(debug.Checked) SudokuTable.Update();
                 status.Text =
@@ -2040,15 +2059,15 @@ namespace Sudoku
             const int maxWait = 5000;
 
             // Asynchrones Polling statt DoEvents
-            while(problem.Solver != null && problem.Solver.IsAlive && waited < maxWait)
+            while(problem.SolverTask != null && !problem.SolverTask.IsCompleted && waited < maxWait)
             {
                 await Task.Delay(waitStep);
                 waited += waitStep;
             }
 
-            if(problem.Solver != null && problem.Solver.IsAlive)
+            if(problem.SolverTask != null && !problem.SolverTask.IsCompleted)
             {
-                try { await Task.Run(() => problem.Solver.Join(500)); } catch { }
+                try { await Task.Run(() => problem.SolverTask.Wait(500)); } catch { }
             }
 
             problem.Aborted = true;
@@ -2397,8 +2416,8 @@ namespace Sudoku
             if(problem != null)
             {
                 try { problem.Cancel(); } catch { }
-                if(problem.Solver != null && problem.Solver.IsAlive)
-                    try { problem.Solver.Join(2000); } catch { } // Einfaches Join statt DoEvents-Loop
+                if(problem.SolverTask != null && !problem.SolverTask.IsCompleted)
+                    try { problem.SolverTask.Wait(2000); } catch { } // Einfaches Join statt DoEvents-Loop
             }
 
             if(e.CloseReason != CloseReason.TaskManagerClosing && e.CloseReason != CloseReason.WindowsShutDown)

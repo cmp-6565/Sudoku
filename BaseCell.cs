@@ -265,11 +265,8 @@ namespace Sudoku
 
         public void SetBlock(int value, bool enable, bool direct) { EnsureEnabledMaskInitialized(); SetBlockInternal(value, enable, direct); }
 
-        public event EventHandler PossibleValuesChanged;
-
         private void SetBlockInternal(int value, bool enable, bool direct)
         {
-            int prevPossible = nPossibleValues;
             int bit = 1 << value;
             bool beforeEnabled = (enabledMask & bit) != 0;
             if (enable)
@@ -285,8 +282,6 @@ namespace Sudoku
             }
             bool afterEnabled = (directBlocks[value] == 0 && indirectBlocks[value] == 0);
             if (beforeEnabled != afterEnabled) { if (afterEnabled) enabledMask |= bit; else enabledMask &= ~bit; }
-            int newPossible = nPossibleValues;
-            if (prevPossible != newPossible) PossibleValuesChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public bool TrySetBlock(int value, bool enable, bool direct)

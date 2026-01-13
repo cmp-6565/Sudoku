@@ -51,8 +51,8 @@ namespace Sudoku
             DisplayValues(problem.Matrix);
             StartDetachedProcess(DisplaySolvingProcess, Resources.Thinking, 2, true);
 
-            if(problem.Solver!=null)
-                problem.Solver.Join();
+            if(problem.SolverTask != null && !problem.SolverTask.IsCompleted)
+                problem.SolverTask.Wait();
 
             ResetDetachedProcess();
             ResetTexts();
@@ -215,8 +215,8 @@ namespace Sudoku
                     {
                         bookletProblem.FindSolutions(2);
 
-                        if(bookletProblem.Solver!=null)
-                            bookletProblem.Solver.Join();
+                        if(bookletProblem.SolverTask != null && !bookletProblem.SolverTask.IsCompleted)
+                            bookletProblem.SolverTask.Wait();
 
                         if(bookletProblem.nSolutions==1)
                         {

@@ -224,6 +224,7 @@
     <None Include="app.config" />
     <BaseApplicationManifest Include="Properties\app.manifest" />
     <None Include="html\example.pdf" />
+    <None Include="html\Load.php" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
