@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks; // WICHTIG: Namespace hinzufügen
+using System.Threading.Tasks;
 
 using Sudoku.Properties;
 
@@ -413,8 +413,6 @@ namespace Sudoku
             catch { }
         }
 
-        // ÄNDERUNG 4: Solve Wrapper bereinigen
-        // ThreadAbortException ist obsolet, da Tasks kooperativ abbrechen
         private void Solve()
         {
             Thread.CurrentThread.CurrentUICulture=new CultureInfo(Settings.Default.DisplayLanguage);
@@ -566,60 +564,62 @@ namespace Sudoku
             const int progressInterval = 1000; // iterations
             int innerIterations = 0;
 
-            if (currentValue.nPossibleValues > 0)
+            if(currentValue.nPossibleValues > 0)
             {
-                while (!problemSolved && ++value <= SudokuForm.SudokuSize)
+                while(!problemSolved && ++value <= SudokuForm.SudokuSize)
                 {
                     // cooperative cancellation check
-                    if (cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+                    if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
 
-                    if (currentValue.Enabled(value))
+                    ResetValue(currentValue.Row, currentValue.Col);
+                    if(currentValue.Enabled(value))
                     {
                         try
                         {
                             TryValue(currentValue.Row, currentValue.Col, value);
                             currentValue.ComputedValue = true;
-                            if (current < nVarValues - 1)
+                            if(current < nVarValues - 1 && Resolvable())
                                 Solve(current + 1);
                             else
                             {
-                                if (problemSolved = Solved()) SaveResult();
-                                if (findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
+                                if(problemSolved = Solved()) SaveResult();
+                                if(findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
                             }
                         }
-                        catch (ArgumentException)
+                        catch(ArgumentException)
                         {
                             // do nothing, the problem is not resolvable
                         }
                     }
 
                     // progress/cancellation throttling
-                    if (++innerIterations >= progressInterval)
+                    if(++innerIterations >= progressInterval)
                     {
                         innerIterations = 0;
                         OnProgress();
-                        if (cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+                        if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
                     }
                 }
             }
-            else if (currentValue.DefinitiveValue != Values.Undefined)
+            else if(currentValue.DefinitiveValue != Values.Undefined)
             {
-                if (cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+                if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
 
                 TryValue(currentValue.Row, currentValue.Col, currentValue.DefinitiveValue);
                 currentValue.ComputedValue = true;
-                if (current < nVarValues - 1 && Resolvable())
+                if(current < nVarValues - 1 && Resolvable())
                     Solve(current + 1);
                 else
                 {
-                    if (problemSolved = Solved()) SaveResult();
-                    if (findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
+                    if(problemSolved = Solved()) SaveResult();
+                    if(findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
                 }
             }
 
-            if ((findAll || checkWellDefined) && current == 0) problemSolved = (numSolutions > 0);
-        }
+            if(!problemSolved) ResetValue(currentValue.Row, currentValue.Col);
 
+            if((findAll || checkWellDefined) && current == 0) problemSolved = (numSolutions > 0);
+        }
         private Boolean Solved()
         {
             int i, j;

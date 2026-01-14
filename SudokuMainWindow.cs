@@ -1823,18 +1823,18 @@ namespace Sudoku
                 }
                 else
                     if(problem.Aborted)
-                {
-                    if(problem.nSolutions > 0)
                     {
-                        status.Text=String.Format(cultureInfo, Resources.SolutionsFound, (problem.TotalPassCounter > 0? Resources.Plural: String.Empty))+Environment.NewLine+Resources.NeededTime+(DateTime.Now-computingStart).ToString()+(findallSolutions.Checked? Environment.NewLine+Resources.TotalNumberOfSolutionsSoFar+problem.nSolutions.ToString("n0", cultureInfo): String.Empty)+Environment.NewLine+Resources.NeededPasses+problem.TotalPassCounter.ToString("n0", cultureInfo);
-                        currentSolution=-1;
-                        NextSolution();
+                        if(problem.nSolutions > 0)
+                        {
+                            status.Text=String.Format(cultureInfo, Resources.SolutionsFound, (problem.TotalPassCounter > 0? Resources.Plural: String.Empty))+Environment.NewLine+Resources.NeededTime+(DateTime.Now-computingStart).ToString()+(findallSolutions.Checked? Environment.NewLine+Resources.TotalNumberOfSolutionsSoFar+problem.nSolutions.ToString("n0", cultureInfo): String.Empty)+Environment.NewLine+Resources.NeededPasses+problem.TotalPassCounter.ToString("n0", cultureInfo);
+                            currentSolution=-1;
+                            NextSolution();
+                        }
+                        else
+                            status.Text=String.Format(cultureInfo, Resources.Interrupt.Replace("\\n", Environment.NewLine), DateTime.Now-computingStart, problem.TotalPassCounter);
                     }
                     else
-                        status.Text=String.Format(cultureInfo, Resources.Interrupt.Replace("\\n", Environment.NewLine), DateTime.Now-computingStart, problem.TotalPassCounter);
-                }
-                else
-                    status.Text=Resources.NotResolvable+Environment.NewLine+Resources.NeededTime+(DateTime.Now-computingStart).ToString()+Environment.NewLine+Resources.NeededPasses+problem.TotalPassCounter.ToString("n0", cultureInfo);
+                        status.Text=Resources.NotResolvable+Environment.NewLine+Resources.NeededTime+(DateTime.Now-computingStart).ToString()+Environment.NewLine+Resources.NeededPasses+problem.TotalPassCounter.ToString("n0", cultureInfo);
 
                 ResetDetachedProcess();
             }
