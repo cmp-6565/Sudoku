@@ -185,7 +185,6 @@ namespace Sudoku
         {
             solutions=new List<Solution>();
             nSolutions=0;
-            problemSolved=false;
         }
 
         public BaseProblem Clone()

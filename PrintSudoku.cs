@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Properties;
@@ -38,7 +39,7 @@ namespace Sudoku
             }
         }
 
-        private void PrintDialog()
+        private async Task PrintDialog()
         {
             if(!SyncProblemWithGUI(true))
             {
@@ -46,37 +47,37 @@ namespace Sudoku
                 return;
             }
 
-            BaseProblem tmp=problem.Clone();
+            BaseProblem tmp=controller.CurrentProblem.Clone();
 
-            DisplayValues(problem.Matrix);
-            StartDetachedProcess(DisplaySolvingProcess, Resources.Thinking, 2, true);
+            DisplayValues(controller.CurrentProblem.Matrix);
+            SolveProblem();
 
-            if(problem.SolverTask != null && !problem.SolverTask.IsCompleted)
-                problem.SolverTask.Wait();
+            if(controller.CurrentProblem.SolverTask != null && !controller.CurrentProblem.SolverTask.IsCompleted)
+                controller.CurrentProblem.SolverTask.Wait();
 
             ResetDetachedProcess();
             ResetTexts();
             DisplayValues(tmp.Matrix);
 
-            if(!problem.Aborted)
+            if(!controller.CurrentProblem.Aborted)
             {
                 // This local variable is needed since the _global_ variable <code>showCandidates</code> might be used reset by other functions before the printout has started
                 Boolean sc;
-                if((sc=problem.HasCandidates())&&Settings.Default.PrintHints)
-                    sc=MessageBox.Show(Resources.PrintCandidates, ProductName, MessageBoxButtons.YesNo)==DialogResult.Yes;
+                if((sc=controller.CurrentProblem.HasCandidates()) && Settings.Default.PrintHints)
+                    sc=MessageBox.Show(Resources.PrintCandidates, ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes;
 
                 printSudokuDialog.UseEXDialog=true;
                 if(printSudokuDialog.ShowDialog()==DialogResult.OK)
                 {
                     printParameters=new PrintParameters();
-                    problem.ResetMatrix();
-                    printParameters.Problems.Add(problem);
+                    controller.CurrentProblem.ResetMatrix();
+                    printParameters.Problems.Add(controller.CurrentProblem);
                     showCandidates=sc;
                     PrintDocument();
                 }
             }
 
-            problem=tmp.Clone();
+            controller.SyncWithGui(tmp);
         }
 
         private void PrintBooklet()
@@ -202,7 +203,7 @@ namespace Sudoku
             Boolean ready=false;
             Random rand=new Random();
 
-            BaseProblem tmp=problem.Clone();
+            BaseProblem tmp=controller.CurrentProblem.Clone();
 
             while(!ready)
             {
@@ -242,7 +243,7 @@ namespace Sudoku
                 filenames.RemoveAt(problemNumber);
                 ready=(printParameters.Problems.Count==Settings.Default.BookletSizeExisting&&!Settings.Default.BookletSizeUnlimited)||filenames.Count==0||abortRequested;
             }
-            problem=tmp.Clone();
+            controller.SyncWithGui(tmp);
 
             return printParameters.Problems.Count;
         }

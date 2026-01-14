@@ -724,21 +724,14 @@ namespace Sudoku
         /// </summary>
         public new virtual BaseMatrix Clone()
         {
-            // 1. Neue Instanz des exakt gleichen Laufzeittyps erstellen 
-            // (dadurch wird der Konstruktor ausgeführt und die Struktur/Nachbarn sauber initialisiert)
             BaseMatrix clonedMatrix = (BaseMatrix)Activator.CreateInstance(this.GetType());
 
-            // 2. Interne Status-Felder der Matrix kopieren
-            // Da wir uns innerhalb der Klasse befinden, haben wir Zugriff auf private Felder der anderen Instanz.
             clonedMatrix.sorted = this.sorted;
             clonedMatrix.nVarValues = this.nVarValues;
             clonedMatrix.severityLevel = this.severityLevel;
             clonedMatrix.definitiveCalculatorCounter = this.definitiveCalculatorCounter;
             clonedMatrix.setPredefinedValues = this.setPredefinedValues;
 
-            // 3. Zellinhalte effizient übertragen
-            // Wir iterieren über das Grid und nutzen BaseCell.CopyTo, um die Werte 
-            // in die bereits existierenden Zell-Objekte der neuen Matrix zu schreiben.
             for(int row = 0; row < SudokuForm.SudokuSize; row++)
             {
                 for(int col = 0; col < SudokuForm.SudokuSize; col++)

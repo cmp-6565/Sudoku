@@ -258,6 +258,7 @@
     </Compile>
     <Compile Include="Solution.cs" />
     <Compile Include="Sudoku.Tests\MaskTests.cs" />
+    <Compile Include="SudokuController.cs" />
     <Compile Include="SudokuMainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
