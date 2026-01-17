@@ -1,5 +1,4 @@
 using System;
-
 using Sudoku.Properties;
 
 namespace Sudoku
@@ -16,6 +15,7 @@ namespace Sudoku
         private int currentProblem=0;
         private Boolean generateBooklet=false;
         private String baseDirectory=String.Empty;
+        private Boolean generateXSudoku=false;
         private Random rand=new Random(unchecked((int)DateTime.Now.Ticks));
         // private Random rand=new Random(1);
 
@@ -86,12 +86,18 @@ namespace Sudoku
             col=rand.Next(0, SudokuForm.SudokuSize);
         }
 
+        public Boolean GenerateXSudoku
+        {
+            get { return generateXSudoku; }
+            set { generateXSudoku = value; }
+        }
         public Boolean NewSudokuType()
         {
-            if(Settings.Default.GenerateXSudoku&&Settings.Default.GenerateNormalSudoku)
-                return rand.Next()%2==0;
+            if(Settings.Default.GenerateXSudoku && Settings.Default.GenerateNormalSudoku)
+                GenerateXSudoku=rand.Next()%2 == 0;
             else
-                return Settings.Default.GenerateXSudoku;
+                GenerateXSudoku=Settings.Default.GenerateXSudoku;
+            return GenerateXSudoku;
         }
     }
 }

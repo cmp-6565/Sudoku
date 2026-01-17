@@ -208,22 +208,21 @@ namespace Sudoku
             while(!ready)
             {
                 int problemNumber=rand.Next(0, filenames.Count-1);
-
                 try
                 {
-                    BaseProblem bookletProblem=CreateProblemFromFile(filenames[problemNumber], Settings.Default.GenerateNormalSudoku, Settings.Default.GenerateXSudoku, false);
-                    if(bookletProblem!=null&&(SeverityLevelInt(bookletProblem)&Settings.Default.SeverityLevel)!=0)
+                    SudokuController bookletController=new SudokuController(filenames[problemNumber], false);
+                    if(bookletController.CurrentProblem != null && (SeverityLevelInt(bookletController.CurrentProblem) & Settings.Default.SeverityLevel) != 0)
                     {
-                        bookletProblem.FindSolutions(2);
+                        bookletController.CurrentProblem.FindSolutions(2);
 
-                        if(bookletProblem.SolverTask != null && !bookletProblem.SolverTask.IsCompleted)
-                            bookletProblem.SolverTask.Wait();
+                        if(bookletController.CurrentProblem.SolverTask != null && !bookletController.CurrentProblem.SolverTask.IsCompleted)
+                            bookletController.CurrentProblem.SolverTask.Wait();
 
-                        if(bookletProblem.nSolutions==1)
+                        if(bookletController.CurrentProblem.NumberOfSolutions==1)
                         {
-                            bookletProblem.ResetMatrix();
-                            bookletProblem.Filename=filenames[problemNumber];
-                            printParameters.Problems.Add(bookletProblem);
+                            bookletController.CurrentProblem.ResetMatrix();
+                            bookletController.CurrentProblem.Filename=filenames[problemNumber];
+                            printParameters.Problems.Add(bookletController.CurrentProblem);
 
                             int remainder;
                             Math.DivRem(printParameters.Problems.Count/10, 25, out remainder);
@@ -247,70 +246,6 @@ namespace Sudoku
 
             return printParameters.Problems.Count;
         }
-        /*
-                private int LoadProblems(List<String> filenames)
-                {
-                    Boolean ready=false;
-                    Random rand=new Random();
-
-                    BaseProblem tmp=problem.Clone();
-
-                    StreamWriter x=new StreamWriter("c:\\temp\\x.txt");
-                    x.WriteLine("Start: {0}", DateTime.Now);
-
-                    while(!ready)
-                    {
-                        int problemNumber=rand.Next(0, filenames.Count-1);
-
-                        try
-                        {
-                            BaseProblem bookletProblem=CreateProblemFromFile(filenames[problemNumber], Settings.Default.GenerateNormalSudoku, Settings.Default.GenerateXSudoku);
-                            if((SeverityLevelInt(bookletProblem)&Settings.Default.SeverityLevel) != 0)
-                            {
-                                bookletProblem.FindSolutions(2);
-
-                                if(bookletProblem.Solver != null)
-                                    bookletProblem.Solver.Join();
-
-                                if(bookletProblem.nSolutions == 1)
-                                {
-                                    bookletProblem.ResetMatrix();
-                                    x.Write(String.Format("{0}\t{1}\t{2}", filenames[problemNumber], bookletProblem.SeverityLevel, bookletProblem.nValues));
-                                    if(bookletProblem.nValues < 30)
-                                    {
-                                        bookletProblem=bookletProblem.Minimize(int.MaxValue);
-                                        bookletProblem.ResetMatrix();
-                                        x.WriteLine(String.Format("\t{0}\t{1}\t{2}\t{3}", bookletProblem.SeverityLevel, bookletProblem.nValues, bookletProblem is XSudokuProblem, false));
-                                    }
-                                    else
-                                        x.WriteLine("-");
-                                    x.Flush();
-                                    bookletProblem.Filename=filenames[problemNumber];
-                                    printParameters.Problems.Add(bookletProblem);
-
-                                    int remainder;
-                                    Math.DivRem(printParameters.Problems.Count/10, 25, out remainder);
-                                    sudokuStatusBarText.Text=Resources.LoadingFiles.PadRight(Resources.LoadingFiles.Length+remainder, '.');
-                                    sudokuStatusBar.Update();
-                                    Application.DoEvents();
-                                }
-                            }
-                        }
-                        catch
-                        {
-                            // do nothing
-                        }
-
-                        filenames.RemoveAt(problemNumber);
-                        ready=(printParameters.Problems.Count == Settings.Default.BookletSizeExisting && !Settings.Default.BookletSizeUnlimited) || filenames.Count == 0 || abortRequested;
-                    }
-                    x.WriteLine("End: {0}", DateTime.Now);
-                    x.Close();
-                    problem=tmp.Clone();
-
-                    return printParameters.Problems.Count;
-                }
-                */
         // Printing
         private void PrintSudokuEvent(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
@@ -416,10 +351,10 @@ namespace Sudoku
             BaseProblem currentProblem=printParameters.Problems[printParameters.CurrentProblem];
             RectangleF rf=new RectangleF(x, y+SudokuSize*printParameters.CellHeightDots+PrintParameters.TitleFont.GetHeight(g), SudokuSize*printParameters.CellWidthDots, printParameters.CellHeightDots);
 
-            if(currentProblem.nSolutions==0)
+            if(currentProblem.NumberOfSolutions==0)
                 g.DrawString(Resources.TitleNotResolvable, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
             else
-                if(currentProblem.nSolutions==1)
+                if(currentProblem.NumberOfSolutions==1)
             {
                 String problemTitle=(printParameters.Problems.Count>1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentProblem+1)+": ": String.Empty)+SeverityLevel(currentProblem)+(Settings.Default.PrintInternalSeverity ? " ("+InternalSeverityLevel(currentProblem)+")": "");
                 g.DrawString(problemTitle, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
@@ -586,9 +521,9 @@ namespace Sudoku
 
             RectangleF rf=new RectangleF(x, y+SudokuSize*printParameters.SmallCellHeightDots, SudokuSize*printParameters.SmallCellWidthDots, PrintParameters.TitleFont.GetHeight(g));
 
-            if(printParameters.Problems[printParameters.CurrentSolution].nSolutions>1)
+            if(printParameters.Problems[printParameters.CurrentSolution].NumberOfSolutions>1)
                 g.DrawString(Resources.SolutionOne, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
-            else if(printParameters.Problems[printParameters.CurrentSolution].nSolutions==0)
+            else if(printParameters.Problems[printParameters.CurrentSolution].NumberOfSolutions==0)
                 g.DrawString(Resources.InvalidProblem, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
             else
                 g.DrawString(printParameters.Problems.Count>1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentSolution+1): Resources.Solution, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
@@ -606,7 +541,7 @@ namespace Sudoku
                 for(col=0; col<SudokuSize; col++)
                     g.DrawRectangle(PrintParameters.TinySolidLine, x+col*printParameters.SmallCellWidthDots, y+row*printParameters.SmallCellHeightDots, printParameters.SmallCellWidthDots, printParameters.SmallCellHeightDots);
 
-            if(printParameters.Problems[printParameters.CurrentSolution].nSolutions>0)
+            if(printParameters.Problems[printParameters.CurrentSolution].NumberOfSolutions>0)
             {
                 Solution solution=printParameters.Solutions(printParameters.CurrentSolution)[0];
 

@@ -566,7 +566,7 @@ namespace Sudoku {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die New Problem generated! ({0})\nProblem has {1:n0} pre-allocated cells\nProblems analyzed: {2:n0}\nPasses needed: {3:n0} ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die New Problem generated! ({0})\nProblem has {1:n0} pre-allocated cells\nProblems analyzed: {2:n0}\nPasses needed: {3:n0}\nTime needed: {4:0#}:{5:0#}:{6:0#},{7:0#} ähnelt.
         /// </summary>
         internal static string NewProblemGenerated {
             get {

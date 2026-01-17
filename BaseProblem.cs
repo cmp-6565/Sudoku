@@ -12,7 +12,6 @@ namespace Sudoku
 {
     internal abstract class BaseProblem: EventArgs, IComparable
     {
-        private Int32 numSolutions=0;
         private Int64 totalPassCount=0;
         private Int64 passCount=0;
         private int nVarValues=0;
@@ -24,7 +23,7 @@ namespace Sudoku
         private Boolean aborted=false;
         
         private Task solverTask=null;       
-        private CancellationTokenSource cancellationTokenSource;
+        public CancellationTokenSource cancellationTokenSource;
 
         private float severityLevel=float.NaN;
         private String filename=String.Empty;
@@ -32,6 +31,7 @@ namespace Sudoku
         private Boolean dirty=false;
         private Boolean preparing=false;
         private TimeSpan solvingTime;
+        private TimeSpan generationTime;
         private BaseProblem minimalProblem;
 
         private static byte ReadOnlyOffset=64;
@@ -63,49 +63,28 @@ namespace Sudoku
         {
             createMatrix();
             solutions=new List<Solution>();
+            solverTask=null;
+            solvingTime=TimeSpan.Zero;  
+            generationTime=TimeSpan.Zero;
         }
-
+        
         protected abstract void createMatrix();
         protected abstract BaseProblem CreateInstance();
         public virtual Boolean IsTricky { get { return false; } }
 
-        public BaseMatrix Matrix
-        {
-            get { return matrix; }
-        }
+        public BaseMatrix Matrix { get { return matrix; } }
+        public List<Solution> Solutions { get { return solutions; } }
 
-        public List<Solution> Solutions
-        {
-            get { return solutions; }
-        }
-
-        public int nValues
-        {
-            get { return Matrix.nValues; }
-        }
-
-        public int nVariableValues
-        {
-            get { return Matrix.nVariableValues; }
-        }
-
-        public int nComputedValues
-        {
-            get { return Matrix.nComputedValues; }
-        }
+        public int nValues { get { return Matrix.nValues; } }
+        public int nVariableValues { get { return Matrix.nVariableValues; } }
+        public int nComputedValues { get { return Matrix.nComputedValues; } }
 
         public Int64 TotalPassCounter
         {
             get { return totalPassCount; }
             set { totalPassCount=value; }
         }
-
-        public Int32 nSolutions
-        {
-            get { return numSolutions; }
-            set { numSolutions=value; }
-        }
-
+        public Int32 NumberOfSolutions { get { return Solutions.Count; } }
         public Task SolverTask
         {
             get { return solverTask; }
@@ -121,7 +100,7 @@ namespace Sudoku
             get { return aborted; }
             set { aborted=value; }
         }
-
+        
         public float SeverityLevel
         {
             get
@@ -139,52 +118,27 @@ namespace Sudoku
 
         public int SeverityLevelInt
         {
-            get { return float.IsNaN(SeverityLevel) ? 0: (SeverityLevel > Settings.Default.Hard ? 8: (SeverityLevel > Settings.Default.Intermediate ? 4: (SeverityLevel > Settings.Default.Trivial ? 2: 1))); }
+            get { return float.IsNaN(SeverityLevel)? 0: (SeverityLevel > Settings.Default.Hard? 8: (SeverityLevel > Settings.Default.Intermediate? 4: (SeverityLevel > Settings.Default.Trivial? 2: 1))); }
         }
 
-        public String Filename
-        {
-            get { return filename; }
-            set { filename=value; }
-        }
-
-        public String Comment
-        {
-            get { return comment; }
-            set { comment=value; }
-        }
-
-        public Boolean Dirty
-        {
-            get { return dirty; }
-            set { dirty=value; }
-        }
-
-        public Boolean Preparing
-        {
-            get { return preparing; }
-            set { preparing=value; }
-        }
-
-        public TimeSpan SolvingTime
-        {
-            get { return solvingTime; }
-            set { solvingTime=value; }
-        }
+        public String Filename { get { return filename; } set { filename=value; } }
+        public String Comment { get { return comment; } set { comment=value; } }
+        public Boolean Dirty { get { return dirty; } set { dirty=value; } }
+        public Boolean Preparing { get { return preparing; } set { preparing=value; } }
+        public TimeSpan SolvingTime { get { return solvingTime; } set { solvingTime = value; } }
+        public TimeSpan GenerationTime { get { return generationTime; } set { generationTime = value; } }
 
         public int CompareTo(System.Object obj)
         {
             if(obj == null) return -1;
             BaseProblem tmpProblem;
             if(!((tmpProblem=(BaseProblem)obj) is BaseProblem)) throw new ArgumentException(obj.ToString());
-
             return SeverityLevel.CompareTo(tmpProblem.SeverityLevel);
         }
 
         public void ResetSolutions()
         {
             solutions=new List<Solution>();
-            nSolutions=0;
         }
 
         public BaseProblem Clone()
@@ -194,8 +148,7 @@ namespace Sudoku
             dest.matrix=CloneMatrix();
 
             dest.ResetSolutions();
-            dest.nSolutions=nSolutions;
-            for(i=0; i < nSolutions && i < Settings.Default.MaxSolutions; i++)
+            for(i=0; i < NumberOfSolutions && i < Settings.Default.MaxSolutions; i++)
                 dest.Solutions.Add(Solutions[i]);
 
             dest.severityLevel=SeverityLevel;
@@ -204,6 +157,7 @@ namespace Sudoku
             dest.Comment=Comment;
             dest.Dirty=Dirty;
             dest.SolvingTime=SolvingTime;
+            dest.GenerationTime=GenerationTime;
 
             return dest;
         }
@@ -243,10 +197,10 @@ namespace Sudoku
 
         private void SaveResult()
         {
-            if(numSolutions++ < Settings.Default.MaxSolutions)
+            if(NumberOfSolutions < Settings.Default.MaxSolutions)
             {
                 Solution solution=null;
-                solutions.Add((Solution)CopyTo(ref solution));
+                Solutions.Add((Solution)CopyTo(ref solution));
             }
             passCount=0;
         }
@@ -316,20 +270,16 @@ namespace Sudoku
         private void ResetValue(int row, int col)
         {
             float sv=severityLevel;
-
             dirty=dirty || (GetValue(row, col) != Values.Undefined);
             SetValue(row, col, Values.Undefined, false);
-
             severityLevel=sv;
         }
 
         private void TryValue(int row, int col, byte value)
         {
             float sv=severityLevel;
-
             dirty=dirty || (value != GetValue(row, col));
             SetValue(row, col, value, true);
-
             severityLevel=sv;
         }
 
@@ -355,52 +305,59 @@ namespace Sudoku
 
         public void FindSolutions(UInt64 maxSolutions)
         {
-            preparing=true;
-            findAll=(maxSolutions == UInt64.MaxValue);
-            checkWellDefined=(maxSolutions == 2);
-            numSolutions=0;
-            passCount=0;
-            totalPassCount=0;
-            problemSolved=false;
+            solverTask = FindSolutionsAsync(maxSolutions);
+        }
+
+        private async Task FindSolutionsAsync(UInt64 maxSolutions)
+        {
+            if(aborted) return;
+
+            preparing = true;
+            findAll = (maxSolutions == UInt64.MaxValue);
+            checkWellDefined = (maxSolutions == 2);
+            passCount = 0;
+            totalPassCount = 0;
+            problemSolved = false;
+            solvingTime = TimeSpan.Zero;
 
             ResetSolutions();
-            severityLevel=Matrix.SeverityLevel;
+            severityLevel = Matrix.SeverityLevel;
+
             try
             {
-                PrepareMatrix();
+                await Task.Run(() =>
+                {
+                    try { PrepareMatrix(); } catch(ArgumentException) { /* Ignorieren, wird unten behandelt */ }
+                });
             }
             catch(ArgumentException)
             {
-                return; // Not resolvable
+                preparing = false;
+                return;
             }
             finally
             {
-                preparing=false;
+                preparing = false;
             }
 
             if(Matrix.nVariableValues == 0)
             {
-                problemSolved=true;
+                problemSolved = true;
                 SaveResult();
                 return;
             }
+
             if(!Resolvable()) return;
 
-            // prepare cancellation token source for this run
             if(cancellationTokenSource != null)
             {
                 try { cancellationTokenSource.Dispose(); } catch { }
             }
             cancellationTokenSource = new CancellationTokenSource();
-
-            solverTask = Task.Run(() => Solve(), cancellationTokenSource.Token);
-
-            return;
+            var token = cancellationTokenSource.Token;
+            await Task.Run(() => Solve(token), token);
         }
 
-        /// <summary>
-        /// Request cooperative cancellation of the running solver/minimizer.
-        /// </summary>
         public void Cancel()
         {
             aborted = true;
@@ -412,53 +369,117 @@ namespace Sudoku
             catch { }
         }
 
-        private void Solve()
+        private void Solve(CancellationToken token)
         {
             Thread.CurrentThread.CurrentUICulture=new CultureInfo(Settings.Default.DisplayLanguage);
             try
             {
-                // do not reset 'aborted' here; it may be set by Cancel()
                 nVarValues=Matrix.nVariableValues;
-                // If cancellation requested before start, abort early
-                if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
+                if(token.IsCancellationRequested) { aborted = true; return; }
                 
-                Solve(0);
+                Solve(0, token);
             }
             catch(Exception)
             {
-                // Allgemeiner Catch für Abbruch oder unerwartete Fehler
                 ResetMatrix();
                 aborted=true;
             }
         }
 
-        public BaseProblem Minimize(int maxSeverity)
+        private void Solve(int current, CancellationToken token)
+        {
+            // Strikter Abbruch-Check am Anfang jeder Rekursion
+            if(aborted || token.IsCancellationRequested) { aborted = true; return; }
+
+            BaseCell currentValue = Matrix.Get(current);
+            byte value = 0;
+
+            passCount++;
+            totalPassCount++;
+
+            const int progressInterval = 2000;
+
+            if(passCount % progressInterval == 0)
+            {
+                OnProgress();
+                if(aborted || token.IsCancellationRequested) { aborted = true; return; }
+            }
+
+            if(currentValue.nPossibleValues > 0)
+            {
+                while(!problemSolved && ++value <= SudokuForm.SudokuSize)
+                {
+                    if(aborted || token.IsCancellationRequested) { aborted = true; return; }
+
+                    ResetValue(currentValue.Row, currentValue.Col);
+                    if(currentValue.Enabled(value))
+                    {
+                        try
+                        {
+                            TryValue(currentValue.Row, currentValue.Col, value);
+                            currentValue.ComputedValue = true;
+
+                            if(current < nVarValues - 1) // Resolvable Check entfernen für Performance in tiefer Rekursion
+                            {
+                                if(Resolvable()) Solve(current + 1, token);
+                            }
+                            else
+                            {
+                                if(problemSolved = IsSolved()) SaveResult();
+                                if(findAll || (checkWellDefined && NumberOfSolutions < 2)) problemSolved = false;
+                            }
+                        }
+                        catch(ArgumentException) { }
+                    }
+                }
+            }
+            else if(currentValue.DefinitiveValue != Values.Undefined)
+            {
+                if(aborted || token.IsCancellationRequested) { aborted = true; return; }
+
+                TryValue(currentValue.Row, currentValue.Col, currentValue.DefinitiveValue);
+                currentValue.ComputedValue = true;
+
+                if(current < nVarValues - 1 && Resolvable())
+                    Solve(current + 1, token);
+                else
+                {
+                    if(problemSolved = IsSolved()) SaveResult();
+                    if(findAll || (checkWellDefined && NumberOfSolutions < 2)) problemSolved = false;
+                }
+            }
+
+            if(!problemSolved) ResetValue(currentValue.Row, currentValue.Col);
+
+            if((findAll || checkWellDefined) && current == 0) problemSolved = (NumberOfSolutions > 0);
+        }
+        public async Task<BaseProblem> Minimize(int maxSeverity)
         {
             ResetMatrix();
 
             minimalProblem=Clone();
-            if(Minimize(GetCandidates(Matrix.Cells, 0), maxSeverity))
+            
+            if(await MinimizeRecursive(GetCandidates(Matrix.Cells, 0, CancellationToken.None).GetAwaiter().GetResult(), maxSeverity, CancellationToken.None))
             {
-                minimalProblem.severityLevel=float.NaN; // force recalculation of Severity Level
-                minimalProblem.FindSolutions(2);
+                minimalProblem.severityLevel=float.NaN;
                 
-                // NEU: Task warten
-                if(minimalProblem.SolverTask != null) minimalProblem.SolverTask.Wait();
+                await minimalProblem.FindSolutionsAsync(2);
                 
-                return (minimalProblem.nSolutions == 1 ? minimalProblem: null);
+                return (minimalProblem.NumberOfSolutions == 1 ? minimalProblem: null);
             }
             else
                 return null;
         }
 
-        private Boolean Minimize(List<BaseCell> candidates, int maxSeverity)
+        // Async Recursive Minimize
+        private async Task<Boolean> MinimizeRecursive(List<BaseCell> candidates, int maxSeverity, CancellationToken token)
         {
             if(candidates == null) return true;
 
             int start=0;
             foreach(BaseCell cell in candidates)
             {
-                if(aborted) return false;
+                if(aborted || token.IsCancellationRequested) return false;
                 if(SeverityLevelInt > maxSeverity) return false;
 
                 if(nValues-(candidates.Count-start) < minimalProblem.nValues)
@@ -469,10 +490,11 @@ namespace Sudoku
                     ResetMatrix();
                     if(nValues < minimalProblem.nValues) minimalProblem=Clone();
 
-                    // OnTestCell(cell);
                     OnMinimizing(minimalProblem);
-                    if(!Minimize(GetCandidates(candidates, ++start), maxSeverity)) return false;
-                    // OnResetCell(cell);
+                    
+                    var nextCandidates = await GetCandidates(candidates, ++start, token);
+                    
+                    if(!await MinimizeRecursive(nextCandidates, maxSeverity, token)) return false;
 
                     ResetMatrix();
                     SetValue(cell, cellValue);
@@ -481,7 +503,8 @@ namespace Sudoku
             return true;
         }
 
-        private List<BaseCell> GetCandidates(List<BaseCell> source, int start)
+         // Private helper now async
+        private async Task<List<BaseCell>> GetCandidates(List<BaseCell> source, int start, CancellationToken token)
         {
             List<BaseCell> candiates=new List<BaseCell>();
 
@@ -497,25 +520,23 @@ namespace Sudoku
                         candiates.Add(source[i]);
                     else
                     {
-                        if(aborted) return null;
-                        FindSolutions(2);
+                        if(aborted || token.IsCancellationRequested) { aborted = true; return null; }
+
+                        // WICHTIG: Async call statt Wait()
+                        await FindSolutionsAsync(2);
                         
-                        // NEU: Task warten
-                        if(SolverTask != null) SolverTask.Wait();
-                        
-                        if(nSolutions == 1)
-                            candiates.Add(source[i]);
+                        if(NumberOfSolutions == 1) candiates.Add(source[i]);
                     }
                     ResetMatrix();
                     SetValue(source[i], cellValue);
                 }
 
-                if(aborted) return null;
+                if(aborted || token.IsCancellationRequested) { aborted = true; return null; }
             }
 
             return candiates;
         }
-        
+
         public virtual Boolean Resolvable()
         {
             for(int row=0; row < SudokuForm.SudokuSize; row++)
@@ -551,75 +572,7 @@ namespace Sudoku
             if (handler != null) handler(this, EventArgs.Empty);
         }
 
-        private void Solve(int current)
-        {
-            BaseCell currentValue = Matrix.Get(current);
-            byte value = 0;
-
-            passCount++;
-            totalPassCount++;
-
-            // occasional progress and cancellation checks
-            const int progressInterval = 1000; // iterations
-            int innerIterations = 0;
-
-            if(currentValue.nPossibleValues > 0)
-            {
-                while(!problemSolved && ++value <= SudokuForm.SudokuSize)
-                {
-                    // cooperative cancellation check
-                    if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
-
-                    ResetValue(currentValue.Row, currentValue.Col);
-                    if(currentValue.Enabled(value))
-                    {
-                        try
-                        {
-                            TryValue(currentValue.Row, currentValue.Col, value);
-                            currentValue.ComputedValue = true;
-                            if(current < nVarValues - 1 && Resolvable())
-                                Solve(current + 1);
-                            else
-                            {
-                                if(problemSolved = Solved()) SaveResult();
-                                if(findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
-                            }
-                        }
-                        catch(ArgumentException)
-                        {
-                            // do nothing, the problem is not resolvable
-                        }
-                    }
-
-                    // progress/cancellation throttling
-                    if(++innerIterations >= progressInterval)
-                    {
-                        innerIterations = 0;
-                        OnProgress();
-                        if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
-                    }
-                }
-            }
-            else if(currentValue.DefinitiveValue != Values.Undefined)
-            {
-                if(cancellationTokenSource?.Token.IsCancellationRequested == true) { aborted = true; return; }
-
-                TryValue(currentValue.Row, currentValue.Col, currentValue.DefinitiveValue);
-                currentValue.ComputedValue = true;
-                if(current < nVarValues - 1 && Resolvable())
-                    Solve(current + 1);
-                else
-                {
-                    if(problemSolved = Solved()) SaveResult();
-                    if(findAll || (checkWellDefined && numSolutions < 2)) problemSolved = false;
-                }
-            }
-
-            if(!problemSolved) ResetValue(currentValue.Row, currentValue.Col);
-
-            if((findAll || checkWellDefined) && current == 0) problemSolved = (numSolutions > 0);
-        }
-        private Boolean Solved()
+        private Boolean IsSolved()
         {
             int i, j;
             for(i=0; i < SudokuForm.SudokuSize; i++)
@@ -628,7 +581,7 @@ namespace Sudoku
 
             return true;
         }
-
+        
         private Boolean Check(int row, int col)
         {
             return !(Matrix.Cell(row, col).nPossibleValues == 0 && GetValue(row, col) == Values.Undefined && Matrix.Cell(row, col).DefinitiveValue == Values.Undefined);
@@ -637,7 +590,6 @@ namespace Sudoku
         public void SaveToFile(String file)
         {
             StreamWriter sw;
-
             try
             {
                 sw=new StreamWriter(file);
@@ -647,7 +599,6 @@ namespace Sudoku
                 Dirty=false;
             }
             catch(Exception) { throw; }
-            return;
         }
 
         public void SaveToHTMLFile(String file)

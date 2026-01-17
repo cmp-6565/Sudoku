@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,22 +14,28 @@ namespace Sudoku
         public BaseProblem CurrentProblem { get; private set; }
         public BaseProblem Backup { get; private set; }
         private Stack<CoreValue> undoStack;
+        public TimeSpan TotalGenerationTime { get; private set; }
 
         // Events
         public event EventHandler MatrixChanged;
         public event EventHandler SolutionFound;
+        public event EventHandler Generating;
 
         public SudokuController()
         {
             undoStack = new Stack<CoreValue>();
         }
 
-        public void CreateNewProblem(bool xSudoku, bool notify=true)
+        public SudokuController(String filenname, Boolean loadCandidates) : this()
+        {
+            CreateProblemFromFile(filenname, Settings.Default.GenerateNormalSudoku, Settings.Default.GenerateXSudoku, loadCandidates);
+            BackupProblem();
+        }
+        public void CreateNewProblem(bool xSudoku, bool notify = true)
         {
             CurrentProblem = xSudoku ? (BaseProblem)new XSudokuProblem() : new SudokuProblem();
             BackupProblem();
-            if(notify)
-                NotifyMatrixChanged();
+            if(notify) NotifyMatrixChanged();
         }
 
         public void UpdateProblemState(BaseProblem updatedProblem)
@@ -36,50 +43,56 @@ namespace Sudoku
             CurrentProblem = updatedProblem.Clone();
         }
 
-        public async Task SolveAsync(bool findAllSolutions, IProgress<SudokuProgress> progress, CancellationToken token)
+        public async Task Solve(bool findAllSolutions, IProgress<GenerationProgressState> progress, CancellationToken token)
         {
             if(CurrentProblem == null) return;
 
-            ulong maxSolutions = findAllSolutions? UInt64.MaxValue: 1;
+            ulong maxSolutions = findAllSolutions ? UInt64.MaxValue : 1;
+            var stopwatch = Stopwatch.StartNew();
 
             CurrentProblem.FindSolutions(maxSolutions);
-
             if(CurrentProblem.SolverTask != null)
             {
                 while(!CurrentProblem.SolverTask.IsCompleted)
                 {
-                    token.ThrowIfCancellationRequested(); // Abbruch prüfen
+                    token.ThrowIfCancellationRequested();
 
-                    // Fortschritt melden
-                    if(progress != null)
+                    progress?.Report(new GenerationProgressState
                     {
-                        var state = new SudokuProgress
-                        {
-                            Message = Resources.Thinking,
-                            PassCount = CurrentProblem.TotalPassCounter,
-                            SolutionCount = CurrentProblem.nSolutions,
-                            Elapsed = DateTime.Now - DateTime.Now // Ggf. echte Startzeit übergeben oder im State halten
-                        };
-                        progress.Report(state);
-                    }
+                        StatusText = Resources.Thinking,
+                        PassCount = CurrentProblem.TotalPassCounter,
+                        SolutionCount = CurrentProblem.NumberOfSolutions,
+                        Elapsed = stopwatch.Elapsed
+                    });
 
-                    await Task.Delay(50); // Polling Intervall
+                    await Task.Delay(50);
                 }
 
-                // Auf Exceptions warten
                 await CurrentProblem.SolverTask;
             }
 
-            // 4. Abschluss
+            stopwatch.Stop();
+            CurrentProblem.SolvingTime = stopwatch.Elapsed;
             NotifyMatrixChanged();
-            SolutionFound?.Invoke(this, EventArgs.Empty);
+            NotifySolutionFound();
         }
 
-        private void NotifyMatrixChanged()
+        private async void NotifyMatrixChanged()
         {
             MatrixChanged?.Invoke(this, EventArgs.Empty);
         }
-        public void RestoreProblemState(bool notify=true)
+        private void NotifySolutionFound()
+        {
+            SolutionFound?.Invoke(this, EventArgs.Empty);
+        }
+        private async void NotifyGeneration(Stopwatch stopwatch, CancellationToken token)
+        {
+            await Task.Delay(10, token);
+            CurrentProblem.GenerationTime += stopwatch.Elapsed;
+            stopwatch.Restart();
+            Generating?.Invoke(this, EventArgs.Empty);
+        }
+        public void RestoreProblemState(bool notify = true)
         {
             Char sudokuType = (Char)Settings.Default.State[0];
             if(sudokuType != SudokuProblem.ProblemIdentifier && sudokuType != XSudokuProblem.ProblemIdentifier)
@@ -99,13 +112,257 @@ namespace Sudoku
                 ;
             }
         }
+        public async Task<bool> GenerateBaseProblem(GenerationParameters generationParameters, bool usePrecalculated, IProgress<GenerationProgressState> progress, CancellationToken token)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            int counter = 0;
+            int minPreAllocations = CurrentProblem.Matrix.MinimumValues;
+
+            if(usePrecalculated)
+            {
+                if(LoadProblem(CurrentProblem is XSudokuProblem))
+                {
+                    NotifyMatrixChanged();
+                    BackupProblem();
+                    return true;
+                }
+                else
+                    usePrecalculated = false;
+            }
+
+            if(!usePrecalculated)
+            {
+                TotalGenerationTime += CurrentProblem.GenerationTime;
+                RestoreProblem(); 
+                await Task.Run(async () =>
+                {
+                    do
+                    {
+                        token.ThrowIfCancellationRequested();
+
+                        counter++;
+                        if(generationParameters.Reset)
+                        {
+                            CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, Values.Undefined);
+                            CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = false;
+
+                            progress?.Report(new GenerationProgressState
+                            {
+                                Row = generationParameters.Row,
+                                Col = generationParameters.Col,
+                                Value = Values.Undefined,
+                                StatusText = null
+                            });
+                        }
+
+                        generationParameters.NewValue();
+                        try
+                        {
+                            CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue);
+                            CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = true;
+
+                            bool updateText = (counter % 100) == 0;
+
+                            progress?.Report(new GenerationProgressState
+                            {
+                                Row = generationParameters.Row,
+                                Col = generationParameters.Col,
+                                Value = generationParameters.GeneratedValue,
+                                ReadOnly = true,
+                                Elapsed = TotalGenerationTime,
+                                StatusText = updateText ? Resources.Generating : null
+                            });
+
+                            if(generationParameters.PreAllocatedValues >= minPreAllocations)
+                                generationParameters.CheckedProblems += 1;
+
+                            generationParameters.PreAllocatedValues = CurrentProblem.nValues - CurrentProblem.nComputedValues;
+                            generationParameters.Reset = !CurrentProblem.Resolvable();
+                        }
+                        catch(ArgumentException)
+                        {
+                            generationParameters.Reset = true;
+                        }
+
+                        if((counter % 100) == 0)
+                        {
+                            if(stopwatch.ElapsedMilliseconds > 50)
+                            {
+                                NotifyGeneration(stopwatch, token);
+                            }
+                        }
+
+                    } while(!token.IsCancellationRequested && (generationParameters.Reset || CurrentProblem.NumDistinctValues() < SudokuForm.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
+                }, token);
+            }
+
+            stopwatch.Stop();
+
+            NotifyGeneration(stopwatch, token);
+            BackupProblem();
+            return true;
+        }
+
+        public async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, TrickyProblems trickyProblemsCollection, IProgress<GenerationProgressState> progress, CancellationToken token)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            int counter = 0;
+            TotalGenerationTime = TimeSpan.Zero;
+
+            while(!token.IsCancellationRequested)
+            {
+                counter++;
+                await GenerateBaseProblem(generationParameters, Settings.Default.UsePrecalculatedProblems, progress, token);
+
+                if(token.IsCancellationRequested) return false;
+
+                await Task.Run(() =>
+                {
+                    CurrentProblem.FindSolutions(2);
+                    CurrentProblem.SolverTask?.Wait();
+                });
+
+                generationParameters.TotalPasses += CurrentProblem.TotalPassCounter;
+
+                if(CurrentProblem.NumberOfSolutions == 0)
+                {
+                    generationParameters.Reset = true;
+                }
+                else if(CurrentProblem.NumberOfSolutions == 1 && !CurrentProblem.Aborted)
+                {
+                    bool processProblem = true;
+
+                    if(Settings.Default.GenerateMinimalProblems)
+                    {
+                        if(SeverityLevelInt() <= targetSeverity)
+                        {
+                            var minimized = await Minimize(targetSeverity);
+                            if(minimized != null)
+                            {
+                                CurrentProblem = minimized;
+                                processProblem = true;
+                            }
+                            else
+                            {
+                                processProblem = false; // Minimierung fehlgeschlagen
+                            }
+                        }
+                    }
+                    else
+                    {
+                        FillCells(generationParameters, targetSeverity, stopwatch, token);
+                    }
+
+                    if((counter % 100) == 0 && stopwatch.ElapsedMilliseconds > 50)
+                    {
+                        NotifyGeneration(stopwatch, token);
+                    }
+
+                    if(processProblem && (SeverityLevelInt() & targetSeverity) != 0)
+                    {
+                        CurrentProblem.ResetMatrix();
+
+                        if((SeverityLevelInt() & targetSeverity) != 0)
+                        {
+                            if(CurrentProblem.IsTricky && !Settings.Default.UsePrecalculatedProblems)
+                            {
+                                trickyProblemsCollection?.Add(CurrentProblem);
+                            }
+                            return true; // ERFOLG
+                        }
+                    }
+                    generationParameters.Reset = true;
+                }
+                else
+                {
+                    generationParameters.Reset = false;
+                }
+            }
+
+            return false;
+        }
+
+        private async Task<BaseProblem> Minimize(int targetSeverity)
+        {
+            return await CurrentProblem.Minimize(targetSeverity);
+        }
+
+        private void FillCells(GenerationParameters generationParameters, int targetSeverity, Stopwatch stopwatch, CancellationToken token)
+        {
+            int counter = 0;
+            CurrentProblem.ResetMatrix();
+
+            // Fülle bis MinValues oder TargetSeverity
+            while(CurrentProblem.nValues < Settings.Default.MinValues)
+            {
+                if((counter++ % 10) == 0) NotifyGeneration(stopwatch, token);
+
+                generationParameters.NewValue();
+                if(CurrentProblem.GetValue(generationParameters.Row, generationParameters.Col) == Values.Undefined && !token.IsCancellationRequested)
+                {
+                    byte solValue = CurrentProblem.Solutions[0].GetValue(generationParameters.Row, generationParameters.Col);
+                    CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, solValue);
+                    CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = true;
+                }
+            }
+            while((SeverityLevelInt() & targetSeverity) == 0 && CurrentProblem.nValues < Settings.Default.MaxValues && !token.IsCancellationRequested)
+            {
+                if((counter++ % 10) == 0) NotifyGeneration(stopwatch, token);
+
+                generationParameters.NewValue();
+                if(CurrentProblem.GetValue(generationParameters.Row, generationParameters.Col) == Values.Undefined)
+                {
+                    byte solValue = CurrentProblem.Solutions[0].GetValue(generationParameters.Row, generationParameters.Col);
+                    CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, solValue);
+                    CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = true;
+                }
+            }
+        }
+
+        private int SeverityLevelInt()
+        {
+            CurrentProblem.SeverityLevel = float.NaN;
+            return CurrentProblem.SeverityLevelInt;
+        }
+
+        public void CreateProblemFromFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
+        {
+            StreamReader sr = null;
+            try
+            {
+                Char sudokuType;
+                sr = new StreamReader(filename.Replace("%20", " "), System.Text.Encoding.Default);
+                sudokuType = (Char)sr.Read();
+                if(sudokuType != SudokuProblem.ProblemIdentifier && sudokuType != XSudokuProblem.ProblemIdentifier) throw new InvalidDataException();
+                if(sudokuType == SudokuProblem.ProblemIdentifier && normalSudoku || sudokuType == XSudokuProblem.ProblemIdentifier && xSudoku)
+                {
+                    CreateNewProblem(sudokuType == XSudokuProblem.ProblemIdentifier);
+                    CurrentProblem.ReadFromFile(sr);
+                    if(loadCandidates)
+                    {
+                        CurrentProblem.LoadCandidates(sr, false);
+                        CurrentProblem.LoadCandidates(sr, true);
+                    }
+                }
+            }
+            catch(Exception) { throw; }
+            finally { sr.Close(); }
+            CurrentProblem.Filename = filename;
+            NotifyMatrixChanged();
+        }
+
+        private Boolean LoadProblem(Boolean xSudoku)
+        {
+            CreateNewProblem(xSudoku);
+            return CurrentProblem.Load();
+        }
 
         public void SyncWithGui(BaseProblem problemFromGui)
         {
             CurrentProblem = problemFromGui.Clone();
         }
 
-        public void ResetProblem()
+        public void RestoreProblem()
         {
             CurrentProblem = Backup.Clone();
         }
@@ -114,6 +371,7 @@ namespace Sudoku
         {
             Backup = CurrentProblem.Clone();
         }
+
         public void PushUndo(CoreValue value)
         {
             undoStack.Push(value);
@@ -128,18 +386,33 @@ namespace Sudoku
         {
             undoStack.Clear();
         }
-
         public Boolean CanUndo()
         {
             return undoStack.Count > 0;
         }
+        public void SaveProblem(String filename)
+        {
+            CurrentProblem.SaveToFile(filename);
+        }
+        public void ExportHTML(String filename)
+        {
+            CurrentProblem.SaveToHTMLFile(filename);
+        }
+
+        public void Cancel()
+        {
+            CurrentProblem?.Cancel();
+        }
     }
-        // Hilfsklasse für den Fortschritt (falls noch nicht vorhanden)
-    public class SudokuProgress
+    public class GenerationProgressState
     {
-        public string Message { get; set; }
         public long PassCount { get; set; }
         public long SolutionCount { get; set; }
         public TimeSpan Elapsed { get; set; }
+        public int Row { get; set; }
+        public int Col { get; set; }
+        public byte Value { get; set; }
+        public bool ReadOnly { get; set; }
+        public string StatusText { get; set; }
     }
 }
