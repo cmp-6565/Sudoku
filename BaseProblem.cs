@@ -453,13 +453,14 @@ namespace Sudoku
 
             if((findAll || checkWellDefined) && current == 0) problemSolved = (NumberOfSolutions > 0);
         }
-        public async Task<BaseProblem> Minimize(int maxSeverity)
+        public async Task<BaseProblem> Minimize(int maxSeverity, CancellationToken token)
         {
             ResetMatrix();
 
             minimalProblem = Clone();
 
-            if(await MinimizeRecursive(GetCandidates(Matrix.Cells, 0, CancellationToken.None).GetAwaiter().GetResult(), maxSeverity, CancellationToken.None))
+            List<BaseCell> candidates=await GetCandidates(Matrix.Cells, 0, CancellationToken.None);
+            if(await MinimizeRecursive(candidates, maxSeverity, token))
             {
                 minimalProblem.severityLevel = float.NaN;
 
@@ -494,6 +495,7 @@ namespace Sudoku
 
                     var nextCandidates = await GetCandidates(candidates, ++start, token);
 
+                    if(aborted || token.IsCancellationRequested) return false;
                     if(!await MinimizeRecursive(nextCandidates, maxSeverity, token)) return false;
 
                     ResetMatrix();
@@ -522,7 +524,6 @@ namespace Sudoku
                     {
                         if(aborted || token.IsCancellationRequested) { aborted = true; return null; }
 
-                        // WICHTIG: Async call statt Wait()
                         await FindSolutionsAsync(2);
 
                         if(NumberOfSolutions == 1) candiates.Add(source[i]);

@@ -268,7 +268,7 @@ namespace Sudoku
             return true;
         }
 
-        public async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, TrickyProblems trickyProblemsCollection, IProgress<GenerationProgressState> progress, CancellationToken token)
+        private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, TrickyProblems trickyProblemsCollection, IProgress<GenerationProgressState> progress, CancellationToken token)
         {
             var stopwatch = Stopwatch.StartNew();
             int counter = 0;
@@ -301,7 +301,7 @@ namespace Sudoku
                     {
                         if(SeverityLevelInt() <= targetSeverity)
                         {
-                            var minimized = await Minimize(targetSeverity);
+                            var minimized = await Minimize(targetSeverity, token);
                             if(minimized != null)
                             {
                                 CurrentProblem = minimized;
@@ -347,12 +347,12 @@ namespace Sudoku
             return false;
         }
 
-        public async Task<BaseProblem> Minimize(int targetSeverity)
+        public async Task<BaseProblem> Minimize(int targetSeverity, CancellationToken token)
         {
             if(CurrentProblem == null) return null;
 
             BackupProblem();
-            return await CurrentProblem.Minimize(targetSeverity);
+            return await CurrentProblem.Minimize(targetSeverity, token);
         }
 
         private void FillCells(GenerationParameters generationParameters, int targetSeverity, Stopwatch stopwatch, CancellationToken token)

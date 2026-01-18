@@ -2043,9 +2043,10 @@ namespace Sudoku
             controller.CurrentProblem.TestCell += HandleOnTestCell;
             controller.CurrentProblem.ResetCell += HandleOnResetCell;
 
+            cts = new CancellationTokenSource();
             try
             {
-                minimizedProblem = await controller.Minimize(maxSeverity);
+                minimizedProblem = await controller.Minimize(maxSeverity, cts.Token);
 
                 if(minimizedProblem != null)
                 {
