@@ -1,6 +1,7 @@
-using System;
-using BenchmarkDotNet.Attributes;
 using System.Collections.Generic;
+
+using BenchmarkDotNet.Attributes;
+
 using Microsoft.VSDiagnostics;
 
 namespace Sudoku.Benchmarks
@@ -186,14 +187,14 @@ namespace Sudoku.Benchmarks
                 0
             };
             int size = SudokuForm.SudokuSize;
-            for (int p = 0; p < puzzles.Length; p++)
+            for(int p = 0; p < puzzles.Length; p++)
             {
                 // keep puzzles in memory; do not pre-create SudokuProblem instances to avoid cloning issues
                 // initialization of problem instances will happen in each benchmark iteration
                 // (preparing puzzles array only)
                 // nothing to do here besides storing the puzzle
                 // preparedProblems list kept for backward compatibility but left empty
-                
+
                 // no-op
             }
         }
@@ -222,7 +223,7 @@ namespace Sudoku.Benchmarks
         public int Solve_All()
         {
             int total = 0;
-            for (int i = 0; i < puzzles.Length; i++)
+            for(int i = 0; i < puzzles.Length; i++)
             {
                 var prob = CreateProblemFromArray(puzzles[i]);
                 prob.FindSolutions(1UL);
@@ -245,13 +246,13 @@ namespace Sudoku.Benchmarks
             int size = SudokuForm.SudokuSize;
             prob.Matrix.Init();
             prob.Matrix.SetPredefinedValues = false;
-            for (int i = 0; i < arr.Length; i++)
+            for(int i = 0; i < arr.Length; i++)
             {
                 int v = arr[i];
-                if (v != 0) prob.SetValue(i / size, i % size, (byte)v);
+                if(v != 0) prob.SetValue(i / size, i % size, (byte)v);
             }
             prob.Matrix.SetPredefinedValues = true;
             return prob;
         }
     }
- }
+}

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Sudoku
 {
     [Serializable]
-    internal abstract class BaseCell : EventArgs, IComparable
+    internal abstract class BaseCell: EventArgs, IComparable
     {
         private CoreValue coreValue = new CoreValue();
         private byte definitiveValue = Values.Undefined;
@@ -68,8 +68,8 @@ namespace Sudoku
 
         public static bool operator ==(BaseCell op1, BaseCell op2)
         {
-            if (ReferenceEquals(op1, op2)) return true;
-            if (op1 is null || op2 is null) return false;
+            if(ReferenceEquals(op1, op2)) return true;
+            if(op1 is null || op2 is null) return false;
             return op1.Row == op2.Row && op1.Col == op2.Col;
         }
 
@@ -85,11 +85,11 @@ namespace Sudoku
             get => coreValue.CellValue;
             set
             {
-                if (CellValue == value) return;
-                if (value != Values.Undefined)
+                if(CellValue == value) return;
+                if(value != Values.Undefined)
                 {
                     DefinitiveValue = Values.Undefined;
-                    if (!Enabled(value)) throw new ArgumentException("value not possible", "value");
+                    if(!Enabled(value)) throw new ArgumentException("value not possible", "value");
                 }
                 SetBlocks(CellValue, value, true);
                 coreValue.CellValue = value;
@@ -101,7 +101,7 @@ namespace Sudoku
             get => definitiveValue;
             set
             {
-                if (DefinitiveValue == value) return;
+                if(DefinitiveValue == value) return;
                 SetBlocks(DefinitiveValue, value, false);
                 definitiveValue = value;
             }
@@ -125,17 +125,17 @@ namespace Sudoku
 
         public int CompareTo(object obj)
         {
-            if (obj == null) return -1;
+            if(obj == null) return -1;
             BaseCell tmpObj = obj as BaseCell;
-            if (tmpObj == null) throw new ArgumentException(obj.ToString());
-            if (FixedValue) return int.MaxValue;
-            if (tmpObj.FixedValue) return int.MinValue;
+            if(tmpObj == null) throw new ArgumentException(obj.ToString());
+            if(FixedValue) return int.MaxValue;
+            if(tmpObj.FixedValue) return int.MinValue;
             return ((nPossibleValues * SudokuForm.TotalCellCount + Row * SudokuForm.SudokuSize + Col) - (tmpObj.nPossibleValues * SudokuForm.TotalCellCount + tmpObj.Row * SudokuForm.SudokuSize + tmpObj.Col));
         }
 
         public bool Enabled(int value)
         {
-            if (value < 1 || value > SudokuForm.SudokuSize) return false;
+            if(value < 1 || value > SudokuForm.SudokuSize) return false;
             EnsureEnabledMaskInitialized();
             return (enabledMask & (1 << value)) != 0;
         }
@@ -166,9 +166,9 @@ namespace Sudoku
 
         private void EnsureEnabledMaskInitialized()
         {
-            if (enabledMaskInitialized) return;
+            if(enabledMaskInitialized) return;
             enabledMask = 0;
-            for (int i = 1; i <= SudokuForm.SudokuSize; i++) if (directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i);
+            for(int i = 1; i <= SudokuForm.SudokuSize; i++) if(directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i);
             enabledMaskInitialized = true;
         }
 
@@ -177,9 +177,9 @@ namespace Sudoku
             indirectBlocks = new int[SudokuForm.SudokuSize + 1];
             possibleValuesCount = directBlocks.Length;
             enabledMask = 0;
-            for (int i = 1; i <= SudokuForm.SudokuSize; i++)
+            for(int i = 1; i <= SudokuForm.SudokuSize; i++)
             {
-                if (directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i); else possibleValuesCount--;
+                if(directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i); else possibleValuesCount--;
             }
             enabledMaskInitialized = true;
             definitiveValue = Values.Undefined;
@@ -189,28 +189,29 @@ namespace Sudoku
 
         private static void EnsureLowbitIndex()
         {
-            if (lowbitIndex != null) return;
+            if(lowbitIndex != null) return;
             int size = 1 << 10;
             lowbitIndex = new int[size];
-            for (int i = 0; i < size; i++) lowbitIndex[i] = -1;
-            for (int b = 0; b < 10; b++) lowbitIndex[1 << b] = b;
+            for(int i = 0; i < size; i++) lowbitIndex[i] = -1;
+            for(int b = 0; b < 10; b++) lowbitIndex[1 << b] = b;
         }
 
         internal static int LowBitIndex(int lowbit)
         {
             EnsureLowbitIndex();
-            if (lowbit > 0 && lowbit < lowbitIndex.Length) return lowbitIndex[lowbit];
-            int idx = 0; while (lowbit > 1) { lowbit >>= 1; idx++; } return idx;
+            if(lowbit > 0 && lowbit < lowbitIndex.Length) return lowbitIndex[lowbit];
+            int idx = 0; while(lowbit > 1) { lowbit >>= 1; idx++; }
+            return idx;
         }
 
         private static int PopCount(int v)
         {
             // 16-bit lookup table population count (lazy initialized)
-            if (popcountCache == null)
+            if(popcountCache == null)
             {
                 // initialize table for 0..65535
                 popcountCache = new byte[1 << 16];
-                for (int i = 0; i < popcountCache.Length; i++)
+                for(int i = 0; i < popcountCache.Length; i++)
                 {
                     int x = i;
                     x = x - ((x >> 1) & 0x5555);
@@ -225,35 +226,35 @@ namespace Sudoku
 
         private byte GetDefiniteValue()
         {
-            if (DefinitiveValue != Values.Undefined) return DefinitiveValue;
+            if(DefinitiveValue != Values.Undefined) return DefinitiveValue;
             bool found = false; byte dv = Values.Undefined;
-            for (byte possibleValue = 1; possibleValue < SudokuForm.SudokuSize + 1; possibleValue++)
-                if (Enabled(possibleValue) && nPossibleValues == 1)
+            for(byte possibleValue = 1; possibleValue < SudokuForm.SudokuSize + 1; possibleValue++)
+                if(Enabled(possibleValue) && nPossibleValues == 1)
                 {
-                    if (found) return Values.Undefined; found = true; dv = possibleValue;
+                    if(found) return Values.Undefined; found = true; dv = possibleValue;
                 }
             return dv;
         }
 
-        public void FillDefiniteValue() { if ((DefinitiveValue = GetDefiniteValue()) == Values.Undefined) throw new InvalidSudokuValueException(); }
+        public void FillDefiniteValue() { if((DefinitiveValue = GetDefiniteValue()) == Values.Undefined) throw new InvalidSudokuValueException(); }
 
         private void SetBlocks(byte oldValue, byte newValue, bool direct)
         {
-            if (oldValue != Values.Undefined)
+            if(oldValue != Values.Undefined)
             {
-                if (direct) 
+                if(direct)
                     SetBlock(oldValue, true, direct);
                 else
-                    for (int i=1; i < SudokuForm.SudokuSize+1; i++)
+                    for(int i = 1; i < SudokuForm.SudokuSize + 1; i++)
                         SetBlock(i, true, direct);
                 EnableNeighbors(oldValue, direct);
             }
-            if (newValue != Values.Undefined)
+            if(newValue != Values.Undefined)
             {
-                if (direct) 
+                if(direct)
                     SetBlock(newValue, false, direct);
                 else
-                    for (int i=1; i < SudokuForm.SudokuSize+1; i++) 
+                    for(int i = 1; i < SudokuForm.SudokuSize + 1; i++)
                         SetBlock(i, false, direct);
                 DisableNeighbors(newValue, direct);
             }
@@ -261,7 +262,7 @@ namespace Sudoku
 
         private void EnableNeighbors(byte value, bool direct) { SetNeighborBlocks(value, true, direct); }
         private void DisableNeighbors(byte value, bool direct) { SetNeighborBlocks(value, false, direct); }
-        private void SetNeighborBlocks(byte newValue, bool enable, bool direct) { foreach (BaseCell neighbor in neighbors) neighbor.SetBlock(newValue, enable, direct); }
+        private void SetNeighborBlocks(byte newValue, bool enable, bool direct) { foreach(BaseCell neighbor in neighbors) neighbor.SetBlock(newValue, enable, direct); }
 
         public void SetBlock(int value, bool enable, bool direct) { EnsureEnabledMaskInitialized(); SetBlockInternal(value, enable, direct); }
 
@@ -269,19 +270,19 @@ namespace Sudoku
         {
             int bit = 1 << value;
             bool beforeEnabled = (enabledMask & bit) != 0;
-            if (enable)
+            if(enable)
             {
-                if (direct) { if (--directBlocks[value] < 0) throw new ArgumentException("enable not possible", "enable"); }
-                else { if (--indirectBlocks[value] < 0) throw new ArgumentException("enable not possible", "enable"); }
-                if ((directBlocks[value] == 0 && indirectBlocks[value] == 0)) possibleValuesCount++;
+                if(direct) { if(--directBlocks[value] < 0) throw new ArgumentException("enable not possible", "enable"); }
+                else { if(--indirectBlocks[value] < 0) throw new ArgumentException("enable not possible", "enable"); }
+                if((directBlocks[value] == 0 && indirectBlocks[value] == 0)) possibleValuesCount++;
             }
             else
             {
-                if ((directBlocks[value] == 0 && indirectBlocks[value] == 0)) possibleValuesCount--;
-                if (direct) directBlocks[value]++; else indirectBlocks[value]++;
+                if((directBlocks[value] == 0 && indirectBlocks[value] == 0)) possibleValuesCount--;
+                if(direct) directBlocks[value]++; else indirectBlocks[value]++;
             }
             bool afterEnabled = (directBlocks[value] == 0 && indirectBlocks[value] == 0);
-            if (beforeEnabled != afterEnabled) { if (afterEnabled) enabledMask |= bit; else enabledMask &= ~bit; }
+            if(beforeEnabled != afterEnabled) { if(afterEnabled) enabledMask |= bit; else enabledMask &= ~bit; }
         }
 
         public bool TrySetBlock(int value, bool enable, bool direct)
@@ -299,7 +300,7 @@ namespace Sudoku
             EnsureEnabledMaskInitialized();
             int before = enabledMask & mask;
             int m = mask;
-            while (m != 0)
+            while(m != 0)
             {
                 int lowbit = m & -m;
                 int value = LowBitIndex(lowbit);
@@ -314,22 +315,22 @@ namespace Sudoku
 
         public bool HasCandidate()
         {
-            return candidatesMask != 0 || exclusionCandidatesMask != 0; 
+            return candidatesMask != 0 || exclusionCandidatesMask != 0;
         }
 
         public bool GetCandidateMask(int candidate, bool exclusionCandidate)
         {
-            if (candidate < 1 || candidate > SudokuForm.SudokuSize) return false;
+            if(candidate < 1 || candidate > SudokuForm.SudokuSize) return false;
             int bit = 1 << candidate;
-            if (exclusionCandidate) return (exclusionCandidatesMask & bit) != 0;
+            if(exclusionCandidate) return (exclusionCandidatesMask & bit) != 0;
             return (candidatesMask & bit) != 0;
         }
 
         public void ToggleCandidateMask(int candidate, bool exclusionCandidate)
         {
-            if (candidate < 1 || candidate > SudokuForm.SudokuSize) throw new ArgumentOutOfRangeException(nameof(candidate));
+            if(candidate < 1 || candidate > SudokuForm.SudokuSize) throw new ArgumentOutOfRangeException(nameof(candidate));
             int bit = 1 << candidate;
-            if (exclusionCandidate) exclusionCandidatesMask ^= bit; else candidatesMask ^= bit;
+            if(exclusionCandidate) exclusionCandidatesMask ^= bit; else candidatesMask ^= bit;
         }
 
         private bool Change(int allowedMask) { return (GetEnabledMask() & allowedMask) != 0; }
@@ -352,12 +353,12 @@ namespace Sudoku
             bool rc = false;
 
             // fast guards
-            if (CellValue != Values.Undefined) return false;
+            if(CellValue != Values.Undefined) return false;
             int count = nPossibleValues;
-            if (count <= 1 || count >= 8) return false;
+            if(count <= 1 || count >= 8) return false;
 
             int allowedMask = GetEnabledMask();
-            if (allowedMask == 0) return false;
+            if(allowedMask == 0) return false;
 
             int nlen = neighborCells.Length;
 
@@ -369,10 +370,10 @@ namespace Sudoku
             int[] threadCommonStamp = scratch.CommonStamp;
 
             // collect neighbor masks and popcounts into reused arrays
-            for (int ni = 0; ni < nlen; ni++)
+            for(int ni = 0; ni < nlen; ni++)
             {
                 var nc = neighborCells[ni];
-                if (nc.CellValue == Values.Undefined)
+                if(nc.CellValue == Values.Undefined)
                 {
                     int nm = nc.GetEnabledMask();
                     threadNeighborMasks[ni] = nm;
@@ -388,49 +389,49 @@ namespace Sudoku
             // cheap early rejects: not enough candidate cells or insufficient union bits
             int cheapCandidateCount = 0;
             int unionMasks = 0;
-            for (int ni = 0; ni < nlen; ni++)
+            for(int ni = 0; ni < nlen; ni++)
             {
                 int nm = threadNeighborMasks[ni];
-                if (threadNeighborCounts[ni] == 0) continue;
-                if ((nm & ~allowedMask) != 0) continue;
+                if(threadNeighborCounts[ni] == 0) continue;
+                if((nm & ~allowedMask) != 0) continue;
                 cheapCandidateCount++;
                 unionMasks |= nm;
             }
-            if (cheapCandidateCount < count) return false;
-            if (PopCount(unionMasks) < count) return false;
+            if(cheapCandidateCount < count) return false;
+            if(PopCount(unionMasks) < count) return false;
 
             // collect candidate neighbor cells (masks subset of allowed and popcount <= count)
             int candidateCount = 0;
-            for (int ni = 0; ni < nlen; ni++)
+            for(int ni = 0; ni < nlen; ni++)
             {
-                if (threadNeighborCounts[ni] == 0) continue;
+                if(threadNeighborCounts[ni] == 0) continue;
                 int nm = threadNeighborMasks[ni];
-                if (threadNeighborCounts[ni] <= count && (nm & ~allowedMask) == 0)
+                if(threadNeighborCounts[ni] <= count && (nm & ~allowedMask) == 0)
                     threadCandidateArr[candidateCount++] = neighborCells[ni];
             }
 
-            if (candidateCount != count || candidateCount == 0) return false;
+            if(candidateCount != count || candidateCount == 0) return false;
 
             // mark candidate cells
             Array.Clear(threadCommonStamp, 0, SudokuForm.TotalCellCount);
-            for (int ci = 0; ci < candidateCount; ci++)
+            for(int ci = 0; ci < candidateCount; ci++)
             {
                 var c = threadCandidateArr[ci];
                 int idx = c.Row * SudokuForm.SudokuSize + c.Col;
                 threadCommonStamp[idx] = 1;
             }
 
-            for (int ni = 0; ni < nlen; ni++)
+            for(int ni = 0; ni < nlen; ni++)
             {
                 BaseCell updateCell = neighborCells[ni];
-                if (updateCell == this) continue;
-                if (updateCell.CellValue != Values.Undefined) continue;
+                if(updateCell == this) continue;
+                if(updateCell.CellValue != Values.Undefined) continue;
                 int uidx = updateCell.Row * SudokuForm.SudokuSize + updateCell.Col;
-                if (threadCommonStamp[uidx] != 0) continue;
+                if(threadCommonStamp[uidx] != 0) continue;
                 // quick check: use cached neighbor mask collected earlier to skip TryDisableMask
                 int updateMask = threadNeighborMasks[ni];
-                if ((updateMask & allowedMask) == 0) continue;
-                if (updateCell.TryDisableMask(allowedMask, false)) rc = true;
+                if((updateMask & allowedMask) == 0) continue;
+                if(updateCell.TryDisableMask(allowedMask, false)) rc = true;
             }
 
             return rc;
@@ -445,18 +446,18 @@ namespace Sudoku
             try
             {
                 Array.Clear(stamp, 0, total);
-                foreach (BaseCell c in candidateNeighbors)
+                foreach(BaseCell c in candidateNeighbors)
                 {
                     int idx = c.Row * SudokuForm.SudokuSize + c.Col;
                     stamp[idx] = 1;
                 }
 
                 List<BaseCell> commonNeighbors = new List<BaseCell>();
-                foreach (BaseCell cell in neighborCells)
+                foreach(BaseCell cell in neighborCells)
                 {
-                    if (cell == this || cell.CellValue != Values.Undefined) continue;
+                    if(cell == this || cell.CellValue != Values.Undefined) continue;
                     int idx = cell.Row * SudokuForm.SudokuSize + cell.Col;
-                    if (stamp[idx] == 0) commonNeighbors.Add(cell);
+                    if(stamp[idx] == 0) commonNeighbors.Add(cell);
                 }
 
                 return commonNeighbors;
@@ -467,7 +468,7 @@ namespace Sudoku
             }
         }
 
-        public bool CommonNeighbor(BaseCell neighbor) { bool common = false; foreach (BaseCell cell in Neighbors) common = (cell == neighbor || common); return common; }
+        public bool CommonNeighbor(BaseCell neighbor) { bool common = false; foreach(BaseCell cell in Neighbors) common = (cell == neighbor || common); return common; }
         public bool SameRectangle(BaseCell value) { return (Col >= value.StartCol && Col < value.StartCol + SudokuForm.RectSize && Row >= value.StartRow && Row < value.StartRow + SudokuForm.RectSize); }
 
         /// <summary>

@@ -1,7 +1,7 @@
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
-using System.Buffers;
 
 namespace Sudoku
 {
@@ -13,11 +13,11 @@ namespace Sudoku
         protected BaseCell[][] rectangles;
         private List<BaseCell> sortableValues;
         private List<BaseCell> cells;
-        private Boolean sorted=false;
-        private int nVarValues=0;
-        protected float severityLevel=float.NaN;
-        private int definitiveCalculatorCounter=0;
-        private Boolean setPredefinedValues=true;
+        private Boolean sorted = false;
+        private int nVarValues = 0;
+        protected float severityLevel = float.NaN;
+        private int definitiveCalculatorCounter = 0;
+        private Boolean setPredefinedValues = true;
 
         [ThreadStatic]
         private static int[] memberStamp;
@@ -27,8 +27,8 @@ namespace Sudoku
         public event EventHandler<BaseCell> CellChanged;
         protected virtual void OnCellChanged(BaseCell v)
         {
-            EventHandler<BaseCell> handler=CellChanged;
-            if(handler!=null) handler(this, v);
+            EventHandler<BaseCell> handler = CellChanged;
+            if(handler != null) handler(this, v);
         }
 
         public BaseMatrix()
@@ -37,50 +37,50 @@ namespace Sudoku
             int i, j;
             int startCol, startRow;
 
-            Matrix=new BaseCell[SudokuForm.SudokuSize][];
-            Cols=new BaseCell[SudokuForm.SudokuSize][];
-            Rectangles=new BaseCell[SudokuForm.SudokuSize][];
-            sortableValues=new List<BaseCell>();
-            cells=new List<BaseCell>();
-            nVarValues=int.MinValue; // not initialized
-            severityLevel=float.NaN;
+            Matrix = new BaseCell[SudokuForm.SudokuSize][];
+            Cols = new BaseCell[SudokuForm.SudokuSize][];
+            Rectangles = new BaseCell[SudokuForm.SudokuSize][];
+            sortableValues = new List<BaseCell>();
+            cells = new List<BaseCell>();
+            nVarValues = int.MinValue; // not initialized
+            severityLevel = float.NaN;
 
-            for(row=0; row<SudokuForm.SudokuSize; row++)
+            for(row = 0; row < SudokuForm.SudokuSize; row++)
             {
-                Matrix[row]=new BaseCell[SudokuForm.SudokuSize];
-                Cols[row]=new BaseCell[SudokuForm.SudokuSize];
-                Rectangles[row]=new BaseCell[SudokuForm.SudokuSize];
+                Matrix[row] = new BaseCell[SudokuForm.SudokuSize];
+                Cols[row] = new BaseCell[SudokuForm.SudokuSize];
+                Rectangles[row] = new BaseCell[SudokuForm.SudokuSize];
 
-                for(col=0; col<SudokuForm.SudokuSize; col++)
-                    Matrix[row][col]=CreateValue(row, col);
+                for(col = 0; col < SudokuForm.SudokuSize; col++)
+                    Matrix[row][col] = CreateValue(row, col);
             }
 
-            for(col=0; col<SudokuForm.SudokuSize; col++)
-                for(row=0; row<SudokuForm.SudokuSize; row++)
-                    Cols[col][row]=Matrix[row][col];
+            for(col = 0; col < SudokuForm.SudokuSize; col++)
+                for(row = 0; row < SudokuForm.SudokuSize; row++)
+                    Cols[col][row] = Matrix[row][col];
 
-            for(row=0; row<SudokuForm.SudokuSize; row+=SudokuForm.RectSize)
-                for(col=0; col<SudokuForm.SudokuSize; col+=SudokuForm.RectSize)
+            for(row = 0; row < SudokuForm.SudokuSize; row += SudokuForm.RectSize)
+                for(col = 0; col < SudokuForm.SudokuSize; col += SudokuForm.RectSize)
                 {
-                    int count=0;
-                    for(i=0; i<SudokuForm.RectSize; i++)
-                        for(j=0; j<SudokuForm.RectSize; j++)
-                            Rectangles[row+((col/SudokuForm.RectSize)%SudokuForm.RectSize)][count++]=Matrix[row+i][col+j];
+                    int count = 0;
+                    for(i = 0; i < SudokuForm.RectSize; i++)
+                        for(j = 0; j < SudokuForm.RectSize; j++)
+                            Rectangles[row + ((col / SudokuForm.RectSize) % SudokuForm.RectSize)][count++] = Matrix[row + i][col + j];
                 }
 
-            for(row=0; row<SudokuForm.SudokuSize; row++)
-                for(col=0; col<SudokuForm.SudokuSize; col++)
+            for(row = 0; row < SudokuForm.SudokuSize; row++)
+                for(col = 0; col < SudokuForm.SudokuSize; col++)
                 {
-                    for(i=0; i<SudokuForm.SudokuSize; i++)
-                        if(i!=col) Cell(row, col).AddNeighbor(ref Matrix[row][i]);
-                    for(i=0; i<SudokuForm.SudokuSize; i++)
-                        if(i!=row) Cell(row, col).AddNeighbor(ref Matrix[i][col]);
+                    for(i = 0; i < SudokuForm.SudokuSize; i++)
+                        if(i != col) Cell(row, col).AddNeighbor(ref Matrix[row][i]);
+                    for(i = 0; i < SudokuForm.SudokuSize; i++)
+                        if(i != row) Cell(row, col).AddNeighbor(ref Matrix[i][col]);
 
-                    startCol=(int)Math.Truncate((double)col/SudokuForm.RectSize)*SudokuForm.RectSize;
-                    startRow=(int)Math.Truncate((double)row/SudokuForm.RectSize)*SudokuForm.RectSize;
-                    for(i=startRow; i<startRow+SudokuForm.RectSize; i++)
-                        for(j=startCol; j<startCol+SudokuForm.RectSize; j++)
-                            if(i!=row&&j!=col) Cell(row, col).AddNeighbor(ref Matrix[i][j]);
+                    startCol = (int)Math.Truncate((double)col / SudokuForm.RectSize) * SudokuForm.RectSize;
+                    startRow = (int)Math.Truncate((double)row / SudokuForm.RectSize) * SudokuForm.RectSize;
+                    for(i = startRow; i < startRow + SudokuForm.RectSize; i++)
+                        for(j = startCol; j < startCol + SudokuForm.RectSize; j++)
+                            if(i != row && j != col) Cell(row, col).AddNeighbor(ref Matrix[i][j]);
                     sortableValues.Add(Cell(row, col));
                     cells.Add(Cell(row, col));
                     Cell(row, col).Init();
@@ -91,32 +91,32 @@ namespace Sudoku
 
         public IEnumerator GetEnumerator()
         {
-            for(int row=0; row<SudokuForm.SudokuSize; row++)
-                for(int col=0; col<SudokuForm.SudokuSize; col++)
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
                     yield return Cell(row, col);
         }
 
         public BaseCell[][] Matrix
         {
-            set { matrix=value; }
+            set { matrix = value; }
             get { return matrix; }
         }
 
         public BaseCell[][] Rows
         {
-            set { matrix=value; }
+            set { matrix = value; }
             get { return matrix; }
         }
 
         public BaseCell[][] Cols
         {
-            set { cols=value; }
+            set { cols = value; }
             get { return cols; }
         }
 
         public BaseCell[][] Rectangles
         {
-            set { rectangles=value; }
+            set { rectangles = value; }
             get { return rectangles; }
         }
 
@@ -129,7 +129,7 @@ namespace Sudoku
         {
             get
             {
-                int nVal=0;
+                int nVal = 0;
                 foreach(BaseCell cell in this)
                     if(cell.FixedValue) nVal++;
                 return nVal;
@@ -140,7 +140,7 @@ namespace Sudoku
         {
             get
             {
-                int nVal=0;
+                int nVal = 0;
                 foreach(BaseCell cell in this)
                     if(cell.ComputedValue) nVal++;
                 return nVal;
@@ -162,7 +162,7 @@ namespace Sudoku
             get { return setPredefinedValues; }
             set
             {
-                setPredefinedValues=value;
+                setPredefinedValues = value;
                 if(setPredefinedValues) SearchDefiniteValues(true);
             }
         }
@@ -181,9 +181,9 @@ namespace Sudoku
 
         public Boolean HasCandidates()
         {
-            for(int row=0; row<SudokuForm.SudokuSize; row++)
-                for(int col=0; col<SudokuForm.SudokuSize; col++)
-                    for(int candidate=1; candidate<SudokuForm.SudokuSize+1; candidate++)
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
+                    for(int candidate = 1; candidate < SudokuForm.SudokuSize + 1; candidate++)
                         if(Cell(row, col).GetCandidateMask(candidate, false) || Cell(row, col).GetCandidateMask(candidate, true)) return true;
 
             return false;
@@ -196,24 +196,24 @@ namespace Sudoku
 
         public override void SetValue(int row, int col, byte value, Boolean fixedValue)
         {
-            if(((value < 1 || value > SudokuForm.SudokuSize) && value != Values.Undefined) || row<0 || col<0 || row > SudokuForm.SudokuSize || col>SudokuForm.SudokuSize)
+            if(((value < 1 || value > SudokuForm.SudokuSize) && value != Values.Undefined) || row < 0 || col < 0 || row > SudokuForm.SudokuSize || col > SudokuForm.SudokuSize)
                 throw new InvalidSudokuValueException();
 
             if(Cell(row, col).FixedValue != fixedValue)
-                nVarValues=fixedValue? nVarValues-1: nVarValues+1;
+                nVarValues = fixedValue ? nVarValues - 1 : nVarValues + 1;
 
-            Cell(row, col).FixedValue=fixedValue;
-            Cell(row, col).ComputedValue=false;
+            Cell(row, col).FixedValue = fixedValue;
+            Cell(row, col).ComputedValue = false;
             if(GetValue(row, col) != value)
             {
                 lock(this)
                 {
                     if(SetPredefinedValues && value == Values.Undefined) ResetIndirectBlocks();
-                    Cell(row, col).CellValue=value;
+                    Cell(row, col).CellValue = value;
                     if(SetPredefinedValues) SearchDefiniteValues(true);
                 }
 
-                severityLevel=float.NaN;
+                severityLevel = float.NaN;
                 OnCellChanged(Cell(row, col));
             }
         }
@@ -240,8 +240,8 @@ namespace Sudoku
 
         public override void Init()
         {
-            nVarValues=int.MinValue; // not initialized
-            severityLevel=float.NaN;
+            nVarValues = int.MinValue; // not initialized
+            severityLevel = float.NaN;
 
             foreach(BaseCell cell in this)
                 cell.Init();
@@ -265,7 +265,7 @@ namespace Sudoku
 
         public void Reset()
         {
-            SetPredefinedValues=false;
+            SetPredefinedValues = false;
             for(int row = 0; row < SudokuForm.SudokuSize; row++)
                 for(int col = 0; col < SudokuForm.SudokuSize; col++)
                     if(!FixedValue(row, col) || ComputedValue(row, col))
@@ -273,22 +273,22 @@ namespace Sudoku
                     else
                         Cell(row, col).ReadOnly = true;
             ResetIndirectBlocks();
-            SetPredefinedValues=true;
+            SetPredefinedValues = true;
         }
 
         private void ResetIndirectBlocks()
         {
             foreach(BaseCell cell in this)
                 cell.InitIndirectBlocks();
-            definitiveCalculatorCounter=0;
+            definitiveCalculatorCounter = 0;
         }
 
         public void Prepare()
         {
             SetDefiniteValues();
             sortableValues.Sort();
-            sorted=true;
-            nVarValues=(SudokuForm.TotalCellCount)-nValues;
+            sorted = true;
+            nVarValues = (SudokuForm.TotalCellCount) - nValues;
         }
 
         private void SetDefiniteValues()
@@ -296,26 +296,26 @@ namespace Sudoku
             SearchDefiniteValues(true);
 
             foreach(BaseCell cell in this)
-                if(cell.DefinitiveValue!=Values.Undefined)
+                if(cell.DefinitiveValue != Values.Undefined)
                 {
-                    Byte definitiveValue=cell.DefinitiveValue;
-                    cell.DefinitiveValue=Values.Undefined;
-                    cell.CellValue=definitiveValue;
+                    Byte definitiveValue = cell.DefinitiveValue;
+                    cell.DefinitiveValue = Values.Undefined;
+                    cell.CellValue = definitiveValue;
                     OnCellChanged(cell);
                     if(!cell.FixedValue) nVarValues--;
-                    cell.FixedValue=true;
-                    cell.ComputedValue=true;
+                    cell.FixedValue = true;
+                    cell.ComputedValue = true;
                 }
         }
 
         public List<BaseCell> GetHints(Boolean deep)
         {
-            List<BaseCell> values=new List<BaseCell>();
+            List<BaseCell> values = new List<BaseCell>();
 
             SearchDefiniteValues(deep);
 
             foreach(BaseCell cell in this)
-                if(cell.DefinitiveValue!=Values.Undefined)
+                if(cell.DefinitiveValue != Values.Undefined)
                     values.Add(cell);
 
             return values;
@@ -352,12 +352,12 @@ namespace Sudoku
         private Boolean FillObviousCells(Boolean reset)
         {
             List<BaseCell> values = GetObviousCellsPooled(reset);
-            Boolean rc = values.Count>0;
+            Boolean rc = values.Count > 0;
 
-            while(values.Count>0)
+            while(values.Count > 0)
             {
-                for(int i=0; i<values.Count; i++)
-                    if(values[i].nPossibleValues==1) values[i].FillDefiniteValue();
+                for(int i = 0; i < values.Count; i++)
+                    if(values[i].nPossibleValues == 1) values[i].FillDefiniteValue();
                 values = GetObviousCellsPooled(reset);
             }
             return rc;
@@ -370,30 +370,30 @@ namespace Sudoku
 
         private void SearchDefiniteValues(Boolean deep)
         {
-            Boolean found=false;
+            Boolean found = false;
 
             do
             {
                 definitiveCalculatorCounter++;
-                found=FillObviousCells(false);
+                found = FillObviousCells(false);
 
-                if(!found||deep)
-                    for(int i=0; i<SudokuForm.SudokuSize; i++)
+                if(!found || deep)
+                    for(int i = 0; i < SudokuForm.SudokuSize; i++)
                     {
-                        found|=HandleIsolatedCells(Rows[i]);
-                        found|=HandleIsolatedCells(Cols[i]);
-                        found|=HandleIsolatedCells(Rectangles[i]);
-                        found|=HandleNakedCells(Rows[i]);
-                        found|=HandleNakedCells(Cols[i]);
-                        found|=HandleNakedCells(Rectangles[i]);
+                        found |= HandleIsolatedCells(Rows[i]);
+                        found |= HandleIsolatedCells(Cols[i]);
+                        found |= HandleIsolatedCells(Rectangles[i]);
+                        found |= HandleNakedCells(Rows[i]);
+                        found |= HandleNakedCells(Cols[i]);
+                        found |= HandleNakedCells(Rectangles[i]);
                     }
 
                 if(this is XSudokuMatrix && (!found || deep))
                 {
-                    found|=HandleNakedCells(GetDiagonal(SudokuPart.DownDiagonal));
-                    found|=HandleIsolatedCells(GetDiagonal(SudokuPart.DownDiagonal));
-                    found|=HandleNakedCells(GetDiagonal(SudokuPart.UpDiagonal));
-                    found|=HandleIsolatedCells(GetDiagonal(SudokuPart.UpDiagonal));
+                    found |= HandleNakedCells(GetDiagonal(SudokuPart.DownDiagonal));
+                    found |= HandleIsolatedCells(GetDiagonal(SudokuPart.DownDiagonal));
+                    found |= HandleNakedCells(GetDiagonal(SudokuPart.UpDiagonal));
+                    found |= HandleIsolatedCells(GetDiagonal(SudokuPart.UpDiagonal));
                 }
             } while(found && deep);
         }
@@ -402,33 +402,33 @@ namespace Sudoku
         {
             if(FillObviousCells(false)) return true;
 
-            if(part==null||part.Length==0) return false;
+            if(part == null || part.Length == 0) return false;
 
-            int counterIncrease=0;
+            int counterIncrease = 0;
             BaseCell.NakedScratch scratch = default;
             try
             {
-                for(int i=0;i<part.Length;i++)
+                for(int i = 0; i < part.Length; i++)
                 {
                     var cell = part[i];
-                    counterIncrease=Math.Max(cell.FindNakedCells(part, ref scratch), counterIncrease);
+                    counterIncrease = Math.Max(cell.FindNakedCells(part, ref scratch), counterIncrease);
                 }
             }
             finally
             {
                 scratch.Release();
             }
-            definitiveCalculatorCounter+=counterIncrease;
-            return counterIncrease>0;
+            definitiveCalculatorCounter += counterIncrease;
+            return counterIncrease > 0;
         }
 
         private Boolean HandleIsolatedCells(BaseCell[] part)
         {
             if(FillObviousCells(false)) return true;
 
-            if(part==null||part.Length==0) return false;
+            if(part == null || part.Length == 0) return false;
 
-            Boolean rc=false;
+            Boolean rc = false;
             int size = SudokuForm.SudokuSize;
             int plen = part.Length;
 
@@ -444,7 +444,7 @@ namespace Sudoku
                 for(int pi = 0; pi < plen; pi++)
                 {
                     BaseCell cell = part[pi];
-                    if (cell.nPossibleValues <= 0) continue;
+                    if(cell.nPossibleValues <= 0) continue;
 
                     int mask = cell.GetEnabledMask();
                     while(mask != 0)
@@ -462,20 +462,20 @@ namespace Sudoku
                     }
                 }
 
-                for (int i = 0; i < size; i++)
+                for(int i = 0; i < size; i++)
                 {
                     int count = enabledCounts[i];
-                    if (count > 0)
+                    if(count > 0)
                         rc |= BlockOtherCellsArray(buffer, i * plen, count, i + 1);
                 }
             }
             finally
             {
-                for (int i = 0; i < size; i++)
+                for(int i = 0; i < size; i++)
                 {
                     int count = enabledCounts[i];
                     int start = i * plen;
-                    for (int j = 0; j < count; j++) buffer[start + j] = null;
+                    for(int j = 0; j < count; j++) buffer[start + j] = null;
                 }
                 cellPool.Return(buffer, false);
                 intPool.Return(enabledCounts, false);
@@ -490,7 +490,7 @@ namespace Sudoku
             Boolean definitive = count == 1;
 
             BaseCell first = enabledCellsArr[offset];
-            if (definitive)
+            if(definitive)
             {
                 rc = first.DefinitiveValue == Values.Undefined;
                 first.DefinitiveValue = (byte)block;
@@ -508,26 +508,26 @@ namespace Sudoku
             bool allSameCol = true;
             bool allSameRect = true;
 
-            for (int i = 1; i < count; i++)
+            for(int i = 1; i < count; i++)
             {
                 var c = enabledCellsArr[offset + i];
-                if (c.Row != baseRow) allSameRow = false;
-                if (c.Col != baseCol) allSameCol = false;
-                if (c.StartRow != firstRectRow || (c.StartCol / SudokuForm.RectSize) != firstRectCol) allSameRect = false;
-                if (!allSameRow && !allSameCol && !allSameRect) break;
+                if(c.Row != baseRow) allSameRow = false;
+                if(c.Col != baseCol) allSameCol = false;
+                if(c.StartRow != firstRectRow || (c.StartCol / SudokuForm.RectSize) != firstRectCol) allSameRect = false;
+                if(!allSameRow && !allSameCol && !allSameRect) break;
             }
 
             // membership test via thread-static stamp array (no allocations)
-            if (memberStamp == null || memberStamp.Length < SudokuForm.TotalCellCount)
+            if(memberStamp == null || memberStamp.Length < SudokuForm.TotalCellCount)
                 memberStamp = new int[SudokuForm.TotalCellCount];
             int stamp = ++memberStampId;
-            if (stamp == 0)
+            if(stamp == 0)
             {
                 Array.Clear(memberStamp, 0, SudokuForm.TotalCellCount);
                 stamp = ++memberStampId;
             }
 
-            for (int i = 0; i < count; i++)
+            for(int i = 0; i < count; i++)
             {
                 var c = enabledCellsArr[offset + i];
                 memberStamp[c.Row * size + c.Col] = stamp;
@@ -538,33 +538,33 @@ namespace Sudoku
                 return memberStamp[cell.Row * size + cell.Col] == stamp;
             }
 
-            if (allSameRow)
+            if(allSameRow)
             {
                 var neighborCells = Rows[baseRow];
-                for (int i = 0; i < neighborCells.Length; i++)
+                for(int i = 0; i < neighborCells.Length; i++)
                 {
                     var cell = neighborCells[i];
-                    if (!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
+                    if(!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
                 }
             }
 
-            if (!definitive && allSameCol)
+            if(!definitive && allSameCol)
             {
                 var neighborCells = Cols[baseCol];
-                for (int i = 0; i < neighborCells.Length; i++)
+                for(int i = 0; i < neighborCells.Length; i++)
                 {
                     var cell = neighborCells[i];
-                    if (!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
+                    if(!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
                 }
             }
 
-            if (!definitive && allSameRect)
+            if(!definitive && allSameRect)
             {
                 var neighborCells = Rectangles[baseRectIndex];
-                for (int i = 0; i < neighborCells.Length; i++)
+                for(int i = 0; i < neighborCells.Length; i++)
                 {
                     var cell = neighborCells[i];
-                    if (!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
+                    if(!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
                 }
             }
 
@@ -578,20 +578,20 @@ namespace Sudoku
 
         protected virtual Boolean BlockOtherCells(List<BaseCell> enabledCells, int block)
         {
-            if (enabledCells == null) return false;
+            if(enabledCells == null) return false;
             int count = enabledCells.Count;
-            if (count == 0) return false;
+            if(count == 0) return false;
 
             var pool = ArrayPool<BaseCell>.Shared;
             BaseCell[] arr = pool.Rent(count);
             try
             {
-                for (int i = 0; i < count; i++) arr[i] = enabledCells[i];
+                for(int i = 0; i < count; i++) arr[i] = enabledCells[i];
                 return BlockOtherCellsArray(arr, count, block);
             }
             finally
             {
-                for (int i = 0; i < count; i++) arr[i] = null;
+                for(int i = 0; i < count; i++) arr[i] = null;
                 pool.Return(arr, false);
             }
         }
@@ -611,7 +611,7 @@ namespace Sudoku
             if(!sorted)
             {
                 sortableValues.Sort();
-                sorted=true;
+                sorted = true;
             }
             return (BaseCell)sortableValues[current];
         }
@@ -620,24 +620,24 @@ namespace Sudoku
 
         public static Boolean Check(BaseCell[] values)
         {
-            Boolean checkCurrentValue=true;
-            Boolean valueIsPossible=true;
-            int currentValue=0;
-            int i=0;
+            Boolean checkCurrentValue = true;
+            Boolean valueIsPossible = true;
+            int currentValue = 0;
+            int i = 0;
 
-            for(currentValue=1; currentValue<SudokuForm.SudokuSize+1; currentValue++)
+            for(currentValue = 1; currentValue < SudokuForm.SudokuSize + 1; currentValue++)
             {
-                i=0;
-                checkCurrentValue=true;
-                while(i<SudokuForm.SudokuSize&&checkCurrentValue)
-                    checkCurrentValue=(values[i++].CellValue!=currentValue);
+                i = 0;
+                checkCurrentValue = true;
+                while(i < SudokuForm.SudokuSize && checkCurrentValue)
+                    checkCurrentValue = (values[i++].CellValue != currentValue);
                 if(checkCurrentValue)
                 {
-                    i=0;
-                    valueIsPossible=false;
-                    while(i<SudokuForm.SudokuSize&&!valueIsPossible)
+                    i = 0;
+                    valueIsPossible = false;
+                    while(i < SudokuForm.SudokuSize && !valueIsPossible)
                     {
-                        valueIsPossible=((!values[i].FixedValue&&values[i].Enabled(currentValue))||values[i].DefinitiveValue==currentValue);
+                        valueIsPossible = ((!values[i].FixedValue && values[i].Enabled(currentValue)) || values[i].DefinitiveValue == currentValue);
                         i++;
                     }
                     if(!valueIsPossible)
@@ -651,70 +651,70 @@ namespace Sudoku
         {
             get
             {
-                if(nValues<MinimumValues) return float.NaN;
+                if(nValues < MinimumValues) return float.NaN;
 
-                if(float.IsNaN(severityLevel)||false)
+                if(float.IsNaN(severityLevel) || false)
                 {
-                    int totalComplexity=0;
-                    int minValuesRow=SudokuForm.SudokuSize;
-                    int minValuesCol=SudokuForm.SudokuSize;
-                    int minValuesRect=SudokuForm.SudokuSize;
-                    int maxValuesRow=0;
-                    int maxValuesCol=0;
-                    int maxValuesRect=0;
-                    byte minNumber=SudokuForm.SudokuSize;
-                    byte maxNumber=0;
-                    byte[] digitCounter=new byte[SudokuForm.SudokuSize];
+                    int totalComplexity = 0;
+                    int minValuesRow = SudokuForm.SudokuSize;
+                    int minValuesCol = SudokuForm.SudokuSize;
+                    int minValuesRect = SudokuForm.SudokuSize;
+                    int maxValuesRow = 0;
+                    int maxValuesCol = 0;
+                    int maxValuesRect = 0;
+                    byte minNumber = SudokuForm.SudokuSize;
+                    byte maxNumber = 0;
+                    byte[] digitCounter = new byte[SudokuForm.SudokuSize];
 
-                    if(definitiveCalculatorCounter==0) SearchDefiniteValues(true);
+                    if(definitiveCalculatorCounter == 0) SearchDefiniteValues(true);
 
-                    for(int row=0; row<SudokuForm.SudokuSize; row++)
+                    for(int row = 0; row < SudokuForm.SudokuSize; row++)
                     {
-                        int nVal=SudokuForm.SudokuSize;
-                        for(int col=0; col<SudokuForm.SudokuSize; col++)
+                        int nVal = SudokuForm.SudokuSize;
+                        for(int col = 0; col < SudokuForm.SudokuSize; col++)
                         {
-                            totalComplexity+=Cell(row, col).nPossibleValues;
-                            if(!Cell(row, col).FixedValue||Cell(row, col).ComputedValue)
+                            totalComplexity += Cell(row, col).nPossibleValues;
+                            if(!Cell(row, col).FixedValue || Cell(row, col).ComputedValue)
                                 nVal--;
-                            else if(Cell(row, col).CellValue!=Values.Undefined)
-                                digitCounter[Cell(row, col).CellValue-1]++;
+                            else if(Cell(row, col).CellValue != Values.Undefined)
+                                digitCounter[Cell(row, col).CellValue - 1]++;
 
                         }
-                        minValuesRow=Math.Min(minValuesRow, nVal);
-                        maxValuesRow=Math.Max(maxValuesRow, nVal);
+                        minValuesRow = Math.Min(minValuesRow, nVal);
+                        maxValuesRow = Math.Max(maxValuesRow, nVal);
                     }
 
-                    for(int col=0; col<SudokuForm.SudokuSize; col++)
+                    for(int col = 0; col < SudokuForm.SudokuSize; col++)
                     {
-                        int nVal=SudokuForm.SudokuSize;
-                        for(int row=0; row<SudokuForm.SudokuSize; row++)
-                            if(!Cell(row, col).FixedValue||Cell(row, col).ComputedValue)
+                        int nVal = SudokuForm.SudokuSize;
+                        for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                            if(!Cell(row, col).FixedValue || Cell(row, col).ComputedValue)
                                 nVal--;
-                        minValuesCol=Math.Min(minValuesCol, nVal);
-                        maxValuesCol=Math.Max(maxValuesCol, nVal);
+                        minValuesCol = Math.Min(minValuesCol, nVal);
+                        maxValuesCol = Math.Max(maxValuesCol, nVal);
                     }
 
-                    for(int row=0; row<SudokuForm.SudokuSize; row+=SudokuForm.RectSize)
+                    for(int row = 0; row < SudokuForm.SudokuSize; row += SudokuForm.RectSize)
                     {
-                        for(int col=0; col<SudokuForm.SudokuSize; col+=SudokuForm.RectSize)
+                        for(int col = 0; col < SudokuForm.SudokuSize; col += SudokuForm.RectSize)
                         {
-                            int nVal=SudokuForm.SudokuSize;
-                            for(int i=0; i<SudokuForm.RectSize; i++)
-                                for(int j=0; j<SudokuForm.RectSize; j++)
-                                    if(!Matrix[row+i][col+j].FixedValue||Matrix[row+i][col+j].ComputedValue)
+                            int nVal = SudokuForm.SudokuSize;
+                            for(int i = 0; i < SudokuForm.RectSize; i++)
+                                for(int j = 0; j < SudokuForm.RectSize; j++)
+                                    if(!Matrix[row + i][col + j].FixedValue || Matrix[row + i][col + j].ComputedValue)
                                         nVal--;
-                            minValuesRect=Math.Min(minValuesRect, nVal);
-                            maxValuesRect=Math.Max(maxValuesRect, nVal);
+                            minValuesRect = Math.Min(minValuesRect, nVal);
+                            maxValuesRect = Math.Max(maxValuesRect, nVal);
                         }
                     }
 
-                    for(int number=0; number<SudokuForm.SudokuSize; number++)
+                    for(int number = 0; number < SudokuForm.SudokuSize; number++)
                     {
-                        maxNumber=Math.Max(maxNumber, digitCounter[number]);
-                        minNumber=Math.Min(minNumber, digitCounter[number]);
+                        maxNumber = Math.Max(maxNumber, digitCounter[number]);
+                        minNumber = Math.Min(minNumber, digitCounter[number]);
                     }
 
-                    severityLevel=(float)((totalComplexity-(nValues-nComputedValues)+(maxValuesCol-minValuesCol)+(maxValuesRow-minValuesRow)+(maxValuesRect-minValuesRect)+(maxNumber-minNumber)*2f+definitiveCalculatorCounter+80f)/3f);
+                    severityLevel = (float)((totalComplexity - (nValues - nComputedValues) + (maxValuesCol - minValuesCol) + (maxValuesRow - minValuesRow) + (maxValuesRect - minValuesRect) + (maxNumber - minNumber) * 2f + definitiveCalculatorCounter + 80f) / 3f);
                 }
                 return severityLevel;
             }

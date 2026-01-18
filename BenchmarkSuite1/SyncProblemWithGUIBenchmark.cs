@@ -1,5 +1,7 @@
 using System.Globalization;
+
 using BenchmarkDotNet.Attributes;
+
 using Sudoku;
 
 namespace BenchmarkSuite1
@@ -34,8 +36,8 @@ namespace BenchmarkSuite1
                 {0,0,0,0,8,0,0,7,9}
             };
 
-            for (int r = 0; r < SudokuForm.SudokuSize; r++)
-                for (int c = 0; c < SudokuForm.SudokuSize; c++)
+            for(int r = 0; r < SudokuForm.SudokuSize; r++)
+                for(int c = 0; c < SudokuForm.SudokuSize; c++)
                     _grid[r, c] = seed[r, c] == 0 ? string.Empty : seed[r, c].ToString(_culture);
         }
 

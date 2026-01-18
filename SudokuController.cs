@@ -112,6 +112,71 @@ namespace Sudoku
                 ;
             }
         }
+        public async Task<bool> Validate(IProgress<GenerationProgressState> progress, CancellationToken token)
+        {
+            if(CurrentProblem == null) return false;
+
+            BackupProblem();
+            var stopwatch = Stopwatch.StartNew();
+            bool result = false;
+
+            try
+            {
+                CurrentProblem.FindSolutions(1);
+
+                if(CurrentProblem.SolverTask != null)
+                {
+                    while(!CurrentProblem.SolverTask.IsCompleted)
+                    {
+                        token.ThrowIfCancellationRequested();
+
+                        progress?.Report(new GenerationProgressState
+                        {
+                            StatusText = Resources.Checking,
+                            PassCount = CurrentProblem.TotalPassCounter,
+                            SolutionCount = CurrentProblem.NumberOfSolutions,
+                            Elapsed = stopwatch.Elapsed
+                        });
+
+                        await Task.Delay(50);
+                    }
+                    await CurrentProblem.SolverTask;
+                }
+
+                result = CurrentProblem.ProblemSolved;
+            }
+            finally
+            {
+                stopwatch.Stop();
+                RestoreProblem();
+                NotifyMatrixChanged();
+            }
+
+            return result;
+        }
+        public async Task GenerateBatch(int count, GenerationParameters parameters, int severityLevel, TrickyProblems trickyProblems, bool usePrecalculated, Func<BaseProblem, int, Task> onProblemGenerated, IProgress<GenerationProgressState> progress, CancellationToken token)
+        {
+            parameters.CurrentProblem = 0;
+
+            for(int i = 0; i < count; i++)
+            {
+                CreateNewProblem((i == 0)? (CurrentProblem is XSudokuProblem): parameters.NewSudokuType());
+
+                parameters.Reset = false;
+                parameters.PreAllocatedValues = 0;
+
+                bool success = await GenerateCompleteProblem(parameters, severityLevel, trickyProblems, progress, token);
+
+                if(!success || token.IsCancellationRequested) return;
+
+                if(onProblemGenerated != null)
+                {
+                    await onProblemGenerated(CurrentProblem, i);
+                }
+
+                parameters.CurrentProblem++;
+            }
+        }
         public async Task<bool> GenerateBaseProblem(GenerationParameters generationParameters, bool usePrecalculated, IProgress<GenerationProgressState> progress, CancellationToken token)
         {
             var stopwatch = Stopwatch.StartNew();
@@ -133,7 +198,7 @@ namespace Sudoku
             if(!usePrecalculated)
             {
                 TotalGenerationTime += CurrentProblem.GenerationTime;
-                RestoreProblem(); 
+                RestoreProblem();
                 await Task.Run(async () =>
                 {
                     do
@@ -282,8 +347,11 @@ namespace Sudoku
             return false;
         }
 
-        private async Task<BaseProblem> Minimize(int targetSeverity)
+        public async Task<BaseProblem> Minimize(int targetSeverity)
         {
+            if(CurrentProblem == null) return null;
+
+            BackupProblem();
             return await CurrentProblem.Minimize(targetSeverity);
         }
 

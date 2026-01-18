@@ -9,17 +9,17 @@ namespace Sudoku
 
         public Solution()
         {
-            values=new byte[SudokuForm.SudokuSize][];
-            for(int row=0; row<SudokuForm.SudokuSize; row++)
-                values[row]=new byte[SudokuForm.SudokuSize];
+            values = new byte[SudokuForm.SudokuSize][];
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+                values[row] = new byte[SudokuForm.SudokuSize];
             Init();
         }
 
         public override void SetValue(int row, int col, byte value, Boolean fixedValue)
         {
-            if(((value<1||value>SudokuForm.SudokuSize)&&value!=Values.Undefined)||row<0||col<0||row>SudokuForm.SudokuSize||col>SudokuForm.SudokuSize)
+            if(((value < 1 || value > SudokuForm.SudokuSize) && value != Values.Undefined) || row < 0 || col < 0 || row > SudokuForm.SudokuSize || col > SudokuForm.SudokuSize)
                 throw new InvalidSudokuValueException();
-            values[row][col]=value;
+            values[row][col] = value;
         }
 
         public override byte GetValue(int row, int col)
@@ -46,9 +46,9 @@ namespace Sudoku
         {
             int row, col;
 
-            for(row=0; row<SudokuForm.SudokuSize; row++)
-                for(col=0; col<SudokuForm.SudokuSize; col++)
-                    values[row][col]=Values.Undefined;
+            for(row = 0; row < SudokuForm.SudokuSize; row++)
+                for(col = 0; col < SudokuForm.SudokuSize; col++)
+                    values[row][col] = Values.Undefined;
         }
     }
 }

@@ -1,6 +1,5 @@
-using System;
 using BenchmarkDotNet.Attributes;
-using System.Collections.Generic;
+
 using Microsoft.VSDiagnostics;
 
 namespace Sudoku.Benchmarks
@@ -103,10 +102,10 @@ namespace Sudoku.Benchmarks
             int size = SudokuForm.SudokuSize;
             problem.Matrix.Init();
             problem.Matrix.SetPredefinedValues = false;
-            for (int i = 0; i < puzzles[0].Length; i++)
+            for(int i = 0; i < puzzles[0].Length; i++)
             {
                 int v = puzzles[0][i];
-                if (v != 0)
+                if(v != 0)
                     problem.SetValue(i / size, i % size, (byte)v);
             }
 
@@ -126,30 +125,30 @@ namespace Sudoku.Benchmarks
             int total = 0;
             var m = problem.Matrix;
             // rows
-            for (int r = 0; r < SudokuForm.SudokuSize; r++)
+            for(int r = 0; r < SudokuForm.SudokuSize; r++)
             {
                 var part = m.Rows[r];
-                foreach (var cell in part)
+                foreach(var cell in part)
                 {
                     total += cell.FindNakedCells(part);
                 }
             }
 
             // cols
-            for (int c = 0; c < SudokuForm.SudokuSize; c++)
+            for(int c = 0; c < SudokuForm.SudokuSize; c++)
             {
                 var part = m.Cols[c];
-                foreach (var cell in part)
+                foreach(var cell in part)
                 {
                     total += cell.FindNakedCells(part);
                 }
             }
 
             // rectangles
-            for (int b = 0; b < SudokuForm.SudokuSize; b++)
+            for(int b = 0; b < SudokuForm.SudokuSize; b++)
             {
                 var part = m.Rectangles[b];
-                foreach (var cell in part)
+                foreach(var cell in part)
                 {
                     total += cell.FindNakedCells(part);
                 }

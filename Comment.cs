@@ -10,7 +10,7 @@ namespace Sudoku
     {
         public Comment()
         {
-            Thread.CurrentThread.CurrentUICulture=new System.Globalization.CultureInfo(Settings.Default.DisplayLanguage);
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(Settings.Default.DisplayLanguage);
             InitializeComponent();
             commentTextBox.Focus();
         }
@@ -18,7 +18,7 @@ namespace Sudoku
         public String SudokuComment
         {
             get { return commentTextBox.Text; }
-            set { commentTextBox.Text=value; }
+            set { commentTextBox.Text = value; }
         }
     }
 }

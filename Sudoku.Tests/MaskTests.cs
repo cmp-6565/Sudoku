@@ -1,5 +1,4 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Sudoku;
 
 namespace Sudoku.Tests
 {
@@ -29,10 +28,10 @@ namespace Sudoku.Tests
         {
             var m = new SudokuMatrix();
             m.Init();
-            m.SetCandidate(0,0,2,false);
-            Assert.IsTrue(m.GetCandidate(0,0,2,false));
-            m.SetCandidate(0,0,2,false);
-            Assert.IsFalse(m.GetCandidate(0,0,2,false));
+            m.SetCandidate(0, 0, 2, false);
+            Assert.IsTrue(m.GetCandidate(0, 0, 2, false));
+            m.SetCandidate(0, 0, 2, false);
+            Assert.IsFalse(m.GetCandidate(0, 0, 2, false));
         }
     }
 }

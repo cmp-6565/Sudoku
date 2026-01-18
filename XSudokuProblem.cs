@@ -6,13 +6,13 @@ namespace Sudoku
 {
     internal class XSudokuProblem: BaseProblem
     {
-        public new static Char ProblemIdentifier='X';
+        public new static Char ProblemIdentifier = 'X';
         public override Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
-        public override Boolean IsTricky { get { return SeverityLevel>Settings.Default.UploadLevelXSudoku; } }
+        public override Boolean IsTricky { get { return SeverityLevel > Settings.Default.UploadLevelXSudoku; } }
 
         protected override void createMatrix()
         {
-            matrix=new XSudokuMatrix();
+            matrix = new XSudokuMatrix();
         }
 
         protected override BaseProblem CreateInstance()
