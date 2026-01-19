@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -419,6 +420,10 @@ namespace Sudoku
             NotifyMatrixChanged();
         }
 
+        public BaseCell[] GetNeighbors(int row, int col)
+        {
+            return CurrentProblem.GetNeighbors(row, col);
+        }
         private Boolean LoadProblem(Boolean xSudoku)
         {
             CreateNewProblem(xSudoku);

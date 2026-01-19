@@ -245,6 +245,11 @@ namespace Sudoku
             return Matrix.HasCandidate(row, col);
         }
 
+        public BaseCell[] GetNeighbors(int row, int col)
+        {
+            return Matrix.Cell(row, col).Neighbors;
+        }
+
         public void SetValue(int row, int col, byte value, Boolean fix)
         {
             if(GetValue(row, col) != value || FixedValue(row, col) != fix)

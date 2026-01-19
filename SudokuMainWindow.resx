@@ -592,40 +592,40 @@
     <value>Strg+Z</value>
   </data>
   <data name="undo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="undo.Text" xml:space="preserve">
     <value>&amp;Undo</value>
   </data>
   <data name="toolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 6</value>
+    <value>189, 6</value>
   </data>
   <data name="debug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="debug.Text" xml:space="preserve">
     <value>&amp;Track</value>
   </data>
   <data name="findallSolutions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="findallSolutions.Text" xml:space="preserve">
     <value>&amp;Find all Solutions</value>
   </data>
   <data name="showPossibleValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="showPossibleValues.Text" xml:space="preserve">
     <value>&amp;Show Possible Values</value>
   </data>
   <data name="autoCheck.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="autoCheck.Text" xml:space="preserve">
     <value>&amp;Auto Check</value>
   </data>
   <data name="pencilMode.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="pencilMode.Text" xml:space="preserve">
     <value>Pencil &amp;Mode</value>
@@ -633,35 +633,41 @@
   <data name="pencilMode.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
   </data>
+  <data name="highlightSameValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>192, 22</value>
+  </data>
+  <data name="highlightSameValues.Text" xml:space="preserve">
+    <value>&amp;Highlight Same Values</value>
+  </data>
   <data name="markNeighbors.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="markNeighbors.Text" xml:space="preserve">
     <value>&amp;Mark Neighbors</value>
   </data>
   <data name="toolStripSeparator10.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 6</value>
+    <value>189, 6</value>
   </data>
   <data name="pause.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
   </data>
   <data name="pause.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="pause.Text" xml:space="preserve">
     <value>&amp;Pause</value>
   </data>
   <data name="resetTimer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="resetTimer.Text" xml:space="preserve">
     <value>&amp;Reset Timer</value>
   </data>
   <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 6</value>
+    <value>189, 6</value>
   </data>
   <data name="sudokuOptionsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>192, 22</value>
   </data>
   <data name="sudokuOptionsToolStripMenuItem.Text" xml:space="preserve">
     <value>Sudoku &amp;Options...</value>
@@ -1596,6 +1602,12 @@
     <value>pencilMode</value>
   </data>
   <data name="&gt;&gt;pencilMode.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;highlightSameValues.Name" xml:space="preserve">
+    <value>highlightSameValues</value>
+  </data>
+  <data name="&gt;&gt;highlightSameValues.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;markNeighbors.Name" xml:space="preserve">

@@ -52,9 +52,9 @@ namespace Sudoku
         private SudokuController controller;
         private CancellationTokenSource cts;
 
-        // Für das Highlighting
-        private List<Point> currentlyHighlightedCells = new List<Point>();
-        private Color highlightColor = Color.Cyan; // Farbe für gleiche Zahlen
+        private Color highlightColor = Color.Cyan;
+        private List<Point> highlightedCells = new List<Point>();
+
         Color gray;
         Color lightGray;
         Color green;
@@ -118,6 +118,7 @@ namespace Sudoku
             findallSolutions.Checked = Settings.Default.FindAllSolutions;
             ShowInTaskbar = !Settings.Default.HideWhenMinimized;
             markNeighbors.Checked = Settings.Default.MarkNeighbors;
+            highlightSameValues.Checked = Settings.Default.HighlightSameValues;
 
             Deactivate += new EventHandler(FocusLost);
             Activated += new EventHandler(FocusGotten);
@@ -266,7 +267,7 @@ namespace Sudoku
             for(row = 0; row < SudokuSize; row++)
                 for(col = 0; col < SudokuSize; col++)
                     FormatCell(row, col);
-            if(markNeighbors.Checked)
+            if(Settings.Default.MarkNeighbors)
                 MarkNeighbors(SudokuTable);
 
             ResizeTable();
@@ -281,19 +282,18 @@ namespace Sudoku
             SudokuTable[row, col].Style.BackColor = (obfuscated ? gray : ((controller.CurrentProblem is XSudokuProblem) && (row == col || row + col == SudokuSize - 1) ? lightGray : Color.White));
             SudokuTable[row, col].Style.ForeColor = (obfuscated ? textColor : Color.Black);
             SudokuTable[row, col].Style.SelectionBackColor = System.Drawing.SystemColors.AppWorkspace;
+#if false
             if(controller.CurrentProblem.Matrix.Cell(row, col).CellValue == Values.Undefined)
             {
                 SudokuTable[col, row].Value = "";
                 controller.CurrentProblem.Matrix.Cell(row, col).ReadOnly = false;
             }
+#endif
         }
-
         private void MarkNeighbors(DataGridView dgv)
         {
-            BaseCell[] neighbors = controller.CurrentProblem.Matrix.Cell(dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y).Neighbors;
+            BaseCell[] neighbors = controller.GetNeighbors(dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y);
             Boolean obfuscated;
-
-            UpdateHighligts(dgv);
 
             obfuscated = ((dgv.CurrentCellAddress.X / 3) % 2 == 1 && (dgv.CurrentCellAddress.Y / 3) % 2 == 0) || ((dgv.CurrentCellAddress.X / 3) % 2 == 0 && (dgv.CurrentCellAddress.Y / 3) % 2 == 1);
             SudokuTable[dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y].Style.BackColor = (obfuscated ? green : lightGreen);
@@ -1271,6 +1271,15 @@ namespace Sudoku
 
             CurrentStatus(false);
         }
+        private void ToggleHighlightSameValuesClicked(object sender, EventArgs e)
+        {
+            highlightSameValues.Checked = !highlightSameValues.Checked;
+            Settings.Default.HighlightSameValues=highlightSameValues.Checked;
+            if(Settings.Default.HighlightSameValues)
+                UpdateHighligts(SudokuTable);
+            else
+                ClearHighlights();
+        }
         public void TogglePencilModeClick(object sender, EventArgs e)
         {
             pencilMode.Checked = !pencilMode.Checked;
@@ -1406,11 +1415,13 @@ namespace Sudoku
         }
         private void CellEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if(sender is DataGridView && controller.CurrentProblem != null && Settings.Default.MarkNeighbors)
+            if(sender is DataGridView)
             {
                 DataGridView dgv = (DataGridView)sender;
 
-                if(controller.CurrentProblem != null && Settings.Default.MarkNeighbors)
+                if(Settings.Default.HighlightSameValues)
+                    UpdateHighligts(dgv);
+                if(Settings.Default.MarkNeighbors)
                     MarkNeighbors(dgv);
             }
             ShowValues();
@@ -1990,41 +2001,35 @@ namespace Sudoku
         {
             ClearHighlights();
 
-            if(dgv.CurrentCell == null || dgv.CurrentCell.Value == null) return;
+            if(dgv.CurrentCell == null || dgv.CurrentCell.Value == null || String.IsNullOrWhiteSpace(dgv.CurrentCell.Value.ToString())) return;
 
-            string selectedValue = dgv.CurrentCell.Value.ToString();
-            if(string.IsNullOrWhiteSpace(selectedValue)) return;
+            highlightedCells = GetSameValueCells(dgv.CurrentCell.Value);
 
-            int currentRow = dgv.CurrentCell.RowIndex;
-            int currentCol = dgv.CurrentCell.ColumnIndex;
-
-            for(int row = 0; row < SudokuSize; row++)
-            {
-                for(int col = 0; col < SudokuSize; col++)
-                {
-                    if(string.Equals(SudokuTable[col, row].Value as string, selectedValue))
-                    {
-                        // Hintergrund ändern und Position merken
-                        SudokuTable[col, row].Style.BackColor = highlightColor;
-                        currentlyHighlightedCells.Add(new Point(col, row)); // X=Col, Y=Row
-                    }
-                }
-            }
+            foreach(Point p in highlightedCells)
+                SudokuTable[p.X, p.Y].Style.BackColor = highlightColor;
         }
-
         private void ClearHighlights()
         {
-            foreach(Point p in currentlyHighlightedCells)
-            {
+            foreach(Point p in highlightedCells)
                 FormatCell(p.X, p.Y);
-            }
-            currentlyHighlightedCells.Clear();
+            highlightedCells.Clear();
         }
+
+        private List<Point> GetSameValueCells(object value)
+        {
+            List<Point> cells = new List<Point>();
+            for(int row = 0; row < SudokuSize; row++)
+                for(int col = 0; col < SudokuSize; col++)
+                    if(SudokuTable[col, row].Value != null && SudokuTable[col, row].Value.Equals(value))
+                        cells.Add(new Point(col, row));
+            return cells;
+        }
+
         private void MarkNeighborsClicked(object sender, EventArgs e)
         {
-            if(!markNeighbors.Checked)
-                FormatTable();
             Settings.Default.MarkNeighbors = markNeighbors.Checked;
+            if(!Settings.Default.MarkNeighbors)
+                FormatTable();
         }
 
         private async Task<Boolean> Minimize(int maxSeverity)

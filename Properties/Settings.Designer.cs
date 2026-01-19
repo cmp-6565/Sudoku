@@ -661,5 +661,17 @@ namespace Sudoku.Properties {
                 this["Contrast"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HighlightSameValues {
+            get {
+                return ((bool)(this["HighlightSameValues"]));
+            }
+            set {
+                this["HighlightSameValues"] = value;
+            }
+        }
     }
 }

@@ -96,6 +96,7 @@ namespace Sudoku
             this.showPossibleValues = new System.Windows.Forms.ToolStripMenuItem();
             this.autoCheck = new System.Windows.Forms.ToolStripMenuItem();
             this.pencilMode = new System.Windows.Forms.ToolStripMenuItem();
+            this.highlightSameValues = new System.Windows.Forms.ToolStripMenuItem();
             this.markNeighbors = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.pause = new System.Windows.Forms.ToolStripMenuItem();
@@ -588,6 +589,7 @@ namespace Sudoku
             this.showPossibleValues,
             this.autoCheck,
             this.pencilMode,
+            this.highlightSameValues,
             this.markNeighbors,
             this.toolStripSeparator10,
             this.pause,
@@ -648,6 +650,12 @@ namespace Sudoku
             resources.ApplyResources(this.pencilMode, "pencilMode");
             this.pencilMode.Tag = "disable=1";
             this.pencilMode.Click += new System.EventHandler(this.TogglePencilModeClick);
+            // 
+            // highlightSameValues
+            // 
+            this.highlightSameValues.Name = "highlightSameValues";
+            resources.ApplyResources(this.highlightSameValues, "highlightSameValues");
+            this.highlightSameValues.Click += new System.EventHandler(this.ToggleHighlightSameValuesClicked);
             // 
             // markNeighbors
             // 
@@ -917,5 +925,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem twitter;
         private System.Windows.Forms.Timer autoPauseTimer;
         private System.Windows.Forms.ToolStripMenuItem pencilMode;
+        private System.Windows.Forms.ToolStripMenuItem highlightSameValues;
     }
 }
