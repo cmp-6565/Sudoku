@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +17,7 @@ namespace Sudoku
         public BaseProblem Backup { get; private set; }
         private Stack<CoreValue> undoStack;
         public TimeSpan TotalGenerationTime { get; private set; }
+        private TrickyProblems trickyProblems;
 
         // Events
         public event EventHandler MatrixChanged;
@@ -25,6 +27,7 @@ namespace Sudoku
         public SudokuController()
         {
             undoStack = new Stack<CoreValue>();
+            trickyProblems = new TrickyProblems();
         }
 
         public SudokuController(String filenname, Boolean loadCandidates) : this()
@@ -37,11 +40,6 @@ namespace Sudoku
             CurrentProblem = xSudoku ? (BaseProblem)new XSudokuProblem() : new SudokuProblem();
             BackupProblem();
             if(notify) NotifyMatrixChanged();
-        }
-
-        public void UpdateProblemState(BaseProblem updatedProblem)
-        {
-            CurrentProblem = updatedProblem.Clone();
         }
 
         public async Task Solve(bool findAllSolutions, IProgress<GenerationProgressState> progress, CancellationToken token)
@@ -113,6 +111,23 @@ namespace Sudoku
                 ;
             }
         }
+        public Boolean HasTrickyProblems()
+        {
+            return trickyProblems.Count > 0;
+        }
+        public int NumberOfTrickyProblems { get { return trickyProblems.Count; } }
+        public Boolean PublishTrickyProblems()
+        {
+            if(trickyProblems.Count > 0)
+            {
+                trickyProblems.Publish();
+                trickyProblems.Clear();
+                return true;
+            }
+            return false;
+        }
+        public string TwitterURL { get { return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), CurrentProblem.Serialize(false).Substring(1, SudokuForm.TotalCellCount)); } }
+
         public async Task<bool> Validate(IProgress<GenerationProgressState> progress, CancellationToken token)
         {
             if(CurrentProblem == null) return false;
@@ -155,8 +170,9 @@ namespace Sudoku
 
             return result;
         }
-        public async Task GenerateBatch(int count, GenerationParameters parameters, int severityLevel, TrickyProblems trickyProblems, bool usePrecalculated, Func<BaseProblem, int, Task> onProblemGenerated, IProgress<GenerationProgressState> progress, CancellationToken token)
+        public async Task GenerateBatch(int count, GenerationParameters parameters, int severityLevel, bool usePrecalculated, Func<BaseProblem, int, Task> onProblemGenerated, IProgress<GenerationProgressState> progress, CancellationToken token)
         {
+            trickyProblems.Clear();
             parameters.CurrentProblem = 0;
 
             for(int i = 0; i < count; i++)
@@ -166,7 +182,7 @@ namespace Sudoku
                 parameters.Reset = false;
                 parameters.PreAllocatedValues = 0;
 
-                bool success = await GenerateCompleteProblem(parameters, severityLevel, trickyProblems, progress, token);
+                bool success = await GenerateCompleteProblem(parameters, severityLevel, progress, token);
 
                 if(!success || token.IsCancellationRequested) return;
 
@@ -177,6 +193,40 @@ namespace Sudoku
 
                 parameters.CurrentProblem++;
             }
+        }
+
+        public Boolean SudokuOfTheDay()
+        {
+            CreateNewProblem(Settings.Default.SudokuOfTheDay);
+            if(CurrentProblem.SudokuOfTheDay())
+            {
+                BackupProblem();
+                NotifyMatrixChanged();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public List<BaseCell> GetHints()
+        {
+            List<BaseCell> values = CurrentProblem.GetObviousCells();
+            if(values.Count == 0)
+                values = CurrentProblem.GetHints();
+            if(values.Count > Settings.Default.MaxHints)
+            {
+                List<BaseCell> hints = new List<BaseCell>();
+                Random rand = new Random();
+                int index;
+                do
+                    if(!hints.Contains(values[(index = rand.Next(values.Count))]))
+                        hints.Add(values[index]);
+                while(hints.Count < Settings.Default.MaxHints);
+                values = hints;
+            }
+            return values;
         }
         public async Task<bool> GenerateBaseProblem(GenerationParameters generationParameters, bool usePrecalculated, IProgress<GenerationProgressState> progress, CancellationToken token)
         {
@@ -269,7 +319,7 @@ namespace Sudoku
             return true;
         }
 
-        private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, TrickyProblems trickyProblemsCollection, IProgress<GenerationProgressState> progress, CancellationToken token)
+        private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, IProgress<GenerationProgressState> progress, CancellationToken token)
         {
             var stopwatch = Stopwatch.StartNew();
             int counter = 0;
@@ -332,7 +382,7 @@ namespace Sudoku
                         {
                             if(CurrentProblem.IsTricky && !Settings.Default.UsePrecalculatedProblems)
                             {
-                                trickyProblemsCollection?.Add(CurrentProblem);
+                                trickyProblems?.Add(CurrentProblem);
                             }
                             return true; // ERFOLG
                         }
@@ -420,6 +470,17 @@ namespace Sudoku
             NotifyMatrixChanged();
         }
 
+        public bool IsCellReadOnly(int row, int col)
+        {
+            return CurrentProblem.Matrix.Cell(row, col).ReadOnly;
+        }
+        public void SetCellReadOnly(int row, int col, bool readOnly)
+        {
+            CurrentProblem.Matrix.Cell(row, col).ReadOnly = readOnly;
+        }
+        public int GetFilledCellCount { get { return CurrentProblem.nValues; } }
+        public int GetComputedCellCount { get { return CurrentProblem.nComputedValues; } }
+        public int GetVariableCellCount { get { return CurrentProblem.nVariableValues; } }
         public BaseCell[] GetNeighbors(int row, int col)
         {
             return CurrentProblem.GetNeighbors(row, col);
@@ -430,9 +491,9 @@ namespace Sudoku
             return CurrentProblem.Load();
         }
 
-        public void SyncWithGui(BaseProblem problemFromGui)
+        public void UpdateProblem(BaseProblem problem)
         {
-            CurrentProblem = problemFromGui.Clone();
+            CurrentProblem = problem.Clone();
         }
 
         public void RestoreProblem()

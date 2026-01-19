@@ -77,7 +77,7 @@ namespace Sudoku
                 }
             }
 
-            controller.SyncWithGui(tmp);
+            controller.UpdateProblem(tmp);
         }
 
         private void PrintBooklet()
@@ -242,7 +242,7 @@ namespace Sudoku
                 filenames.RemoveAt(problemNumber);
                 ready = (printParameters.Problems.Count == Settings.Default.BookletSizeExisting && !Settings.Default.BookletSizeUnlimited) || filenames.Count == 0 || abortRequested;
             }
-            controller.SyncWithGui(tmp);
+            controller.UpdateProblem(tmp);
 
             return printParameters.Problems.Count;
         }
