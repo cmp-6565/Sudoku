@@ -34,7 +34,8 @@ namespace Sudoku
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.SudokuTable = new System.Windows.Forms.DataGridView();
+            // ALT: this.SudokuTable = new System.Windows.Forms.DataGridView();
+            this.SudokuTable = new SudokuBoard(); // NEU
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -902,7 +903,7 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem pause;
         private System.Windows.Forms.ToolStripMenuItem resetTimer;
         private System.Windows.Forms.ToolStripMenuItem EditComment;
-        private System.Windows.Forms.DataGridView SudokuTable;
+        private SudokuBoard SudokuTable;
         private System.Windows.Forms.ToolStripMenuItem newItem;
         private System.Windows.Forms.ToolStripMenuItem newNormalSudoku;
         private System.Windows.Forms.ToolStripMenuItem newXSudoku;

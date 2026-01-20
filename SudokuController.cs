@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 using Sudoku.Properties;
 
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 namespace Sudoku
 {
     internal class SudokuController
@@ -443,7 +445,61 @@ namespace Sudoku
             CurrentProblem.SeverityLevel = float.NaN;
             return CurrentProblem.SeverityLevelInt;
         }
+        public ValidationResult ParseAndSync(string[,] grid)
+        {
+            if(grid == null) throw new ArgumentNullException(nameof(grid));
+            if(grid.GetLength(0) != SudokuForm.SudokuSize || grid.GetLength(1) != SudokuForm.SudokuSize)
+                throw new ArgumentException("grid must be SudokuSize x SudokuSize", nameof(grid));
 
+            ValidationResult result = new ValidationResult();
+
+            BackupProblem();
+
+            for(int row = 0; row < SudokuForm.SudokuSize; row++)
+            {
+                for(int col = 0; col < SudokuForm.SudokuSize; col++)
+                {
+                    string raw = grid[row, col];
+                    if(string.IsNullOrEmpty(raw)) continue;
+
+                    string value = raw.Trim();
+                    if(value.Length == 0)
+                    {
+                        CurrentProblem.SetValue(row, col, Values.Undefined);
+                        continue;
+                    }
+
+                    if(!byte.TryParse(value, NumberStyles.Integer, Thread.CurrentThread.CurrentUICulture, out byte parsed))
+                    {
+                        result.IsValid = false;
+                        result.addError(new ValidationResult.Error
+                        {
+                            Row = row,
+                            Col = col,
+                            Message = String.Format(Thread.CurrentThread.CurrentUICulture, Resources.InvalidValue, value, row + 1, col + 1)
+                        });
+                    }
+
+                    try
+                    {
+                        CurrentProblem.SetValue(row, col, parsed);
+                    }
+                    catch(ArgumentException)
+                    {
+                        result.IsValid = false;
+                        result.addError(new ValidationResult.Error
+                        {
+                            Row = row,
+                            Col = col,
+                            Message = String.Format(Thread.CurrentThread.CurrentUICulture, Resources.InvalidValue, value, row + 1, col + 1)
+                        });
+                    }
+                }
+            }
+            if(!result.IsValid) RestoreProblem();
+
+            return result;
+        }
         public void CreateProblemFromFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
         {
             StreamReader sr = null;
@@ -469,7 +525,6 @@ namespace Sudoku
             CurrentProblem.Filename = filename;
             NotifyMatrixChanged();
         }
-
         public bool IsCellReadOnly(int row, int col)
         {
             return CurrentProblem.Matrix.Cell(row, col).ReadOnly;
@@ -490,22 +545,22 @@ namespace Sudoku
             CreateNewProblem(xSudoku);
             return CurrentProblem.Load();
         }
-
         public void UpdateProblem(BaseProblem problem)
         {
             CurrentProblem = problem.Clone();
         }
-
         public void RestoreProblem()
         {
             CurrentProblem = Backup.Clone();
         }
-
         public void BackupProblem()
         {
             Backup = CurrentProblem.Clone();
         }
-
+        public Boolean IsProblemResolvable()
+        {
+            return CurrentProblem.Resolvable();
+        }
         public void PushUndo(CoreValue value)
         {
             undoStack.Push(value);
@@ -548,5 +603,28 @@ namespace Sudoku
         public byte Value { get; set; }
         public bool ReadOnly { get; set; }
         public string StatusText { get; set; }
+    }
+
+    public class ValidationResult
+    {
+        public struct Error
+        {
+            public int Row { get; set; }
+            public int Col { get; set; }
+            public string Message { get; set; }
+        }
+        public bool IsValid { get; set; }
+        public string Message { get; set; }
+        public List<Error> Errors { get; set; }
+        public void addError(Error error)
+        {
+            Errors.Add(error);
+        }
+        public ValidationResult()
+        {
+            IsValid = true;
+            Message = string.Empty;
+            Errors = new List<Error>();
+        }
     }
 }
