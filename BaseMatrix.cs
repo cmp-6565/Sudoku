@@ -653,7 +653,7 @@ namespace Sudoku
             {
                 if(nValues < MinimumValues) return float.NaN;
 
-                if(float.IsNaN(severityLevel) || false)
+                if(float.IsNaN(severityLevel))
                 {
                     int totalComplexity = 0;
                     int minValuesRow = SudokuForm.SudokuSize;

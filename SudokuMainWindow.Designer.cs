@@ -185,13 +185,6 @@ namespace Sudoku
             this.SudokuTable.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.SudokuTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.SudokuTable.StandardTab = true;
-            this.SudokuTable.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.BeginEdit);
-            this.SudokuTable.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.EndEdit);
-            this.SudokuTable.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.CellEnter);
-            this.SudokuTable.CellLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.CellLeave);
-            this.SudokuTable.Paint += new System.Windows.Forms.PaintEventHandler(this.ShowCellHints);
-            this.SudokuTable.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HandleSpecialChar);
-            this.SudokuTable.KeyUp += new System.Windows.Forms.KeyEventHandler(this.KeyUp);
             // 
             // Column1
             // 

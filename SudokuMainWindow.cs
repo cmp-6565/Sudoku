@@ -34,18 +34,13 @@ namespace Sudoku
         private Boolean usePrecalculatedProblem = false;
         private int severityLevel = 0;
         private int incorrectTries = 0;
-        private Boolean valuesVisible = true;
-        private Boolean inSync = false;
 
-        // Kontextmenü Variable
-        private ContextMenuStrip cellContextMenu;
+        private SudokuController controller;
+        private CancellationTokenSource cts;
 
         // Für das Pause-Overlay
         private Label pauseOverlay;
         private DateTime pauseStartTimestamp;
-
-        private SudokuController controller;
-        private CancellationTokenSource cts;
 
         private delegate void PerformAction();
 
@@ -58,7 +53,7 @@ namespace Sudoku
 
             InitializeComponent();
             InitializeInputValidation();
-            InitializeCellContextMenu();
+            InitializeController();
 
             sudokuMenu.Renderer = new FlatRenderer();
 
@@ -83,10 +78,8 @@ namespace Sudoku
             FormatTable();
             EnableGUI();
             UpdateGUI();
-            ResetUndoStack();
+            ResetUndo();
             ResetTexts();
-            SudokuTable.ResetMatrix();
-            SudokuTable.DisplayValues(controller.CurrentProblem.Matrix);
 
             CheckVersion();
             try
@@ -164,129 +157,18 @@ namespace Sudoku
         /// </summary>
         private void FormatTable()
         {
-            int row, col;
-
-            for(row = 0; row < SudokuSize; row++)
-                for(col = 0; col < SudokuSize; col++)
-                    FormatCell(row, col);
-            if(Settings.Default.MarkNeighbors)
-                MarkNeighbors(SudokuTable);
-
+            SudokuTable.FormatBoard();
             ResizeForm();
-            SetCellFont();
             // to allow all cell-hints to be redrawn, the table itself must be redrawn
             SudokuTable.Refresh();
         }
 
         private void ResizeForm()
         {
-            int width = 0;
-            int height = 0;
-            int cellSize = (int)((float)Settings.Default.Size * Settings.Default.MagnificationFactor * Settings.Default.CellWidth * .7f);
-
-            for(int i = 0; i < SudokuSize; i++)
-            {
-                width += (SudokuTable.Columns[i].Width = cellSize);
-                height += (SudokuTable.Rows[i].Height = cellSize);
-            }
-
-            Width = width + 30;
-            Height = height + 140 + (60 * Settings.Default.Size);
-
-            SudokuTable.Width = width + 1;
-            SudokuTable.Height = height + 1;
+            int height=SudokuTable.ResizeBoard();
             status.Location = new Point(status.Location.X, SudokuTable.Location.Y + height + 10);
             next.Location = new Point(next.Location.X, SudokuTable.Location.Y + height + 10);
             prior.Location = new Point(prior.Location.X, SudokuTable.Location.Y + height + 10);
-        }
-
-        /// <summary>
-        /// Sets the cell font for all cells which depends on the cell's size; the actual font name is an application setting
-        /// </summary>
-        private void SetCellFont()
-        {
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
-                    SetCellFont(row, col);
-            status.Font = new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size - 1]) * .8f, FontStyle.Regular);
-        }
-
-        /// <summary>
-        /// Sets the cell font for a specific cell
-        /// </summary>
-        /// <param name="row">
-        /// Row of the cell which font is to be changed
-        /// </param>
-        /// <param name="col">
-        /// Column of the cell which font is to be changed
-        /// </param>
-        private void SetCellFont(int row, int col)
-        {
-            SudokuTable[col, row].Style.Font = controller.IsCellReadOnly(row, col)? boldDisplayFont: normalDisplayFont;
-            SudokuTable[col, row].ReadOnly = controller.IsCellReadOnly(row, col);
-        }
-
-        /// <summary>
-        /// Reads all values from the gui into the main controller.CurrentProblem
-        /// </summary>
-        /// <param name="silent">
-        /// true: Do not show any error if any; leave cell font unchanged.
-        /// false: Display message box, if an error occurs and activates the incorrect cell; set cell font accordingly.
-        /// </param>
-        /// <returns>
-        /// true: Everything is ok.
-        /// false: otherwise.
-        /// </returns>
-        private Boolean SyncProblemWithGUI(Boolean silent)
-        {
-            Text = ProductName;
-            SudokuTable.EndEdit();
-            mouseWheelEditing = false;
-
-            // Marshal UI grid to string[,] with minimal processing
-            string[,] grid = new string[SudokuForm.SudokuSize, SudokuForm.SudokuSize];
-            for(int row = 0; row < SudokuForm.SudokuSize; row++)
-                for(int col = 0; col < SudokuForm.SudokuSize; col++)
-                {
-                    SudokuTable[col, row].ErrorText = String.Empty;
-                    grid[row, col] = SudokuTable[col, row].Value as string;
-                }
-
-            ValidationResult result=controller.ParseAndSync(grid, cultureInfo);
-            inSync = result.IsValid;
-
-            if(autoCheck.Checked)
-            {
-                foreach(var error in result.Errors)
-                {
-                    SudokuTable[error.Col, error.Row].ErrorText = error.Message;
-                }
-
-                if(!silent && !result.IsValid)
-                {
-                    MessageBox.Show(result.Errors[0].Message, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-            }
-            ResetTexts();
-            if(Settings.Default.ShowHints) SudokuTable.Refresh();
-            return result.IsValid;
-        }
-
-        /// <summary>
-        /// Counts the number of filled cells in the current controller.CurrentProblem
-        /// </summary>
-        /// <returns>
-        /// Number of filled cells in the current controller.CurrentProblem
-        /// </returns>
-        private int FilledCells()
-        {
-            int count = 0;
-
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
-                    if(SudokuTable[col, row].Value != null && (((string)SudokuTable[col, row].Value).Trim()).Length > 0)
-                        count++;
-            return count;
         }
 
         /// <summary>
@@ -298,10 +180,12 @@ namespace Sudoku
             int count;
             String problemStatus;
 
-            count = FilledCells();
+            count = SudokuTable.FilledCells;
             problemStatus = Resources.FilledCells + count;
 
-            Boolean inputOK = SyncProblemWithGUI(true);
+            Boolean inputOK = SudokuTable.SyncProblemWithGUI(true, autoCheck.Checked);
+
+            ResetTexts();
             if(autoCheck.Checked && (!inputOK || !controller.IsProblemResolvable()))
             {
                 problemStatus += (Environment.NewLine + Resources.NotResolvable);
@@ -327,44 +211,6 @@ namespace Sudoku
                 sudokuStatusBarText.Text = Resources.Ready;
             }
         }
-
-
-        /// <summary>
-        /// Calculates a string representation of the severity level of the given controller.CurrentProblem
-        /// </summary>
-        /// <param name="currentProblem">
-        /// Problem of interest
-        /// </param>
-        /// <returns>
-        /// Severity level of the controller.CurrentProblem in the current language
-        /// </returns>
-        static private String SeverityLevel(BaseProblem currentProblem)
-        {
-            currentProblem.SeverityLevel = float.NaN;
-            return currentProblem.SeverityLevelText;
-        }
-
-        /// <summary>
-        /// Calculates a numeric representation of the severity level of the given controller.CurrentProblem, not to muddle up with the internal severity level
-        /// </summary>
-        /// <param name="currentProblem">
-        /// Problem of interest
-        /// </param>
-        /// <returns>
-        /// Severity level of the controller.CurrentProblem (0: not defined, 1: trivial, 2: easy, 4: intermediate, 8: hard)
-        /// </returns>
-        static private int SeverityLevelInt(BaseProblem currentProblem)
-        {
-            currentProblem.SeverityLevel = float.NaN;
-            return currentProblem.SeverityLevelInt;
-        }
-
-        static private String InternalSeverityLevel(BaseProblem currentProblem)
-        {
-            currentProblem.SeverityLevel = float.NaN;
-            return currentProblem.SeverityLevel.ToString("f");
-        }
-
         /// <summary>
         /// Sets the status text to a string stating that the current generation has been aborted by the user
         /// </summary>
@@ -378,7 +224,7 @@ namespace Sudoku
             abortRequested = false;
             ResetDetachedProcess();
             controller.RestoreProblem();
-            DisplayValues(controller.CurrentProblem.Matrix);
+            SudokuTable.DisplayValues();
             generationParameters = new GenerationParameters();
         }
 
@@ -403,7 +249,6 @@ namespace Sudoku
         /// </summary>
         private void ResetTexts()
         {
-            // DisplayValues(controller.CurrentProblem.Matrix);
             status.Text = String.Empty;
             prior.Enabled = next.Enabled = false;
             if(!solvingTimer.Enabled) sudokuStatusBarText.Text = Resources.Ready;
@@ -413,13 +258,12 @@ namespace Sudoku
         /// <summary>
         /// Clears the undo-stack
         /// </summary>
-        private void ResetUndoStack()
+        private void ResetUndo()
         {
-            controller.ClearUndo();
+            SudokuTable.ResetUndo();
             undo.Enabled = false;
             solvingTimer.Stop();
             interactiveStart = DateTime.MinValue;
-            controller.CurrentProblem.Dirty = false;
         }
 
         // Misc functions
@@ -432,7 +276,7 @@ namespace Sudoku
         /// </returns>
         private Boolean PreCheck()
         {
-            if(!inSync || !controller.IsProblemResolvable())
+            if(!SudokuTable.InSync || !controller.IsProblemResolvable())
             {
                 CheckProblem();
                 return false;
@@ -442,15 +286,12 @@ namespace Sudoku
 
         private void SetReadOnly(Boolean readOnly)
         {
-            if(readOnly && !SyncProblemWithGUI(true))
+            if(readOnly && !SudokuTable.SyncProblemWithGUI(true, autoCheck.Checked))
             {
                 MessageBox.Show(this, Resources.NotFixable);
                 return;
             }
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
-                    controller.SetCellReadOnly(row, col, (readOnly && SudokuTable[col, row].Value.ToString().Trim() != String.Empty));
-            DisplayValues(controller.CurrentProblem.Matrix);
+            SudokuTable.SetReadOnly(readOnly);
         }
 
         private void CheckVersion()
@@ -464,8 +305,7 @@ namespace Sudoku
         private async void GenerateProblems(int nProblems, Boolean xSudoku)
         {
             // 1. Initialisierung
-            controller.CreateNewProblem(xSudoku);
-            controller.BackupProblem();
+            SudokuTable.CreateNewProblem(xSudoku);
 
             // Severity Logik
             if(!(generationParameters.GenerateBooklet = (nProblems != 1)))
@@ -482,13 +322,7 @@ namespace Sudoku
 
             var progress = new Progress<GenerationProgressState>(state =>
             {
-                if(state.Value != Values.Undefined)
-                    DisplayValue(state.Row, state.Col, state.Value);
-                else
-                    SudokuTable[state.Col, state.Row].Value = "";
-
-                if(state.ReadOnly) SetCellFont(state.Row, state.Col);
-
+                SudokuTable.UpdateProblemState(state);
                 if(state.StatusText != null)
                 {
                     GenerationStatus(controller.CurrentProblem.GenerationTime);
@@ -510,7 +344,7 @@ namespace Sudoku
                             printParameters.Problems.Add(problem);
                             if(Settings.Default.AutoSaveBooklet)
                             {
-                                string filename = generationParameters.BaseDirectory + Path.DirectorySeparatorChar + "Problem-" + (index + 1).ToString(cultureInfo) + "(" + SeverityLevel(problem) + ") (" + InternalSeverityLevel(problem) + ")" + Settings.Default.DefaultFileExtension;
+                                string filename = generationParameters.BaseDirectory + Path.DirectorySeparatorChar + "Problem-" + (index + 1).ToString(cultureInfo) + "(" + problem.SeverityLevelText + ") (" + problem.SeverityLevel + ")" + Settings.Default.DefaultFileExtension;
                                 if(!SaveProblem(filename)) Settings.Default.AutoSaveBooklet = false;
                             }
                         }
@@ -544,9 +378,9 @@ namespace Sudoku
 
             controller.BackupProblem();
             controller.CurrentProblem.PrepareMatrix();
-            DisplayValues(controller.CurrentProblem.Matrix);
-            ResetUndoStack();
-            SyncProblemWithGUI(true);
+            SudokuTable.DisplayValues();
+            ResetUndo();
+            SudokuTable.SyncProblemWithGUI(true, autoCheck.Checked);
             status.Text = String.Format(cultureInfo, Resources.ProblemInfo.Replace("\\n", Environment.NewLine), controller.GetFilledCellCount - controller.GetComputedCellCount, controller.GetComputedCellCount, controller.GetVariableCellCount);
             status.Update();
         }
@@ -555,7 +389,6 @@ namespace Sudoku
         {
             if(!PreCheck()) return;
 
-            // BaseProblem tmp = controller.CurrentProblem.Clone();
             int count;
             Color hintColor = Color.Red;
 
@@ -598,14 +431,14 @@ namespace Sudoku
         {
             String problemInfo;
             Boolean modified = controller.CurrentProblem.Dirty;
-            Boolean problemValid = SyncProblemWithGUI(true);
+            Boolean problemValid = SudokuTable.SyncProblemWithGUI(true, autoCheck.Checked);
 
             problemInfo = Resources.PreAllocatedValues + controller.CurrentProblem.nValues.ToString(cultureInfo);
             controller.CurrentProblem.PrepareMatrix();
             problemInfo += Environment.NewLine + Resources.DefiniteCells + controller.CurrentProblem.nComputedValues.ToString(cultureInfo);
             controller.CurrentProblem.ResetMatrix();
             if(problemValid)
-                problemInfo += Environment.NewLine + Resources.ComplexityLevel + SeverityLevel(controller.CurrentProblem) + " (" + String.Format(cultureInfo, "{0:0.00}", controller.CurrentProblem.SeverityLevel) + ")";
+                problemInfo += Environment.NewLine + Resources.ComplexityLevel + controller.CurrentProblem.SeverityLevelText + " (" + String.Format(cultureInfo, "{0:0.00}", controller.CurrentProblem.SeverityLevel) + ")";
             problemInfo += Environment.NewLine +
                 (controller.CurrentProblem.ProblemSolved ? String.Format(cultureInfo, Resources.CheckResult, controller.CurrentProblem is XSudokuProblem ? "X-" : Resources.Classic, Resources.AtLeast) :
                  controller.IsProblemResolvable() && problemValid ? String.Format(cultureInfo, Resources.ValidationStatus, controller.CurrentProblem is XSudokuProblem ? "X-" : Resources.Classic) : Resources.NotResolvable);
@@ -684,7 +517,7 @@ namespace Sudoku
             if(pauseOverlay != null) pauseOverlay.Visible = false;
 
             solvingTimer.Start();
-            ShowValues();
+            SudokuTable.ShowValues();
 
             TimeSpan pauseDuration = DateTime.Now - pauseStartTimestamp;
             interactiveStart += pauseDuration;
@@ -706,7 +539,7 @@ namespace Sudoku
 
         private void CheckProblem()
         {
-            if(SyncProblemWithGUI(false))
+            if(SudokuTable.SyncProblemWithGUI(false, autoCheck.Checked))
                 MessageBox.Show(this, controller.IsProblemResolvable()? String.Format(cultureInfo, Resources.ValidationStatus, controller.CurrentProblem is XSudokuProblem ? "X-": Resources.Classic): Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
                 MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -725,15 +558,13 @@ namespace Sudoku
 
             var progress = new Progress<GenerationProgressState>(state =>
             {
-                status.Text = String.Format(cultureInfo, Resources.CheckingStatus, state.PassCount) + Environment.NewLine +
-                              Resources.TimeElapsed + state.Elapsed.ToString(); // Formatierung ggf. anpassen
+                status.Text = String.Format(cultureInfo, Resources.CheckingStatus, state.PassCount) + Environment.NewLine + Resources.TimeElapsed + state.Elapsed.ToString(); // Formatierung ggf. anpassen
                 status.Update();
                 if(debug.Checked) SudokuTable.Update();
             });
 
             try
             {
-                // Aufruf der neuen Controller-Methode
                 bool solvable = await controller.Validate(progress, cts.Token);
 
                 status.Text = String.Empty;
@@ -758,38 +589,35 @@ namespace Sudoku
                 EnableGUI();
             }
         }
-
         private void ResetProblem()
         {
             controller.RestoreProblem();
             controller.CurrentProblem.ResetSolutions();
-            ResetUndoStack();
+            ResetUndo();
             ResetTexts();
             for(int row = 0; row < SudokuSize; row++)
                 for(int col = 0; col < SudokuSize; col++)
                     SudokuTable[col, row].ErrorText = String.Empty;
         }
-
         private Boolean SudokuOfTheDay()
         {
             if(controller.SudokuOfTheDay())
             {
                 UpdateGUI();
-                SetCellFont();
-                ResetUndoStack();
+                SudokuTable.SetCellFont();
+                ResetUndo();
                 return true;
             }
             else
                 return false;
         }
-
         private void CreateProblemFromFile(String filename)
         {
             controller.CreateProblemFromFile(filename, true, true, true);
         }
         private void NextSolution()
         {
-            DisplayValues(controller.CurrentProblem.Solutions[++currentSolution]);
+            SudokuTable.DisplayValues(controller.CurrentProblem.Solutions[++currentSolution]);
             next.Enabled = (currentSolution < controller.CurrentProblem.Solutions.Count - 1);
             prior.Enabled = (currentSolution > 0);
             Text = String.Format(cultureInfo, Resources.DisplaySolution, currentSolution + 1, controller.CurrentProblem.Solutions[currentSolution].Counter);
@@ -797,7 +625,7 @@ namespace Sudoku
 
         private void PriorSolution()
         {
-            DisplayValues(controller.CurrentProblem.Solutions[--currentSolution]);
+            SudokuTable.DisplayValues(controller.CurrentProblem.Solutions[--currentSolution]);
             prior.Enabled = (currentSolution > 0);
             next.Enabled = (controller.CurrentProblem.Solutions.Count > 1);
             Text = String.Format(cultureInfo, Resources.DisplaySolution, currentSolution + 1, controller.CurrentProblem.Solutions[currentSolution].Counter);
@@ -818,7 +646,7 @@ namespace Sudoku
             Boolean rc = true;
             DialogResult dialogResult;
 
-            if(controller.CurrentProblem.Dirty && FilledCells() != TotalCellCount)
+            if(controller.CurrentProblem.Dirty && SudokuTable.FilledCells != TotalCellCount)
             {
                 dialogResult = MessageBox.Show(this, Resources.UnsavedChanges, ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
                 if(dialogResult == DialogResult.Yes)
@@ -868,8 +696,8 @@ namespace Sudoku
             controller.BackupProblem();
 
             UpdateGUI();
-            SetCellFont();
-            ResetUndoStack();
+            SudokuTable.SetCellFont();
+            ResetUndo();
         }
 
         private Boolean SaveProblem(String filename)
@@ -906,7 +734,7 @@ namespace Sudoku
 
         private Boolean SaveProblem()
         {
-            if(!SyncProblemWithGUI(true))
+            if(!SudokuTable.SyncProblemWithGUI(true, false))
             {
                 MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.SaveNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
@@ -920,7 +748,7 @@ namespace Sudoku
 
         private Boolean ExportProblem()
         {
-            if(!SyncProblemWithGUI(true))
+            if(!SudokuTable.SyncProblemWithGUI(true, false))
             {
                 MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.ExportNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
@@ -934,7 +762,7 @@ namespace Sudoku
 
         private Boolean TwitterProblem()
         {
-            if(!SyncProblemWithGUI(true))
+            if(!SudokuTable.SyncProblemWithGUI(true, false))
             {
                 MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.TwitterNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
@@ -980,161 +808,19 @@ namespace Sudoku
                 e.Effect = DragDropEffects.Move;
         }
 
-        private void BeginEdit(object sender, DataGridViewCellCancelEventArgs e)
-        {
-            if(sender is DataGridView)
-                if(!pencilMode.Checked && !((DataGridView)sender).CurrentCell.ReadOnly)
-                    PushOnUndoStack((DataGridView)sender);
-        }
-
-        private void EndEdit(object sender, DataGridViewCellEventArgs e)
-        {
-            CellEndEdit(sender);
-        }
-
-        private void CellEndEdit(object sender)
-        {
-            if(sender is DataGridView)
-            {
-                if(!solvingTimer.Enabled)
-                {
-                    controller.CurrentProblem.SolvingTime = TimeSpan.Zero;
-                    solvingTimer.Start();
-                    interactiveStart = DateTime.Now - controller.CurrentProblem.SolvingTime;
-                }
-
-                DataGridView dgv = (DataGridView)sender;
-                controller.CurrentProblem.SetValue(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex, Values.Undefined);
-                SetCellFont(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex);
-            }
-            mouseWheelEditing = false;
-
-            CurrentStatus(false);
-        }
         private void ToggleHighlightSameValuesClicked(object sender, EventArgs e)
         {
             highlightSameValues.Checked = !highlightSameValues.Checked;
             Settings.Default.HighlightSameValues=highlightSameValues.Checked;
             if(Settings.Default.HighlightSameValues)
-                UpdateHighligts(SudokuTable);
+                SudokuTable.UpdateHighligts();
             else
-                ClearHighlights();
+                SudokuTable.ClearHighlights();
         }
         public void TogglePencilModeClick(object sender, EventArgs e)
         {
             pencilMode.Checked = !pencilMode.Checked;
             SudokuTable.Cursor = pencilMode.Checked ? Cursors.Help : Cursors.Default;
-        }
-        private new void KeyUp(object sender, KeyEventArgs e)
-        {
-            int candidate;
-            candidate = e.KeyValue - 96; // Numpad
-            if(candidate < 0) candidate = e.KeyValue - 48;
-
-            if(sender is DataGridView && (Control.ModifierKeys == Keys.Control || Control.ModifierKeys == (Keys.Control | Keys.Shift)) && candidate > 0 && candidate <= SudokuSize)
-            {
-                if(Settings.Default.ShowHints && MessageBox.Show(this, Resources.CandidatesNotShown, ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    showPossibleValues.Checked = Settings.Default.ShowHints = false;
-
-                DataGridView dgv = (DataGridView)sender;
-                if(!controller.CurrentProblem.Cell(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex).ReadOnly)
-                {
-                    controller.CurrentProblem.SetCandidate(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex, candidate, Control.ModifierKeys == (Keys.Control | Keys.Shift));
-                    clearCandidates.Enabled = controller.CurrentProblem.HasCandidates();
-                }
-
-                dgv.Refresh();
-            }
-        }
-
-        private void HandleSpecialChar(object sender, KeyEventArgs e)
-        {
-            if(sender is DataGridView)
-            {
-                if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Apps || e.KeyCode == Keys.Back)
-                {
-                    DataGridView dgv = (DataGridView)sender;
-                    if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
-                    {
-                        if(!SudokuTable[dgv.CurrentCell.ColumnIndex, dgv.CurrentCell.RowIndex].ReadOnly)
-                        {
-                            PushOnUndoStack(dgv);
-                            SudokuTable[dgv.CurrentCell.ColumnIndex, dgv.CurrentCell.RowIndex].Value = "";
-                            CellEndEdit(sender);
-                        }
-                    }
-                    else
-                    {
-                        HandleRightMouseButton(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex);
-                    }
-                }
-                else
-                {
-                    if(!pencilMode.Checked || e.Control || e.Alt) return;
-
-                    int value = -1;
-                    if(e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9) value = e.KeyCode - Keys.D0;
-                    else if(e.KeyCode >= Keys.NumPad1 && e.KeyCode <= Keys.NumPad9) value = e.KeyCode - Keys.NumPad0;
-
-                    if(value > 0)
-                    {
-                        DataGridViewCell current = SudokuTable.CurrentCell;
-                        if(current != null && !current.ReadOnly)
-                        {
-                            controller.CurrentProblem.SetCandidate(current.RowIndex, current.ColumnIndex, value, false);
-                            clearCandidates.Enabled = controller.CurrentProblem.HasCandidates();
-
-                            e.Handled = true;
-                            e.SuppressKeyPress = true;
-
-                            SudokuTable.InvalidateCell(current.ColumnIndex, current.RowIndex);
-                            SudokuTable.Refresh();
-                        }
-                    }
-                }
-            }
-        }
-        private void CellLeave(object sender, DataGridViewCellEventArgs e)
-        {
-            if(mouseWheelEditing) CellEndEdit(sender);
-
-            if(Settings.Default.MarkNeighbors)
-            {
-                DataGridView dgv = (DataGridView)sender;
-                BaseCell[] neighbors = controller.CurrentProblem.Matrix.Cell(dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y).Neighbors;
-
-                FormatCell(dgv.CurrentCellAddress.X, dgv.CurrentCellAddress.Y);
-                foreach(BaseCell cell in neighbors)
-                    FormatCell(cell.Row, cell.Col);
-            }
-        }
-
-        private void ShowValues()
-        {
-            if(!valuesVisible)
-            {
-                DisplayValues(controller.CurrentProblem.Matrix);
-                valuesVisible = true;
-                if(!solvingTimer.Enabled)
-                {
-                    controller.CurrentProblem.SolvingTime = TimeSpan.Zero;
-                    solvingTimer.Start();
-                    interactiveStart = DateTime.Now;
-                }
-            }
-        }
-        private void CellEnter(object sender, DataGridViewCellEventArgs e)
-        {
-            if(sender is DataGridView)
-            {
-                DataGridView dgv = (DataGridView)sender;
-
-                if(Settings.Default.HighlightSameValues)
-                    UpdateHighligts(dgv);
-                if(Settings.Default.MarkNeighbors)
-                    MarkNeighbors(dgv);
-            }
-            ShowValues();
         }
 
         private void HandleCellChanged(object sender, BaseCell v)
@@ -1143,7 +829,7 @@ namespace Sudoku
             {
                 Invoke(new Action(() =>
                 {
-                    DisplayValue(v.Row, v.Col, v.CellValue);
+                    SudokuTable.DisplayValue(v.Row, v.Col, v.CellValue);
                     SudokuTable.Update();
                 }));
 
@@ -1154,65 +840,9 @@ namespace Sudoku
                 return;
             }
 
-            DisplayValue(v.Row, v.Col, v.CellValue);
+            SudokuTable.DisplayValue(v.Row, v.Col, v.CellValue);
             SudokuTable.Update();
         }
-        private void HandleOnTestCell(object sender, BaseCell cell)
-        {
-            if(InvokeRequired)
-            {
-                Invoke(new Action<object, BaseCell>(HandleOnTestCell), sender, cell);
-                return;
-            }
-            SudokuTable[cell.Col, cell.Row].Style.Font = strikethroughFont;
-            SudokuTable[cell.Col, cell.Row].Style.BackColor = Color.Coral;
-        }
-
-        private void HandleOnResetCell(object sender, BaseCell cell)
-        {
-            if(InvokeRequired)
-            {
-                Invoke(new Action<object, BaseCell>(HandleOnResetCell), sender, cell);
-                return;
-            }
-            SudokuTable[cell.Col, cell.Row].Style.Font = boldDisplayFont;
-            FormatCell(cell.Col, cell.Row);
-        }
-
-        private void HandleMinimizing(object sender, BaseProblem minimalProblem)
-        {
-            if(InvokeRequired)
-            {
-                Invoke(new Action<object, BaseProblem>(HandleMinimizing), sender, minimalProblem);
-                return;
-            }
-            status.Text = String.Format(Resources.CurrentMinimalProblem, SeverityLevel(minimalProblem), minimalProblem.nValues, controller.CurrentProblem.nValues).Replace("\\n", Environment.NewLine);
-            status.Update();
-        }
-
-        private void ShowCellHints(object sender, PaintEventArgs e)
-        {
-            if(sender is DataGridView)
-            {
-                Font printFont = (Settings.Default.Size == 1 ? PrintParameters.SmallFont : PrintParameters.NormalFont);
-
-                showCandidates = !Settings.Default.ShowHints;
-                DataGridView dgv = (DataGridView)sender;
-                float cellSize = dgv.Columns[0].Width;
-                for(int row = 0; row < SudokuSize; row++)
-                    for(int col = 0; col < SudokuSize; col++)
-                        if(controller.CurrentProblem.GetValue(row, col) == Values.Undefined)
-                        {
-                            RectangleF rf = new RectangleF(col * cellSize, row * cellSize, cellSize, cellSize);
-                            if(rf.IntersectsWith(e.ClipRectangle))
-                                if(Settings.Default.UseWatchHandHints)
-                                    PrintWatchHands(controller.CurrentProblem.Cell(row, col), rf, e.Graphics);
-                                else
-                                    PrintHints(controller.CurrentProblem.Cell(row, col), rf, e.Graphics, printFont, SudokuTable[row, col].Style.ForeColor);
-                        }
-            }
-        }
-
         private void DisplayCellInfo(object sender, EventArgs e)
         {
             DataGridViewSelectedCellCollection cells = SudokuTable.SelectedCells;
@@ -1260,8 +890,8 @@ namespace Sudoku
 
             status.Text = usePrecalculatedProblem ?
                 Resources.ProblemRetrieved :
-                String.Format(cultureInfo, Resources.NewProblemGenerated.Replace("\\n", Environment.NewLine), SeverityLevel(controller.CurrentProblem), controller.CurrentProblem.nValues, generationParameters.CheckedProblems, generationParameters.TotalPasses, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
-            DisplayValues(controller.CurrentProblem.Matrix);
+                String.Format(cultureInfo, Resources.NewProblemGenerated.Replace("\\n", Environment.NewLine), controller.CurrentProblem.SeverityLevelText, controller.CurrentProblem.nValues, generationParameters.CheckedProblems, generationParameters.TotalPasses, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
+            SudokuTable.DisplayValues(controller.CurrentProblem.Matrix);
             PublishTrickyProblems();
             ResetDetachedProcess();
             generationParameters = new GenerationParameters();
@@ -1522,16 +1152,8 @@ namespace Sudoku
 
                 if(generationParameters.GenerateBooklet) severityLevel = Settings.Default.SeverityLevel;
 
-                int colorIndex = 255 - (int)(255f * ((float)Settings.Default.Contrast / 100f));
-                gray = Color.FromArgb(colorIndex, colorIndex, colorIndex);
-                green = Color.FromArgb(64, colorIndex, 64);
-                colorIndex = 255 - (int)(255f * ((float)Settings.Default.Contrast / 220f));
-                lightGray = Color.FromArgb(colorIndex, colorIndex, colorIndex);
-                colorIndex = 255 - (int)(255f * ((float)Settings.Default.Contrast / 1000f));
-                lightGreen = Color.FromArgb(191, colorIndex, 191);
-                textColor = Settings.Default.Contrast > 50 ? Color.White : Color.Black;
-                normalDisplayFont = new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size - 1]), FontStyle.Regular);
-                boldDisplayFont = new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size - 1]), FontStyle.Bold);
+                SudokuTable.UpdateFonts();
+
                 autoPauseTimer.Interval = Convert.ToInt32(Settings.Default.AutoPauseLag) * 1000;
 
                 UpdateGUI();
@@ -1589,7 +1211,7 @@ namespace Sudoku
 
             try
             {
-                DisplayValues(controller.CurrentProblem.Matrix);
+                SudokuTable.DisplayValues(controller.CurrentProblem.Matrix);
                 if(controller.CurrentProblem.NumberOfSolutions > 0)
                 {
                     currentSolution = -1;
@@ -1691,50 +1313,12 @@ namespace Sudoku
                 sudokuStatusBarText.Text += Resources.Paused;
 
             autoPauseTimer.Stop();
-            HideCells();
+            SudokuTable.HideCells();
 
             // Statt MessageBox nun das Overlay zeigen
             pauseOverlay.Visible = true;
             pauseOverlay.BringToFront();
         }
-        private void HideCells()
-        {
-            int row, col;
-
-            for(row = 0; row < SudokuSize; row++)
-                for(col = 0; col < SudokuSize; col++)
-                    SudokuTable[row, col].Value = "";
-            valuesVisible = false;
-        }
-
-        private void UpdateHighligts(DataGridView dgv)
-        {
-            ClearHighlights();
-
-            if(dgv.CurrentCell == null || dgv.CurrentCell.Value == null || String.IsNullOrWhiteSpace(dgv.CurrentCell.Value.ToString())) return;
-
-            highlightedCells = GetSameValueCells(dgv.CurrentCell.Value);
-
-            foreach(Point p in highlightedCells)
-                SudokuTable[p.X, p.Y].Style.BackColor = highlightColor;
-        }
-        private void ClearHighlights()
-        {
-            foreach(Point p in highlightedCells)
-                FormatCell(p.X, p.Y);
-            highlightedCells.Clear();
-        }
-
-        private List<Point> GetSameValueCells(object value)
-        {
-            List<Point> cells = new List<Point>();
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
-                    if(SudokuTable[col, row].Value != null && SudokuTable[col, row].Value.Equals(value))
-                        cells.Add(new Point(col, row));
-            return cells;
-        }
-
         private void MarkNeighborsClicked(object sender, EventArgs e)
         {
             Settings.Default.MarkNeighbors = markNeighbors.Checked;
@@ -1742,58 +1326,12 @@ namespace Sudoku
                 FormatTable();
         }
 
-        private async Task<Boolean> Minimize(int maxSeverity)
-        {
-            String statusbarText = sudokuStatusBarText.Text;
-            BaseProblem minimizedProblem = null;
-            Boolean rc = false;
-
-            controller.BackupProblem();
-            sudokuStatusBarText.Text = Resources.Minimizing;
-            Cursor = Cursors.WaitCursor;
-            DisableGUI();
-
-            // Berechnung in Hintergrund-Task auslagern
-            controller.CurrentProblem.Minimizing += HandleMinimizing;
-            controller.CurrentProblem.TestCell += HandleOnTestCell;
-            controller.CurrentProblem.ResetCell += HandleOnResetCell;
-
-            cts = new CancellationTokenSource();
-            try
-            {
-                minimizedProblem = await controller.Minimize(maxSeverity, cts.Token);
-
-                if(minimizedProblem != null)
-                {
-                    rc = true;
-                    controller.UpdateProblem(minimizedProblem);
-                }
-            }
-            finally
-            {
-                controller.CurrentProblem.ResetCell -= HandleOnResetCell;
-                controller.CurrentProblem.TestCell -= HandleOnTestCell;
-                controller.CurrentProblem.Minimizing -= HandleMinimizing;
-                controller.CurrentProblem.ResetMatrix();
-
-                UpdateGUI();
-                DisplayValues(controller.CurrentProblem.Matrix);
-                SetCellFont();
-                ResetUndoStack();
-                EnableGUI();
-                Cursor = Cursors.Default;
-                sudokuStatusBarText.Text = statusbarText;
-            }
-
-            return rc;
-        }
-
         private async void MinimizeClick(object sender, EventArgs e)
         {
             int before = controller.CurrentProblem.nValues;
             Boolean dirty = controller.CurrentProblem.Dirty;
 
-            if(!SyncProblemWithGUI(true))
+            if(!SudokuTable.SyncProblemWithGUI(true, false))
             {
                 MessageBox.Show(this, Resources.MinimizationNotPossible);
                 return;
@@ -1812,6 +1350,48 @@ namespace Sudoku
                 controller.CurrentProblem.Dirty = true;
             }
         }
+        public async Task<Boolean> Minimize(int maxSeverity)
+        {
+            String statusbarText = sudokuStatusBarText.Text;
+            BaseProblem minimizedProblem = null;
+            Boolean rc = false;
+
+            controller.BackupProblem();
+
+            // Berechnung in Hintergrund-Task auslagern
+            controller.CurrentProblem.Minimizing += HandleMinimizing;
+            controller.CurrentProblem.TestCell += SudokuTable.HandleOnTestCell;
+            controller.CurrentProblem.ResetCell += SudokuTable.HandleOnResetCell;
+
+            cts = new CancellationTokenSource();
+            try
+            {
+                minimizedProblem = await controller.Minimize(maxSeverity, cts.Token);
+
+                if(minimizedProblem != null)
+                {
+                    rc = true;
+                    controller.UpdateProblem(minimizedProblem);
+                }
+            }
+            finally
+            {
+                controller.CurrentProblem.ResetCell -= SudokuTable.HandleOnResetCell;
+                controller.CurrentProblem.TestCell -= SudokuTable.HandleOnTestCell;
+                controller.CurrentProblem.Minimizing -= HandleMinimizing;
+                controller.CurrentProblem.ResetMatrix();
+
+                UpdateGUI();
+                SudokuTable.DisplayValues(controller.CurrentProblem.Matrix);
+                SudokuTable.SetCellFont();
+                ResetUndo();
+                EnableGUI();
+                Cursor = Cursors.Default;
+                sudokuStatusBarText.Text = statusbarText;
+            }
+
+            return rc;
+        }
         private void FixClick(object sender, EventArgs e)
         {
             SetReadOnly(true);
@@ -1824,10 +1404,36 @@ namespace Sudoku
 
         private void InitializeInputValidation()
         {
-            // Event abonnieren, das feuert, wenn eine Zelle in den Editiermodus wechselt
             SudokuTable.EditingControlShowing += EditingControl;
         }
+        private void InitializeController()
+        {
+            controller = new SudokuController();
+            controller.Generating += (s, e) => OnGenerating(s, e);
+            if(Settings.Default.State.Length > 0)
+                controller.RestoreProblemState(false);
+            else
+                controller.CreateNewProblem(false, false);
+            SudokuTable.Controller = controller;
+            SudokuTable.UndoAvailableChanged += (s, canUndo) =>  { undo.Enabled = canUndo; };
+            SudokuTable.CandidatesAvailableChanged += (s, hasCandidates) => { clearCandidates.Enabled = hasCandidates; };
+            SudokuTable.StatusTextChanged += (s, text) => 
+            {
+                status.Text = text;
+                status.Update();
+            };
 
+        }
+
+        private void OnGenerating(object s, EventArgs e)
+        {
+            if(InvokeRequired)
+            {
+                Invoke(new EventHandler(OnGenerating), s, e);
+                return;
+            }
+            GenerationStatus(((SudokuController)s).CurrentProblem.GenerationTime);
+        }
         private void EditingControl(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
             // Wir prüfen, ob das Control eine TextBox ist (Standard bei DataGridViewTextBoxColumn)
@@ -1849,58 +1455,6 @@ namespace Sudoku
                 System.Media.SystemSounds.Beep.Play();
             }
         }
-        private void InitializeCellContextMenu()
-        {
-            cellContextMenu = new ContextMenuStrip();
-
-            // Menüpunkt: Zelle leeren
-            var itemClear = cellContextMenu.Items.Add(Resources.ClearContent);
-            itemClear.Enabled = true;
-            itemClear.Click += (s, e) =>
-            {
-                if(SudokuTable.CurrentCell != null && !SudokuTable.CurrentCell.ReadOnly)
-                {
-                    // Nutzen der existierenden Logik via Undo-Stack
-                    PushOnUndoStack(SudokuTable);
-                    SudokuTable.CurrentCell.Value = "";
-                    CellEndEdit(SudokuTable);
-                }
-            };
-
-            // Menüpunkt: Als Kandidaten speichern (Beispiel für erweiterte Interaktion)
-            var itemCandidate = cellContextMenu.Items.Add(Resources.ClearCandidates);
-            itemCandidate.Enabled = true;
-            itemCandidate.Click += (s, e) =>
-            {
-                if(controller.CurrentProblem != null)
-                {
-                    controller.CurrentProblem.ResetCandidates(SudokuTable.CurrentCell.RowIndex, SudokuTable.CurrentCell.ColumnIndex);
-                    clearCandidates.Enabled = controller.CurrentProblem.HasCandidates();
-                    SudokuTable.Refresh();
-                }
-            };
-
-            // Menü zuweisen
-            SudokuTable.ContextMenuStrip = cellContextMenu;
-
-            // Selektion beim Rechtsklick korrigieren (Standard WinForms selektiert nicht bei Rechtsklick)
-            SudokuTable.CellMouseDown += CellMouseDown;
-        }
-
-        private void CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if(e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex >= 0)
-            {
-                HandleRightMouseButton(e.RowIndex, e.ColumnIndex);
-            }
-        }
-
-        private void HandleRightMouseButton(int row, int col)
-        {
-            SudokuTable.CurrentCell = SudokuTable[col, row];
-            cellContextMenu.Items[0].Enabled = SudokuTable.CurrentCell.Value.ToString().Trim().Length != 0;
-            cellContextMenu.Items[1].Enabled = controller.CurrentProblem.HasCandidate(row, col);
-        }
         private void VersionHistoryClicked(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start(Resources.VersionHistory);
@@ -1918,7 +1472,16 @@ namespace Sudoku
             else
                 MessageBox.Show(this, Resources.SudokuOfTheDayNotLoaded);
         }
-
+        private void HandleMinimizing(object sender, BaseProblem minimalProblem)
+        {
+            if(InvokeRequired)
+            {
+                Invoke(new Action<object, BaseProblem>(HandleMinimizing), sender, minimalProblem);
+                return;
+            }
+            status.Text = String.Format(Resources.CurrentMinimalProblem, minimalProblem.SeverityLevelText, minimalProblem.nValues, controller.CurrentProblem.nValues).Replace("\\n", Environment.NewLine);
+            status.Update();
+        }
         // Exit Sudoku
         private void ExitSudoku(object sender, FormClosingEventArgs e)
         {
@@ -1942,7 +1505,7 @@ namespace Sudoku
                 {
                     Settings.Default.State = "";
                     Settings.Default.Save();
-                    if(!SyncProblemWithGUI(true))
+                    if(!SudokuTable.SyncProblemWithGUI(true, autoCheck.Checked))
                     {
                         e.Cancel = MessageBox.Show(this, Resources.CloseAnyway, ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No;
                     }

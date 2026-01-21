@@ -574,6 +574,7 @@ namespace Sudoku
         public void ClearUndo()
         {
             undoStack.Clear();
+            CurrentProblem.Dirty = false;
         }
         public Boolean CanUndo()
         {

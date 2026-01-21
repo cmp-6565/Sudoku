@@ -41,7 +41,7 @@ namespace Sudoku
 
         private async Task PrintDialog()
         {
-            if(!SyncProblemWithGUI(true))
+            if(!SudokuTable.SyncProblemWithGUI(true, false))
             {
                 MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.PrintNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
@@ -49,7 +49,7 @@ namespace Sudoku
 
             BaseProblem tmp = controller.CurrentProblem.Clone();
 
-            DisplayValues(controller.CurrentProblem.Matrix);
+            SudokuTable.DisplayValues(controller.CurrentProblem.Matrix);
             SolveProblem();
 
             if(controller.CurrentProblem.SolverTask != null && !controller.CurrentProblem.SolverTask.IsCompleted)
@@ -57,7 +57,7 @@ namespace Sudoku
 
             ResetDetachedProcess();
             ResetTexts();
-            DisplayValues(tmp.Matrix);
+            SudokuTable.DisplayValues(tmp.Matrix);
 
             if(!controller.CurrentProblem.Aborted)
             {
@@ -211,7 +211,7 @@ namespace Sudoku
                 try
                 {
                     SudokuController bookletController = new SudokuController(filenames[problemNumber], false);
-                    if(bookletController.CurrentProblem != null && (SeverityLevelInt(bookletController.CurrentProblem) & Settings.Default.SeverityLevel) != 0)
+                    if(bookletController.CurrentProblem != null && (bookletController.CurrentProblem.SeverityLevelInt & Settings.Default.SeverityLevel) != 0)
                     {
                         bookletController.CurrentProblem.FindSolutions(2);
 
@@ -343,6 +343,7 @@ namespace Sudoku
 
         private void PrintProblem(float x, float y, Graphics g)
         {
+            bool showCandidatesMode = !Settings.Default.ShowHints;
             int row = 0;
             int col = 0;
             Font printFont = (Settings.Default.HorizontalProblems > 3 ? PrintParameters.SmallFont : (Settings.Default.HorizontalProblems < 2 ? PrintParameters.LargeFont : PrintParameters.NormalFont));
@@ -356,7 +357,7 @@ namespace Sudoku
             else
                 if(currentProblem.NumberOfSolutions == 1)
             {
-                String problemTitle = (printParameters.Problems.Count > 1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentProblem + 1) + ": " : String.Empty) + SeverityLevel(currentProblem) + (Settings.Default.PrintInternalSeverity ? " (" + InternalSeverityLevel(currentProblem) + ")" : "");
+                String problemTitle = (printParameters.Problems.Count > 1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentProblem + 1) + ": " : String.Empty) + currentProblem.SeverityLevelText + (Settings.Default.PrintInternalSeverity ? " (" + currentProblem.SeverityLevel + ")" : "");
                 g.DrawString(problemTitle, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
             }
             else
@@ -395,125 +396,12 @@ namespace Sudoku
                         g.DrawString(currentProblem.GetValue(row, col).ToString(cultureInfo).Trim(), printFont, PrintParameters.SolidBrush, cell, PrintParameters.Centered);
                     else if(Settings.Default.PrintHints || showCandidates)
                         if(Settings.Default.UseWatchHandHints || printParameters.CellWidthDots < 30)
-                            PrintWatchHands(currentProblem.Matrix.Cell(row, col), cell, g);
+                            SudokuRenderer.DrawWatchHands(currentProblem.Matrix.Cell(row, col), cell, g, showCandidatesMode);
                         else
-                            PrintHints(currentProblem.Matrix.Cell(row, col), cell, g, hintFont);
+                            SudokuRenderer.DrawHints(currentProblem.Matrix.Cell(row, col), rf, g, printFont, Color.Black, showCandidatesMode);
                 }
             printParameters.CurrentProblem++;
         }
-
-        private void PrintWatchHands(BaseCell value, RectangleF rf, Graphics g)
-        {
-            float diameter = rf.Width / 10;
-            float xStart = 0, xEnd = 0, yStart = 0, yEnd = 0;
-
-            for(int i = 1; i <= SudokuForm.SudokuSize; i++)
-                if((!showCandidates && (value.Enabled(i) || value.DefinitiveValue == i)) || (showCandidates && (value.GetCandidateMask(i, false) || value.GetCandidateMask(i, true))))
-                {
-                    if(i == 5)
-                        g.FillEllipse(showCandidates ? (value.GetCandidateMask(i, false) ? PrintParameters.GreenSolidBrush : PrintParameters.RedSolidBrush) : PrintParameters.SolidBrush, rf.X + rf.Width / 2, rf.Y + rf.Height / 2, diameter, diameter);
-                    else
-                    {
-                        switch(i)
-                        {
-                        case 1:
-                        case 6:
-                            xStart = xEnd = rf.X + rf.Width / 2f;
-                            break;
-                        case 2:
-                        case 3:
-                        case 4:
-                            xStart = rf.X + rf.Width / 10 * 8f;
-                            xEnd = rf.X + rf.Width;
-                            break;
-                        case 7:
-                        case 8:
-                        case 9:
-                            xStart = rf.X + rf.Width / 10 * 2f;
-                            xEnd = rf.X;
-                            break;
-                        }
-
-                        switch(i)
-                        {
-                        case 1:
-                        case 2:
-                        case 9:
-                            yStart = rf.Y + rf.Height / 10 * 2f;
-                            yEnd = rf.Y;
-                            break;
-                        case 3:
-                        case 8:
-                            yStart = yEnd = rf.Y + rf.Height / 2f;
-                            break;
-                        case 4:
-                        case 6:
-                        case 7:
-                            yStart = rf.Y + rf.Height / 10 * 8f;
-                            yEnd = rf.Y + rf.Height;
-                            break;
-                        }
-                        g.DrawLine(showCandidates ? (value.GetCandidateMask(i, false) ? PrintParameters.GreenTinySolidLine : PrintParameters.RedTinySolidLine) : PrintParameters.TinySolidLine, xStart, yStart, xEnd, yEnd);
-                    }
-                }
-        }
-
-        private void PrintHints(BaseCell value, RectangleF rf, Graphics g, Font printFont)
-        {
-            PrintHints(value, rf, g, printFont, Color.Black);
-        }
-
-        private void PrintHints(BaseCell value, RectangleF rf, Graphics g, Font printFont, Color color)
-        {
-            float x = 0, y = 0;
-            SolidBrush normalBrush = new SolidBrush(color);
-            SolidBrush candidateBrush = new SolidBrush(Color.Green);
-            SolidBrush exclusionCandidateBrush = new SolidBrush(Color.Red);
-
-            for(int i = 1; i <= SudokuForm.SudokuSize; i++)
-                if((!showCandidates && (value.Enabled(i) || value.DefinitiveValue == i)) || (showCandidates && (value.GetCandidateMask(i, false) || value.GetCandidateMask(i, true))))
-                {
-                    switch(i)
-                    {
-                    case 2:
-                    case 5:
-                    case 8:
-                        x = rf.X + rf.Width / 2f - (printFont.SizeInPoints * .75f);
-                        break;
-                    case 1:
-                    case 4:
-                    case 7:
-                        x = rf.X + printFont.SizeInPoints / 8f;
-                        break;
-                    case 3:
-                    case 6:
-                    case 9:
-                        x = rf.X + rf.Width - (printFont.SizeInPoints * 1.5f);
-                        break;
-                    }
-
-                    switch(i)
-                    {
-                    case 1:
-                    case 2:
-                    case 3:
-                        y = rf.Y + printFont.SizeInPoints / 8f;
-                        break;
-                    case 4:
-                    case 5:
-                    case 6:
-                        y = rf.Y + rf.Height / 2f - (printFont.SizeInPoints * .75f);
-                        break;
-                    case 7:
-                    case 8:
-                    case 9:
-                        y = rf.Y + rf.Height - (printFont.SizeInPoints * 1.75f);
-                        break;
-                    }
-                    g.DrawString(i.ToString(), printFont, showCandidates ? (value.GetCandidateMask(i, false) ? candidateBrush : exclusionCandidateBrush) : normalBrush, x, y);
-                }
-        }
-
         private void PrintSolution(float x, float y, Graphics g)
         {
             int row = 0;

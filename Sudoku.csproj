@@ -273,6 +273,7 @@
     <Compile Include="BaseMatrix.cs" />
     <Compile Include="BaseCell.cs" />
     <Compile Include="Cell.cs" />
+    <Compile Include="SudokuRenderer.cs" />
     <Compile Include="TrickyProblems.cs" />
     <Compile Include="Values.cs" />
     <Compile Include="XSudokuMatrix.cs" />
