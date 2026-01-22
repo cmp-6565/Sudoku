@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 
 using BenchmarkDotNet.Attributes;
 
@@ -203,7 +204,8 @@ namespace Sudoku.Benchmarks
         public int Solve_Puzzle1()
         {
             var prob = CreateProblemFromArray(puzzles[0]);
-            prob.FindSolutions(1UL);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            prob.FindSolutions(1, cts.Token);
             int local = prob.Solutions.Count;
             checksum ^= local;
             return local;
@@ -213,7 +215,8 @@ namespace Sudoku.Benchmarks
         public int Solve_Puzzle2()
         {
             var prob = CreateProblemFromArray(puzzles[1]);
-            prob.FindSolutions(1UL);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            prob.FindSolutions(1, cts.Token);
             int local = prob.Solutions.Count;
             checksum ^= local;
             return local;
@@ -226,7 +229,8 @@ namespace Sudoku.Benchmarks
             for(int i = 0; i < puzzles.Length; i++)
             {
                 var prob = CreateProblemFromArray(puzzles[i]);
-                prob.FindSolutions(1UL);
+                CancellationTokenSource cts = new CancellationTokenSource();
+                prob.FindSolutions(1, cts.Token);
                 total += prob.Solutions.Count;
             }
 

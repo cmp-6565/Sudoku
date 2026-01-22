@@ -1,36 +1,30 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Properties;
 
-using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static Sudoku.ValidationResult;
-
 namespace Sudoku
 {
-    public partial class SudokuBoard: DataGridView
+    internal class SudokuBoard: DataGridView
     {
-        public const int RectSize = 3;
-        public const int SudokuSize = RectSize * RectSize;
-        public const int TotalCellCount = SudokuSize * SudokuSize;
+        public int RectSize;
+        public int SudokuSize;
+        public int TotalCellCount;
 
         private SudokuController controller;
 
         private Boolean mouseWheelEditing = false;
         public Boolean InSync { get; private set; }
 
-        public event EventHandler<bool> UndoAvailableChanged;
-        public event EventHandler<bool> CandidatesAvailableChanged;
+        public event EventHandler<Boolean> UndoAvailableChanged;
+        public event EventHandler<Boolean> CandidatesAvailableChanged;
+        public event EventHandler<Boolean> UpdateStatus;
+        public event EventHandler<Boolean> UpdateHints;
         public event EventHandler<string> StatusTextChanged;
 
-        // Kontextmenü Variable
+        // KontextmenÃ¼ Variable
         private ContextMenuStrip cellContextMenu;
 
         private Color highlightColor = Color.Cyan;
@@ -48,11 +42,16 @@ namespace Sudoku
         Color lightGreen;
         Color textColor;
 
-        public SudokuBoard()
+        public SudokuBoard() { }
+
+        internal void Initialize(int rectSize)
         {
+            RectSize = rectSize;
+            SudokuSize = RectSize * RectSize;
+            TotalCellCount = SudokuSize * SudokuSize;
+
             DoubleBuffered = true;
 
-            // Grundlegende UI-Einstellungen (ausgelagert aus dem Form-Designer/Constructor)
             AllowUserToAddRows = false;
             AllowUserToDeleteRows = false;
             AllowUserToResizeColumns = false;
@@ -68,7 +67,7 @@ namespace Sudoku
 
             MultiSelect = false;
             SelectionMode = DataGridViewSelectionMode.CellSelect;
-            StandardTab = true; // Tab springt zur nächsten Zelle
+            StandardTab = true; // Tab springt zur nÃ¤chsten Zelle
 
             DefaultCellStyle.SelectionBackColor = Color.FromArgb(180, 210, 255);
             DefaultCellStyle.SelectionForeColor = Color.Black;
@@ -133,7 +132,7 @@ namespace Sudoku
             }
             Refresh();
         }
-        
+
         private void InitializeEvents()
         {
             CellBeginEdit += new DataGridViewCellCancelEventHandler(HandleBeginEdit);
@@ -215,7 +214,7 @@ namespace Sudoku
             Boolean obfuscated = ((row / 3) % 2 == 1 && (col / 3) % 2 == 0) || ((row / 3) % 2 == 0 && (col / 3) % 2 == 1);
             this[row, col].Style.BackColor = (obfuscated ? gray : ((controller.CurrentProblem is XSudokuProblem) && (row == col || row + col == SudokuSize - 1) ? lightGray : Color.White));
             this[row, col].Style.ForeColor = (obfuscated ? textColor : Color.Black);
-            this[row, col].Style.SelectionBackColor = System.Drawing.SystemColors.AppWorkspace;
+            this[row, col].Style.SelectionBackColor = SystemColors.AppWorkspace;
         }
 
         public void MarkNeighbors()
@@ -237,10 +236,10 @@ namespace Sudoku
         public void PushOnUndoStack(DataGridView dgv)
         {
             CoreValue cv = new CoreValue();
-            cv.Row = dgv.CurrentCell.RowIndex;
-            cv.Col = dgv.CurrentCell.ColumnIndex;
-            if(dgv.CurrentCell.Value != null)
-                cv.UnformatedValue = (String)dgv.CurrentCell.Value;
+            cv.Row = CurrentCell.RowIndex;
+            cv.Col = CurrentCell.ColumnIndex;
+            if(CurrentCell.Value != null)
+                cv.UnformatedValue = (String)CurrentCell.Value;
             controller.PushUndo(cv);
             UndoAvailableChanged?.Invoke(this, true);
         }
@@ -282,7 +281,7 @@ namespace Sudoku
         public void DisplayValues(Values values = null)
         {
             if(values == null) values = controller?.CurrentProblem?.Matrix;
-            if (values == null) return;
+            if(values == null) return;
 
             for(int i = 0; i < SudokuForm.SudokuSize; i++)
                 for(int j = 0; j < SudokuForm.SudokuSize; j++)
@@ -304,7 +303,7 @@ namespace Sudoku
 
         public void SetCellFont(int row, int col)
         {
-            if (controller == null) return;
+            if(controller == null) return;
             this[col, row].Style.Font = controller.IsCellReadOnly(row, col) ? boldDisplayFont : normalDisplayFont;
             this[col, row].ReadOnly = controller.IsCellReadOnly(row, col);
         }
@@ -343,11 +342,9 @@ namespace Sudoku
 
         public void FormatBoard()
         {
-            int row, col;
-
             SetCellFont();
-            for(row = 0; row < SudokuSize; row++)
-                for(col = 0; col < SudokuSize; col++)
+            for(int row = 0; row < SudokuSize; row++)
+                for(int col = 0; col < SudokuSize; col++)
                     FormatCell(row, col);
             if(Settings.Default.MarkNeighbors)
                 MarkNeighbors();
@@ -374,7 +371,7 @@ namespace Sudoku
                     controller.SetCellReadOnly(row, col, (readOnly && this[col, row].Value.ToString().Trim() != String.Empty));
             DisplayValues();
         }
-        
+
         private void HandleBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             if(sender is DataGridView)
@@ -391,13 +388,12 @@ namespace Sudoku
         {
             if(sender is DataGridView)
             {
-                DataGridView dgv = (DataGridView)sender;
-                controller.CurrentProblem.SetValue(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex, Values.Undefined);
-                SetCellFont(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex);
+                SetValue(CurrentCell.RowIndex, CurrentCell.ColumnIndex, Values.Undefined);
+                SetCellFont(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
             }
             mouseWheelEditing = false;
-            
-            // CurrentStatus(false); // TODO: StatusChanged Event an Form senden
+
+            UpdateStatus?.Invoke(this, false);
         }
 
         private void HandleKeyUp(object sender, KeyEventArgs e)
@@ -408,16 +404,15 @@ namespace Sudoku
 
             if(sender is DataGridView && (Control.ModifierKeys == Keys.Control || Control.ModifierKeys == (Keys.Control | Keys.Shift)) && candidate > 0 && candidate <= SudokuSize)
             {
-                // TODO: Settings.Default.ShowHints prüfen und ggf. MessageBox zeigen (Callback an Form)
-                
-                DataGridView dgv = (DataGridView)sender;
-                if(!controller.CurrentProblem.Cell(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex).ReadOnly)
+                UpdateHints?.Invoke(this, true);
+
+                if(!controller.CurrentProblem.Cell(CurrentCell.RowIndex, CurrentCell.ColumnIndex).ReadOnly)
                 {
-                    controller.CurrentProblem.SetCandidate(dgv.CurrentCell.RowIndex, dgv.CurrentCell.ColumnIndex, candidate, Control.ModifierKeys == (Keys.Control | Keys.Shift));
-                    // TODO: Event feuern für clearCandidates.Enabled
+                    controller.CurrentProblem.SetCandidate(CurrentCell.RowIndex, CurrentCell.ColumnIndex, candidate, Control.ModifierKeys == (Keys.Control | Keys.Shift));
+                    CandidatesAvailableChanged?.Invoke(this, controller.CurrentProblem.HasCandidates());
                 }
 
-                dgv.Refresh();
+                Refresh();
             }
         }
 
@@ -443,7 +438,7 @@ namespace Sudoku
                 }
                 else
                 {
-                    // if(!pencilMode.Checked || e.Control || e.Alt) return; // TODO: pencilMode prüfen
+                    // if(!pencilMode.Checked || e.Control || e.Alt) return; // TODO: pencilMode prÃ¼fen
 
                     int value = -1;
                     if(e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9) value = e.KeyCode - Keys.D0;
@@ -455,7 +450,7 @@ namespace Sudoku
                         if(current != null && !current.ReadOnly)
                         {
                             controller.CurrentProblem.SetCandidate(CurrentCell.RowIndex, CurrentCell.ColumnIndex, value, false);
-                            // TODO: Event feuern für clearCandidates.Enabled
+                            CandidatesAvailableChanged?.Invoke(this, controller.CurrentProblem.HasCandidates());
 
                             e.Handled = true;
                             e.SuppressKeyPress = true;
@@ -472,22 +467,13 @@ namespace Sudoku
         {
             if(mouseWheelEditing) HandleCellEndEdit(sender);
 
-            if(Settings.Default.MarkNeighbors)
-            {
-                FormatCell(CurrentCellAddress.X, CurrentCellAddress.Y);
-                FormatBoard(); 
-            }
+            if(Settings.Default.MarkNeighbors) FormatBoard();
         }
 
         private void HandleCellEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if(sender is DataGridView)
-            {
-                if(Settings.Default.HighlightSameValues)
-                    UpdateHighligts();
-                if(Settings.Default.MarkNeighbors)
-                    MarkNeighbors();
-            }
+            if(Settings.Default.HighlightSameValues) UpdateHighligts();
+            if(Settings.Default.MarkNeighbors) FormatBoard();
             // ShowValues();
         }
 
@@ -562,14 +548,13 @@ namespace Sudoku
 
         private void ShowCellHints(object sender, PaintEventArgs e)
         {
-            if(sender is DataGridView dgv && Controller?.CurrentProblem != null)
+            if(sender is DataGridView && Controller?.CurrentProblem != null)
             {
                 Font printFont = (Settings.Default.Size == 1 ? PrintParameters.SmallFont : PrintParameters.NormalFont);
-                // Hinweis: Wir negieren ShowHints nicht mehr hier, sondern übergeben Logik
                 bool showCandidatesMode = !Settings.Default.ShowHints;
 
                 float cellSize = Columns[0].Width;
-                // Wir zeichnen nur die sichtbaren Zellen neu (e.ClipRectangle) für Performance
+
                 int startRow = Math.Max(0, (int)(e.ClipRectangle.Top / cellSize));
                 int endRow = Math.Min(SudokuSize, (int)(e.ClipRectangle.Bottom / cellSize) + 1);
                 int startCol = Math.Max(0, (int)(e.ClipRectangle.Left / cellSize));
@@ -597,14 +582,14 @@ namespace Sudoku
             cellContextMenu.Items[0].Enabled = CurrentCell.Value.ToString().Trim().Length != 0;
             cellContextMenu.Items[1].Enabled = controller.CurrentProblem.HasCandidate(row, col);
         }
-        
+
         public void CreateNewProblem(Boolean xSudoku)
         {
             controller.CreateNewProblem(xSudoku);
             controller.BackupProblem();
             InSync = true;
         }
-        
+
         public void ResetUndo()
         {
             controller.ClearUndo();

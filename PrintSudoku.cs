@@ -50,10 +50,10 @@ namespace Sudoku
             BaseProblem tmp = controller.CurrentProblem.Clone();
 
             SudokuTable.DisplayValues(controller.CurrentProblem.Matrix);
-            SolveProblem();
-
-            if(controller.CurrentProblem.SolverTask != null && !controller.CurrentProblem.SolverTask.IsCompleted)
-                controller.CurrentProblem.SolverTask.Wait();
+            if(controller.CurrentProblem.NumberOfSolutions == 0)
+            {
+                await SolveProblem(false);
+            }
 
             ResetDetachedProcess();
             ResetTexts();
@@ -213,7 +213,7 @@ namespace Sudoku
                     SudokuController bookletController = new SudokuController(filenames[problemNumber], false);
                     if(bookletController.CurrentProblem != null && (bookletController.CurrentProblem.SeverityLevelInt & Settings.Default.SeverityLevel) != 0)
                     {
-                        bookletController.CurrentProblem.FindSolutions(2);
+                        bookletController.CurrentProblem.FindSolutions(2, FormCTS.Token);
 
                         if(bookletController.CurrentProblem.SolverTask != null && !bookletController.CurrentProblem.SolverTask.IsCompleted)
                             bookletController.CurrentProblem.SolverTask.Wait();

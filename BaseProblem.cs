@@ -23,7 +23,6 @@ namespace Sudoku
         private Boolean aborted = false;
 
         private Task solverTask = null;
-        public CancellationTokenSource cancellationTokenSource;
 
         private float severityLevel = float.NaN;
         private String filename = String.Empty;
@@ -37,6 +36,27 @@ namespace Sudoku
         private static byte ReadOnlyOffset = 64;
         public static Char ProblemIdentifier = ' ';
         public virtual Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
+
+        public static CancellationTokenSource FormCTS
+        {
+            get
+            {
+                try
+                {
+                    if(System.Windows.Forms.Application.OpenForms.Count > 0)
+                    {
+                        SudokuForm mainForm = (SudokuForm)System.Windows.Forms.Application.OpenForms[0];
+                        return mainForm.FormCTS;
+                    }
+                    else
+                        return null;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+        }
 
         public event EventHandler<BaseProblem> Minimizing;
         protected virtual void OnMinimizing(BaseProblem p)
@@ -84,7 +104,7 @@ namespace Sudoku
             get { return totalPassCount; }
             set { totalPassCount = value; }
         }
-        public Int32 NumberOfSolutions { get { return Solutions.Count; } }
+        public int NumberOfSolutions { get { return Solutions.Count; } }
         public Task SolverTask
         {
             get { return solverTask; }
@@ -143,12 +163,11 @@ namespace Sudoku
 
         public BaseProblem Clone()
         {
-            int i;
             BaseProblem dest = CreateInstance();
             dest.matrix = CloneMatrix();
 
             dest.ResetSolutions();
-            for(i = 0; i < NumberOfSolutions && i < Settings.Default.MaxSolutions; i++)
+            for(int i = 0; i < NumberOfSolutions && i < Settings.Default.MaxSolutions; i++)
                 dest.Solutions.Add(Solutions[i]);
 
             dest.severityLevel = SeverityLevel;
@@ -308,17 +327,22 @@ namespace Sudoku
             return Matrix.FixedValue(row, col);
         }
 
-        public void FindSolutions(UInt64 maxSolutions)
+        public void FindSolutions(int maxSolutions, CancellationToken token)
         {
-            solverTask = FindSolutionsAsync(maxSolutions);
+            solverTask?.Dispose();
+
+            if(NumberOfSolutions >= maxSolutions) return;
+
+            solverTask = FindSolutionsAsync(maxSolutions, token);
+            solverTask.Wait(10);
         }
 
-        private async Task FindSolutionsAsync(UInt64 maxSolutions)
+        private async Task FindSolutionsAsync(int maxSolutions, CancellationToken token)
         {
             if(aborted) return;
 
             preparing = true;
-            findAll = (maxSolutions == UInt64.MaxValue);
+            findAll = (maxSolutions == int.MaxValue);
             checkWellDefined = (maxSolutions == 2);
             passCount = 0;
             totalPassCount = 0;
@@ -330,10 +354,7 @@ namespace Sudoku
 
             try
             {
-                await Task.Run(() =>
-                {
-                    try { PrepareMatrix(); } catch(ArgumentException) { /* Ignorieren, wird unten behandelt */ }
-                });
+                PrepareMatrix();
             }
             catch(ArgumentException)
             {
@@ -354,12 +375,6 @@ namespace Sudoku
 
             if(!Resolvable()) return;
 
-            if(cancellationTokenSource != null)
-            {
-                try { cancellationTokenSource.Dispose(); } catch { }
-            }
-            cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
             await Task.Run(() => Solve(token), token);
         }
 
@@ -368,8 +383,8 @@ namespace Sudoku
             aborted = true;
             try
             {
-                if(cancellationTokenSource != null && !cancellationTokenSource.IsCancellationRequested)
-                    cancellationTokenSource.Cancel();
+                if(FormCTS != null && !FormCTS.IsCancellationRequested)
+                    FormCTS.Cancel();
             }
             catch { }
         }
@@ -469,7 +484,7 @@ namespace Sudoku
             {
                 minimalProblem.severityLevel = float.NaN;
 
-                await minimalProblem.FindSolutionsAsync(2);
+                await minimalProblem.FindSolutionsAsync(2, token);
 
                 return (minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null);
             }
@@ -529,7 +544,7 @@ namespace Sudoku
                     {
                         if(aborted || token.IsCancellationRequested) { aborted = true; return null; }
 
-                        await FindSolutionsAsync(2);
+                        await FindSolutionsAsync(2, token);
 
                         if(NumberOfSolutions == 1) candiates.Add(source[i]);
                     }

@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 
 using Sudoku.Properties;
 
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-
 namespace Sudoku
 {
     internal class SudokuController
@@ -32,7 +30,7 @@ namespace Sudoku
             trickyProblems = new TrickyProblems();
         }
 
-        public SudokuController(String filenname, Boolean loadCandidates) : this()
+        public SudokuController(String filenname, Boolean loadCandidates): this()
         {
             CreateProblemFromFile(filenname, Settings.Default.GenerateNormalSudoku, Settings.Default.GenerateXSudoku, loadCandidates);
             BackupProblem();
@@ -48,13 +46,13 @@ namespace Sudoku
         {
             if(CurrentProblem == null) return;
 
-            ulong maxSolutions = findAllSolutions ? UInt64.MaxValue : 1;
+            int maxSolutions = findAllSolutions? int.MaxValue: 1;
             var stopwatch = Stopwatch.StartNew();
 
-            CurrentProblem.FindSolutions(maxSolutions);
+            CurrentProblem.FindSolutions(maxSolutions, token);
             if(CurrentProblem.SolverTask != null)
             {
-                while(!CurrentProblem.SolverTask.IsCompleted)
+                while(!CurrentProblem.SolverTask.IsCompleted && CurrentProblem.NumberOfSolutions < maxSolutions)
                 {
                     token.ThrowIfCancellationRequested();
 
@@ -71,7 +69,6 @@ namespace Sudoku
 
                 await CurrentProblem.SolverTask;
             }
-
             stopwatch.Stop();
             CurrentProblem.SolvingTime = stopwatch.Elapsed;
             NotifyMatrixChanged();
@@ -140,7 +137,7 @@ namespace Sudoku
 
             try
             {
-                CurrentProblem.FindSolutions(1);
+                CurrentProblem.FindSolutions(1, token);
 
                 if(CurrentProblem.SolverTask != null)
                 {
@@ -336,7 +333,7 @@ namespace Sudoku
 
                 await Task.Run(() =>
                 {
-                    CurrentProblem.FindSolutions(2);
+                    CurrentProblem.FindSolutions(2, token);
                     CurrentProblem.SolverTask?.Wait();
                 });
 

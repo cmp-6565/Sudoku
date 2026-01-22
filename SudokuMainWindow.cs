@@ -36,7 +36,7 @@ namespace Sudoku
         private int incorrectTries = 0;
 
         private SudokuController controller;
-        private CancellationTokenSource cts;
+        public CancellationTokenSource FormCTS { get; set; }
 
         // Für das Pause-Overlay
         private Label pauseOverlay;
@@ -52,6 +52,7 @@ namespace Sudoku
             Thread.CurrentThread.CurrentUICulture = (cultureInfo = new CultureInfo(Settings.Default.DisplayLanguage));
 
             InitializeComponent();
+            SudokuTable.Initialize(RectSize);
             InitializeInputValidation();
             InitializeController();
 
@@ -329,7 +330,7 @@ namespace Sudoku
                 }
             });
 
-            cts = new CancellationTokenSource();
+            FormCTS = new CancellationTokenSource();
             try
             {
                 sudokuStatusBarText.Text = usePrecalculatedProblem ? Resources.Loading : Resources.Generating;
@@ -350,7 +351,7 @@ namespace Sudoku
                         }
                     },
                     progress,
-                    cts.Token
+                    FormCTS.Token
                 );
 
                 if(generationParameters.GenerateBooklet)
@@ -554,7 +555,7 @@ namespace Sudoku
             computingStart = DateTime.Now;
 
             // Setup cancellation
-            cts = new CancellationTokenSource();
+            FormCTS = new CancellationTokenSource();
 
             var progress = new Progress<GenerationProgressState>(state =>
             {
@@ -565,7 +566,7 @@ namespace Sudoku
 
             try
             {
-                bool solvable = await controller.Validate(progress, cts.Token);
+                bool solvable = await controller.Validate(progress, FormCTS.Token);
 
                 status.Text = String.Empty;
                 sudokuStatusBarText.Text = Resources.Ready;
@@ -598,6 +599,7 @@ namespace Sudoku
             for(int row = 0; row < SudokuSize; row++)
                 for(int col = 0; col < SudokuSize; col++)
                     SudokuTable[col, row].ErrorText = String.Empty;
+            SudokuTable.DisplayValues();
         }
         private Boolean SudokuOfTheDay()
         {
@@ -1013,7 +1015,7 @@ namespace Sudoku
 
         private async void SolveClick(object sender, EventArgs e)
         {
-            SolveProblem();
+            await SolveProblem();
         }
 
         private void GenerateClick(object sender, EventArgs e)
@@ -1021,15 +1023,15 @@ namespace Sudoku
             if(UnsavedChanges()) GenerateProblems(1, false);
         }
 
-        private async void SolveProblem()
+        private async Task SolveProblem(Boolean showResult=true)
         {
             if(!PreCheck()) return;
 
-            controller.UpdateProblem(controller.CurrentProblem);
+            controller.BackupProblem();
             DisableGUI();
             if(debug.Checked) controller.CurrentProblem.Matrix.CellChanged += HandleCellChanged;
 
-            cts = new CancellationTokenSource();
+            FormCTS = new CancellationTokenSource();
 
             var progress = new Progress<GenerationProgressState>(state =>
             {
@@ -1046,7 +1048,7 @@ namespace Sudoku
 
             try
             {
-                await controller.Solve(findallSolutions.Checked, progress, cts.Token);
+                await controller.Solve(findallSolutions.Checked, progress, FormCTS.Token);
 
                 if(controller.CurrentProblem.ProblemSolved || controller.CurrentProblem.NumberOfSolutions > 0)
                 {
@@ -1065,11 +1067,11 @@ namespace Sudoku
                     if(findallSolutions.Checked)
                         msg += Environment.NewLine + Resources.TotalNumberOfSolutions + controller.CurrentProblem.NumberOfSolutions.ToString("n0", cultureInfo);
 
-                    MessageBox.Show(this, msg, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if(showResult) MessageBox.Show(this, msg, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show(this, Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if(showResult) MessageBox.Show(this, Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 ResetDetachedProcess();
             }
@@ -1185,9 +1187,9 @@ namespace Sudoku
             try { controller.Cancel(); }
             catch { /* ignore */ }
 
-            if(cts != null && !cts.IsCancellationRequested)
+            if(FormCTS != null && !FormCTS.IsCancellationRequested)
             {
-                cts.Cancel();
+                FormCTS.Cancel();
             }
 
             int waited = 0;
@@ -1363,10 +1365,10 @@ namespace Sudoku
             controller.CurrentProblem.TestCell += SudokuTable.HandleOnTestCell;
             controller.CurrentProblem.ResetCell += SudokuTable.HandleOnResetCell;
 
-            cts = new CancellationTokenSource();
+            FormCTS = new CancellationTokenSource();
             try
             {
-                minimizedProblem = await controller.Minimize(maxSeverity, cts.Token);
+                minimizedProblem = await controller.Minimize(maxSeverity, FormCTS.Token);
 
                 if(minimizedProblem != null)
                 {
@@ -1417,6 +1419,12 @@ namespace Sudoku
             SudokuTable.Controller = controller;
             SudokuTable.UndoAvailableChanged += (s, canUndo) =>  { undo.Enabled = canUndo; };
             SudokuTable.CandidatesAvailableChanged += (s, hasCandidates) => { clearCandidates.Enabled = hasCandidates; };
+            SudokuTable.UpdateStatus += (s, silent) => { CurrentStatus(silent); };
+            SudokuTable.UpdateHints+= (s, e) => 
+            {
+                if(Settings.Default.ShowHints && MessageBox.Show(Resources.CandidatesNotShown, ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    showPossibleValues.Checked = Settings.Default.ShowHints = false;
+            };
             SudokuTable.StatusTextChanged += (s, text) => 
             {
                 status.Text = text;
@@ -1436,8 +1444,7 @@ namespace Sudoku
         }
         private void EditingControl(object sender, DataGridViewEditingControlShowingEventArgs e)
         {
-            // Wir prüfen, ob das Control eine TextBox ist (Standard bei DataGridViewTextBoxColumn)
-            if(e.Control is System.Windows.Forms.TextBox textBox)
+            if(e.Control is TextBox textBox)
             {
                 textBox.KeyPress -= CellKeyPressValidation;
                 textBox.KeyPress += CellKeyPressValidation;
