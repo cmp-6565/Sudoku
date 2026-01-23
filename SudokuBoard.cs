@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Properties;
@@ -605,6 +606,17 @@ namespace Sudoku
                 this[state.Col, state.Row].Value = "";
 
             if(state.ReadOnly) SetCellFont(state.Row, state.Col);
+        }
+        public async Task AnimateHint(int row, int col, bool isSingle)
+        {
+            Color originalColor = this[col, row].Style.BackColor;
+            this[col, row].Style.BackColor = isSingle ? Color.Red : Color.Orange;
+
+            Refresh();
+
+            await Task.Delay(500);
+
+            this[col, row].Style.BackColor = originalColor;
         }
     }
 }

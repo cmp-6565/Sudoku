@@ -199,7 +199,7 @@
     <value>SudokuTable</value>
   </data>
   <data name="&gt;&gt;SudokuTable.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DataGridView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>Sudoku.SudokuBoard, Sudoku, Version=5.0.9519.26750, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;SudokuTable.Parent" xml:space="preserve">
     <value>$this</value>
@@ -303,9 +303,6 @@
   <data name="&gt;&gt;prior.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="solutionTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>131, 22</value>
-  </metadata>
   <metadata name="sudokuMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>2, 2</value>
   </metadata>
@@ -801,21 +798,12 @@
   <metadata name="printSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>661, 17</value>
   </metadata>
-  <metadata name="printSudoku.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>546, 17</value>
-  </metadata>
   <metadata name="selectBookletDirectory.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>811, 4</value>
   </metadata>
   <data name="selectBookletDirectory.SelectedPath" xml:space="preserve">
     <value>C:\Dokumente und Einstellungen\Clemens\Desktop</value>
   </data>
-  <metadata name="solvingTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>983, 3</value>
-  </metadata>
-  <metadata name="autoPauseTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>1119, 3</value>
-  </metadata>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -1316,12 +1304,6 @@
   <data name="&gt;&gt;Column9.Type" xml:space="preserve">
     <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;solutionTimer.Name" xml:space="preserve">
-    <value>solutionTimer</value>
-  </data>
-  <data name="&gt;&gt;solutionTimer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="&gt;&gt;file.Name" xml:space="preserve">
     <value>file</value>
   </data>
@@ -1712,29 +1694,11 @@
   <data name="&gt;&gt;printSudokuDialog.Type" xml:space="preserve">
     <value>System.Windows.Forms.PrintDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;printSudoku.Name" xml:space="preserve">
-    <value>printSudoku</value>
-  </data>
-  <data name="&gt;&gt;printSudoku.Type" xml:space="preserve">
-    <value>System.Drawing.Printing.PrintDocument, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="&gt;&gt;selectBookletDirectory.Name" xml:space="preserve">
     <value>selectBookletDirectory</value>
   </data>
   <data name="&gt;&gt;selectBookletDirectory.Type" xml:space="preserve">
     <value>System.Windows.Forms.FolderBrowserDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;solvingTimer.Name" xml:space="preserve">
-    <value>solvingTimer</value>
-  </data>
-  <data name="&gt;&gt;solvingTimer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;autoPauseTimer.Name" xml:space="preserve">
-    <value>autoPauseTimer</value>
-  </data>
-  <data name="&gt;&gt;autoPauseTimer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Timer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>SudokuForm</value>

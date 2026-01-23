@@ -28,14 +28,12 @@ namespace Sudoku
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SudokuForm));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            // ALT: this.SudokuTable = new System.Windows.Forms.DataGridView();
-            this.SudokuTable = new SudokuBoard(); // NEU
+            this.SudokuTable = new Sudoku.SudokuBoard();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -48,7 +46,6 @@ namespace Sudoku
             this.status = new System.Windows.Forms.Label();
             this.next = new System.Windows.Forms.Button();
             this.prior = new System.Windows.Forms.Button();
-            this.solutionTimer = new System.Windows.Forms.Timer(this.components);
             this.sudokuMenu = new System.Windows.Forms.MenuStrip();
             this.file = new System.Windows.Forms.ToolStripMenuItem();
             this.newItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -116,10 +113,7 @@ namespace Sudoku
             this.sudokuStatusBar = new System.Windows.Forms.StatusStrip();
             this.sudokuStatusBarText = new System.Windows.Forms.ToolStripStatusLabel();
             this.printSudokuDialog = new System.Windows.Forms.PrintDialog();
-            this.printSudoku = new System.Drawing.Printing.PrintDocument();
             this.selectBookletDirectory = new System.Windows.Forms.FolderBrowserDialog();
-            this.solvingTimer = new System.Windows.Forms.Timer(this.components);
-            this.autoPauseTimer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.SudokuTable)).BeginInit();
             this.sudokuMenu.SuspendLayout();
             this.sudokuStatusBar.SuspendLayout();
@@ -649,6 +643,7 @@ namespace Sudoku
             // 
             this.highlightSameValues.Name = "highlightSameValues";
             resources.ApplyResources(this.highlightSameValues, "highlightSameValues");
+            this.highlightSameValues.Tag = "disable=1";
             this.highlightSameValues.Click += new System.EventHandler(this.ToggleHighlightSameValuesClicked);
             // 
             // markNeighbors
@@ -771,24 +766,10 @@ namespace Sudoku
             // 
             this.printSudokuDialog.AllowSelection = true;
             this.printSudokuDialog.AllowSomePages = true;
-            this.printSudokuDialog.Document = this.printSudoku;
-            // 
-            // printSudoku
-            // 
-            this.printSudoku.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.PrintSudokuEvent);
             // 
             // selectBookletDirectory
             // 
             resources.ApplyResources(this.selectBookletDirectory, "selectBookletDirectory");
-            // 
-            // solvingTimer
-            // 
-            this.solvingTimer.Tick += new System.EventHandler(this.SolvingTimerTick);
-            // 
-            // autoPauseTimer
-            // 
-            this.autoPauseTimer.Interval = 1000;
-            this.autoPauseTimer.Tick += new System.EventHandler(this.AutoPauseTick);
             // 
             // SudokuForm
             // 
@@ -827,7 +808,6 @@ namespace Sudoku
         private System.Windows.Forms.Label status;
         private System.Windows.Forms.Button next;
         private System.Windows.Forms.Button prior;
-        private System.Windows.Forms.Timer solutionTimer;
         private System.Windows.Forms.MenuStrip sudokuMenu;
         private System.Windows.Forms.ToolStripMenuItem file;
         private System.Windows.Forms.ToolStripMenuItem sudokuProblem;
@@ -889,7 +869,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem undo;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripMenuItem showPossibleValues;
-        private System.Windows.Forms.Timer solvingTimer;
         private System.Windows.Forms.ToolStripMenuItem visitHomepage;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
@@ -905,7 +884,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem versionHistory;
         private System.Windows.Forms.ToolStripMenuItem clearCandidates;
         private System.Windows.Forms.ToolStripMenuItem showCellInfo;
-        private System.Drawing.Printing.PrintDocument printSudoku;
         private System.Windows.Forms.ToolStripMenuItem export;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mimimalAllocation;
@@ -917,7 +895,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem sudokuOfTheDayToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem startSolveProblem;
         private System.Windows.Forms.ToolStripMenuItem twitter;
-        private System.Windows.Forms.Timer autoPauseTimer;
         private System.Windows.Forms.ToolStripMenuItem pencilMode;
         private System.Windows.Forms.ToolStripMenuItem highlightSameValues;
     }
