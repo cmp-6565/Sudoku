@@ -269,7 +269,7 @@
       <DependentUpon>SudokuMainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="SudokuMatrix.cs" />
-    <Compile Include="SudokuPrinter.cs" />
+    <Compile Include="SudokuPrinterService.cs" />
     <Compile Include="SudokuProblem.cs" />
     <Compile Include="BaseMatrix.cs" />
     <Compile Include="BaseCell.cs" />

@@ -20,8 +20,8 @@ namespace Sudoku
             }
             catch(Win32Exception)
             {
-                if(printParameters.PrintResult != 0)
-                    MessageBox.Show(this, Resources.NotPrinted + Environment.NewLine + PrintParameters.PrintError(printParameters.PrintResult));
+                if(printerService.PrintResult != 0)
+                    MessageBox.Show(this, Resources.NotPrinted + Environment.NewLine + printerService.PrintErrorMessage);
             }
             catch(System.Runtime.InteropServices.ExternalException)
             {
@@ -68,16 +68,13 @@ namespace Sudoku
                 printSudokuDialog.UseEXDialog = true;
                 if(printSudokuDialog.ShowDialog() == DialogResult.OK)
                 {
-                    SudokuPrinter printer = new SudokuPrinter();
-                    printParameters = new PrintParameters();
+                    SudokuPrinterService printerService = new SudokuPrinterService(SudokuSize);
 
-                    printSudokuDialog.Document = printer.Document;
-                    printParameters.SudokuSize = SudokuSize;
-                    printer.PrintParameters = printParameters;
+                    printSudokuDialog.Document = printerService.Document;
 
                     controller.CurrentProblem.ResetMatrix();
-                    printParameters.Problems.Add(controller.CurrentProblem);
-                    printParameters.ShowCandidates=sc;
+                    printerService.AddProblem(controller.CurrentProblem);
+                    printerService.ShowCandidates=sc;
                     PrintDocument();
                 }
             }
@@ -87,26 +84,28 @@ namespace Sudoku
 
         private void PrintBooklet()
         {
-            printParameters.ShowCandidates = false;
-            if(printParameters.Problems.Count < 1)
+            printerService.ShowCandidates = false;
+            if(printerService.NumberOfProblems < 1)
                 MessageBox.Show(this, Resources.NoProblems);
             else
             {
                 printSudokuDialog.UseEXDialog = true;
                 if(printSudokuDialog.ShowDialog() == DialogResult.OK)
                 {
-                    SudokuPrinter printer = new SudokuPrinter();
+                    printSudokuDialog.Document = printerService.Document;
 
-                    printSudokuDialog.Document = printer.Document;
-                    printParameters.SudokuSize = SudokuSize;
-                    printer.PrintParameters = printParameters;
-
-                    printParameters.Problems.Sort();
+                    printerService.SortProblems();
                     PrintDocument();
                 }
             }
         }
 
+        private SudokuPrinterService InitializePrinterService()
+        {
+            printerService?.Dispose();
+            printerService = new SudokuPrinterService(SudokuSize);
+            return printerService;
+        }
         private void GenerateProblems4Booklet()
         {
             if(!UnsavedChanges()) return;
@@ -139,13 +138,13 @@ namespace Sudoku
                     Settings.Default.AutoSaveBooklet = false;
                 }
             }
-            printParameters = new PrintParameters();
+            printerService = InitializePrinterService();
             GenerateProblems(Settings.Default.BookletSizeNew, generationParameters.NewSudokuType());
         }
 
         private void LoadProblems4Booklet()
         {
-            printParameters = new PrintParameters();
+            printerService = InitializePrinterService();
 
             selectBookletDirectory.SelectedPath = Settings.Default.ProblemDirectory;
             selectBookletDirectory.ShowNewFolderButton = false;
@@ -225,10 +224,10 @@ namespace Sudoku
                         {
                             bookletController.CurrentProblem.ResetMatrix();
                             bookletController.CurrentProblem.Filename = filenames[problemNumber];
-                            printParameters.Problems.Add(bookletController.CurrentProblem);
+                            printerService.AddProblem(bookletController.CurrentProblem);
 
                             int remainder;
-                            Math.DivRem(printParameters.Problems.Count / 10, 25, out remainder);
+                            Math.DivRem(printerService.NumberOfProblems / 10, 25, out remainder);
                             sudokuStatusBarText.Text = Resources.LoadingFiles.PadRight(Resources.LoadingFiles.Length + remainder, '.');
                             sudokuStatusBar.Update();
 
@@ -243,11 +242,11 @@ namespace Sudoku
                 }
 
                 filenames.RemoveAt(problemNumber);
-                ready = (printParameters.Problems.Count == Settings.Default.BookletSizeExisting && !Settings.Default.BookletSizeUnlimited) || filenames.Count == 0 || abortRequested;
+                ready = (printerService.NumberOfProblems == Settings.Default.BookletSizeExisting && !Settings.Default.BookletSizeUnlimited) || filenames.Count == 0 || abortRequested;
             }
             controller.UpdateProblem(tmp);
 
-            return printParameters.Problems.Count;
+            return printerService.NumberOfProblems;
         }
     }
 }

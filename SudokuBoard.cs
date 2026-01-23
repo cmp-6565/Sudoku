@@ -42,7 +42,6 @@ namespace Sudoku
         Color green;
         Color lightGreen;
         Color textColor;
-
         public SudokuBoard() { }
 
         internal void Initialize(int rectSize)
@@ -82,6 +81,7 @@ namespace Sudoku
             DisplayValues();
 
             InitializeCellContextMenu();
+            InitializeInputValidation();
             InitializeEvents();
         }
 
@@ -134,6 +134,30 @@ namespace Sudoku
             Refresh();
         }
 
+        private void InitializeInputValidation()
+        {
+            EditingControlShowing += CellEditingControl;
+        }
+        private void CellEditingControl(object sender, DataGridViewEditingControlShowingEventArgs e)
+        {
+            if(e.Control is TextBox textBox)
+            {
+                textBox.KeyPress -= CellKeyPressValidation;
+                textBox.KeyPress += CellKeyPressValidation;
+            }
+        }
+
+        private void CellKeyPressValidation(object sender, KeyPressEventArgs e)
+        {
+            bool isValidDigit = char.IsDigit(e.KeyChar) && e.KeyChar != '0';
+            bool isControl = char.IsControl(e.KeyChar);
+
+            if(!isValidDigit && !isControl)
+            {
+                e.Handled = true;
+                System.Media.SystemSounds.Beep.Play();
+            }
+        }
         private void InitializeEvents()
         {
             CellBeginEdit += new DataGridViewCellCancelEventHandler(HandleBeginEdit);

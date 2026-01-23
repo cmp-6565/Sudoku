@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -589,6 +590,42 @@ namespace Sudoku
         public void Cancel()
         {
             CurrentProblem?.Cancel();
+        }
+        public string GetCellInfoText(int row, int col)
+        {
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentUICulture;
+            BaseCell cell = CurrentProblem.Matrix.Cell(row, col);
+
+            String cellInfo = String.Format(cultureInfo, Resources.Cellinfo, row + 1, col + 1, (cell.ReadOnly ? " (" + Resources.ReadOnly + ") " : "")) + Environment.NewLine;
+            if(cell.DefinitiveValue != Values.Undefined)
+                cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.DefiniteValue) + cell.DefinitiveValue.ToString();
+            else
+                if(cell.FixedValue)
+                cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.CellValue) + cell.CellValue.ToString();
+
+            String directBlockedCells = "";
+            String indirectBlockedCells = "";
+
+            for(int i = 1; i <= SudokuForm.SudokuSize; i++)
+            {
+                if(i != cell.DefinitiveValue && i != cell.CellValue)
+                {
+                    if(cell.Blocked(i))
+                        directBlockedCells += (directBlockedCells.Length == 0 ? i.ToString() : ", " + i.ToString());
+                    else
+                        if(cell.IndirectlyBlocked(i)) indirectBlockedCells += (indirectBlockedCells.Length == 0 ? i.ToString() : ", " + i.ToString());
+                }
+            }
+
+            cellInfo +=
+                Environment.NewLine + String.Format(cultureInfo, Resources.DirectBlocks) +
+                (directBlockedCells.Length == 0 ? Resources.None : directBlockedCells) +
+                Environment.NewLine + String.Format(cultureInfo, Resources.IndirectBlocks) +
+                (indirectBlockedCells.Length == 0 ? Resources.None : indirectBlockedCells);
+
+            // ... hier der ganze Code mit String.Format aus der Form ...
+            // ... Berechnung der Blocked/IndirectBlocked ...
+            return cellInfo;
         }
     }
     public class GenerationProgressState

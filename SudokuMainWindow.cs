@@ -21,14 +21,13 @@ namespace Sudoku
         public const int SudokuSize = RectSize * RectSize;
         public const int TotalCellCount = SudokuSize * SudokuSize;
 
-        private PrintParameters printParameters;
         private System.Windows.Forms.Timer autoPauseTimer = new System.Windows.Forms.Timer();
 
+        private SudokuPrinterService printerService = null;
         private GenerationParameters generationParameters;
         private int currentSolution = 0;
         private Boolean abortRequested = false;
         private Boolean applicationExiting = false;
-        private Boolean showCandidates = false;
         private CultureInfo cultureInfo;
         private OptionsDialog optionsDialog = null;
         private Boolean usePrecalculatedProblem = false;
@@ -51,7 +50,6 @@ namespace Sudoku
 
             InitializeComponent();
             SudokuTable.Initialize(RectSize);
-            InitializeInputValidation();
             InitializeController();
 
             sudokuMenu.Renderer = new FlatRenderer();
@@ -70,7 +68,6 @@ namespace Sudoku
             autoPauseTimer.Tick += new EventHandler(AutoPauseTick);
 
             generationParameters = new GenerationParameters();
-            printParameters = new PrintParameters();
 
             FormatTable();
             EnableGUI();
@@ -313,7 +310,7 @@ namespace Sudoku
                     {
                         if(generationParameters.GenerateBooklet)
                         {
-                            printParameters.Problems.Add(problem);
+                            printerService.AddProblem(problem);
                             if(Settings.Default.AutoSaveBooklet)
                             {
                                 string filename = generationParameters.BaseDirectory + Path.DirectorySeparatorChar + "Problem-" + (index + 1).ToString(cultureInfo) + "(" + problem.SeverityLevelText + ") (" + problem.SeverityLevel + ")" + Settings.Default.DefaultFileExtension;
@@ -417,38 +414,8 @@ namespace Sudoku
         {
             // TODO:
             // Die Gründe für die indirekten Blocks ausgeben (pair, ...)
-            String cellInfo;
-            BaseCell cell = controller.CurrentProblem.Matrix.Cell(row, col);
-
-            cellInfo = String.Format(cultureInfo, Resources.Cellinfo, row + 1, col + 1, (cell.ReadOnly ? " (" + Resources.ReadOnly + ") " : "")) + Environment.NewLine;
-            if(cell.DefinitiveValue != Values.Undefined)
-                cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.DefiniteValue) + cell.DefinitiveValue.ToString();
-            else
-                if(cell.FixedValue)
-                cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.CellValue) + cell.CellValue.ToString();
-
-            String directBlockedCells = "";
-            String indirectBlockedCells = "";
-
-            for(int i = 1; i <= SudokuSize; i++)
-            {
-                if(i != cell.DefinitiveValue && i != cell.CellValue)
-                {
-                    if(cell.Blocked(i))
-                        directBlockedCells += (directBlockedCells.Length == 0 ? i.ToString() : ", " + i.ToString());
-                    else
-                        if(cell.IndirectlyBlocked(i)) indirectBlockedCells += (indirectBlockedCells.Length == 0 ? i.ToString() : ", " + i.ToString());
-                }
-            }
-
-            cellInfo +=
-                Environment.NewLine + String.Format(cultureInfo, Resources.DirectBlocks) +
-                (directBlockedCells.Length == 0 ? Resources.None : directBlockedCells) +
-                Environment.NewLine + String.Format(cultureInfo, Resources.IndirectBlocks) +
-                (indirectBlockedCells.Length == 0 ? Resources.None : indirectBlockedCells);
-
+            String cellInfo=controller.GetCellInfoText(row, col);
             MessageBox.Show(this, cellInfo);
-
             return;
         }
 
@@ -1344,10 +1311,6 @@ namespace Sudoku
             SetReadOnly(false);
         }
 
-        private void InitializeInputValidation()
-        {
-            SudokuTable.EditingControlShowing += EditingControl;
-        }
         private void InitializeController()
         {
             controller = new SudokuController();
@@ -1381,26 +1344,6 @@ namespace Sudoku
                 return;
             }
             GenerationStatus(((SudokuController)s).CurrentProblem.GenerationTime);
-        }
-        private void EditingControl(object sender, DataGridViewEditingControlShowingEventArgs e)
-        {
-            if(e.Control is TextBox textBox)
-            {
-                textBox.KeyPress -= CellKeyPressValidation;
-                textBox.KeyPress += CellKeyPressValidation;
-            }
-        }
-
-        private void CellKeyPressValidation(object sender, KeyPressEventArgs e)
-        {
-            bool isValidDigit = char.IsDigit(e.KeyChar) && e.KeyChar != '0';
-            bool isControl = char.IsControl(e.KeyChar);
-
-            if(!isValidDigit && !isControl)
-            {
-                e.Handled = true;
-                System.Media.SystemSounds.Beep.Play();
-            }
         }
         private void VersionHistoryClicked(object sender, EventArgs e)
         {

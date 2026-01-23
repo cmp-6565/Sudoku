@@ -12,8 +12,6 @@ namespace Sudoku
         private int currentProblem = 0;
         private int currentSolution = 0;
         private int currentPage = 0;
-        private Boolean showCandidates = false;
-        private int sudokuSize;
 
         private float pageWidthDots = 0;
         private float pageHeightDots = 0;
@@ -254,16 +252,6 @@ namespace Sudoku
         {
             get { return currentPage; }
             set { currentPage = value; }
-        }
-        public Boolean ShowCandidates
-        {
-            get { return showCandidates; }
-            set { showCandidates = value; }
-        }
-        public int SudokuSize
-        {
-            get { return sudokuSize; }
-            set { sudokuSize = value; }
         }
     }
 }
