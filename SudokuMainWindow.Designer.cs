@@ -33,7 +33,7 @@ namespace Sudoku
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.SudokuTable = new Sudoku.SudokuBoard();
+            this.SudokuGrid = new Sudoku.SudokuBoard();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -114,19 +114,19 @@ namespace Sudoku
             this.sudokuStatusBarText = new System.Windows.Forms.ToolStripStatusLabel();
             this.printSudokuDialog = new System.Windows.Forms.PrintDialog();
             this.selectBookletDirectory = new System.Windows.Forms.FolderBrowserDialog();
-            ((System.ComponentModel.ISupportInitialize)(this.SudokuTable)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SudokuGrid)).BeginInit();
             this.sudokuMenu.SuspendLayout();
             this.sudokuStatusBar.SuspendLayout();
             this.SuspendLayout();
             // 
-            // SudokuTable
+            // SudokuGrid
             // 
-            this.SudokuTable.AllowUserToAddRows = false;
-            this.SudokuTable.AllowUserToDeleteRows = false;
-            this.SudokuTable.AllowUserToResizeColumns = false;
-            this.SudokuTable.AllowUserToResizeRows = false;
-            this.SudokuTable.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.SudokuTable.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
+            this.SudokuGrid.AllowUserToAddRows = false;
+            this.SudokuGrid.AllowUserToDeleteRows = false;
+            this.SudokuGrid.AllowUserToResizeColumns = false;
+            this.SudokuGrid.AllowUserToResizeRows = false;
+            this.SudokuGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.SudokuGrid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -135,11 +135,11 @@ namespace Sudoku
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            resources.ApplyResources(this.SudokuTable, "SudokuTable");
-            this.SudokuTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.SudokuTable.ColumnHeadersVisible = false;
-            this.SudokuTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.SudokuGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            resources.ApplyResources(this.SudokuGrid, "SudokuGrid");
+            this.SudokuGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.SudokuGrid.ColumnHeadersVisible = false;
+            this.SudokuGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3,
@@ -158,9 +158,9 @@ namespace Sudoku
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.ButtonShadow;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.DefaultCellStyle = dataGridViewCellStyle2;
-            this.SudokuTable.MultiSelect = false;
-            this.SudokuTable.Name = "SudokuTable";
+            this.SudokuGrid.DefaultCellStyle = dataGridViewCellStyle2;
+            this.SudokuGrid.MultiSelect = false;
+            this.SudokuGrid.Name = "SudokuGrid";
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -169,16 +169,16 @@ namespace Sudoku
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.SudokuTable.RowHeadersVisible = false;
-            this.SudokuTable.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
+            this.SudokuGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.SudokuGrid.RowHeadersVisible = false;
+            this.SudokuGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             dataGridViewCellStyle4.FormatProvider = new System.Globalization.CultureInfo("de-DE");
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.SudokuTable.RowTemplate.Height = 30;
-            this.SudokuTable.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.SudokuTable.StandardTab = true;
+            this.SudokuGrid.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.SudokuGrid.RowTemplate.Height = 30;
+            this.SudokuGrid.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.SudokuGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.SudokuGrid.StandardTab = true;
             // 
             // Column1
             // 
@@ -780,7 +780,7 @@ namespace Sudoku
             this.Controls.Add(this.prior);
             this.Controls.Add(this.next);
             this.Controls.Add(this.status);
-            this.Controls.Add(this.SudokuTable);
+            this.Controls.Add(this.SudokuGrid);
             this.Controls.Add(this.sudokuStatusBar);
             this.Controls.Add(this.sudokuMenu);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
@@ -793,7 +793,7 @@ namespace Sudoku
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.DropProblem);
             this.DragOver += new System.Windows.Forms.DragEventHandler(this.DragOverForm);
             this.Resize += new System.EventHandler(this.ResizeForm);
-            ((System.ComponentModel.ISupportInitialize)(this.SudokuTable)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SudokuGrid)).EndInit();
             this.sudokuMenu.ResumeLayout(false);
             this.sudokuMenu.PerformLayout();
             this.sudokuStatusBar.ResumeLayout(false);
@@ -875,7 +875,7 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem pause;
         private System.Windows.Forms.ToolStripMenuItem resetTimer;
         private System.Windows.Forms.ToolStripMenuItem EditComment;
-        private SudokuBoard SudokuTable;
+        private SudokuBoard SudokuGrid;
         private System.Windows.Forms.ToolStripMenuItem newItem;
         private System.Windows.Forms.ToolStripMenuItem newNormalSudoku;
         private System.Windows.Forms.ToolStripMenuItem newXSudoku;

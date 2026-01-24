@@ -22,7 +22,6 @@ namespace Sudoku
 
         // Events
         public event EventHandler MatrixChanged;
-        public event EventHandler SolutionFound;
         public event EventHandler Generating;
 
         public SudokuController()
@@ -73,16 +72,11 @@ namespace Sudoku
             stopwatch.Stop();
             CurrentProblem.SolvingTime = stopwatch.Elapsed;
             NotifyMatrixChanged();
-            NotifySolutionFound();
         }
 
         private async void NotifyMatrixChanged()
         {
             MatrixChanged?.Invoke(this, EventArgs.Empty);
-        }
-        private void NotifySolutionFound()
-        {
-            SolutionFound?.Invoke(this, EventArgs.Empty);
         }
         private async void NotifyGeneration(Stopwatch stopwatch, CancellationToken token)
         {

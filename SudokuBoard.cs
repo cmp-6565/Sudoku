@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -10,14 +12,13 @@ namespace Sudoku
 {
     internal class SudokuBoard: DataGridView
     {
-        public int RectSize;
         public int SudokuSize;
-        public int TotalCellCount;
 
         private SudokuController controller;
+        private Boolean debugMode = false;
 
         private Boolean mouseWheelEditing = false;
-        public Boolean InSync { get; private set; }
+        public Boolean InSync { get; private set; } = true;
 
         public event EventHandler<Boolean> UndoAvailableChanged;
         public event EventHandler<Boolean> CandidatesAvailableChanged;
@@ -44,11 +45,9 @@ namespace Sudoku
         Color textColor;
         public SudokuBoard() { }
 
-        internal void Initialize(int rectSize)
+        internal void Initialize()
         {
-            RectSize = rectSize;
-            SudokuSize = RectSize * RectSize;
-            TotalCellCount = SudokuSize * SudokuSize;
+            SudokuSize = Columns.Count;
 
             DoubleBuffered = true;
 
@@ -93,7 +92,11 @@ namespace Sudoku
                 if(controller != null)
                 {
                     controller.MatrixChanged -= OnMatrixChanged;
-                    controller.SolutionFound -= OnSolutionFound;
+                    if(controller.CurrentProblem != null)
+                    {
+                        controller.CurrentProblem.SolutionFound -= OnSolutionFound;
+                        controller.CurrentProblem.Matrix.CellChanged -= OnCellChanged;
+                    }
                 }
 
                 controller = value;
@@ -101,9 +104,13 @@ namespace Sudoku
                 if(controller != null)
                 {
                     controller.MatrixChanged += OnMatrixChanged;
-                    controller.SolutionFound += OnSolutionFound;
-
-                    if(controller.CurrentProblem != null) DisplayValues(controller.CurrentProblem.Matrix);
+                    if(controller.CurrentProblem != null)
+                    {
+                        controller.CurrentProblem.SolutionFound += OnSolutionFound;
+                        DisplayValues(controller.CurrentProblem.Matrix);
+                        if(debugMode)
+                            controller.CurrentProblem.Matrix.CellChanged += OnCellChanged;
+                    }
                 }
             }
         }
@@ -123,6 +130,26 @@ namespace Sudoku
 
             Refresh();
         }
+        private void OnCellChanged(object sender, BaseCell v)
+        {
+            if(InvokeRequired)
+            {
+                Invoke(new Action(() =>
+                {
+                    DisplayValue(v.Row, v.Col, v.CellValue);
+                    Update();
+                }));
+
+                if(Settings.Default.TraceFrequence > 0)
+                {
+                    try { Thread.Sleep(Settings.Default.TraceFrequence); } catch { }
+                }
+                return;
+            }
+
+            DisplayValue(v.Row, v.Col, v.CellValue);
+            Update();
+        }
 
         private void OnSolutionFound(object s, EventArgs e)
         {
@@ -131,6 +158,7 @@ namespace Sudoku
                 Invoke(new EventHandler(OnSolutionFound), s, e);
                 return;
             }
+            DisplayValues(Controller.CurrentProblem.Solutions[controller.CurrentProblem.NumberOfSolutions-1]);
             Refresh();
         }
 
@@ -146,7 +174,6 @@ namespace Sudoku
                 textBox.KeyPress += CellKeyPressValidation;
             }
         }
-
         private void CellKeyPressValidation(object sender, KeyPressEventArgs e)
         {
             bool isValidDigit = char.IsDigit(e.KeyChar) && e.KeyChar != '0';
@@ -596,7 +623,7 @@ namespace Sudoku
         public void CreateNewProblem(Boolean xSudoku)
         {
             Controller.CreateNewProblem(xSudoku);
-            Controller.BackupProblem();
+            SetDebugMode(debugMode);
             InSync = true;
         }
 
@@ -620,7 +647,7 @@ namespace Sudoku
             boldDisplayFont = new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size - 1]), FontStyle.Bold);
             strikethroughFont = new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size - 1]), FontStyle.Bold | FontStyle.Strikeout);
 
-            textColor = Color.FromArgb(255-colorIndex, 255-colorIndex, 255-colorIndex);
+            textColor = Color.FromArgb(255 - colorIndex, 255 - colorIndex, 255 - colorIndex);
         }
         public void UpdateProblemState(GenerationProgressState state)
         {
@@ -641,6 +668,14 @@ namespace Sudoku
             await Task.Delay(500);
 
             this[col, row].Style.BackColor = originalColor;
+        }
+        public void SetDebugMode(Boolean debug)
+        {
+            debugMode = debug;
+            if(debug)
+                controller.CurrentProblem.Matrix.CellChanged += OnCellChanged;
+            else
+                controller.CurrentProblem.Matrix.CellChanged -= OnCellChanged;
         }
     }
 }

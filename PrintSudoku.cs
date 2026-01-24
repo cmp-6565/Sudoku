@@ -41,7 +41,7 @@ namespace Sudoku
 
         private async Task PrintDialog()
         {
-            if(!SudokuTable.SyncProblemWithGUI(true, false))
+            if(!SudokuGrid.SyncProblemWithGUI(true, false))
             {
                 MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.PrintNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
@@ -49,7 +49,7 @@ namespace Sudoku
 
             BaseProblem tmp = controller.CurrentProblem.Clone();
 
-            SudokuTable.DisplayValues(controller.CurrentProblem.Matrix);
+            SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
             if(controller.CurrentProblem.NumberOfSolutions == 0)
             {
                 await SolveProblem(false);
@@ -57,7 +57,7 @@ namespace Sudoku
 
             ResetDetachedProcess();
             ResetTexts();
-            SudokuTable.DisplayValues(tmp.Matrix);
+            SudokuGrid.DisplayValues(tmp.Matrix);
 
             if(!controller.CurrentProblem.Aborted)
             {

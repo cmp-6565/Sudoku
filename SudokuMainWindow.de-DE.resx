@@ -308,7 +308,7 @@
     <value>208, 22</value>
   </data>
   <data name="findallSolutions.Text" xml:space="preserve">
-    <value>&amp;Alle Lösungen finden</value>
+    <value>&amp;Alle Lösungen finden (max. 100)</value>
   </data>
   <data name="showPossibleValues.Size" type="System.Drawing.Size, System.Drawing">
     <value>208, 22</value>
