@@ -523,11 +523,11 @@ namespace Sudoku
             this[cell.Col, cell.Row].Style.BackColor = Color.Coral;
         }
 
-        internal void HandleOnResetCell(object sender, BaseCell cell)
+        internal void ResetCellVisuals(object sender, BaseCell cell)
         {
             if(InvokeRequired)
             {
-                Invoke(new Action<object, BaseCell>(HandleOnResetCell), sender, cell);
+                Invoke(new Action<object, BaseCell>(ResetCellVisuals), sender, cell);
                 return;
             }
             this[cell.Col, cell.Row].Style.Font = boldDisplayFont;

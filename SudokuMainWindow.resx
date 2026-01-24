@@ -579,10 +579,10 @@
   <data name="abort.Text" xml:space="preserve">
     <value>&amp;Abort</value>
   </data>
-  <data name="sudokuProblem.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="SudokuProblem.Size" type="System.Drawing.Size, System.Drawing">
     <value>64, 20</value>
   </data>
-  <data name="sudokuProblem.Text" xml:space="preserve">
+  <data name="SudokuProblem.Text" xml:space="preserve">
     <value>&amp;Problem</value>
   </data>
   <data name="undo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
@@ -1412,10 +1412,10 @@
   <data name="&gt;&gt;exit.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;sudokuProblem.Name" xml:space="preserve">
-    <value>sudokuProblem</value>
+  <data name="&gt;&gt;SudokuProblem.Name" xml:space="preserve">
+    <value>SudokuProblem</value>
   </data>
-  <data name="&gt;&gt;sudokuProblem.Type" xml:space="preserve">
+  <data name="&gt;&gt;SudokuProblem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;generate.Name" xml:space="preserve">

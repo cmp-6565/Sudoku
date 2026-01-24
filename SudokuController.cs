@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 using Sudoku.Properties;
 
@@ -30,7 +31,7 @@ namespace Sudoku
             trickyProblems = new TrickyProblems();
         }
 
-        public SudokuController(String filenname, Boolean loadCandidates): this()
+        public SudokuController(String filenname, Boolean loadCandidates) : this()
         {
             CreateProblemFromFile(filenname, Settings.Default.GenerateNormalSudoku, Settings.Default.GenerateXSudoku, loadCandidates);
             BackupProblem();
@@ -46,7 +47,7 @@ namespace Sudoku
         {
             if(CurrentProblem == null) return;
 
-            int maxSolutions = findAllSolutions? int.MaxValue: 1;
+            int maxSolutions = findAllSolutions ? int.MaxValue : 1;
             var stopwatch = Stopwatch.StartNew();
 
             CurrentProblem.FindSolutions(maxSolutions, token);
@@ -93,11 +94,12 @@ namespace Sudoku
             CreateNewProblem(sudokuType == XSudokuProblem.ProblemIdentifier, notify);
             try
             {
-                CurrentProblem.InitProblem(Settings.Default.State.Substring(1, SudokuForm.TotalCellCount).ToCharArray(), Settings.Default.State.Substring(SudokuForm.TotalCellCount + 1, 16).ToCharArray(), null);
+                SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+                fileService.InitProblem(Settings.Default.State.Substring(1, SudokuForm.TotalCellCount).ToCharArray(), Settings.Default.State.Substring(SudokuForm.TotalCellCount + 1, 16).ToCharArray(), null);
                 if(Settings.Default.State.IndexOf('\n') > 0)
                 {
-                    CurrentProblem.LoadCandidates(Settings.Default.State.Substring(Settings.Default.State.IndexOf('\n') + 1), false);
-                    CurrentProblem.LoadCandidates(Settings.Default.State.Substring(Settings.Default.State.LastIndexOf('\n') + 1), true);
+                    fileService.LoadCandidates(Settings.Default.State.Substring(Settings.Default.State.IndexOf('\n') + 1), false);
+                    fileService.LoadCandidates(Settings.Default.State.Substring(Settings.Default.State.LastIndexOf('\n') + 1), true);
                 }
             }
             catch(Exception)
@@ -120,8 +122,15 @@ namespace Sudoku
             }
             return false;
         }
-        public string TwitterURL { get { return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), CurrentProblem.Serialize(false).Substring(1, SudokuForm.TotalCellCount)); } }
-
+        public string TwitterURL
+        {
+            get
+            {
+                SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+                return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), fileService.Serialize(false).Substring(1, SudokuForm.TotalCellCount)); 
+            }
+        }
+    
         public async Task<bool> Validate(IProgress<GenerationProgressState> progress, CancellationToken token)
         {
             if(CurrentProblem == null) return false;
@@ -164,7 +173,7 @@ namespace Sudoku
 
             return result;
         }
-        public async Task GenerateBatch(int count, GenerationParameters parameters, int severityLevel, bool usePrecalculated, Func<BaseProblem, int, Task> onProblemGenerated, IProgress<GenerationProgressState> progress, CancellationToken token)
+        public async Task GenerateBatch(int count, GenerationParameters parameters, int severityLevel, bool usePrecalculated, Func<BaseProblem, int, Task> onProblemGenerated, IProgress<GenerationProgressState> progress, IProgress<MinimizationUpdate> minimizeProgress, CancellationToken token)
         {
             trickyProblems.Clear();
             parameters.CurrentProblem = 0;
@@ -176,7 +185,7 @@ namespace Sudoku
                 parameters.Reset = false;
                 parameters.PreAllocatedValues = 0;
 
-                bool success = await GenerateCompleteProblem(parameters, severityLevel, progress, token);
+                bool success = await GenerateCompleteProblem(parameters, severityLevel, progress, minimizeProgress, token);
 
                 if(!success || token.IsCancellationRequested) return;
 
@@ -192,7 +201,8 @@ namespace Sudoku
         public Boolean SudokuOfTheDay()
         {
             CreateNewProblem(Settings.Default.SudokuOfTheDay);
-            if(CurrentProblem.SudokuOfTheDay())
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            if(fileService.SudokuOfTheDay())
             {
                 BackupProblem();
                 NotifyMatrixChanged();
@@ -313,7 +323,7 @@ namespace Sudoku
             return true;
         }
 
-        private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, IProgress<GenerationProgressState> progress, CancellationToken token)
+        private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, IProgress<GenerationProgressState> progress, IProgress<MinimizationUpdate> mimimizeProgress, CancellationToken token)
         {
             var stopwatch = Stopwatch.StartNew();
             int counter = 0;
@@ -346,7 +356,7 @@ namespace Sudoku
                     {
                         if(SeverityLevelInt() <= targetSeverity)
                         {
-                            var minimized = await Minimize(targetSeverity, token);
+                            var minimized = await Minimize(targetSeverity, mimimizeProgress, token);
                             if(minimized != null)
                             {
                                 CurrentProblem = minimized;
@@ -392,14 +402,40 @@ namespace Sudoku
             return false;
         }
 
-        public async Task<BaseProblem> Minimize(int targetSeverity, CancellationToken token)
+        // In SudokuController.cs
+
+        public async Task<BaseProblem> Minimize(int targetSeverity, IProgress<MinimizationUpdate> progress, CancellationToken token)
         {
             if(CurrentProblem == null) return null;
 
             BackupProblem();
-            return await CurrentProblem.Minimize(targetSeverity, token);
-        }
 
+            // Lokale Event-Handler, die an IProgress weiterleiten
+            Action<object, BaseCell> onTestCell = (s, cell) =>
+                progress?.Report(new MinimizationUpdate { Type = MinimizationUpdateType.TestCell, Cell = cell });
+
+            Action<object, BaseCell> onResetCell = (s, cell) =>
+                progress?.Report(new MinimizationUpdate { Type = MinimizationUpdateType.ResetCell, Cell = cell });
+
+            Action<object, BaseProblem> onMinimizing = (s, problem) =>
+                progress?.Report(new MinimizationUpdate { Type = MinimizationUpdateType.Status, Problem = problem });
+
+            // Events abonnieren
+            CurrentProblem.TestCell += onTestCell;
+            CurrentProblem.ResetCell += onResetCell;
+            CurrentProblem.Minimizing += onMinimizing;
+
+            try
+            {
+                return await CurrentProblem.Minimize(targetSeverity, token);
+            }
+            finally
+            {
+                CurrentProblem.TestCell -= onTestCell;
+                CurrentProblem.ResetCell -= onResetCell;
+                CurrentProblem.Minimizing -= onMinimizing;
+            }
+        }
         private void FillCells(GenerationParameters generationParameters, int targetSeverity, Stopwatch stopwatch, CancellationToken token)
         {
             int counter = 0;
@@ -494,27 +530,14 @@ namespace Sudoku
         }
         public void CreateProblemFromFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
         {
-            StreamReader sr = null;
-            try
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            fileService.ReadProblem += (b) =>
             {
-                Char sudokuType;
-                sr = new StreamReader(filename.Replace("%20", " "), System.Text.Encoding.Default);
-                sudokuType = (Char)sr.Read();
-                if(sudokuType != SudokuProblem.ProblemIdentifier && sudokuType != XSudokuProblem.ProblemIdentifier) throw new InvalidDataException();
-                if(sudokuType == SudokuProblem.ProblemIdentifier && normalSudoku || sudokuType == XSudokuProblem.ProblemIdentifier && xSudoku)
-                {
-                    CreateNewProblem(sudokuType == XSudokuProblem.ProblemIdentifier);
-                    CurrentProblem.ReadFromFile(sr);
-                    if(loadCandidates)
-                    {
-                        CurrentProblem.LoadCandidates(sr, false);
-                        CurrentProblem.LoadCandidates(sr, true);
-                    }
-                }
-            }
-            catch(Exception) { throw; }
-            finally { sr.Close(); }
-            CurrentProblem.Filename = filename;
+                CreateNewProblem(b);
+                fileService.Sudoku = CurrentProblem;
+            };
+            fileService.CreateProblemFromFile(filename, normalSudoku, xSudoku, loadCandidates);
+
             NotifyMatrixChanged();
         }
         public bool IsCellReadOnly(int row, int col)
@@ -535,7 +558,8 @@ namespace Sudoku
         private Boolean LoadProblem(Boolean xSudoku)
         {
             CreateNewProblem(xSudoku);
-            return CurrentProblem.Load();
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            return fileService.Load();
         }
         public void UpdateProblem(BaseProblem problem)
         {
@@ -574,11 +598,13 @@ namespace Sudoku
         }
         public void SaveProblem(String filename)
         {
-            CurrentProblem.SaveToFile(filename);
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            fileService.SaveToFile(filename);
         }
         public void ExportHTML(String filename)
         {
-            CurrentProblem.SaveToHTMLFile(filename);
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            fileService.SaveToHTMLFile(filename);
         }
 
         public void Cancel()
@@ -611,14 +637,9 @@ namespace Sudoku
                 }
             }
 
-            cellInfo +=
-                Environment.NewLine + String.Format(cultureInfo, Resources.DirectBlocks) +
-                (directBlockedCells.Length == 0 ? Resources.None : directBlockedCells) +
-                Environment.NewLine + String.Format(cultureInfo, Resources.IndirectBlocks) +
-                (indirectBlockedCells.Length == 0 ? Resources.None : indirectBlockedCells);
+            cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.DirectBlocks) + (directBlockedCells.Length == 0 ? Resources.None : directBlockedCells) +
+                Environment.NewLine + String.Format(cultureInfo, Resources.IndirectBlocks) + (indirectBlockedCells.Length == 0 ? Resources.None : indirectBlockedCells);
 
-            // ... hier der ganze Code mit String.Format aus der Form ...
-            // ... Berechnung der Blocked/IndirectBlocked ...
             return cellInfo;
         }
     }

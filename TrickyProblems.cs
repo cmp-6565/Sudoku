@@ -33,7 +33,8 @@ namespace Sudoku
             {
                 foreach(BaseProblem problem in problems)
                 {
-                    String sudoku = problem.Serialize().Substring(0, SudokuForm.TotalCellCount + 1);
+                    SudokuFileService fileService = new SudokuFileService(problem);
+                    String sudoku = fileService.Serialize().Substring(0, SudokuForm.TotalCellCount + 1);
                     if(client.UploadString("http://sudoku.pi-c-it.de/misc/Hard%20Games/Original/Upload/upload.aspx", sudoku).Trim() != sudoku)
                         return false;
                 }

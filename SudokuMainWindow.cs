@@ -295,6 +295,26 @@ namespace Sudoku
             });
 
             FormCTS = new CancellationTokenSource();
+            var minimizeProgress = new Progress<MinimizationUpdate>(update =>
+            {
+                switch(update.Type)
+                {
+                case MinimizationUpdateType.TestCell:
+                    SudokuGrid.HandleOnTestCell(this, update.Cell);
+                    break;
+                case MinimizationUpdateType.ResetCell:
+                    SudokuGrid.ResetCellVisuals(this, update.Cell);
+                    break;
+                case MinimizationUpdateType.Status:
+                    status.Text = String.Format(Resources.CurrentMinimalProblem,
+                        update.Problem.SeverityLevelText,
+                        update.Problem.nValues,
+                        controller.CurrentProblem.nValues).Replace("\\n", Environment.NewLine);
+                    status.Update();
+                    break;
+                }
+            });
+
             try
             {
                 sudokuStatusBarText.Text = usePrecalculatedProblem ? Resources.Loading : Resources.Generating;
@@ -313,7 +333,7 @@ namespace Sudoku
                             }
                         }
                     },
-                    progress,
+                    progress, minimizeProgress,
                     FormCTS.Token
                 );
 
@@ -1237,23 +1257,40 @@ namespace Sudoku
                 controller.CurrentProblem.Dirty = true;
             }
         }
+        // In SudokuMainWindow.cs
+
         public async Task<Boolean> Minimize(int maxSeverity)
         {
-            String statusbarText = sudokuStatusBarText.Text;
+            String oldStatusText = sudokuStatusBarText.Text;
             BaseProblem minimizedProblem = null;
             Boolean rc = false;
 
+            var progress = new Progress<MinimizationUpdate>(update =>
+            {
+                switch(update.Type)
+                {
+                case MinimizationUpdateType.TestCell:
+                    SudokuGrid.HandleOnTestCell(this, update.Cell);
+                    break;
+                case MinimizationUpdateType.ResetCell:
+                    SudokuGrid.ResetCellVisuals(this, update.Cell);
+                    break;
+                case MinimizationUpdateType.Status:
+                    status.Text = String.Format(Resources.CurrentMinimalProblem,
+                        update.Problem.SeverityLevelText,
+                        update.Problem.nValues,
+                        controller.CurrentProblem.nValues).Replace("\\n", Environment.NewLine);
+                    status.Update();
+                    break;
+                }
+            });
+
             controller.BackupProblem();
-
-            // Berechnung in Hintergrund-Task auslagern
-            controller.CurrentProblem.Minimizing += HandleMinimizing;
-            controller.CurrentProblem.TestCell += SudokuGrid.HandleOnTestCell;
-            controller.CurrentProblem.ResetCell += SudokuGrid.HandleOnResetCell;
-
             FormCTS = new CancellationTokenSource();
+
             try
             {
-                minimizedProblem = await controller.Minimize(maxSeverity, FormCTS.Token);
+                minimizedProblem = await controller.Minimize(maxSeverity, progress, FormCTS.Token);
 
                 if(minimizedProblem != null)
                 {
@@ -1263,9 +1300,6 @@ namespace Sudoku
             }
             finally
             {
-                controller.CurrentProblem.ResetCell -= SudokuGrid.HandleOnResetCell;
-                controller.CurrentProblem.TestCell -= SudokuGrid.HandleOnTestCell;
-                controller.CurrentProblem.Minimizing -= HandleMinimizing;
                 controller.CurrentProblem.ResetMatrix();
 
                 UpdateGUI();
@@ -1274,7 +1308,7 @@ namespace Sudoku
                 ResetUndo();
                 EnableGUI();
                 Cursor = Cursors.Default;
-                sudokuStatusBarText.Text = statusbarText;
+                sudokuStatusBarText.Text = oldStatusText;
             }
 
             return rc;
@@ -1366,7 +1400,8 @@ namespace Sudoku
                 if(Settings.Default.AutoSaveState)
                 {
                     // if(solvingTimer.Enabled) controller.CurrentProblem.SolvingTime = DateTime.Now - interactiveStart;
-                    Settings.Default.State = controller.CurrentProblem.Serialize();
+                    SudokuFileService fileService = new SudokuFileService(controller.CurrentProblem);
+                    Settings.Default.State = fileService.Serialize();
                     Settings.Default.Save();
                 }
                 else

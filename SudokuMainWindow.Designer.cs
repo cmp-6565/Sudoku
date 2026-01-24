@@ -65,7 +65,7 @@ namespace Sudoku
             this.existingBooklet = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.exit = new System.Windows.Forms.ToolStripMenuItem();
-            this.sudokuProblem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SudokuProblem = new System.Windows.Forms.ToolStripMenuItem();
             this.generate = new System.Windows.Forms.ToolStripMenuItem();
             this.generateNormalSudoku = new System.Windows.Forms.ToolStripMenuItem();
             this.generateXSudoku = new System.Windows.Forms.ToolStripMenuItem();
@@ -274,7 +274,7 @@ namespace Sudoku
             this.sudokuMenu.BackColor = System.Drawing.SystemColors.MenuBar;
             this.sudokuMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.file,
-            this.sudokuProblem,
+            this.SudokuProblem,
             this.options,
             this.help});
             resources.ApplyResources(this.sudokuMenu, "sudokuMenu");
@@ -411,9 +411,9 @@ namespace Sudoku
             resources.ApplyResources(this.exit, "exit");
             this.exit.Click += new System.EventHandler(this.ExitClick);
             // 
-            // sudokuProblem
+            // SudokuProblem
             // 
-            this.sudokuProblem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.SudokuProblem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generate,
             this.solve,
             this.mimimalAllocation,
@@ -432,8 +432,8 @@ namespace Sudoku
             this.clearCandidates,
             this.toolStripSeparator4,
             this.abort});
-            this.sudokuProblem.Name = "sudokuProblem";
-            resources.ApplyResources(this.sudokuProblem, "sudokuProblem");
+            this.SudokuProblem.Name = "SudokuProblem";
+            resources.ApplyResources(this.SudokuProblem, "SudokuProblem");
             // 
             // generate
             // 
@@ -810,7 +810,7 @@ namespace Sudoku
         private System.Windows.Forms.Button prior;
         private System.Windows.Forms.MenuStrip sudokuMenu;
         private System.Windows.Forms.ToolStripMenuItem file;
-        private System.Windows.Forms.ToolStripMenuItem sudokuProblem;
+        private System.Windows.Forms.ToolStripMenuItem SudokuProblem;
         private System.Windows.Forms.ToolStripMenuItem help;
         private System.Windows.Forms.ToolStripMenuItem aboutSudoku;
         private System.Windows.Forms.ToolStripMenuItem open;
