@@ -21,6 +21,8 @@ namespace Sudoku
         public const int SudokuSize = RectSize * RectSize;
         public const int TotalCellCount = SudokuSize * SudokuSize;
 
+        ISudokuSettings settings = new WinFormsSettings();
+
         private System.Windows.Forms.Timer autoPauseTimer = new System.Windows.Forms.Timer();
 
         private SudokuPrinterService printerService = null;
@@ -48,7 +50,7 @@ namespace Sudoku
             Thread.CurrentThread.CurrentUICulture = (cultureInfo = new CultureInfo(Settings.Default.DisplayLanguage));
 
             InitializeComponent();
-            SudokuGrid.Initialize();
+            SudokuGrid.Initialize(settings);
             InitializeController();
 
             sudokuMenu.Renderer = new FlatRenderer();
@@ -1325,7 +1327,7 @@ namespace Sudoku
 
         private void InitializeController()
         {
-            controller = new SudokuController();
+            controller = new SudokuController(settings);
             controller.Generating += (s, e) => OnGenerating(s, e);
             if(Settings.Default.State.Length > 0)
                 controller.RestoreProblemState(false);

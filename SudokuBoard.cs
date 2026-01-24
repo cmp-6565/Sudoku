@@ -12,6 +12,8 @@ namespace Sudoku
 {
     internal class SudokuBoard: DataGridView
     {
+        private ISudokuSettings settings;
+
         public int SudokuSize;
 
         private SudokuController controller;
@@ -45,7 +47,7 @@ namespace Sudoku
         Color textColor;
         public SudokuBoard() { }
 
-        internal void Initialize()
+        internal void Initialize(ISudokuSettings settings)
         {
             SudokuSize = Columns.Count;
 
@@ -74,6 +76,7 @@ namespace Sudoku
             MouseWheel += new MouseEventHandler(MouseWheelHandler);
             Rows.Add(SudokuSize);
 
+            this.settings = settings;
             UpdateFonts();
 
             ResetMatrix();
@@ -140,9 +143,9 @@ namespace Sudoku
                     Update();
                 }));
 
-                if(Settings.Default.TraceFrequence > 0)
+                if(settings.TraceFrequence > 0)
                 {
-                    try { Thread.Sleep(Settings.Default.TraceFrequence); } catch { }
+                    try { Thread.Sleep(settings.TraceFrequence); } catch { }
                 }
                 return;
             }
@@ -303,7 +306,7 @@ namespace Sudoku
         {
             int width = 0;
             int height = 0;
-            int cellSize = (int)((float)Settings.Default.Size * Settings.Default.MagnificationFactor * Settings.Default.CellWidth * .7f);
+            int cellSize = (int)((float)settings.Size * settings.MagnificationFactor * settings.CellWidth * .7f);
 
             for(int i = 0; i < SudokuSize; i++)
             {
@@ -391,7 +394,7 @@ namespace Sudoku
                     MessageBox.Show(result.Errors[0].Message, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
-            if(Settings.Default.ShowHints) Refresh();
+            if(settings.ShowHints) Refresh();
             return result.IsValid;
         }
 
@@ -401,7 +404,7 @@ namespace Sudoku
             for(int row = 0; row < SudokuSize; row++)
                 for(int col = 0; col < SudokuSize; col++)
                     FormatCell(row, col);
-            if(Settings.Default.MarkNeighbors)
+            if(settings.MarkNeighbors)
                 MarkNeighbors();
         }
 
@@ -502,13 +505,13 @@ namespace Sudoku
         {
             if(mouseWheelEditing) HandleCellEndEdit(sender);
 
-            if(Settings.Default.MarkNeighbors) FormatBoard();
+            if(settings.MarkNeighbors) FormatBoard();
         }
 
         private void HandleCellEnter(object sender, DataGridViewCellEventArgs e)
         {
-            if(Settings.Default.HighlightSameValues) UpdateHighligts();
-            if(Settings.Default.MarkNeighbors) FormatBoard();
+            if(settings.HighlightSameValues) UpdateHighligts();
+            if(settings.MarkNeighbors) FormatBoard();
             ShowValues();
         }
 
@@ -585,8 +588,8 @@ namespace Sudoku
         {
             if(sender is DataGridView && Controller?.CurrentProblem != null)
             {
-                Font printFont = (Settings.Default.Size == 1 ? PrintParameters.SmallFont : PrintParameters.NormalFont);
-                bool showCandidatesMode = !Settings.Default.ShowHints;
+                Font printFont = (settings.Size == 1 ? PrintParameters.SmallFont : PrintParameters.NormalFont);
+                bool showCandidatesMode = !settings.ShowHints;
 
                 if(showCandidatesMode && !Controller.CurrentProblem.HasCandidates()) return;
 
@@ -605,7 +608,7 @@ namespace Sudoku
                         {
                             RectangleF rf = new RectangleF(col * cellSize, row * cellSize, cellSize, cellSize);
 
-                            if(Settings.Default.UseWatchHandHints)
+                            if(settings.UseWatchHandHints)
                                 SudokuRenderer.DrawWatchHands(Controller.CurrentProblem.Cell(row, col), rf, e.Graphics, showCandidatesMode);
                             else
                                 SudokuRenderer.DrawHints(Controller.CurrentProblem.Cell(row, col), rf, e.Graphics, printFont, this[col, row].Style.ForeColor, showCandidatesMode);
@@ -634,18 +637,18 @@ namespace Sudoku
         }
         public void UpdateFonts()
         {
-            int colorIndex = 255 - (int)(255f * ((float)Settings.Default.Contrast / 100f));
+            int colorIndex = 255 - (int)(255f * ((float)settings.Contrast / 100f));
             gray = Color.FromArgb(colorIndex, colorIndex, colorIndex);
             green = Color.FromArgb(64, colorIndex, 64);
-            colorIndex = 255 - (int)(255f * ((float)Settings.Default.Contrast / 220f));
+            colorIndex = 255 - (int)(255f * ((float)settings.Contrast / 220f));
             lightGray = Color.FromArgb(colorIndex, colorIndex, colorIndex);
-            colorIndex = 255 - (int)(255f * ((float)Settings.Default.Contrast / 1000f));
+            colorIndex = 255 - (int)(255f * ((float)settings.Contrast / 1000f));
             lightGreen = Color.FromArgb(191, colorIndex, 191);
 
-            fontSizes = Settings.Default.FontSizes.Split('|');
-            normalDisplayFont = new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size - 1]), FontStyle.Regular);
-            boldDisplayFont = new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size - 1]), FontStyle.Bold);
-            strikethroughFont = new Font(Settings.Default.TableFont, Convert.ToInt32(fontSizes[Settings.Default.Size - 1]), FontStyle.Bold | FontStyle.Strikeout);
+            fontSizes = settings.FontSizes.Split('|');
+            normalDisplayFont = new Font(settings.TableFont, Convert.ToInt32(fontSizes[settings.Size - 1]), FontStyle.Regular);
+            boldDisplayFont = new Font(settings.TableFont, Convert.ToInt32(fontSizes[settings.Size - 1]), FontStyle.Bold);
+            strikethroughFont = new Font(settings.TableFont, Convert.ToInt32(fontSizes[settings.Size - 1]), FontStyle.Bold | FontStyle.Strikeout);
 
             textColor = Color.FromArgb(255 - colorIndex, 255 - colorIndex, 255 - colorIndex);
         }

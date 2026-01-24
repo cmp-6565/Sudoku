@@ -15,6 +15,7 @@ namespace Sudoku
 {
     internal class SudokuController
     {
+        private readonly ISudokuSettings settings; 
         public BaseProblem CurrentProblem { get; private set; }
         public BaseProblem Backup { get; private set; }
         private Stack<CoreValue> undoStack;
@@ -25,15 +26,16 @@ namespace Sudoku
         public event EventHandler MatrixChanged;
         public event EventHandler Generating;
 
-        public SudokuController()
+        public SudokuController(ISudokuSettings settings)
         {
             undoStack = new Stack<CoreValue>();
             trickyProblems = new TrickyProblems();
+            this.settings = settings;
         }
 
-        public SudokuController(String filenname, Boolean loadCandidates) : this()
+        public SudokuController(String filenname, Boolean loadCandidates, ISudokuSettings settings): this(settings)
         {
-            CreateProblemFromFile(filenname, Settings.Default.GenerateNormalSudoku, Settings.Default.GenerateXSudoku, loadCandidates);
+            CreateProblemFromFile(filenname, settings.GenerateNormalSudoku, settings.GenerateXSudoku, loadCandidates);
             BackupProblem();
         }
         public void CreateNewProblem(bool xSudoku, bool notify = true)
@@ -88,18 +90,18 @@ namespace Sudoku
         }
         public void RestoreProblemState(bool notify = true)
         {
-            Char sudokuType = (Char)Settings.Default.State[0];
+            Char sudokuType = (Char)settings.State[0];
             if(sudokuType != SudokuProblem.ProblemIdentifier && sudokuType != XSudokuProblem.ProblemIdentifier)
                 throw new InvalidDataException();
             CreateNewProblem(sudokuType == XSudokuProblem.ProblemIdentifier, notify);
             try
             {
                 SudokuFileService fileService = new SudokuFileService(CurrentProblem);
-                fileService.InitProblem(Settings.Default.State.Substring(1, SudokuForm.TotalCellCount).ToCharArray(), Settings.Default.State.Substring(SudokuForm.TotalCellCount + 1, 16).ToCharArray(), null);
-                if(Settings.Default.State.IndexOf('\n') > 0)
+                fileService.InitProblem(settings.State.Substring(1, SudokuForm.TotalCellCount).ToCharArray(), settings.State.Substring(SudokuForm.TotalCellCount + 1, 16).ToCharArray(), null);
+                if(settings.State.IndexOf('\n') > 0)
                 {
-                    fileService.LoadCandidates(Settings.Default.State.Substring(Settings.Default.State.IndexOf('\n') + 1), false);
-                    fileService.LoadCandidates(Settings.Default.State.Substring(Settings.Default.State.LastIndexOf('\n') + 1), true);
+                    fileService.LoadCandidates(settings.State.Substring(settings.State.IndexOf('\n') + 1), false);
+                    fileService.LoadCandidates(settings.State.Substring(settings.State.LastIndexOf('\n') + 1), true);
                 }
             }
             catch(Exception)
@@ -200,7 +202,7 @@ namespace Sudoku
 
         public Boolean SudokuOfTheDay()
         {
-            CreateNewProblem(Settings.Default.SudokuOfTheDay);
+            CreateNewProblem(settings.SudokuOfTheDay);
             SudokuFileService fileService = new SudokuFileService(CurrentProblem);
             if(fileService.SudokuOfTheDay())
             {
@@ -219,7 +221,7 @@ namespace Sudoku
             List<BaseCell> values = CurrentProblem.GetObviousCells();
             if(values.Count == 0)
                 values = CurrentProblem.GetHints();
-            if(values.Count > Settings.Default.MaxHints)
+            if(values.Count > settings.MaxHints)
             {
                 List<BaseCell> hints = new List<BaseCell>();
                 Random rand = new Random();
@@ -227,7 +229,7 @@ namespace Sudoku
                 do
                     if(!hints.Contains(values[(index = rand.Next(values.Count))]))
                         hints.Add(values[index]);
-                while(hints.Count < Settings.Default.MaxHints);
+                while(hints.Count < settings.MaxHints);
                 values = hints;
             }
             return values;
@@ -332,7 +334,7 @@ namespace Sudoku
             while(!token.IsCancellationRequested)
             {
                 counter++;
-                await GenerateBaseProblem(generationParameters, Settings.Default.UsePrecalculatedProblems, progress, token);
+                await GenerateBaseProblem(generationParameters, settings.UsePrecalculatedProblems, progress, token);
 
                 if(token.IsCancellationRequested) return false;
 
@@ -352,7 +354,7 @@ namespace Sudoku
                 {
                     bool processProblem = true;
 
-                    if(Settings.Default.GenerateMinimalProblems)
+                    if(settings.GenerateMinimalProblems)
                     {
                         if(SeverityLevelInt() <= targetSeverity)
                         {
@@ -384,7 +386,7 @@ namespace Sudoku
 
                         if((SeverityLevelInt() & targetSeverity) != 0)
                         {
-                            if(CurrentProblem.IsTricky && !Settings.Default.UsePrecalculatedProblems)
+                            if(CurrentProblem.IsTricky && !settings.UsePrecalculatedProblems)
                             {
                                 trickyProblems?.Add(CurrentProblem);
                             }
@@ -442,7 +444,7 @@ namespace Sudoku
             CurrentProblem.ResetMatrix();
 
             // Fülle bis MinValues oder TargetSeverity
-            while(CurrentProblem.nValues < Settings.Default.MinValues)
+            while(CurrentProblem.nValues < settings.MinValues)
             {
                 if((counter++ % 10) == 0) NotifyGeneration(stopwatch, token);
 
@@ -454,7 +456,7 @@ namespace Sudoku
                     CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = true;
                 }
             }
-            while((SeverityLevelInt() & targetSeverity) == 0 && CurrentProblem.nValues < Settings.Default.MaxValues && !token.IsCancellationRequested)
+            while((SeverityLevelInt() & targetSeverity) == 0 && CurrentProblem.nValues < settings.MaxValues && !token.IsCancellationRequested)
             {
                 if((counter++ % 10) == 0) NotifyGeneration(stopwatch, token);
 

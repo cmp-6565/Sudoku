@@ -142,6 +142,7 @@
     <Compile Include="FlatRenderer.cs" />
     <Compile Include="GenerationParameters.cs" />
     <Compile Include="InvalidSudokuValueException.cs" />
+    <Compile Include="ISudokuSettings.cs" />
     <Compile Include="MinimizationUpdate.cs" />
     <Compile Include="OptionsDialog.cs">
       <SubType>Form</SubType>
@@ -279,6 +280,7 @@
     <Compile Include="SudokuFileService.cs" />
     <Compile Include="TrickyProblems.cs" />
     <Compile Include="Values.cs" />
+    <Compile Include="WinFormsSettings.cs" />
     <Compile Include="XSudokuMatrix.cs" />
     <Compile Include="XSudokuProblem.cs" />
     <None Include="Sudoku.Tests\Sudoku.Tests.csproj" />

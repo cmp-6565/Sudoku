@@ -212,7 +212,7 @@ namespace Sudoku
                 int problemNumber = rand.Next(0, filenames.Count - 1);
                 try
                 {
-                    SudokuController bookletController = new SudokuController(filenames[problemNumber], false);
+                    SudokuController bookletController = new SudokuController(filenames[problemNumber], false, settings);
                     if(bookletController.CurrentProblem != null && (bookletController.CurrentProblem.SeverityLevelInt & Settings.Default.SeverityLevel) != 0)
                     {
                         bookletController.CurrentProblem.FindSolutions(2, FormCTS.Token);
