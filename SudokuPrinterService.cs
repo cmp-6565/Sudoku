@@ -15,6 +15,8 @@ namespace Sudoku
 {
     internal class SudokuPrinterService
     {
+        private readonly ISudokuSettings settings;
+
         private System.Drawing.Printing.PrintDocument printSudoku;
         internal PrintParameters printParameters;
         private CultureInfo cultureInfo;
@@ -23,13 +25,14 @@ namespace Sudoku
 
         public int NumberOfProblems => printParameters.Problems.Count;
 
-        public SudokuPrinterService(int sudokuSize)
+        public SudokuPrinterService(int sudokuSize, ISudokuSettings settings)
         {
             printSudoku = new System.Drawing.Printing.PrintDocument();
             printSudoku.PrintPage += PrintSudokuEvent;
             cultureInfo = Thread.CurrentThread.CurrentUICulture;
-            printParameters = new PrintParameters();
+            printParameters = new PrintParameters(settings);
             SudokuSize = sudokuSize;
+            this.settings = settings;
         }
         public void Dispose()
         {
@@ -68,17 +71,17 @@ namespace Sudoku
             printParameters.PageWidthDots = e.PageSettings.PrintableArea.Width - printSudoku.DefaultPageSettings.Margins.Right - printSudoku.DefaultPageSettings.Margins.Left;
             printParameters.PageHeightDots = e.PageSettings.PrintableArea.Height - printSudoku.DefaultPageSettings.Margins.Top - printSudoku.DefaultPageSettings.Margins.Bottom;
 
-            printParameters.CellWidthDots = (printParameters.CellHeightDots = printParameters.PageWidthDots / (Settings.Default.HorizontalProblems * horizontalOffset));
-            printParameters.SmallCellWidthDots = (printParameters.SmallCellHeightDots = printParameters.PageWidthDots / (Settings.Default.HorizontalSolutions * verticalOffset));
+            printParameters.CellWidthDots = (printParameters.CellHeightDots = printParameters.PageWidthDots / (settings.HorizontalProblems * horizontalOffset));
+            printParameters.SmallCellWidthDots = (printParameters.SmallCellHeightDots = printParameters.PageWidthDots / (settings.HorizontalSolutions * verticalOffset));
 
             Boolean printSolutions = true;
 
             // Draw Title and copyright information on every page
-            g.DrawString(AssemblyInfo.AssemblyCompany+ " " + AssemblyInfo.AssemblyProduct, PrintParameters.HeaderFont, PrintParameters.SolidBrush, new RectangleF(currentX, currentY, printParameters.PageWidthDots, PrintParameters.HeaderFont.GetHeight(g)), PrintParameters.Centered);
-            g.DrawString(AssemblyInfo.AssemblyCopyright, PrintParameters.SmallFont, PrintParameters.SolidBrush, new RectangleF(currentX + printParameters.PageWidthDots, 0, printParameters.CellWidthDots, printSudoku.DefaultPageSettings.PaperSize.Height), PrintParameters.Vertical);
-            g.DrawString(AssemblyInfo.AssemblyProduct + " " + Resources.Version + AssemblyInfo.AssemblyVersion, PrintParameters.SmallFont, PrintParameters.SolidBrush, (rf = new RectangleF(currentX, printSudoku.DefaultPageSettings.PaperSize.Height - printSudoku.DefaultPageSettings.Margins.Bottom, printParameters.PageWidthDots, printParameters.CellHeightDots)), PrintParameters.LeftBounded);
-            g.DrawString(Resources.Page + (++printParameters.CurrentPage).ToString("n0", cultureInfo), PrintParameters.SmallFont, PrintParameters.SolidBrush, rf, PrintParameters.RightBounded);
-            currentY += 2 * PrintParameters.HeaderFont.GetHeight(g);
+            g.DrawString(AssemblyInfo.AssemblyCompany+ " " + AssemblyInfo.AssemblyProduct, printParameters.HeaderFont, PrintParameters.SolidBrush, new RectangleF(currentX, currentY, printParameters.PageWidthDots, printParameters.HeaderFont.GetHeight(g)), PrintParameters.Centered);
+            g.DrawString(AssemblyInfo.AssemblyCopyright, printParameters.SmallFont, PrintParameters.SolidBrush, new RectangleF(currentX + printParameters.PageWidthDots, 0, printParameters.CellWidthDots, printSudoku.DefaultPageSettings.PaperSize.Height), PrintParameters.Vertical);
+            g.DrawString(AssemblyInfo.AssemblyProduct + " " + Resources.Version + AssemblyInfo.AssemblyVersion, printParameters.SmallFont, PrintParameters.SolidBrush, (rf = new RectangleF(currentX, printSudoku.DefaultPageSettings.PaperSize.Height - printSudoku.DefaultPageSettings.Margins.Bottom, printParameters.PageWidthDots, printParameters.CellHeightDots)), PrintParameters.LeftBounded);
+            g.DrawString(Resources.Page + (++printParameters.CurrentPage).ToString("n0", cultureInfo), printParameters.SmallFont, PrintParameters.SolidBrush, rf, PrintParameters.RightBounded);
+            currentY += 2 * printParameters.HeaderFont.GetHeight(g);
 
             if(printParameters.CurrentProblem < printParameters.Problems.Count)
             {
@@ -107,14 +110,14 @@ namespace Sudoku
                 printSolutions = printParameters.Problems.Count == 1;
             }
 
-            e.HasMorePages = Settings.Default.PrintSolution || printParameters.CurrentProblem < printParameters.Problems.Count;
+            e.HasMorePages = settings.PrintSolution || printParameters.CurrentProblem < printParameters.Problems.Count;
 
-            if(Settings.Default.PrintSolution && printSolutions)
+            if(settings.PrintSolution && printSolutions)
             {
                 if(printParameters.Problems.Count == 1)
                 {
                     currentX = (e.PageSettings.PrintableArea.Left + printSudoku.DefaultPageSettings.Margins.Left + (printParameters.PageWidthDots - (horizontalOffset * printParameters.CellWidthDots)) / 2f) + (horizontalOffset * printParameters.CellWidthDots);
-                    currentY = e.PageSettings.PrintableArea.Top + printSudoku.DefaultPageSettings.Margins.Top + 2 * PrintParameters.HeaderFont.GetHeight(g);
+                    currentY = e.PageSettings.PrintableArea.Top + printSudoku.DefaultPageSettings.Margins.Top + 2 * printParameters.HeaderFont.GetHeight(g);
                     if(currentX + horizontalOffset * printParameters.SmallCellWidthDots > e.PageSettings.PrintableArea.Left + printSudoku.DefaultPageSettings.Margins.Left + printParameters.PageWidthDots)
                     {
                         currentX = e.PageSettings.PrintableArea.Left + printSudoku.DefaultPageSettings.Margins.Left + (printParameters.PageWidthDots / 2f) - (SudokuSize / 2f * printParameters.SmallCellWidthDots);
@@ -126,7 +129,7 @@ namespace Sudoku
                 }
                 else
                 {
-                    g.DrawString(Resources.Solution + Resources.Plural, PrintParameters.TitleFont, PrintParameters.SolidBrush, new RectangleF(currentX, currentY - 1.5f * PrintParameters.TitleFont.GetHeight(g), printParameters.PageWidthDots, PrintParameters.TitleFont.GetHeight(g)), PrintParameters.Centered);
+                    g.DrawString(Resources.Solution + Resources.Plural, printParameters.TitleFont, PrintParameters.SolidBrush, new RectangleF(currentX, currentY - 1.5f * printParameters.TitleFont.GetHeight(g), printParameters.PageWidthDots, printParameters.TitleFont.GetHeight(g)), PrintParameters.Centered);
 
                     // calculate the numbers of Solutions/page
                     int problemsHorizontal = (int)(Math.Round(printParameters.PageWidthDots / (horizontalOffset * printParameters.SmallCellWidthDots), 1));
@@ -150,39 +153,39 @@ namespace Sudoku
 
         private void PrintProblem(float x, float y, Graphics g)
         {
-            bool showCandidatesMode = !Settings.Default.ShowHints;
+            bool showCandidatesMode = !settings.ShowHints;
             int row = 0;
             int col = 0;
-            Font printFont = (Settings.Default.HorizontalProblems > 3 ? PrintParameters.SmallFont : (Settings.Default.HorizontalProblems < 2 ? PrintParameters.LargeFont : PrintParameters.NormalFont));
-            Font hintFont = (printParameters.CellWidthDots < 45 ? PrintParameters.SmallFixedFont : PrintParameters.NormalFont);
+            Font printFont = (settings.HorizontalProblems > 3 ? printParameters.SmallFont : (settings.HorizontalProblems < 2 ? printParameters.LargeFont : printParameters.NormalFont));
+            Font hintFont = (printParameters.CellWidthDots < 45 ? printParameters.SmallFixedFont : printParameters.NormalFont);
 
             BaseProblem currentProblem = printParameters.Problems[printParameters.CurrentProblem];
-            RectangleF rf = new RectangleF(x, y + SudokuSize * printParameters.CellHeightDots + PrintParameters.TitleFont.GetHeight(g), SudokuSize * printParameters.CellWidthDots, printParameters.CellHeightDots);
+            RectangleF rf = new RectangleF(x, y + SudokuSize * printParameters.CellHeightDots + printParameters.TitleFont.GetHeight(g), SudokuSize * printParameters.CellWidthDots, printParameters.CellHeightDots);
 
             if(currentProblem.NumberOfSolutions == 0)
-                g.DrawString(Resources.TitleNotResolvable, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
+                g.DrawString(Resources.TitleNotResolvable, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
             else
                 if(currentProblem.NumberOfSolutions == 1)
             {
-                String problemTitle = (printParameters.Problems.Count > 1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentProblem + 1) + ": " : String.Empty) + currentProblem.SeverityLevelText + (Settings.Default.PrintInternalSeverity ? " (" + currentProblem.SeverityLevel + ")" : "");
-                g.DrawString(problemTitle, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
+                String problemTitle = (printParameters.Problems.Count > 1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentProblem + 1) + ": " : String.Empty) + currentProblem.SeverityLevelText + (settings.PrintInternalSeverity ? " (" + currentProblem.SeverityLevel + ")" : "");
+                g.DrawString(problemTitle, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
             }
             else
-                g.DrawString(Resources.MoreThanOne, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
+                g.DrawString(Resources.MoreThanOne, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
 
             String subTitle = String.Empty;
             if(String.IsNullOrEmpty(subTitle = currentProblem.Comment))
             {
                 subTitle = currentProblem.Filename;
-                if(PrintParameters.SmallFixedFont.SizeInPoints * subTitle.Length > SudokuSize * printParameters.CellWidthDots)
-                    subTitle = "..." + subTitle.Substring(subTitle.Length - (int)(SudokuSize * printParameters.CellWidthDots / PrintParameters.SmallFixedFont.SizeInPoints) - 3);
+                if(printParameters.SmallFixedFont.SizeInPoints * subTitle.Length > SudokuSize * printParameters.CellWidthDots)
+                    subTitle = "..." + subTitle.Substring(subTitle.Length - (int)(SudokuSize * printParameters.CellWidthDots / printParameters.SmallFixedFont.SizeInPoints) - 3);
             }
             else
             {
-                if(PrintParameters.SmallFixedFont.SizeInPoints * subTitle.Length > SudokuSize * printParameters.CellWidthDots)
-                    subTitle = subTitle.Substring(0, (int)(SudokuSize * printParameters.CellWidthDots / PrintParameters.SmallFixedFont.SizeInPoints) - 3) + "...";
+                if(printParameters.SmallFixedFont.SizeInPoints * subTitle.Length > SudokuSize * printParameters.CellWidthDots)
+                    subTitle = subTitle.Substring(0, (int)(SudokuSize * printParameters.CellWidthDots / printParameters.SmallFixedFont.SizeInPoints) - 3) + "...";
             }
-            g.DrawString(subTitle, PrintParameters.SmallFixedFont, PrintParameters.SolidBrush, new RectangleF(x, y + SudokuSize * printParameters.CellHeightDots + .5f * PrintParameters.SmallFixedFont.GetHeight(g), SudokuSize * printParameters.CellWidthDots, PrintParameters.SmallFixedFont.GetHeight(g)), PrintParameters.Centered);
+            g.DrawString(subTitle, printParameters.SmallFixedFont, PrintParameters.SolidBrush, new RectangleF(x, y + SudokuSize * printParameters.CellHeightDots + .5f * printParameters.SmallFixedFont.GetHeight(g), SudokuSize * printParameters.CellWidthDots, printParameters.SmallFixedFont.GetHeight(g)), PrintParameters.Centered);
 
             if(currentProblem is XSudokuProblem)
                 for(row = 0; row < SudokuSize; row++)
@@ -201,8 +204,8 @@ namespace Sudoku
                     RectangleF cell = new RectangleF(x + col * printParameters.CellWidthDots, y + row * printParameters.CellHeightDots, printParameters.CellWidthDots, printParameters.CellHeightDots);
                     if(currentProblem.GetValue(row, col) != Values.Undefined && !currentProblem.ComputedValue(row, col))
                         g.DrawString(currentProblem.GetValue(row, col).ToString(cultureInfo).Trim(), printFont, PrintParameters.SolidBrush, cell, PrintParameters.Centered);
-                    else if(Settings.Default.PrintHints || ShowCandidates)
-                        if(Settings.Default.UseWatchHandHints || printParameters.CellWidthDots < 30)
+                    else if(settings.PrintHints || ShowCandidates)
+                        if(settings.UseWatchHandHints || printParameters.CellWidthDots < 30)
                             SudokuRenderer.DrawWatchHands(currentProblem.Matrix.Cell(row, col), cell, g, showCandidatesMode);
                         else
                             SudokuRenderer.DrawHints(currentProblem.Matrix.Cell(row, col), rf, g, printFont, Color.Black, showCandidatesMode);
@@ -214,14 +217,14 @@ namespace Sudoku
             int row = 0;
             int col = 0;
 
-            RectangleF rf = new RectangleF(x, y + SudokuSize * printParameters.SmallCellHeightDots, SudokuSize * printParameters.SmallCellWidthDots, PrintParameters.TitleFont.GetHeight(g));
+            RectangleF rf = new RectangleF(x, y + SudokuSize * printParameters.SmallCellHeightDots, SudokuSize * printParameters.SmallCellWidthDots, printParameters.TitleFont.GetHeight(g));
 
             if(printParameters.Problems[printParameters.CurrentSolution].NumberOfSolutions > 1)
-                g.DrawString(Resources.SolutionOne, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
+                g.DrawString(Resources.SolutionOne, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
             else if(printParameters.Problems[printParameters.CurrentSolution].NumberOfSolutions == 0)
-                g.DrawString(Resources.InvalidProblem, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
+                g.DrawString(Resources.InvalidProblem, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
             else
-                g.DrawString(printParameters.Problems.Count > 1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentSolution + 1) : Resources.Solution, PrintParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
+                g.DrawString(printParameters.Problems.Count > 1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentSolution + 1) : Resources.Solution, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
 
             if(printParameters.Problems[printParameters.CurrentSolution] is XSudokuProblem)
                 for(row = 0; row < SudokuSize; row++)
@@ -248,7 +251,7 @@ namespace Sudoku
                     for(col = 0; col < SudokuSize; col++)
                     {
                         g.DrawString(solution.GetValue(row, col).ToString(cultureInfo).Trim(),
-                            printParameters.Problems[printParameters.CurrentSolution].FixedValue(row, col) && !printParameters.Problems[printParameters.CurrentSolution].Matrix.ComputedValue(row, col) ? PrintParameters.SmallBoldFont : PrintParameters.SmallFont,
+                            printParameters.Problems[printParameters.CurrentSolution].FixedValue(row, col) && !printParameters.Problems[printParameters.CurrentSolution].Matrix.ComputedValue(row, col) ? printParameters.SmallBoldFont : printParameters.SmallFont,
                             PrintParameters.SolidBrush, new RectangleF(x + ((col - 1) * printParameters.SmallCellWidthDots), y + ((row - 1) * printParameters.SmallCellHeightDots), printParameters.SmallCellWidthDots, printParameters.SmallCellHeightDots), PrintParameters.Centered);
                     }
                 rotateMatrix.RotateAt(180, f);

@@ -14,6 +14,8 @@ namespace Sudoku
 {
     internal class SudokuFileService
     {
+        private readonly ISudokuSettings settings;
+
         private static byte ReadOnlyOffset = 64;
         public Char SudokuTypeIdentifier { get { return Sudoku.SudokuTypeIdentifier; } }
 
@@ -38,9 +40,10 @@ namespace Sudoku
         {
             Sudoku.SetCandidate(row, col, candidate, exclusionCandidate);
         }
-        public SudokuFileService(BaseProblem SudokuProblem)
+        public SudokuFileService(BaseProblem SudokuProblem, ISudokuSettings settings)
         {
             Sudoku = SudokuProblem;
+            this.settings = settings;
         }
         public void SaveToFile(String file)
         {
@@ -156,7 +159,7 @@ namespace Sudoku
                             problem[81] == '0' ? "&nbsp;" : problem[81] > '9' ? (problem[81] - offset).ToString() : problem[81].ToString()),
                         SeverityLevelText,
                         String.IsNullOrEmpty(Comment) ? "" : Comment,
-                        DateTime.Now.ToString("yyyy.MM.dd", new CultureInfo(Settings.Default.DisplayLanguage)),
+                        DateTime.Now.ToString("yyyy.MM.dd", new CultureInfo(settings.DisplayLanguage)),
                         AssemblyInfo.AssemblyCopyright
                     ));
                 sw.Close();

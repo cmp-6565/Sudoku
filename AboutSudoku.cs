@@ -7,9 +7,10 @@ namespace Sudoku
 {
     partial class AboutSudoku: Form
     {
-        public AboutSudoku()
+        private readonly ISudokuSettings settings;
+        public AboutSudoku(ISudokuSettings settings)
         {
-            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(Settings.Default.DisplayLanguage);
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(settings.DisplayLanguage);
             InitializeComponent();
 
             //  Initialize the AboutBox to display the product information from the assembly information.
@@ -23,11 +24,12 @@ namespace Sudoku
             this.labelCompanyName.Text = Resources.picit;
             this.textBoxDescription.Text = Resources.Description.Replace("\\n", Environment.NewLine);
             this.logoPictureBox.Image = Resources.SudokuProblem;
+            this.settings = settings;
         }
 
         private void contact_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("mailto:" + Settings.Default.MailAddress);
+            System.Diagnostics.Process.Start("mailto:" + settings.MailAddress);
         }
     }
 }

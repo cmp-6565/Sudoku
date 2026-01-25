@@ -11,73 +11,76 @@ namespace Sudoku
 {
     public partial class OptionsDialog: Form
     {
+        private readonly ISudokuSettings settings;
+
         String[] supportedCultures;
         String[] supportedGridSizes;
         String[] supportedSolutionGridSizes;
 
-        public OptionsDialog()
+        public OptionsDialog(ISudokuSettings settings)
         {
-            supportedCultures = Settings.Default.SupportedCultures.Split('|');
-            supportedGridSizes = Settings.Default.HorizontalProblemsAlternatives.Split('|');
-            supportedSolutionGridSizes = Settings.Default.HorizontalSolutionsAlternatives.Split('|');
-            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(Settings.Default.DisplayLanguage);
+            supportedCultures = settings.SupportedCultures.Split('|');
+            supportedGridSizes = settings.HorizontalProblemsAlternatives.Split('|');
+            supportedSolutionGridSizes = settings.HorizontalSolutionsAlternatives.Split('|');
+            Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(settings.DisplayLanguage);
 
             InitializeComponent();
 
             hard.Text = Resources.Hard;
             easy.Text = Resources.Easy;
             intermediate.Text = Resources.Intermediate;
-            minValues.Maximum = Settings.Default.MaxValues;
+            minValues.Maximum = settings.MaxValues;
 
-            bookletSizeNew.Value = Settings.Default.BookletSizeNew;
-            bookletSizeExisting.Value = Settings.Default.BookletSizeExisting;
-            bookletSizeExisting.Enabled = !Settings.Default.BookletSizeUnlimited;
-            unlimited.Checked = Settings.Default.BookletSizeUnlimited;
-            minValues.Value = Settings.Default.MinValues;
-            constrast.Value = Settings.Default.Contrast;
-            xSudokuConstrast.Value = Settings.Default.XSudokuConstrast;
-            problemDirectory.Text = Settings.Default.ProblemDirectory;
-            printSolutions.Checked = Settings.Default.PrintSolution;
-            printInternalSeverity.Checked = Settings.Default.PrintInternalSeverity;
-            autoSaveBooklet.Checked = Settings.Default.AutoSaveBooklet;
-            printHints.Checked = Settings.Default.PrintHints;
-            hideWhenMinimized.Checked = Settings.Default.HideWhenMinimized;
-            saveState.Checked = Settings.Default.AutoSaveState;
-            generateMinimalProblems.Checked = Settings.Default.GenerateMinimalProblems;
+            bookletSizeNew.Value = settings.BookletSizeNew;
+            bookletSizeExisting.Value = settings.BookletSizeExisting;
+            bookletSizeExisting.Enabled = !settings.BookletSizeUnlimited;
+            unlimited.Checked = settings.BookletSizeUnlimited;
+            minValues.Value = settings.MinValues;
+            constrast.Value = settings.Contrast;
+            xSudokuConstrast.Value = settings.XSudokuConstrast;
+            problemDirectory.Text = settings.ProblemDirectory;
+            printSolutions.Checked = settings.PrintSolution;
+            printInternalSeverity.Checked = settings.PrintInternalSeverity;
+            autoSaveBooklet.Checked = settings.AutoSaveBooklet;
+            printHints.Checked = settings.PrintHints;
+            hideWhenMinimized.Checked = settings.HideWhenMinimized;
+            saveState.Checked = settings.AutoSaveState;
+            generateMinimalProblems.Checked = settings.GenerateMinimalProblems;
             minValues.Enabled = !generateMinimalProblems.Checked;
-            precalculatedProblems.Checked = Settings.Default.UsePrecalculatedProblems;
-            autoPause.Checked = Settings.Default.AutoPause;
-            autoPauseLag.Value = Settings.Default.AutoPauseLag;
+            precalculatedProblems.Checked = settings.UsePrecalculatedProblems;
+            autoPause.Checked = settings.AutoPause;
+            autoPauseLag.Value = settings.AutoPauseLag;
             autoPauseLag.Enabled = autoPause.Checked;
 
             // The severity level "trivial" (1) is not handled
-            if(Settings.Default.SeverityLevel == 0) Settings.Default.SeverityLevel = 15;
-            hard.Checked = (Settings.Default.SeverityLevel & 8) != 0;
-            intermediate.Checked = (Settings.Default.SeverityLevel & 4) != 0;
-            easy.Checked = (Settings.Default.SeverityLevel & 2) != 0;
-            selectSeverityLevel.Checked = Settings.Default.SelectSeverity;
+            if(settings.SeverityLevel == 0) settings.SeverityLevel = 15;
+            hard.Checked = (settings.SeverityLevel & 8) != 0;
+            intermediate.Checked = (settings.SeverityLevel & 4) != 0;
+            easy.Checked = (settings.SeverityLevel & 2) != 0;
+            selectSeverityLevel.Checked = settings.SelectSeverity;
 
-            normalSudoku.Checked = Settings.Default.GenerateNormalSudoku;
-            xSudoku.Checked = Settings.Default.GenerateXSudoku;
+            normalSudoku.Checked = settings.GenerateNormalSudoku;
+            xSudoku.Checked = settings.GenerateXSudoku;
 
             foreach(RadioButton rb in sizeGroupBox.Controls)
-                rb.Checked = (rb.Tag.ToString() == Settings.Default.Size.ToString());
+                rb.Checked = (rb.Tag.ToString() == settings.Size.ToString());
 
-            useWatchHands.Checked = Settings.Default.UseWatchHandHints;
+            useWatchHands.Checked = settings.UseWatchHandHints;
             useDigits.Checked = !useWatchHands.Checked;
             possibleValuesExamplePicture.Image = useWatchHands.Checked ? Resources.watchHandCandidates : Resources.digitCandidates;
 
             int i = supportedGridSizes.Length;
             foreach(RadioButton rb in problemPrintSize.Controls)
-                rb.Checked = (supportedGridSizes[--i].ToString() == Settings.Default.HorizontalProblems.ToString());
+                rb.Checked = (supportedGridSizes[--i].ToString() == settings.HorizontalProblems.ToString());
 
             i = supportedSolutionGridSizes.Length;
             foreach(RadioButton rb in solutionPrintSize.Controls)
-                rb.Checked = (supportedSolutionGridSizes[--i].ToString() == Settings.Default.HorizontalSolutions.ToString());
+                rb.Checked = (supportedSolutionGridSizes[--i].ToString() == settings.HorizontalSolutions.ToString());
 
             for(i = 0; i < supportedCultures.Length; i++)
                 language.Items.Add(CultureInfo.GetCultureInfoByIetfLanguageTag(supportedCultures[i]).DisplayName);
-            language.Text = CultureInfo.GetCultureInfoByIetfLanguageTag(Settings.Default.DisplayLanguage).DisplayName;
+            language.Text = CultureInfo.GetCultureInfoByIetfLanguageTag(settings.DisplayLanguage).DisplayName;
+            this.settings = settings;
         }
 
         public int MinBookletSize
@@ -97,38 +100,38 @@ namespace Sudoku
 
         private void ok_Click(object sender, EventArgs e)
         {
-            Settings.Default.BookletSizeNew = (int)bookletSizeNew.Value;
-            Settings.Default.MinValues = (int)minValues.Value;
-            Settings.Default.Contrast = (int)constrast.Value;
-            Settings.Default.XSudokuConstrast = (int)xSudokuConstrast.Value;
-            Settings.Default.ProblemDirectory = problemDirectory.Text;
-            Settings.Default.PrintSolution = printSolutions.Checked;
-            Settings.Default.AutoSaveBooklet = autoSaveBooklet.Checked;
-            Settings.Default.PrintHints = printHints.Checked;
-            Settings.Default.PrintInternalSeverity = printInternalSeverity.Checked;
-            Settings.Default.BookletSizeUnlimited = unlimited.Checked;
-            Settings.Default.BookletSizeExisting = (int)bookletSizeExisting.Value;
-            Settings.Default.SeverityLevel = (easy.Checked ? 2 : 0) + (intermediate.Checked ? 4 : 0) + (hard.Checked ? 8 : 0);
-            Settings.Default.SelectSeverity = selectSeverityLevel.Checked;
-            Settings.Default.HideWhenMinimized = hideWhenMinimized.Checked;
-            Settings.Default.AutoSaveState = saveState.Checked;
-            Settings.Default.UseWatchHandHints = useWatchHands.Checked;
-            Settings.Default.GenerateNormalSudoku = normalSudoku.Checked;
-            Settings.Default.GenerateXSudoku = xSudoku.Checked;
-            Settings.Default.GenerateMinimalProblems = generateMinimalProblems.Checked;
-            Settings.Default.UsePrecalculatedProblems = precalculatedProblems.Checked;
-            Settings.Default.AutoPause = autoPause.Checked;
-            Settings.Default.AutoPauseLag = autoPauseLag.Value;
+            settings.BookletSizeNew = (int)bookletSizeNew.Value;
+            settings.MinValues = (int)minValues.Value;
+            settings.Contrast = (int)constrast.Value;
+            settings.XSudokuConstrast = (int)xSudokuConstrast.Value;
+            settings.ProblemDirectory = problemDirectory.Text;
+            settings.PrintSolution = printSolutions.Checked;
+            settings.AutoSaveBooklet = autoSaveBooklet.Checked;
+            settings.PrintHints = printHints.Checked;
+            settings.PrintInternalSeverity = printInternalSeverity.Checked;
+            settings.BookletSizeUnlimited = unlimited.Checked;
+            settings.BookletSizeExisting = (int)bookletSizeExisting.Value;
+            settings.SeverityLevel = (easy.Checked ? 2 : 0) + (intermediate.Checked ? 4 : 0) + (hard.Checked ? 8 : 0);
+            settings.SelectSeverity = selectSeverityLevel.Checked;
+            settings.HideWhenMinimized = hideWhenMinimized.Checked;
+            settings.AutoSaveState = saveState.Checked;
+            settings.UseWatchHandHints = useWatchHands.Checked;
+            settings.GenerateNormalSudoku = normalSudoku.Checked;
+            settings.GenerateXSudoku = xSudoku.Checked;
+            settings.GenerateMinimalProblems = generateMinimalProblems.Checked;
+            settings.UsePrecalculatedProblems = precalculatedProblems.Checked;
+            settings.AutoPause = autoPause.Checked;
+            settings.AutoPauseLag = autoPauseLag.Value;
 
             foreach(RadioButton rb in sizeGroupBox.Controls)
                 if(rb.Checked)
-                    Settings.Default.Size = Convert.ToInt32(rb.Tag.ToString());
+                    settings.Size = Convert.ToInt32(rb.Tag.ToString());
 
             int i = supportedGridSizes.Length - 1;
             foreach(RadioButton rb in problemPrintSize.Controls)
             {
                 if(rb.Checked)
-                    Settings.Default.HorizontalProblems = Convert.ToInt32(supportedGridSizes[i].ToString());
+                    settings.HorizontalProblems = Convert.ToInt32(supportedGridSizes[i].ToString());
                 i--;
             }
 
@@ -136,7 +139,7 @@ namespace Sudoku
             foreach(RadioButton rb in solutionPrintSize.Controls)
             {
                 if(rb.Checked)
-                    Settings.Default.HorizontalSolutions = Convert.ToInt32(supportedSolutionGridSizes[i].ToString());
+                    settings.HorizontalSolutions = Convert.ToInt32(supportedSolutionGridSizes[i].ToString());
                 i--;
             }
         }
@@ -152,7 +155,7 @@ namespace Sudoku
                     for(int i = 0; i < supportedCultures.Length; i++)
                         if(ci.IetfLanguageTag.CompareTo(supportedCultures[i]) == 0)
                         {
-                            Settings.Default.DisplayLanguage = supportedCultures[i];
+                            settings.DisplayLanguage = supportedCultures[i];
                             return;
                         }
             }
@@ -195,12 +198,12 @@ namespace Sudoku
         private void precalculatedCheckedChanged(object sender, EventArgs e)
         {
             if(precalculatedProblems.Checked)
-                bookletSizeNew.Value = Math.Min(bookletSizeNew.Value, Settings.Default.MaxProblems);
+                bookletSizeNew.Value = Math.Min(bookletSizeNew.Value, settings.MaxProblems);
         }
 
         private void bookletSizeNewChanged(object sender, EventArgs e)
         {
-            precalculatedProblems.Checked = (precalculatedProblems.Checked && (bookletSizeNew.Value <= Settings.Default.MaxProblems));
+            precalculatedProblems.Checked = (precalculatedProblems.Checked && (bookletSizeNew.Value <= settings.MaxProblems));
         }
 
         private void autoPauseCheckedChanged(object sender, EventArgs e)

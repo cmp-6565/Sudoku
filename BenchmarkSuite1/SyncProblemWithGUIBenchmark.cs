@@ -9,6 +9,8 @@ namespace BenchmarkSuite1
     [MemoryDiagnoser]
     public class SyncProblemWithGUIBenchmark
     {
+        ISudokuSettings settings = new WinFormsSettings();
+
         private BaseProblem _problem;
         private string[,] _grid;
         private CultureInfo _culture;
@@ -17,7 +19,7 @@ namespace BenchmarkSuite1
         [GlobalSetup]
         public void Setup()
         {
-            _problem = new SudokuProblem();
+            _problem = new SudokuProblem(settings);
             _culture = CultureInfo.InvariantCulture;
             _grid = new string[SudokuForm.SudokuSize, SudokuForm.SudokuSize];
 

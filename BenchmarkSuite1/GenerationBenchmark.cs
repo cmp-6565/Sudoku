@@ -7,6 +7,8 @@ namespace Sudoku.Benchmarks
     [CPUUsageDiagnoser]
     public class GenerationBenchmark
     {
+        ISudokuSettings settings = new WinFormsSettings();
+
         private SudokuProblem problem;
         private int[][] puzzles;
         [GlobalSetup]
@@ -98,7 +100,7 @@ namespace Sudoku.Benchmarks
                 7,
                 9
             };
-            problem = new SudokuProblem();
+            problem = new SudokuProblem(settings);
             int size = SudokuForm.SudokuSize;
             problem.Matrix.Init();
             problem.Matrix.SetPredefinedValues = false;

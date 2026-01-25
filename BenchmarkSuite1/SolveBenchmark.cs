@@ -10,6 +10,8 @@ namespace Sudoku.Benchmarks
     [CPUUsageDiagnoser]
     public class SolveBenchmark
     {
+        ISudokuSettings settings = new WinFormsSettings();
+
         private List<SudokuProblem> preparedProblems;
         private int checksum = 0;
         private int[][] puzzles;
@@ -246,7 +248,7 @@ namespace Sudoku.Benchmarks
 
         private SudokuProblem CreateProblemFromArray(int[] arr)
         {
-            var prob = new SudokuProblem();
+            var prob = new SudokuProblem(settings);
             int size = SudokuForm.SudokuSize;
             prob.Matrix.Init();
             prob.Matrix.SetPredefinedValues = false;

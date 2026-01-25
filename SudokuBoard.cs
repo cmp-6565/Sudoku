@@ -588,7 +588,7 @@ namespace Sudoku
         {
             if(sender is DataGridView && Controller?.CurrentProblem != null)
             {
-                Font printFont = (settings.Size == 1 ? PrintParameters.SmallFont : PrintParameters.NormalFont);
+                Font printFont = (settings.Size == 1 ? new PrintParameters(settings).SmallFont : new PrintParameters(settings).NormalFont);
                 bool showCandidatesMode = !settings.ShowHints;
 
                 if(showCandidatesMode && !Controller.CurrentProblem.HasCandidates()) return;

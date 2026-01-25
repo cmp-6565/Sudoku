@@ -29,7 +29,7 @@ namespace Sudoku
         public SudokuController(ISudokuSettings settings)
         {
             undoStack = new Stack<CoreValue>();
-            trickyProblems = new TrickyProblems();
+            trickyProblems = new TrickyProblems(settings);
             this.settings = settings;
         }
 
@@ -40,7 +40,7 @@ namespace Sudoku
         }
         public void CreateNewProblem(bool xSudoku, bool notify = true)
         {
-            CurrentProblem = xSudoku ? (BaseProblem)new XSudokuProblem() : new SudokuProblem();
+            CurrentProblem = xSudoku ? (BaseProblem)new XSudokuProblem(settings) : new SudokuProblem(settings);
             BackupProblem();
             if(notify) NotifyMatrixChanged();
         }
@@ -96,7 +96,7 @@ namespace Sudoku
             CreateNewProblem(sudokuType == XSudokuProblem.ProblemIdentifier, notify);
             try
             {
-                SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+                SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
                 fileService.InitProblem(settings.State.Substring(1, SudokuForm.TotalCellCount).ToCharArray(), settings.State.Substring(SudokuForm.TotalCellCount + 1, 16).ToCharArray(), null);
                 if(settings.State.IndexOf('\n') > 0)
                 {
@@ -128,7 +128,7 @@ namespace Sudoku
         {
             get
             {
-                SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+                SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
                 return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), fileService.Serialize(false).Substring(1, SudokuForm.TotalCellCount)); 
             }
         }
@@ -203,7 +203,7 @@ namespace Sudoku
         public Boolean SudokuOfTheDay()
         {
             CreateNewProblem(settings.SudokuOfTheDay);
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
             if(fileService.SudokuOfTheDay())
             {
                 BackupProblem();
@@ -532,7 +532,7 @@ namespace Sudoku
         }
         public void CreateProblemFromFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
         {
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
             fileService.ReadProblem += (b) =>
             {
                 CreateNewProblem(b);
@@ -560,7 +560,7 @@ namespace Sudoku
         private Boolean LoadProblem(Boolean xSudoku)
         {
             CreateNewProblem(xSudoku);
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
             return fileService.Load();
         }
         public void UpdateProblem(BaseProblem problem)
@@ -600,12 +600,12 @@ namespace Sudoku
         }
         public void SaveProblem(String filename)
         {
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
             fileService.SaveToFile(filename);
         }
         public void ExportHTML(String filename)
         {
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem);
+            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
             fileService.SaveToHTMLFile(filename);
         }
 

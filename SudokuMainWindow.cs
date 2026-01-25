@@ -47,7 +47,7 @@ namespace Sudoku
         /// </summary>
         public SudokuForm()
         {
-            Thread.CurrentThread.CurrentUICulture = (cultureInfo = new CultureInfo(Settings.Default.DisplayLanguage));
+            Thread.CurrentThread.CurrentUICulture = (cultureInfo = new CultureInfo(settings.DisplayLanguage));
 
             InitializeComponent();
             SudokuGrid.Initialize(settings);
@@ -55,20 +55,20 @@ namespace Sudoku
 
             sudokuMenu.Renderer = new FlatRenderer();
 
-            debug.Checked = Settings.Default.Debug;
-            autoCheck.Checked = Settings.Default.AutoCheck;
-            showPossibleValues.Checked = Settings.Default.ShowHints;
-            findallSolutions.Checked = Settings.Default.FindAllSolutions;
-            ShowInTaskbar = !Settings.Default.HideWhenMinimized;
-            markNeighbors.Checked = Settings.Default.MarkNeighbors;
-            highlightSameValues.Checked = Settings.Default.HighlightSameValues;
+            debug.Checked = settings.Debug;
+            autoCheck.Checked = settings.AutoCheck;
+            showPossibleValues.Checked = settings.ShowHints;
+            findallSolutions.Checked = settings.FindAllSolutions;
+            ShowInTaskbar = !settings.HideWhenMinimized;
+            markNeighbors.Checked = settings.MarkNeighbors;
+            highlightSameValues.Checked = settings.HighlightSameValues;
 
             Deactivate += new EventHandler(FocusLost);
             Activated += new EventHandler(FocusGotten);
-            autoPauseTimer.Interval = 1000;
+            autoPauseTimer.Interval = Convert.ToInt32(settings.AutoPauseLag) * 1000; 
             autoPauseTimer.Tick += new EventHandler(AutoPauseTick);
 
-            generationParameters = new GenerationParameters();
+            generationParameters = new GenerationParameters(settings);
 
             FormatTable();
             EnableGUI();
@@ -90,7 +90,7 @@ namespace Sudoku
 
         private void FocusLost(object sender, EventArgs e)
         {
-            if(SudokuGrid.Enabled && Settings.Default.AutoPause)
+            if(SudokuGrid.Enabled && settings.AutoPause)
                 autoPauseTimer.Start();
         }
 
@@ -191,14 +191,14 @@ namespace Sudoku
         {
             status.Text =
                 String.Format(cultureInfo, Resources.GenerationAborted.Replace("\\n", Environment.NewLine),
-                generationParameters.GenerateBooklet ? String.Format(cultureInfo, Resources.GeneratedProblems.Replace("\\n", Environment.NewLine), generationParameters.CurrentProblem, Settings.Default.BookletSizeNew) + Environment.NewLine : String.Empty,
+                generationParameters.GenerateBooklet ? String.Format(cultureInfo, Resources.GeneratedProblems.Replace("\\n", Environment.NewLine), generationParameters.CurrentProblem, settings.BookletSizeNew) + Environment.NewLine : String.Empty,
                 generationParameters.CheckedProblems, generationParameters.TotalPasses);
             status.Update();
             abortRequested = false;
             ResetDetachedProcess();
             controller.RestoreProblem();
             SudokuGrid.DisplayValues();
-            generationParameters = new GenerationParameters();
+            generationParameters = new GenerationParameters(settings);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace Sudoku
         {
             status.Text =
                 (usePrecalculatedProblem ? String.Format(cultureInfo, Resources.RetrieveProblem) :
-                    (generationParameters.GenerateBooklet ? String.Format(cultureInfo, Resources.GeneratedProblems, generationParameters.CurrentProblem, Settings.Default.BookletSizeNew) + Environment.NewLine : String.Empty) +
+                    (generationParameters.GenerateBooklet ? String.Format(cultureInfo, Resources.GeneratedProblems, generationParameters.CurrentProblem, settings.BookletSizeNew) + Environment.NewLine : String.Empty) +
                     String.Format(cultureInfo, Resources.GeneratingStatus, generationParameters.CheckedProblems) + Environment.NewLine + String.Format(cultureInfo, Resources.CheckingStatus, generationParameters.TotalPasses + controller.CurrentProblem.TotalPassCounter) +
                     Environment.NewLine +
                     Resources.PreAllocatedValues + generationParameters.PreAllocatedValues.ToString(cultureInfo)) +
@@ -267,9 +267,9 @@ namespace Sudoku
 
         private void CheckVersion()
         {
-            if(Settings.Default.LastVersion != AssemblyInfo.AssemblyVersion)
+            if(settings.LastVersion != AssemblyInfo.AssemblyVersion)
                 VersionHistoryClicked(null, null);
-            Settings.Default.LastVersion = AssemblyInfo.AssemblyVersion;
+            settings.LastVersion = AssemblyInfo.AssemblyVersion;
         }
 
         // Main functions
@@ -282,7 +282,7 @@ namespace Sudoku
             if(!(generationParameters.GenerateBooklet = (nProblems != 1)))
                 severityLevel = GetSeverity();
             else
-                severityLevel = Settings.Default.SeverityLevel;
+                severityLevel = settings.SeverityLevel;
 
             if(severityLevel == 0) return; // Abbrechen
 
@@ -322,16 +322,16 @@ namespace Sudoku
                 sudokuStatusBarText.Text = usePrecalculatedProblem ? Resources.Loading : Resources.Generating;
 
                 // Controller Batch Aufruf
-                await controller.GenerateBatch(generationParameters.GenerateBooklet? Settings.Default.BookletSizeNew: 1, generationParameters, severityLevel, usePrecalculatedProblem,
+                await controller.GenerateBatch(generationParameters.GenerateBooklet? settings.BookletSizeNew: 1, generationParameters, severityLevel, usePrecalculatedProblem,
                     async (problem, index) =>
                     {
                         if(generationParameters.GenerateBooklet)
                         {
                             printerService.AddProblem(problem);
-                            if(Settings.Default.AutoSaveBooklet)
+                            if(settings.AutoSaveBooklet)
                             {
-                                string filename = generationParameters.BaseDirectory + Path.DirectorySeparatorChar + "Problem-" + (index + 1).ToString(cultureInfo) + "(" + problem.SeverityLevelText + ") (" + problem.SeverityLevel + ")" + Settings.Default.DefaultFileExtension;
-                                if(!SaveProblem(filename)) Settings.Default.AutoSaveBooklet = false;
+                                string filename = generationParameters.BaseDirectory + Path.DirectorySeparatorChar + "Problem-" + (index + 1).ToString(cultureInfo) + "(" + problem.SeverityLevelText + ") (" + problem.SeverityLevel + ")" + settings.DefaultFileExtension;
+                                if(!SaveProblem(filename)) settings.AutoSaveBooklet = false;
                             }
                         }
                     },
@@ -462,6 +462,7 @@ namespace Sudoku
             if(pauseOverlay != null) pauseOverlay.Visible = false;
 
             sudokuStatusBarText.Text = sudokuStatusBarText.Text.Replace(Resources.Paused, "").Trim();
+            SudokuGrid.ShowValues();
         }
         private void PublishTrickyProblems()
         {
@@ -472,7 +473,7 @@ namespace Sudoku
                 if(controller.PublishTrickyProblems())
                     MessageBox.Show(this, String.Format(Resources.PublishOK, controller.NumberOfTrickyProblems));
                 else
-                    MessageBox.Show(this, String.Format(Resources.PublishFailed, Settings.Default.MailAddress));
+                    MessageBox.Show(this, String.Format(Resources.PublishFailed, settings.MailAddress));
             }
         }
 
@@ -597,9 +598,9 @@ namespace Sudoku
         {
             if(UnsavedChanges())
             {
-                openSudokuDialog.InitialDirectory = Settings.Default.ProblemDirectory;
-                openSudokuDialog.DefaultExt = "*" + Settings.Default.DefaultFileExtension;
-                openSudokuDialog.Filter = String.Format(cultureInfo, Resources.FilterString, Settings.Default.DefaultFileExtension);
+                openSudokuDialog.InitialDirectory = settings.ProblemDirectory;
+                openSudokuDialog.DefaultExt = "*" + settings.DefaultFileExtension;
+                openSudokuDialog.Filter = String.Format(cultureInfo, Resources.FilterString, settings.DefaultFileExtension);
                 if(openSudokuDialog.ShowDialog() == DialogResult.OK)
                     LoadProblem(openSudokuDialog.FileName);
             }
@@ -674,7 +675,7 @@ namespace Sudoku
                 return false;
             }
 
-            if(ShowSaveDialog(Settings.Default.DefaultFileExtension) == DialogResult.OK)
+            if(ShowSaveDialog(settings.DefaultFileExtension) == DialogResult.OK)
                 return SaveProblem(saveSudokuDialog.FileName);
             else
                 return false;
@@ -688,7 +689,7 @@ namespace Sudoku
                 return false;
             }
 
-            if(ShowSaveDialog(Settings.Default.HTMLFileExtension) == DialogResult.OK)
+            if(ShowSaveDialog(settings.HTMLFileExtension) == DialogResult.OK)
                 return ExportProblem(saveSudokuDialog.FileName);
             else
                 return false;
@@ -710,7 +711,7 @@ namespace Sudoku
         private DialogResult ShowSaveDialog(String Extension)
         {
             DialogResult result = DialogResult.OK;
-            saveSudokuDialog.InitialDirectory = Settings.Default.ProblemDirectory;
+            saveSudokuDialog.InitialDirectory = settings.ProblemDirectory;
             saveSudokuDialog.RestoreDirectory = true;
             saveSudokuDialog.DefaultExt = "*" + Extension;
             saveSudokuDialog.Filter = String.Format(cultureInfo, Resources.FilterString, Extension);
@@ -745,8 +746,8 @@ namespace Sudoku
         private void ToggleHighlightSameValuesClicked(object sender, EventArgs e)
         {
             highlightSameValues.Checked = !highlightSameValues.Checked;
-            Settings.Default.HighlightSameValues=highlightSameValues.Checked;
-            if(Settings.Default.HighlightSameValues)
+            settings.HighlightSameValues=highlightSameValues.Checked;
+            if(settings.HighlightSameValues)
                 SudokuGrid.UpdateHighligts();
             else
                 SudokuGrid.ClearHighlights();
@@ -802,7 +803,7 @@ namespace Sudoku
             SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
             PublishTrickyProblems();
             ResetDetachedProcess();
-            generationParameters = new GenerationParameters();
+            generationParameters = new GenerationParameters(settings);
         }
 
         private async void GenerationBookletProblemFinished()
@@ -813,7 +814,7 @@ namespace Sudoku
             ResetTexts();
             ResetDetachedProcess();
             controller.CurrentProblem.Dirty = false;
-            generationParameters = new GenerationParameters();
+            generationParameters = new GenerationParameters(settings);
         }
 
         // Menu handling
@@ -872,12 +873,12 @@ namespace Sudoku
         // Menu Entries
         private void AboutSudokuClick(object sender, EventArgs e)
         {
-            new AboutSudoku().ShowDialog();
+            new AboutSudoku(settings).ShowDialog();
         }
 
-        static private int GetSeverity()
+        private int GetSeverity()
         {
-            if(Settings.Default.SelectSeverity)
+            if(settings.SelectSeverity)
             {
                 SeverityLevelDialog severityLevelDialog = new SeverityLevelDialog();
 
@@ -887,7 +888,7 @@ namespace Sudoku
                     return 0;
             }
             else
-                return Settings.Default.SeverityLevel;
+                return settings.SeverityLevel;
         }
 
         private void ExitClick(object sender, EventArgs e)
@@ -1055,20 +1056,20 @@ namespace Sudoku
 
         private void OptionsClick(object sender, EventArgs e)
         {
-            optionsDialog = new OptionsDialog();
+            optionsDialog = new OptionsDialog(settings);
             optionsDialog.MinBookletSize = (generationParameters.GenerateBooklet ? Math.Max(generationParameters.CurrentProblem + 1, 2) : 2);
 
             if(optionsDialog.ShowDialog() == DialogResult.OK)
             {
-                Thread.CurrentThread.CurrentUICulture = (cultureInfo = new System.Globalization.CultureInfo(Settings.Default.DisplayLanguage));
-                ShowInTaskbar = !Settings.Default.HideWhenMinimized;
-                usePrecalculatedProblem = Settings.Default.UsePrecalculatedProblems;
+                Thread.CurrentThread.CurrentUICulture = (cultureInfo = new System.Globalization.CultureInfo(settings.DisplayLanguage));
+                ShowInTaskbar = !settings.HideWhenMinimized;
+                usePrecalculatedProblem = settings.UsePrecalculatedProblems;
 
-                if(generationParameters.GenerateBooklet) severityLevel = Settings.Default.SeverityLevel;
+                if(generationParameters.GenerateBooklet) severityLevel = settings.SeverityLevel;
 
                 SudokuGrid.UpdateFonts();
 
-                autoPauseTimer.Interval = Convert.ToInt32(Settings.Default.AutoPauseLag) * 1000;
+                autoPauseTimer.Interval = Convert.ToInt32(settings.AutoPauseLag) * 1000;
 
                 UpdateGUI();
             }
@@ -1077,7 +1078,7 @@ namespace Sudoku
         private void EditCommentClicked(object sender, EventArgs e)
         {
             String oldComment = String.Empty;
-            Comment commentDialog = new Comment();
+            Comment commentDialog = new Comment(settings);
 
             oldComment = commentDialog.SudokuComment = controller.CurrentProblem.Comment;
             if(commentDialog.ShowDialog() == DialogResult.OK)
@@ -1180,24 +1181,24 @@ namespace Sudoku
 
         private void DebugClick(object sender, EventArgs e)
         {
-            Settings.Default.Debug = debug.Checked;
+            settings.Debug = debug.Checked;
             SudokuGrid.SetDebugMode(debug.Checked);
         }
 
         private void FindallSolutionsClick(object sender, EventArgs e)
         {
-            Settings.Default.FindAllSolutions = findallSolutions.Checked;
+            settings.FindAllSolutions = findallSolutions.Checked;
         }
 
         private void ShowPossibleValuesClick(object sender, EventArgs e)
         {
-            Settings.Default.ShowHints = showPossibleValues.Checked;
+            settings.ShowHints = showPossibleValues.Checked;
             UpdateGUI();
         }
 
         private void AutoCheckClick(object sender, EventArgs e)
         {
-            Settings.Default.AutoCheck = autoCheck.Checked;
+            settings.AutoCheck = autoCheck.Checked;
         }
 
         private void VisitHomepageClick(object sender, EventArgs e)
@@ -1221,17 +1222,14 @@ namespace Sudoku
             if(!sudokuStatusBarText.Text.Contains(Resources.Paused))
                 sudokuStatusBarText.Text += Resources.Paused;
 
-            autoPauseTimer.Stop();
-            SudokuGrid.HideCells();
-
             // Statt MessageBox nun das Overlay zeigen
             pauseOverlay.Visible = true;
             pauseOverlay.BringToFront();
         }
         private void MarkNeighborsClicked(object sender, EventArgs e)
         {
-            Settings.Default.MarkNeighbors = markNeighbors.Checked;
-            if(!Settings.Default.MarkNeighbors)
+            settings.MarkNeighbors = markNeighbors.Checked;
+            if(!settings.MarkNeighbors)
                 FormatTable();
         }
 
@@ -1329,7 +1327,7 @@ namespace Sudoku
         {
             controller = new SudokuController(settings);
             controller.Generating += (s, e) => OnGenerating(s, e);
-            if(Settings.Default.State.Length > 0)
+            if(settings.State.Length > 0)
                 controller.RestoreProblemState(false);
             else
                 controller.CreateNewProblem(false, false);
@@ -1339,8 +1337,8 @@ namespace Sudoku
             SudokuGrid.UpdateStatus += (s, silent) => { CurrentStatus(silent); };
             SudokuGrid.UpdateHints+= (s, e) => 
             {
-                if(Settings.Default.ShowHints && MessageBox.Show(Resources.CandidatesNotShown, ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
-                    showPossibleValues.Checked = Settings.Default.ShowHints = false;
+                if(settings.ShowHints && MessageBox.Show(Resources.CandidatesNotShown, ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
+                    showPossibleValues.Checked = settings.ShowHints = false;
             };
             SudokuGrid.StatusTextChanged += (s, text) => 
             {
@@ -1399,17 +1397,17 @@ namespace Sudoku
 
             if(e.CloseReason != CloseReason.TaskManagerClosing && e.CloseReason != CloseReason.WindowsShutDown)
             {
-                if(Settings.Default.AutoSaveState)
+                if(settings.AutoSaveState)
                 {
                     // if(solvingTimer.Enabled) controller.CurrentProblem.SolvingTime = DateTime.Now - interactiveStart;
-                    SudokuFileService fileService = new SudokuFileService(controller.CurrentProblem);
-                    Settings.Default.State = fileService.Serialize();
-                    Settings.Default.Save();
+                    SudokuFileService fileService = new SudokuFileService(controller.CurrentProblem, settings);
+                    settings.State = fileService.Serialize();
+                    settings.Save();
                 }
                 else
                 {
-                    Settings.Default.State = "";
-                    Settings.Default.Save();
+                    settings.State = "";
+                    settings.Save();
                     if(!SudokuGrid.SyncProblemWithGUI(true, autoCheck.Checked))
                     {
                         e.Cancel = MessageBox.Show(this, Resources.CloseAnyway, ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No;

@@ -6,6 +6,8 @@ namespace Sudoku
 {
     internal class GenerationParameters
     {
+		private readonly ISudokuSettings settings;
+		
         private int row = 0;
         private int col = 0;
         private Byte generatedValue = 0;
@@ -20,7 +22,12 @@ namespace Sudoku
         private Random rand = new Random(unchecked((int)DateTime.Now.Ticks));
         // private Random rand=new Random(1);
 
-        public String BaseDirectory
+        public GenerationParameters(ISudokuSettings settings)
+		{
+            this.settings = settings;
+		}
+
+		public String BaseDirectory
         {
             get { return baseDirectory; }
             set { baseDirectory = value; }
@@ -94,10 +101,10 @@ namespace Sudoku
         }
         public Boolean NewSudokuType()
         {
-            if(Settings.Default.GenerateXSudoku && Settings.Default.GenerateNormalSudoku)
+            if(settings.GenerateXSudoku && settings.GenerateNormalSudoku)
                 GenerateXSudoku = rand.Next() % 2 == 0;
             else
-                GenerateXSudoku = Settings.Default.GenerateXSudoku;
+                GenerateXSudoku = settings.GenerateXSudoku;
             return GenerateXSudoku;
         }
     }

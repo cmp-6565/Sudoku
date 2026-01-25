@@ -12,6 +12,8 @@ namespace Sudoku
 {
     internal abstract class BaseProblem: EventArgs, IComparable
     {
+		protected readonly ISudokuSettings settings;
+		
         private Int64 totalPassCount = 0;
         private Int64 passCount = 0;
         private int nVarValues = 0;
@@ -81,13 +83,14 @@ namespace Sudoku
         {
             SolutionFound?.Invoke(this, EventArgs.Empty);
         }
-        public BaseProblem()
+        public BaseProblem(ISudokuSettings settings)
         {
             createMatrix();
             solutions = new List<Solution>();
             solverTask = null;
             solvingTime = TimeSpan.Zero;
             generationTime = TimeSpan.Zero;
+            this.settings = settings;
         }
 
         protected abstract void createMatrix();
@@ -134,12 +137,12 @@ namespace Sudoku
 
         public String SeverityLevelText
         {
-            get { return float.IsNaN(SeverityLevel) ? "-" : (SeverityLevel > Settings.Default.Hard ? Resources.Hard : (SeverityLevel > Settings.Default.Intermediate ? Resources.Intermediate : (SeverityLevel > Settings.Default.Trivial ? Resources.Easy : Resources.Trivial))); }
+            get { return float.IsNaN(SeverityLevel) ? "-" : (SeverityLevel > settings.Hard ? Resources.Hard : (SeverityLevel > settings.Intermediate ? Resources.Intermediate : (SeverityLevel > settings.Trivial ? Resources.Easy : Resources.Trivial))); }
         }
 
         public int SeverityLevelInt
         {
-            get { return float.IsNaN(SeverityLevel) ? 0 : (SeverityLevel > Settings.Default.Hard ? 8 : (SeverityLevel > Settings.Default.Intermediate ? 4 : (SeverityLevel > Settings.Default.Trivial ? 2 : 1))); }
+            get { return float.IsNaN(SeverityLevel) ? 0 : (SeverityLevel > settings.Hard ? 8 : (SeverityLevel > settings.Intermediate ? 4 : (SeverityLevel > settings.Trivial ? 2 : 1))); }
         }
 
         public String Filename { get { return filename; } set { filename = value; } }
@@ -168,7 +171,7 @@ namespace Sudoku
             dest.matrix = CloneMatrix();
 
             dest.ResetSolutions();
-            for(int i = 0; i < NumberOfSolutions && i < Settings.Default.MaxSolutions; i++)
+            for(int i = 0; i < NumberOfSolutions && i < settings.MaxSolutions; i++)
                 dest.Solutions.Add(Solutions[i]);
 
             dest.severityLevel = SeverityLevel;
@@ -217,7 +220,7 @@ namespace Sudoku
 
         private void SaveResult()
         {
-            if(NumberOfSolutions < Settings.Default.MaxSolutions)
+            if(NumberOfSolutions < settings.MaxSolutions)
             {
                 Solution solution = null;
                 Solutions.Add((Solution)CopyTo(ref solution));
@@ -396,7 +399,7 @@ namespace Sudoku
 
         private void Solve(CancellationToken token)
         {
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo(Settings.Default.DisplayLanguage);
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo(settings.DisplayLanguage);
             try
             {
                 nVarValues = Matrix.nVariableValues;

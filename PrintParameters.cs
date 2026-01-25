@@ -8,6 +8,8 @@ namespace Sudoku
 {
     internal class PrintParameters
     {
+        private readonly ISudokuSettings settings;
+        
         private List<BaseProblem> problems;
         private int currentProblem = 0;
         private int currentSolution = 0;
@@ -31,25 +33,25 @@ namespace Sudoku
         static private Brush lightGraySolidBrush;
         static private Brush greenSolidBrush = new SolidBrush(Color.Green);
         static private Brush redSolidBrush = new SolidBrush(Color.Red);
-        static private Font titleFont = new Font(Settings.Default.TableFont, 12, FontStyle.Bold);
-        static private Font headerFont = new Font(Settings.Default.TableFont, 24, FontStyle.Bold);
-        static private Font largeFont = new Font(Settings.Default.PrintFont, 14, FontStyle.Regular);
-        static private Font normalFont = new Font(Settings.Default.PrintFont, 10, FontStyle.Regular);
-        static private Font normalBoldFont = new Font(Settings.Default.PrintFont, 10, FontStyle.Bold);
-        static private Font smallFont = new Font(Settings.Default.PrintFont, 6, FontStyle.Regular);
-        static private Font smallBoldFont = new Font(Settings.Default.PrintFont, 6, FontStyle.Bold);
-        static private Font smallFixedFont = new Font(Settings.Default.FixedFont, 6, FontStyle.Regular);
+        private Font titleFont;
+        private Font headerFont;
+        private Font largeFont;
+        private Font normalFont;
+        private Font normalBoldFont;
+        private Font smallFont;
+        private Font smallBoldFont;
+        private Font smallFixedFont;
 
         static private StringFormat centered = new StringFormat();
         static private StringFormat vertical = new StringFormat();
         static private StringFormat leftBounded = new StringFormat();
         static private StringFormat rightBounded = new StringFormat();
 
-        public PrintParameters()
+        public PrintParameters(ISudokuSettings settings)
         {
             problems = new List<BaseProblem>();
 
-            int colorIndex = 255 - (int)(255f * ((float)Settings.Default.XSudokuConstrast / 100f));
+            int colorIndex = 255 - (int)(255f * ((float)settings.XSudokuConstrast / 100f));
             lightGraySolidBrush = new SolidBrush(Color.FromArgb(colorIndex, colorIndex, colorIndex));
 
             centered.FormatFlags = StringFormatFlags.NoWrap;
@@ -67,6 +69,17 @@ namespace Sudoku
             rightBounded.FormatFlags = StringFormatFlags.NoWrap;
             rightBounded.Alignment = StringAlignment.Far;
             rightBounded.LineAlignment = StringAlignment.Far;
+
+            titleFont = new Font(settings.TableFont, 12, FontStyle.Bold);
+            headerFont = new Font(settings.TableFont, 24, FontStyle.Bold);
+            largeFont = new Font(settings.PrintFont, 14, FontStyle.Regular);
+            normalFont = new Font(settings.PrintFont, 10, FontStyle.Regular);
+            normalBoldFont = new Font(settings.PrintFont, 10, FontStyle.Bold);
+            smallFont = new Font(settings.PrintFont, 6, FontStyle.Regular);
+            smallBoldFont = new Font(settings.PrintFont, 6, FontStyle.Bold);
+            smallFixedFont = new Font(settings.FixedFont, 6, FontStyle.Regular);
+
+            this.settings = settings;
         }
 
         public static String PrintError(int errorCode)
@@ -188,42 +201,42 @@ namespace Sudoku
             get { return PrintParameters.greenSolidBrush; }
         }
 
-        static public Font TitleFont
+        public Font TitleFont
         {
             get { return titleFont; }
         }
 
-        static public Font HeaderFont
+        public Font HeaderFont
         {
             get { return headerFont; }
         }
 
-        static public Font LargeFont
+        public Font LargeFont
         {
             get { return largeFont; }
         }
 
-        static public Font NormalFont
+        public Font NormalFont
         {
             get { return normalFont; }
         }
 
-        static public Font NormalBoldFont
+        public Font NormalBoldFont
         {
             get { return normalBoldFont; }
         }
 
-        static public Font SmallFont
+        public Font SmallFont
         {
             get { return smallFont; }
         }
 
-        static public Font SmallBoldFont
+        public Font SmallBoldFont
         {
             get { return smallBoldFont; }
         }
 
-        static public Font SmallFixedFont
+        public Font SmallFixedFont
         {
             get { return smallFixedFont; }
         }
