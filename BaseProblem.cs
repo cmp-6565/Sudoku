@@ -6,8 +6,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Sudoku.Properties;
-
 namespace Sudoku
 {
     internal abstract class BaseProblem: EventArgs, IComparable
@@ -37,26 +35,6 @@ namespace Sudoku
         public static Char ProblemIdentifier = ' ';
         public virtual Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
 
-        public static CancellationTokenSource FormCTS
-        {
-            get
-            {
-                try
-                {
-                    if(System.Windows.Forms.Application.OpenForms.Count > 0)
-                    {
-                        SudokuForm mainForm = (SudokuForm)System.Windows.Forms.Application.OpenForms[0];
-                        return mainForm.FormCTS;
-                    }
-                    else
-                        return null;
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-        }
         public Action <Object, BaseProblem> Minimizing;
         protected virtual void OnMinimizing(Object o, BaseProblem p)
         {
@@ -118,11 +96,6 @@ namespace Sudoku
         public Boolean ProblemSolved
         {
             get { return problemSolved; }
-        }
-
-        public Boolean Aborted
-        {
-            get { return FormCTS.Token.IsCancellationRequested; }
         }
 
         public float SeverityLevel
@@ -228,7 +201,7 @@ namespace Sudoku
             }
             else 
             {
-                FormCTS.Cancel();
+                throw new MaxResultsReached();
             }
             passCount = 0;
         }
@@ -387,16 +360,6 @@ namespace Sudoku
             await Task.Run(() => Solve(token), token);
         }
 
-        public void Cancel()
-        {
-            try
-            {
-                if(FormCTS != null && !FormCTS.IsCancellationRequested)
-                    FormCTS.Cancel();
-            }
-            catch { }
-        }
-
         private void Solve(CancellationToken token)
         {
             Thread.CurrentThread.CurrentUICulture = new CultureInfo(settings.DisplayLanguage);
@@ -410,13 +373,12 @@ namespace Sudoku
             catch(Exception)
             {
                 ResetMatrix();
-                Cancel();
+                 // Cancel();
             }
         }
 
         private void Solve(int current, CancellationToken token)
         {
-            // Strikter Abbruch-Check am Anfang jeder Rekursion
             if(token.IsCancellationRequested) return;
 
             BaseCell currentValue = Matrix.Get(current);

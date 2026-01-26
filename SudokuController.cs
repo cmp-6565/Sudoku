@@ -26,6 +26,7 @@ namespace Sudoku
         public event EventHandler MatrixChanged;
         public event EventHandler Generating;
 
+        private Stopwatch solvingTimer = new Stopwatch();
         public SudokuController(ISudokuSettings settings)
         {
             undoStack = new Stack<CoreValue>();
@@ -88,6 +89,22 @@ namespace Sudoku
             stopwatch.Restart();
             Generating?.Invoke(this, EventArgs.Empty);
         }
+        public void StartTimer()
+        {
+            solvingTimer.Restart();
+        }
+        public void StopTimer()
+        {
+            solvingTimer.Stop();
+            CurrentProblem.SolvingTime += solvingTimer.Elapsed;
+            solvingTimer.Reset();
+        }
+        public void PauseTimer()
+        {
+            solvingTimer.Start();
+        }
+        public TimeSpan ElapsedTime { get { return solvingTimer.Elapsed; }  }
+        public Boolean IsTimerRunning { get { return solvingTimer.IsRunning; } }
         public void RestoreProblemState(bool notify = true)
         {
             Char sudokuType = (Char)settings.State[0];
@@ -350,7 +367,7 @@ namespace Sudoku
                 {
                     generationParameters.Reset = true;
                 }
-                else if(CurrentProblem.NumberOfSolutions == 1 && !CurrentProblem.Aborted)
+                else if(CurrentProblem.NumberOfSolutions == 1 && !token.IsCancellationRequested)
                 {
                     bool processProblem = true;
 
@@ -600,6 +617,7 @@ namespace Sudoku
         }
         public void SaveProblem(String filename)
         {
+            StopTimer();
             SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
             fileService.SaveToFile(filename);
         }
@@ -607,11 +625,6 @@ namespace Sudoku
         {
             SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings);
             fileService.SaveToHTMLFile(filename);
-        }
-
-        public void Cancel()
-        {
-            CurrentProblem?.Cancel();
         }
         public string GetCellInfoText(int row, int col)
         {

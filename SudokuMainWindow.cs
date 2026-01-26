@@ -18,7 +18,7 @@ namespace Sudoku
 {
     public enum SudokuPart { Row, Column, Block, UpDiagonal, DownDiagonal };
 
-    public partial class SudokuForm: Form
+    public partial class SudokuForm: Form, IUserInteraction
     {
         public const int RectSize = 3;
         public const int SudokuSize = RectSize * RectSize;
@@ -26,10 +26,9 @@ namespace Sudoku
 
         ISudokuSettings settings = new WinFormsSettings();
 
-        private System.Timers.Timer autoPauseTimer;
-        private System.Timers.Timer statusUpdateTimer; 
+        private System.Windows.Forms.Timer autoPauseTimer;
+        private System.Windows.Forms.Timer statusUpdateTimer; 
         private Stopwatch generationTimer = new Stopwatch();
-        private Stopwatch solvingTimer = new Stopwatch();
 
         private SudokuPrinterService printerService = null;
         private GenerationParameters generationParameters;
@@ -71,13 +70,13 @@ namespace Sudoku
             Deactivate += new EventHandler(FocusLost);
             Activated += new EventHandler(FocusGotten);
             
-            autoPauseTimer = new System.Timers.Timer();
+            autoPauseTimer = new System.Windows.Forms.Timer();
             autoPauseTimer.Interval = Convert.ToInt32(settings.AutoPauseLag) * 1000; 
-            autoPauseTimer.Elapsed += new System.Timers.ElapsedEventHandler(AutoPauseTick);
+            autoPauseTimer.Tick += new EventHandler(AutoPauseTick);
 
-            statusUpdateTimer = new System.Timers.Timer();
+            statusUpdateTimer = new System.Windows.Forms.Timer();
             statusUpdateTimer.Interval = 1000;
-            statusUpdateTimer.Elapsed += new System.Timers.ElapsedEventHandler(StatusUpdateTick);
+            statusUpdateTimer.Tick += new EventHandler(StatusUpdateTick);
 
             generationParameters = new GenerationParameters(settings);
 
@@ -97,6 +96,31 @@ namespace Sudoku
                 LoadProblem(fn);
             }
             catch(Exception) { }
+        }
+
+        public void ShowError(string message)
+        {
+            MessageBox.Show(this, message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        public void ShowInfo(string message)
+        {
+            MessageBox.Show(this, message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        public DialogResult Confirm(string message, MessageBoxButtons buttons=MessageBoxButtons.YesNo)
+        {
+            return MessageBox.Show(this, message, ProductName, buttons, MessageBoxIcon.Question);
+        }
+        public string AskForFilename(string defaultExt)
+        {
+            String filename = String.Empty;
+            saveSudokuDialog.InitialDirectory = settings.ProblemDirectory;
+            saveSudokuDialog.RestoreDirectory = true;
+            saveSudokuDialog.DefaultExt = "*" + defaultExt;
+            saveSudokuDialog.Filter = String.Format(cultureInfo, Resources.FilterString, defaultExt);
+            saveSudokuDialog.FileName = "Problem-" + DateTime.Now.ToString("yyyy.MM.dd-hh-mm", cultureInfo);
+            if(saveSudokuDialog.ShowDialog() == DialogResult.OK)
+                filename = saveSudokuDialog.FileName;
+            return filename;
         }
 
         private void FocusLost(object sender, EventArgs e)
@@ -165,9 +189,9 @@ namespace Sudoku
         /// </summary>
         private void CurrentStatus(Boolean silent)
         {
-            if(!solvingTimer.IsRunning)
+            if(!controller.IsTimerRunning)
             {
-                solvingTimer.Start();
+                controller.StartTimer();
                 statusUpdateTimer.Start();
             }
 
@@ -184,21 +208,19 @@ namespace Sudoku
 
             if(!silent && SudokuGrid.FilledCells == TotalCellCount)
             {
-                solvingTimer.Stop();
+                controller.StopTimer();
                 statusUpdateTimer.Stop();
-                controller.CurrentProblem.SolvingTime = solvingTimer.Elapsed;
                 status.ForeColor = Color.Green;
                 status.Text += " - " + Resources.ProblemSolved;
 
                 System.Media.SystemSounds.Asterisk.Play();
 
-                MessageBox.Show(this, inputOK?
-                    Resources.Congratulations + Environment.NewLine + Resources.ProblemSolved + Environment.NewLine + Resources.TimeNeeded + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", solvingTimer.Elapsed.Days * 24 + solvingTimer.Elapsed.Hours, solvingTimer.Elapsed.Minutes, solvingTimer.Elapsed.Seconds):
-                    Resources.ProblemNotSolved, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ShowInfo(inputOK?
+                    Resources.Congratulations + Environment.NewLine + Resources.ProblemSolved + Environment.NewLine + Resources.TimeNeeded + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", controller.CurrentProblem.SolvingTime.Days * 24 + controller.CurrentProblem.SolvingTime.Hours, controller.CurrentProblem.SolvingTime.Minutes, controller.CurrentProblem.SolvingTime.Seconds):
+                    Resources.ProblemNotSolved);
 
                 status.ForeColor = Color.Black;
                 sudokuStatusBarText.Text = Resources.Ready;
-                solvingTimer.Reset();
             }
         }
         /// <summary>
@@ -242,7 +264,7 @@ namespace Sudoku
         {
             status.Text = String.Empty;
             prior.Enabled = next.Enabled = false;
-            if(!solvingTimer.IsRunning) sudokuStatusBarText.Text = Resources.Ready;
+            if(!controller.IsTimerRunning) sudokuStatusBarText.Text = Resources.Ready;
             Text = ProductName;
         }
 
@@ -277,7 +299,7 @@ namespace Sudoku
         {
             if(readOnly && !SudokuGrid.SyncProblemWithGUI(true, autoCheck.Checked))
             {
-                MessageBox.Show(this, Resources.NotFixable);
+                ShowInfo(Resources.NotFixable);
                 return;
             }
             SudokuGrid.SetReadOnly(readOnly);
@@ -367,7 +389,7 @@ namespace Sudoku
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Error generating: " + ex.Message);
+                ShowError("Error generating: " + ex.Message);
                 GenerationAborted();
             }
             finally
@@ -400,7 +422,7 @@ namespace Sudoku
             List<BaseCell> hints = controller.GetHints();
             if(hints.Count == 0)
             {
-                MessageBox.Show(this, Resources.NoHints);
+                ShowInfo(Resources.NoHints);
                 return;
             }
 
@@ -440,7 +462,7 @@ namespace Sudoku
                 problemInfo += Environment.NewLine + Resources.Filename + Environment.NewLine + controller.CurrentProblem.Filename;
             if(!String.IsNullOrEmpty(controller.CurrentProblem.Comment))
                 problemInfo += Environment.NewLine + controller.CurrentProblem.Comment;
-            MessageBox.Show(this, problemInfo, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            ShowInfo(problemInfo);
             controller.CurrentProblem.Dirty = modified;
         }
 
@@ -449,7 +471,7 @@ namespace Sudoku
             // TODO:
             // Die Gründe für die indirekten Blocks ausgeben (pair, ...)
             String cellInfo=controller.GetCellInfoText(row, col);
-            MessageBox.Show(this, cellInfo);
+            ShowInfo(cellInfo);
             return;
         }
 
@@ -473,7 +495,7 @@ namespace Sudoku
 
             this.Controls.Add(pauseOverlay);
             pauseOverlay.BringToFront();
-            solvingTimer.Stop();
+            controller.StopTimer();
             statusUpdateTimer.Stop();
         }
 
@@ -483,27 +505,27 @@ namespace Sudoku
 
             sudokuStatusBarText.Text = sudokuStatusBarText.Text.Replace(Resources.Paused, "").Trim();
             SudokuGrid.ShowValues();
-            solvingTimer.Start();
+            controller.StartTimer();
         }
         private void PublishTrickyProblems()
         {
             if(!controller.HasTrickyProblems()) return;
 
-            if(MessageBox.Show(this, (generationParameters.GenerateBooklet ? Resources.OneOrMoreProblems : Resources.OneProblem) + Resources.Publish, ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if(Confirm((generationParameters.GenerateBooklet ? Resources.OneOrMoreProblems : Resources.OneProblem) + Resources.Publish) == DialogResult.Yes)
             {
                 if(controller.PublishTrickyProblems())
-                    MessageBox.Show(this, String.Format(Resources.PublishOK, controller.NumberOfTrickyProblems));
+                    ShowInfo(String.Format(Resources.PublishOK, controller.NumberOfTrickyProblems));
                 else
-                    MessageBox.Show(this, String.Format(Resources.PublishFailed, settings.MailAddress));
+                    ShowInfo(String.Format(Resources.PublishFailed, settings.MailAddress));
             }
         }
 
         private void CheckProblem()
         {
             if(SudokuGrid.SyncProblemWithGUI(false, autoCheck.Checked))
-                MessageBox.Show(this, controller.IsProblemResolvable()? String.Format(cultureInfo, Resources.ValidationStatus, controller.CurrentProblem is XSudokuProblem ? "X-": Resources.Classic): Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ShowInfo(controller.IsProblemResolvable()? String.Format(cultureInfo, Resources.ValidationStatus, controller.CurrentProblem is XSudokuProblem ? "X-": Resources.Classic): Resources.NotResolvable);
             else
-                MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                ShowInfo(Resources.InvalidProblem + Environment.NewLine + Resources.NotResolvable);
         }
 
         private async void ValidateProblem()
@@ -530,10 +552,7 @@ namespace Sudoku
                 status.Text = String.Empty;
                 sudokuStatusBarText.Text = Resources.Ready;
 
-                MessageBox.Show(this,
-                    String.Format(cultureInfo, Resources.CheckResult, controller.CurrentProblem is XSudokuProblem ? "X-" : Resources.Classic, solvable ? Resources.AtLeast : Resources.No),
-                    ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                ShowInfo(String.Format(cultureInfo, Resources.CheckResult, controller.CurrentProblem is XSudokuProblem ? "X-" : Resources.Classic, solvable ? Resources.AtLeast : Resources.No));
             }
             catch(OperationCanceledException)
             {
@@ -542,7 +561,7 @@ namespace Sudoku
             }
             catch(Exception ex)
             {
-                MessageBox.Show(this, "Error validating: " + ex.Message);
+                ShowInfo("Error validating: " + ex.Message);
             }
             finally
             {
@@ -606,7 +625,7 @@ namespace Sudoku
 
             if(controller.CurrentProblem.Dirty && SudokuGrid.FilledCells != TotalCellCount)
             {
-                dialogResult = MessageBox.Show(this, Resources.UnsavedChanges, ProductName, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+                dialogResult = Confirm(Resources.UnsavedChanges, MessageBoxButtons.YesNoCancel);
                 if(dialogResult == DialogResult.Yes)
                     rc = SaveProblem();
                 else
@@ -637,17 +656,17 @@ namespace Sudoku
             }
             catch(ArgumentException)
             {
-                MessageBox.Show(this, String.Format(cultureInfo, Resources.InvalidSudokuFile, filename), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError(String.Format(cultureInfo, Resources.InvalidSudokuFile, filename));
                 controller.UpdateProblem(tmp);
             }
             catch(InvalidDataException)
             {
-                MessageBox.Show(this, Resources.InvalidSudokuIdentifier, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError(Resources.InvalidSudokuIdentifier);
                 controller.UpdateProblem(tmp);
             }
             catch(Exception e)
             {
-                MessageBox.Show(this, Resources.OpenFailed + Environment.NewLine + e.Message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError(Resources.OpenFailed + Environment.NewLine + e.Message);
                 controller.UpdateProblem(tmp);
             }
 
@@ -667,7 +686,7 @@ namespace Sudoku
             }
             catch(Exception e)
             {
-                MessageBox.Show(this, Resources.SaveFailed + Environment.NewLine + e.Message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError(Resources.SaveFailed + Environment.NewLine + e.Message);
                 returnCode = false;
             }
             return returnCode;
@@ -682,7 +701,7 @@ namespace Sudoku
             }
             catch(Exception e)
             {
-                MessageBox.Show(this, Resources.SaveFailed + Environment.NewLine + e.Message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ShowError(Resources.SaveFailed + Environment.NewLine + e.Message);
                 returnCode = false;
             }
             return returnCode;
@@ -692,7 +711,7 @@ namespace Sudoku
         {
             if(!SudokuGrid.SyncProblemWithGUI(true, false))
             {
-                MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.SaveNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                ShowInfo(Resources.InvalidProblem + Environment.NewLine + Resources.SaveNotPossible);
                 return false;
             }
 
@@ -706,7 +725,7 @@ namespace Sudoku
         {
             if(!SudokuGrid.SyncProblemWithGUI(true, false))
             {
-                MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.ExportNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                ShowError(Resources.InvalidProblem + Environment.NewLine + Resources.ExportNotPossible);
                 return false;
             }
 
@@ -720,7 +739,7 @@ namespace Sudoku
         {
             if(!SudokuGrid.SyncProblemWithGUI(true, false))
             {
-                MessageBox.Show(this, Resources.InvalidProblem + Environment.NewLine + Resources.TwitterNotPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                ShowError(Resources.InvalidProblem + Environment.NewLine + Resources.TwitterNotPossible);
                 return false;
             }
 
@@ -815,7 +834,8 @@ namespace Sudoku
 
         private void StatusUpdateTick(object sender, EventArgs e)
         {
-            sudokuStatusBarText.Text = Resources.SolutionTime + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", solvingTimer.Elapsed.Days * 24 + solvingTimer.Elapsed.Hours, solvingTimer.Elapsed.Minutes, solvingTimer.Elapsed.Seconds);
+            TimeSpan elapsed = controller.ElapsedTime+controller.CurrentProblem.SolvingTime;
+            sudokuStatusBarText.Text = Resources.SolutionTime + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", elapsed.Hours * 24 + elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
         }
 
         private void GenerationSingleProblemFinished()
@@ -828,7 +848,7 @@ namespace Sudoku
             SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
             PublishTrickyProblems();
             ResetDetachedProcess();
-            MessageBox.Show(this, status.Text, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information); 
+            ShowInfo(status.Text); 
             generationParameters = new GenerationParameters(settings);
         }
 
@@ -879,7 +899,7 @@ namespace Sudoku
                     }
             }
             undo.Enabled = controller.CanUndo() && enable;
-            resetTimer.Enabled = solvingTimer.IsRunning && enable;
+            resetTimer.Enabled = controller.IsTimerRunning && enable;
             clearCandidates.Enabled = controller.CurrentProblem.HasCandidates() && enable;
 
             if(SudokuGrid.Enabled = enable)
@@ -894,8 +914,7 @@ namespace Sudoku
         public void DisableGUI()
         {
             EnableGUI(false);
-            solvingTimer.Stop();
-            solvingTimer.Reset();
+            controller.StopTimer();
             statusUpdateTimer.Stop();
         }
 
@@ -1009,11 +1028,11 @@ namespace Sudoku
                     if(findallSolutions.Checked)
                         msg += Environment.NewLine + Resources.TotalNumberOfSolutions + controller.CurrentProblem.NumberOfSolutions.ToString("n0", cultureInfo);
 
-                    if(showResult) MessageBox.Show(this, msg, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if(showResult) ShowInfo(msg);
                 }
                 else
                 {
-                    if(showResult) MessageBox.Show(this, Resources.NotResolvable, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    if(showResult) ShowError(Resources.NotResolvable);
                 }
                 ResetDetachedProcess();
             }
@@ -1031,7 +1050,7 @@ namespace Sudoku
             }
             catch(Exception ex)
             {
-                MessageBox.Show(this, "Error: " + ex.Message);
+                ShowError("Error: " + ex.Message);
             }
             finally
             {
@@ -1126,7 +1145,7 @@ namespace Sudoku
         {
             if(controller.CurrentProblem == null) return;
 
-            try { controller.Cancel(); }
+            try { FormCTS.Cancel(); }
             catch { /* ignore */ }
 
             if(FormCTS != null && !FormCTS.IsCancellationRequested)
@@ -1236,10 +1255,9 @@ namespace Sudoku
 
         private void ResetTimerClick(object sender, EventArgs e)
         {
-            controller.CurrentProblem.SolvingTime = TimeSpan.Zero;
             sudokuStatusBarText.Text = Resources.Ready;
-            solvingTimer.Stop();
-            solvingTimer.Reset();
+            controller.StopTimer();
+            controller.CurrentProblem.SolvingTime = TimeSpan.Zero;
             statusUpdateTimer.Stop();
         }
 
@@ -1269,7 +1287,7 @@ namespace Sudoku
 
             if(!SudokuGrid.SyncProblemWithGUI(true, false))
             {
-                MessageBox.Show(this, Resources.MinimizationNotPossible);
+                ShowError(Resources.MinimizationNotPossible);
                 return;
             }
 
@@ -1277,12 +1295,12 @@ namespace Sudoku
 
             if(before - controller.CurrentProblem.nValues == 0)
             {
-                MessageBox.Show(this, Resources.NoMinimizationPossible, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ShowInfo(Resources.NoMinimizationPossible);
                 controller.CurrentProblem.Dirty = dirty;
             }
             else
             {
-                MessageBox.Show(this, String.Format(Resources.Minimized, (before - controller.CurrentProblem.nValues).ToString()), ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ShowInfo(String.Format(Resources.Minimized, (before - controller.CurrentProblem.nValues).ToString()));
                 controller.CurrentProblem.Dirty = true;
             }
         }
@@ -1345,8 +1363,7 @@ namespace Sudoku
         private void StartGameClick(object sender, EventArgs e)
         {
             SetReadOnly(true);
-            solvingTimer.Reset();
-            solvingTimer.Start();
+            controller.StartTimer();
             statusUpdateTimer.Start();
         }
         private void FixClick(object sender, EventArgs e)
@@ -1357,6 +1374,15 @@ namespace Sudoku
         private void ReleaseClick(object sender, EventArgs e)
         {
             SetReadOnly(false);
+        }
+        public void Cancel()
+        {
+            try
+            {
+                if(FormCTS != null && !FormCTS.IsCancellationRequested)
+                    FormCTS.Cancel();
+            }
+            catch { }
         }
 
         private void InitializeController()
@@ -1373,7 +1399,7 @@ namespace Sudoku
             SudokuGrid.UpdateStatus += (s, silent) => { CurrentStatus(silent); };
             SudokuGrid.UpdateHints+= (s, e) => 
             {
-                if(settings.ShowHints && MessageBox.Show(Resources.CandidatesNotShown, ProductName, MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if(settings.ShowHints && Confirm(Resources.CandidatesNotShown, MessageBoxButtons.YesNo) == DialogResult.Yes)
                     showPossibleValues.Checked = settings.ShowHints = false;
             };
             SudokuGrid.StatusTextChanged += (s, text) => 
@@ -1400,15 +1426,15 @@ namespace Sudoku
 
         private void OptionsMenuOpening(object sender, EventArgs e)
         {
-            pause.Enabled = resetTimer.Enabled= solvingTimer.IsRunning;
+            pause.Enabled = resetTimer.Enabled= controller.IsTimerRunning;
         }
 
         private void SudokuOfTheDayClicked(object sender, EventArgs e)
         {
             if(SudokuOfTheDay())
-                MessageBox.Show(this, String.Format(Resources.SudokuOfTheDayInfo, controller.CurrentProblem.SeverityLevelText));
+                ShowInfo(String.Format(Resources.SudokuOfTheDayInfo, controller.CurrentProblem.SeverityLevelText));
             else
-                MessageBox.Show(this, Resources.SudokuOfTheDayNotLoaded);
+                ShowError(Resources.SudokuOfTheDayNotLoaded);
         }
         private void HandleMinimizing(object sender, BaseProblem minimalProblem)
         {
@@ -1426,7 +1452,7 @@ namespace Sudoku
             // Synchroner Fallback für das Schließen der Anwendung
             if(controller.CurrentProblem != null)
             {
-                try { controller.Cancel(); } catch { }
+                try { FormCTS.Cancel(); } catch { }
                 if(controller.CurrentProblem.SolverTask != null && !controller.CurrentProblem.SolverTask.IsCompleted)
                     try { controller.CurrentProblem.SolverTask.Wait(2000); } catch { } // Einfaches Join statt DoEvents-Loop
             }
@@ -1435,10 +1461,9 @@ namespace Sudoku
             {
                 if(settings.AutoSaveState)
                 {
-                    if(solvingTimer.IsRunning)
+                    if(controller.IsTimerRunning)
                     {
-                        controller.CurrentProblem.SolvingTime = solvingTimer.Elapsed;
-                        solvingTimer.Stop();
+                        controller.StopTimer();
                     }
                     SudokuFileService fileService = new SudokuFileService(controller.CurrentProblem, settings);
                     settings.State = fileService.Serialize();
@@ -1450,7 +1475,7 @@ namespace Sudoku
                     settings.Save();
                     if(!SudokuGrid.SyncProblemWithGUI(true, autoCheck.Checked))
                     {
-                        e.Cancel = MessageBox.Show(this, Resources.CloseAnyway, ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == DialogResult.No;
+                        e.Cancel = Confirm(Resources.CloseAnyway) == DialogResult.No;
                     }
                     else
                         e.Cancel = !UnsavedChanges();

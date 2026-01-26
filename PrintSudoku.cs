@@ -59,7 +59,7 @@ namespace Sudoku
             ResetTexts();
             SudokuGrid.DisplayValues(tmp.Matrix);
 
-            if(!controller.CurrentProblem.Aborted)
+            if(!FormCTS.Token.IsCancellationRequested)
             {
                 Boolean sc;
                 if((sc = controller.CurrentProblem.HasCandidates()) && settings.PrintHints)

@@ -143,6 +143,7 @@
     <Compile Include="GenerationParameters.cs" />
     <Compile Include="InvalidSudokuValueException.cs" />
     <Compile Include="ISudokuSettings.cs" />
+    <Compile Include="IUserInteraction.cs" />
     <Compile Include="MinimizationUpdate.cs" />
     <Compile Include="OptionsDialog.cs">
       <SubType>Form</SubType>
