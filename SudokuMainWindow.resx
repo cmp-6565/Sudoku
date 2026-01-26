@@ -199,7 +199,7 @@
     <value>SudokuGrid</value>
   </data>
   <data name="&gt;&gt;SudokuGrid.Type" xml:space="preserve">
-    <value>Sudoku.SudokuBoard, Sudoku, Version=5.0.9520.23878, Culture=neutral, PublicKeyToken=null</value>
+    <value>Sudoku.SudokuBoard, Sudoku, Version=5.0.9522.21780, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;SudokuGrid.Parent" xml:space="preserve">
     <value>$this</value>

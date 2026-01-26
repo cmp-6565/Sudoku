@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -10,6 +11,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Properties;
+
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 
 namespace Sudoku
 {
@@ -23,7 +26,10 @@ namespace Sudoku
 
         ISudokuSettings settings = new WinFormsSettings();
 
-        private System.Windows.Forms.Timer autoPauseTimer = new System.Windows.Forms.Timer();
+        private System.Timers.Timer autoPauseTimer;
+        private System.Timers.Timer statusUpdateTimer; 
+        private Stopwatch generationTimer = new Stopwatch();
+        private Stopwatch solvingTimer = new Stopwatch();
 
         private SudokuPrinterService printerService = null;
         private GenerationParameters generationParameters;
@@ -40,7 +46,6 @@ namespace Sudoku
 
         // Für das Pause-Overlay
         private Label pauseOverlay;
-        private DateTime pauseStartTimestamp;
 
         /// <summary>
         /// Constructor for the form, mainly used for defaulting some variables and initializing of the gui.
@@ -65,8 +70,14 @@ namespace Sudoku
 
             Deactivate += new EventHandler(FocusLost);
             Activated += new EventHandler(FocusGotten);
+            
+            autoPauseTimer = new System.Timers.Timer();
             autoPauseTimer.Interval = Convert.ToInt32(settings.AutoPauseLag) * 1000; 
-            autoPauseTimer.Tick += new EventHandler(AutoPauseTick);
+            autoPauseTimer.Elapsed += new System.Timers.ElapsedEventHandler(AutoPauseTick);
+
+            statusUpdateTimer = new System.Timers.Timer();
+            statusUpdateTimer.Interval = 1000;
+            statusUpdateTimer.Elapsed += new System.Timers.ElapsedEventHandler(StatusUpdateTick);
 
             generationParameters = new GenerationParameters(settings);
 
@@ -154,34 +165,40 @@ namespace Sudoku
         /// </summary>
         private void CurrentStatus(Boolean silent)
         {
-            int count;
-            String problemStatus;
-
-            count = SudokuGrid.FilledCells;
-            problemStatus = Resources.FilledCells + count;
+            if(!solvingTimer.IsRunning)
+            {
+                solvingTimer.Start();
+                statusUpdateTimer.Start();
+            }
 
             Boolean inputOK = SudokuGrid.SyncProblemWithGUI(true, autoCheck.Checked);
 
             ResetTexts();
+            status.Text = Resources.FilledCells + SudokuGrid.FilledCells;
+
             if(autoCheck.Checked && (!inputOK || !controller.IsProblemResolvable()))
             {
-                problemStatus += (Environment.NewLine + Resources.NotResolvable);
+                status.Text += (Environment.NewLine + Resources.NotResolvable);
                 System.Media.SystemSounds.Hand.Play();
             }
 
-            status.Text = problemStatus;
-
-            if(!silent && count == TotalCellCount)
+            if(!silent && SudokuGrid.FilledCells == TotalCellCount)
             {
+                solvingTimer.Stop();
+                statusUpdateTimer.Stop();
+                controller.CurrentProblem.SolvingTime = solvingTimer.Elapsed;
                 status.ForeColor = Color.Green;
                 status.Text += " - " + Resources.ProblemSolved;
 
                 System.Media.SystemSounds.Asterisk.Play();
 
-                MessageBox.Show(this, inputOK ? Resources.Congratulations + Environment.NewLine + Resources.ProblemSolved : Resources.ProblemNotSolved, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(this, inputOK?
+                    Resources.Congratulations + Environment.NewLine + Resources.ProblemSolved + Environment.NewLine + Resources.TimeNeeded + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", solvingTimer.Elapsed.Days * 24 + solvingTimer.Elapsed.Hours, solvingTimer.Elapsed.Minutes, solvingTimer.Elapsed.Seconds):
+                    Resources.ProblemNotSolved, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 status.ForeColor = Color.Black;
                 sudokuStatusBarText.Text = Resources.Ready;
+                solvingTimer.Reset();
             }
         }
         /// <summary>
@@ -212,7 +229,8 @@ namespace Sudoku
                     String.Format(cultureInfo, Resources.GeneratingStatus, generationParameters.CheckedProblems) + Environment.NewLine + String.Format(cultureInfo, Resources.CheckingStatus, generationParameters.TotalPasses + controller.CurrentProblem.TotalPassCounter) +
                     Environment.NewLine +
                     Resources.PreAllocatedValues + generationParameters.PreAllocatedValues.ToString(cultureInfo)) +
-                    Environment.NewLine + Resources.TimeNeeded + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#},{3:0#}", elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds); /* +", "+
+                    /* Environment.NewLine + Resources.TimeNeeded + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#},{3:0#}", elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds) + */
+                    Environment.NewLine + Resources.TimeNeeded + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#},{3:0#}", generationTimer.Elapsed.Hours, generationTimer.Elapsed.Minutes, generationTimer.Elapsed.Seconds, generationTimer.Elapsed.Milliseconds); /* +", "+
                     Resources.ComplexityLevel+SeverityLevel(controller.CurrentProblem); */
             status.Update();
         }
@@ -224,7 +242,7 @@ namespace Sudoku
         {
             status.Text = String.Empty;
             prior.Enabled = next.Enabled = false;
-            sudokuStatusBarText.Text = Resources.Ready;
+            if(!solvingTimer.IsRunning) sudokuStatusBarText.Text = Resources.Ready;
             Text = ProductName;
         }
 
@@ -275,10 +293,10 @@ namespace Sudoku
         // Main functions
         private async void GenerateProblems(int nProblems, Boolean xSudoku)
         {
-            // 1. Initialisierung
             SudokuGrid.CreateNewProblem(xSudoku);
+            generationTimer.Reset();
+            generationTimer.Start();
 
-            // Severity Logik
             if(!(generationParameters.GenerateBooklet = (nProblems != 1)))
                 severityLevel = GetSeverity();
             else
@@ -321,7 +339,6 @@ namespace Sudoku
             {
                 sudokuStatusBarText.Text = usePrecalculatedProblem ? Resources.Loading : Resources.Generating;
 
-                // Controller Batch Aufruf
                 await controller.GenerateBatch(generationParameters.GenerateBooklet? settings.BookletSizeNew: 1, generationParameters, severityLevel, usePrecalculatedProblem,
                     async (problem, index) =>
                     {
@@ -355,6 +372,8 @@ namespace Sudoku
             }
             finally
             {
+                generationTimer.Stop();
+                generationTimer.Reset();
                 EnableGUI();
             }
         }
@@ -442,19 +461,20 @@ namespace Sudoku
             pauseOverlay.Text = Resources.PausedMessage.Replace("\\n", Environment.NewLine);
             pauseOverlay.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             pauseOverlay.Dock = DockStyle.Fill;
-            // Halbtransparentes Weiß (Alpha=200)
+            
             pauseOverlay.BackColor = Color.FromArgb(200, 255, 255, 255);
             pauseOverlay.ForeColor = Color.DarkSlateGray;
-            // Dynamische Schriftgröße basierend auf Formular
+            
             pauseOverlay.Font = new Font(this.Font.FontFamily, 24, FontStyle.Bold);
             pauseOverlay.Visible = false;
             pauseOverlay.Cursor = Cursors.Hand;
 
-            // Klick auf das Overlay setzt das Spiel fort
             pauseOverlay.Click += (s, e) => ResumeGame();
 
             this.Controls.Add(pauseOverlay);
             pauseOverlay.BringToFront();
+            solvingTimer.Stop();
+            statusUpdateTimer.Stop();
         }
 
         private void ResumeGame()
@@ -463,6 +483,7 @@ namespace Sudoku
 
             sudokuStatusBarText.Text = sudokuStatusBarText.Text.Replace(Resources.Paused, "").Trim();
             SudokuGrid.ShowValues();
+            solvingTimer.Start();
         }
         private void PublishTrickyProblems()
         {
@@ -789,13 +810,17 @@ namespace Sudoku
         // Timer Events
         private void AutoPauseTick(object sender, EventArgs e)
         {
-            if(WindowState != FormWindowState.Minimized)
-                PauseClick(sender, e);
+            if(WindowState != FormWindowState.Minimized) PauseClick(sender, e);
+        }
+
+        private void StatusUpdateTick(object sender, EventArgs e)
+        {
+            sudokuStatusBarText.Text = Resources.SolutionTime + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", solvingTimer.Elapsed.Days * 24 + solvingTimer.Elapsed.Hours, solvingTimer.Elapsed.Minutes, solvingTimer.Elapsed.Seconds);
         }
 
         private void GenerationSingleProblemFinished()
         {
-            TimeSpan elapsed = controller.CurrentProblem.GenerationTime;
+            TimeSpan elapsed = generationTimer.Elapsed;
 
             status.Text = usePrecalculatedProblem ?
                 Resources.ProblemRetrieved :
@@ -803,6 +828,7 @@ namespace Sudoku
             SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
             PublishTrickyProblems();
             ResetDetachedProcess();
+            MessageBox.Show(this, status.Text, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information); 
             generationParameters = new GenerationParameters(settings);
         }
 
@@ -853,7 +879,7 @@ namespace Sudoku
                     }
             }
             undo.Enabled = controller.CanUndo() && enable;
-            // resetTimer.Enabled = solvingTimer.Enabled && enable;
+            resetTimer.Enabled = solvingTimer.IsRunning && enable;
             clearCandidates.Enabled = controller.CurrentProblem.HasCandidates() && enable;
 
             if(SudokuGrid.Enabled = enable)
@@ -868,6 +894,9 @@ namespace Sudoku
         public void DisableGUI()
         {
             EnableGUI(false);
+            solvingTimer.Stop();
+            solvingTimer.Reset();
+            statusUpdateTimer.Stop();
         }
 
         // Menu Entries
@@ -1109,7 +1138,6 @@ namespace Sudoku
             const int waitStep = 50;
             const int maxWait = 5000;
 
-            // Asynchrones Polling statt DoEvents
             while(controller.CurrentProblem.SolverTask != null && !controller.CurrentProblem.SolverTask.IsCompleted && waited < maxWait)
             {
                 await Task.Delay(waitStep);
@@ -1203,21 +1231,22 @@ namespace Sudoku
 
         private void VisitHomepageClick(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(Resources.Homepage);
+            Process.Start(Resources.Homepage);
         }
 
         private void ResetTimerClick(object sender, EventArgs e)
         {
             controller.CurrentProblem.SolvingTime = TimeSpan.Zero;
             sudokuStatusBarText.Text = Resources.Ready;
+            solvingTimer.Stop();
+            solvingTimer.Reset();
+            statusUpdateTimer.Stop();
         }
 
         private void PauseClick(object sender, EventArgs e)
         {
             // Overlay initialisieren, falls noch nicht geschehen
             InitializePauseOverlay();
-
-            pauseStartTimestamp = DateTime.Now;
 
             if(!sudokuStatusBarText.Text.Contains(Resources.Paused))
                 sudokuStatusBarText.Text += Resources.Paused;
@@ -1313,6 +1342,13 @@ namespace Sudoku
 
             return rc;
         }
+        private void StartGameClick(object sender, EventArgs e)
+        {
+            SetReadOnly(true);
+            solvingTimer.Reset();
+            solvingTimer.Start();
+            statusUpdateTimer.Start();
+        }
         private void FixClick(object sender, EventArgs e)
         {
             SetReadOnly(true);
@@ -1364,7 +1400,7 @@ namespace Sudoku
 
         private void OptionsMenuOpening(object sender, EventArgs e)
         {
-            pause.Enabled = resetTimer.Enabled; // = solvingTimer.Enabled;
+            pause.Enabled = resetTimer.Enabled= solvingTimer.IsRunning;
         }
 
         private void SudokuOfTheDayClicked(object sender, EventArgs e)
@@ -1399,7 +1435,11 @@ namespace Sudoku
             {
                 if(settings.AutoSaveState)
                 {
-                    // if(solvingTimer.Enabled) controller.CurrentProblem.SolvingTime = DateTime.Now - interactiveStart;
+                    if(solvingTimer.IsRunning)
+                    {
+                        controller.CurrentProblem.SolvingTime = solvingTimer.Elapsed;
+                        solvingTimer.Stop();
+                    }
                     SudokuFileService fileService = new SudokuFileService(controller.CurrentProblem, settings);
                     settings.State = fileService.Serialize();
                     settings.Save();

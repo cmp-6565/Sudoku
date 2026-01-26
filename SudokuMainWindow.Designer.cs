@@ -520,6 +520,7 @@ namespace Sudoku
             this.startSolveProblem.Name = "startSolveProblem";
             resources.ApplyResources(this.startSolveProblem, "startSolveProblem");
             this.startSolveProblem.Tag = "disable=1";
+            this.startSolveProblem.Click += new System.EventHandler(this.StartGameClick);
             // 
             // fixCurrentValues
             // 
