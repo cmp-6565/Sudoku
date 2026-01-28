@@ -5,10 +5,12 @@ namespace Sudoku.Tests
     [TestClass]
     public class MaskTests
     {
+        private ISudokuSettings settings = new WinFormsSettings();
+
         [TestMethod]
         public void ToggleAndGetViaCell()
         {
-            var m = new SudokuMatrix();
+            var m = new SudokuMatrix(settings);
             m.Init();
             var cell = m.Cell(0, 0);
 
@@ -26,7 +28,7 @@ namespace Sudoku.Tests
         [TestMethod]
         public void SetGetViaMatrix()
         {
-            var m = new SudokuMatrix();
+            var m = new SudokuMatrix(settings);
             m.Init();
             m.SetCandidate(0, 0, 2, false);
             Assert.IsTrue(m.GetCandidate(0, 0, 2, false));

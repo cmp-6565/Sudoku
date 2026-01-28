@@ -18,9 +18,6 @@ namespace Sudoku
         private int currentProblem = 0;
         private Boolean generateBooklet = false;
         private String baseDirectory = String.Empty;
-        private Boolean generateXSudoku = false;
-        private Random rand = new Random(unchecked((int)DateTime.Now.Ticks));
-        // private Random rand=new Random(1);
 
         public GenerationParameters(ISudokuSettings settings)
 		{
@@ -89,23 +86,10 @@ namespace Sudoku
 
         public void NewValue()
         {
-            generatedValue = (Byte)rand.Next(1, SudokuForm.SudokuSize + 1);
-            row = rand.Next(0, SudokuForm.SudokuSize);
-            col = rand.Next(0, SudokuForm.SudokuSize);
-        }
-
-        public Boolean GenerateXSudoku
-        {
-            get { return generateXSudoku; }
-            set { generateXSudoku = value; }
-        }
-        public Boolean NewSudokuType()
-        {
-            if(settings.GenerateXSudoku && settings.GenerateNormalSudoku)
-                GenerateXSudoku = rand.Next() % 2 == 0;
-            else
-                GenerateXSudoku = settings.GenerateXSudoku;
-            return GenerateXSudoku;
+            Random rand = new Random();
+            generatedValue = (Byte)rand.Next(1, settings.SudokuSize + 1);
+            row = rand.Next(0, settings.SudokuSize);
+            col = rand.Next(0, settings.SudokuSize);
         }
     }
 }

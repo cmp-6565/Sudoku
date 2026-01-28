@@ -165,12 +165,12 @@ namespace Sudoku
 
         public Solution CopyTo(ref Solution dest)
         {
-            dest = new Solution();
+            dest = new Solution(settings);
             dest.Init();
             dest.Counter = passCount;
 
-            for(int row = 0; row < SudokuForm.SudokuSize; row++)
-                for(int col = 0; col < SudokuForm.SudokuSize; col++)
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
                     dest.SetValue(row, col, Matrix.GetValue(row, col), true);
 
             return dest;
@@ -397,7 +397,7 @@ namespace Sudoku
 
             if(currentValue.nPossibleValues > 0)
             {
-                while(!problemSolved && ++value <= SudokuForm.SudokuSize)
+                while(!problemSolved && ++value <= settings.SudokuSize)
                 {
                     if(token.IsCancellationRequested) return;
 
@@ -475,6 +475,7 @@ namespace Sudoku
 
                 if(nValues - (candidates.Count - start) < minimalProblem.nValues)
                 {
+                    OnTestCell(this, cell);
                     byte cellValue = cell.CellValue;
                     SetValue(cell, Values.Undefined);
 
@@ -488,6 +489,7 @@ namespace Sudoku
                     if(token.IsCancellationRequested) return false;
                     if(!await MinimizeRecursive(nextCandidates, maxSeverity, token)) return false;
 
+                    OnResetCell(this, cell);
                     ResetMatrix();
                     SetValue(cell, cellValue);
                 }
@@ -530,12 +532,12 @@ namespace Sudoku
 
         public virtual Boolean Resolvable()
         {
-            for(int row = 0; row < SudokuForm.SudokuSize; row++)
-                for(int col = 0; col < SudokuForm.SudokuSize; col++)
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
                     if(!Check(row, col)) return false;
 
-            for(int i = 0; i < SudokuForm.SudokuSize; i++)
-                if(!BaseMatrix.Check(Matrix.Rows[i]) || !BaseMatrix.Check(Matrix.Cols[i]) || !BaseMatrix.Check(Matrix.Rectangles[i])) return false;
+            for(int i = 0; i < settings.SudokuSize; i++)
+                if(!Matrix.Check(Matrix.Rows[i]) || !Matrix.Check(Matrix.Cols[i]) || !Matrix.Check(Matrix.Rectangles[i])) return false;
 
             return true;
         }
@@ -544,13 +546,13 @@ namespace Sudoku
         {
             int i, j;
             int count = 0;
-            Boolean[] exists = new Boolean[SudokuForm.SudokuSize + 1];
+            Boolean[] exists = new Boolean[settings.SudokuSize + 1];
 
-            for(i = 0; i <= SudokuForm.SudokuSize; i++) exists[i] = false;
-            for(i = 0; i < SudokuForm.SudokuSize; i++)
-                for(j = 0; j < SudokuForm.SudokuSize; j++)
+            for(i = 0; i <= settings.SudokuSize; i++) exists[i] = false;
+            for(i = 0; i < settings.SudokuSize; i++)
+                for(j = 0; j < settings.SudokuSize; j++)
                     exists[GetValue(i, j)] = true;
-            for(i = 1; i <= SudokuForm.SudokuSize; i++)
+            for(i = 1; i <= settings.SudokuSize; i++)
                 if(exists[i]) count++;
 
             return count;
@@ -566,8 +568,8 @@ namespace Sudoku
         private Boolean IsSolved()
         {
             int i, j;
-            for(i = 0; i < SudokuForm.SudokuSize; i++)
-                for(j = 0; j < SudokuForm.SudokuSize; j++)
+            for(i = 0; i < settings.SudokuSize; i++)
+                for(j = 0; j < settings.SudokuSize; j++)
                     if(GetValue(i, j) == Values.Undefined || !Check(i, j)) return false;
 
             return true;

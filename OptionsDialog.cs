@@ -9,15 +9,16 @@ using Sudoku.Properties;
 
 namespace Sudoku
 {
-    public partial class OptionsDialog: Form
+    internal partial class OptionsDialog: Form
     {
         private readonly ISudokuSettings settings;
+        private IUserInteraction ui;
 
         String[] supportedCultures;
         String[] supportedGridSizes;
         String[] supportedSolutionGridSizes;
 
-        public OptionsDialog(ISudokuSettings settings)
+        public OptionsDialog(ISudokuSettings settings, IUserInteraction ui)
         {
             supportedCultures = settings.SupportedCultures.Split('|');
             supportedGridSizes = settings.HorizontalProblemsAlternatives.Split('|');
@@ -81,6 +82,7 @@ namespace Sudoku
                 language.Items.Add(CultureInfo.GetCultureInfoByIetfLanguageTag(supportedCultures[i]).DisplayName);
             language.Text = CultureInfo.GetCultureInfoByIetfLanguageTag(settings.DisplayLanguage).DisplayName;
             this.settings = settings;
+            this.ui = ui;
         }
 
         public int MinBookletSize
@@ -159,7 +161,7 @@ namespace Sudoku
                             return;
                         }
             }
-            MessageBox.Show(Resources.InvalidCulture, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            ui.ShowError(Resources.InvalidCulture);
         }
 
         private void unlimitedCheckedChanged(object sender, EventArgs e)
@@ -171,7 +173,7 @@ namespace Sudoku
         {
             if(!easy.Checked && !intermediate.Checked && !hard.Checked)
             {
-                MessageBox.Show(Resources.SeverityLevelError, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ui.ShowError(Resources.SeverityLevelError);
                 ((CheckBox)sender).Checked = true;
             }
         }
@@ -180,7 +182,7 @@ namespace Sudoku
         {
             if(!xSudoku.Checked && !normalSudoku.Checked)
             {
-                MessageBox.Show(Resources.SudokuTypeError, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                ui.ShowError(Resources.SudokuTypeError);
                 ((CheckBox)sender).Checked = true;
             }
         }

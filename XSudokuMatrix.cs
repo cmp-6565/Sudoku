@@ -6,30 +6,32 @@ namespace Sudoku
     [Serializable]
     internal class XSudokuMatrix: BaseMatrix
     {
-        protected BaseCell[] UpDiagonal = new BaseCell[SudokuForm.SudokuSize];
-        protected BaseCell[] DownDiagonal = new BaseCell[SudokuForm.SudokuSize];
+        protected BaseCell[] UpDiagonal;
+        protected BaseCell[] DownDiagonal;
 
-        public XSudokuMatrix() : base()
+        public XSudokuMatrix(ISudokuSettings settings) : base(settings)
         {
-            for(int row = 0; row < SudokuForm.SudokuSize; row++)
-                for(int i = 0; i < SudokuForm.SudokuSize; i++)
+            UpDiagonal = new BaseCell[settings.SudokuSize];
+            DownDiagonal = new BaseCell[settings.SudokuSize];
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int i = 0; i < settings.SudokuSize; i++)
                 {
                     if(!Cell(row, row).SameRectangle(Cell(i, i))) Cell(row, row).AddNeighbor(ref Matrix[i][i]);
-                    if(!Cell(row, SudokuForm.SudokuSize - 1 - row).SameRectangle(Cell(i, SudokuForm.SudokuSize - 1 - i))) Cell(row, SudokuForm.SudokuSize - 1 - row).AddNeighbor(ref Matrix[i][SudokuForm.SudokuSize - 1 - i]);
+                    if(!Cell(row, settings.SudokuSize - 1 - row).SameRectangle(Cell(i, settings.SudokuSize - 1 - i))) Cell(row, settings.SudokuSize - 1 - row).AddNeighbor(ref Matrix[i][settings.SudokuSize - 1 - i]);
                 }
-            for(int i = 0; i < SudokuForm.SudokuSize; i++)
+            for(int i = 0; i < settings.SudokuSize; i++)
             {
                 DownDiagonal[i] = Cell(i, i);
-                UpDiagonal[i] = Cell(i, SudokuForm.SudokuSize - 1 - i);
+                UpDiagonal[i] = Cell(i, settings.SudokuSize - 1 - i);
             }
         }
 
         public override BaseCell CreateValue(int row, int col)
         {
-            if(row == col || row + col == SudokuForm.SudokuSize - 1)
-                return new DiagonalCell(row, col);
+            if(row == col || row + col == settings.SudokuSize - 1)
+                return new DiagonalCell(row, col, settings);
             else
-                return new Cell(row, col);
+                return new Cell(row, col, settings);
         }
 
         protected override BaseCell[] GetDiagonal(SudokuPart direction)

@@ -67,6 +67,9 @@ namespace Sudoku
         int MaxValues { get; }
         int MaxHints { get; }
         int MaxProblems { get; }
+        int RectSize { get; }
+        int SudokuSize { get; }
+        int TotalCellCount { get; }
 
         /// <summary>
         /// Speichert die aktuellen Benutzereinstellungen dauerhaft.

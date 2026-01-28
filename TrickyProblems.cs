@@ -8,13 +8,15 @@ namespace Sudoku
     internal class TrickyProblems
     {
         private readonly ISudokuSettings settings;
+        private IUserInteraction ui;
 
         private List<BaseProblem> problems;
 
-        public TrickyProblems(ISudokuSettings settings)
+        public TrickyProblems(ISudokuSettings settings, IUserInteraction ui)
         {
             problems = new List<BaseProblem>();
             this.settings = settings;
+            this.ui = ui;
         }
 
         public void Add(BaseProblem problem)
@@ -36,8 +38,8 @@ namespace Sudoku
             {
                 foreach(BaseProblem problem in problems)
                 {
-                    SudokuFileService fileService = new SudokuFileService(problem, settings);
-                    String sudoku = fileService.Serialize().Substring(0, SudokuForm.TotalCellCount + 1);
+                    SudokuFileService fileService = new SudokuFileService(problem, settings, ui);
+                    String sudoku = fileService.Serialize().Substring(0, settings.TotalCellCount + 1);
                     if(client.UploadString("http://sudoku.pi-c-it.de/misc/Hard%20Games/Original/Upload/upload.aspx", sudoku).Trim() != sudoku)
                         return false;
                 }

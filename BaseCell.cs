@@ -6,6 +6,8 @@ namespace Sudoku
     [Serializable]
     internal abstract class BaseCell: EventArgs, IComparable
     {
+        protected ISudokuSettings settings;
+
         private CoreValue coreValue = new CoreValue();
         private byte definitiveValue = Values.Undefined;
         private int nNeighbors = 0;
@@ -33,6 +35,7 @@ namespace Sudoku
             public byte[] NeighborCounts;
             public BaseCell[] CandidateArr;
             public int[] CommonStamp;
+            public ISudokuSettings settings;
 
             public void Ensure(int neighborLen)
             {
@@ -44,10 +47,10 @@ namespace Sudoku
                     NeighborMasks = intPool.Rent(neighborLen);
                 if(NeighborCounts == null || NeighborCounts.Length < neighborLen)
                     NeighborCounts = bytePool.Rent(neighborLen);
-                if(CandidateArr == null || CandidateArr.Length < SudokuForm.SudokuSize)
-                    CandidateArr = cellPool.Rent(SudokuForm.SudokuSize);
-                if(CommonStamp == null || CommonStamp.Length < SudokuForm.TotalCellCount)
-                    CommonStamp = intPool.Rent(SudokuForm.TotalCellCount);
+                if(CandidateArr == null || CandidateArr.Length < settings.SudokuSize)
+                    CandidateArr = cellPool.Rent(settings.SudokuSize);
+                if(CommonStamp == null || CommonStamp.Length < settings.TotalCellCount)
+                    CommonStamp = intPool.Rent(settings.TotalCellCount);
             }
 
             public void Release()
@@ -62,7 +65,6 @@ namespace Sudoku
                 if(CandidateArr != null) { Array.Clear(CandidateArr, 0, CandidateArr.Length); cellPool.Return(CandidateArr, true); CandidateArr = null; }
             }
         }
-
         public abstract bool Up();
         public abstract bool Down();
 
@@ -78,7 +80,7 @@ namespace Sudoku
         public static bool operator <(BaseCell op1, BaseCell op2) => op1.GetHashCode() < op2.GetHashCode();
 
         public override bool Equals(object obj) => this == (obj as BaseCell);
-        public override int GetHashCode() => Row * SudokuForm.SudokuSize + Col;
+        public override int GetHashCode() => Row * settings.SudokuSize + Col;
 
         public byte CellValue
         {
@@ -107,8 +109,8 @@ namespace Sudoku
             }
         }
 
-        public int Row { get => coreValue.Row; set { coreValue.Row = value; startRow = (int)Math.Truncate((double)value / SudokuForm.RectSize) * SudokuForm.RectSize; } }
-        public int Col { get => coreValue.Col; set { coreValue.Col = value; startCol = (int)Math.Truncate((double)value / SudokuForm.RectSize) * SudokuForm.RectSize; } }
+        public int Row { get => coreValue.Row; set { coreValue.Row = value; startRow = (int)Math.Truncate((double)value / settings.RectSize) * settings.RectSize; } }
+        public int Col { get => coreValue.Col; set { coreValue.Col = value; startCol = (int)Math.Truncate((double)value / settings.RectSize) * settings.RectSize; } }
         public int StartRow => startRow;
         public int StartCol => startCol;
         public BaseCell[] Neighbors => neighbors;
@@ -118,8 +120,7 @@ namespace Sudoku
         public bool ReadOnly { get => readOnly; set => readOnly = value; }
         public bool ComputedValue { get => computedValue; set => computedValue = value; }
 
-        public BaseCell() { }
-        public BaseCell(int row, int col) { Row = row; Col = col; Init(); }
+        public BaseCell(int row, int col, ISudokuSettings settings) { Row = row; Col = col; this.settings = settings; Init(); }
 
         public void AddNeighbor(ref BaseCell neighbor) { neighbors[nNeighbors++] = neighbor; }
 
@@ -130,12 +131,12 @@ namespace Sudoku
             if(tmpObj == null) throw new ArgumentException(obj.ToString());
             if(FixedValue) return int.MaxValue;
             if(tmpObj.FixedValue) return int.MinValue;
-            return ((nPossibleValues * SudokuForm.TotalCellCount + Row * SudokuForm.SudokuSize + Col) - (tmpObj.nPossibleValues * SudokuForm.TotalCellCount + tmpObj.Row * SudokuForm.SudokuSize + tmpObj.Col));
+            return ((nPossibleValues * settings.TotalCellCount + Row * settings.SudokuSize + Col) - (tmpObj.nPossibleValues * settings.TotalCellCount + tmpObj.Row * settings.SudokuSize + tmpObj.Col));
         }
 
         public bool Enabled(int value)
         {
-            if(value < 1 || value > SudokuForm.SudokuSize) return false;
+            if(value < 1 || value > settings.SudokuSize) return false;
             EnsureEnabledMaskInitialized();
             return (enabledMask & (1 << value)) != 0;
         }
@@ -168,16 +169,16 @@ namespace Sudoku
         {
             if(enabledMaskInitialized) return;
             enabledMask = 0;
-            for(int i = 1; i <= SudokuForm.SudokuSize; i++) if(directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i);
+            for(int i = 1; i <= settings.SudokuSize; i++) if(directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i);
             enabledMaskInitialized = true;
         }
 
         public void InitIndirectBlocks()
         {
-            indirectBlocks = new int[SudokuForm.SudokuSize + 1];
+            indirectBlocks = new int[settings.SudokuSize + 1];
             possibleValuesCount = directBlocks.Length;
             enabledMask = 0;
-            for(int i = 1; i <= SudokuForm.SudokuSize; i++)
+            for(int i = 1; i <= settings.SudokuSize; i++)
             {
                 if(directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i); else possibleValuesCount--;
             }
@@ -185,7 +186,7 @@ namespace Sudoku
             definitiveValue = Values.Undefined;
         }
 
-        private void InitDirectBlocks() { directBlocks = new int[SudokuForm.SudokuSize + 1]; }
+        private void InitDirectBlocks() { directBlocks = new int[settings.SudokuSize + 1]; }
 
         private static void EnsureLowbitIndex()
         {
@@ -228,7 +229,7 @@ namespace Sudoku
         {
             if(DefinitiveValue != Values.Undefined) return DefinitiveValue;
             bool found = false; byte dv = Values.Undefined;
-            for(byte possibleValue = 1; possibleValue < SudokuForm.SudokuSize + 1; possibleValue++)
+            for(byte possibleValue = 1; possibleValue < settings.SudokuSize + 1; possibleValue++)
                 if(Enabled(possibleValue) && nPossibleValues == 1)
                 {
                     if(found) return Values.Undefined; found = true; dv = possibleValue;
@@ -245,7 +246,7 @@ namespace Sudoku
                 if(direct)
                     SetBlock(oldValue, true, direct);
                 else
-                    for(int i = 1; i < SudokuForm.SudokuSize + 1; i++)
+                    for(int i = 1; i < settings.SudokuSize + 1; i++)
                         SetBlock(i, true, direct);
                 EnableNeighbors(oldValue, direct);
             }
@@ -254,7 +255,7 @@ namespace Sudoku
                 if(direct)
                     SetBlock(newValue, false, direct);
                 else
-                    for(int i = 1; i < SudokuForm.SudokuSize + 1; i++)
+                    for(int i = 1; i < settings.SudokuSize + 1; i++)
                         SetBlock(i, false, direct);
                 DisableNeighbors(newValue, direct);
             }
@@ -320,7 +321,7 @@ namespace Sudoku
 
         public bool GetCandidateMask(int candidate, bool exclusionCandidate)
         {
-            if(candidate < 1 || candidate > SudokuForm.SudokuSize) return false;
+            if(candidate < 1 || candidate > settings.SudokuSize) return false;
             int bit = 1 << candidate;
             if(exclusionCandidate) return (exclusionCandidatesMask & bit) != 0;
             return (candidatesMask & bit) != 0;
@@ -328,7 +329,7 @@ namespace Sudoku
 
         public void ToggleCandidateMask(int candidate, bool exclusionCandidate)
         {
-            if(candidate < 1 || candidate > SudokuForm.SudokuSize) throw new ArgumentOutOfRangeException(nameof(candidate));
+            if(candidate < 1 || candidate > settings.SudokuSize) throw new ArgumentOutOfRangeException(nameof(candidate));
             int bit = 1 << candidate;
             if(exclusionCandidate) exclusionCandidatesMask ^= bit; else candidatesMask ^= bit;
         }
@@ -338,6 +339,7 @@ namespace Sudoku
         public int FindNakedCells(BaseCell[] neighborCells)
         {
             NakedScratch scratch = default;
+            scratch.settings = settings;
             try { return FindNakedCells(neighborCells, ref scratch); }
             finally { scratch.Release(); }
         }
@@ -413,11 +415,11 @@ namespace Sudoku
             if(candidateCount != count || candidateCount == 0) return false;
 
             // mark candidate cells
-            Array.Clear(threadCommonStamp, 0, SudokuForm.TotalCellCount);
+            Array.Clear(threadCommonStamp, 0, settings.TotalCellCount);
             for(int ci = 0; ci < candidateCount; ci++)
             {
                 var c = threadCandidateArr[ci];
-                int idx = c.Row * SudokuForm.SudokuSize + c.Col;
+                int idx = c.Row * settings.SudokuSize + c.Col;
                 threadCommonStamp[idx] = 1;
             }
 
@@ -426,7 +428,7 @@ namespace Sudoku
                 BaseCell updateCell = neighborCells[ni];
                 if(updateCell == this) continue;
                 if(updateCell.CellValue != Values.Undefined) continue;
-                int uidx = updateCell.Row * SudokuForm.SudokuSize + updateCell.Col;
+                int uidx = updateCell.Row * settings.SudokuSize + updateCell.Col;
                 if(threadCommonStamp[uidx] != 0) continue;
                 // quick check: use cached neighbor mask collected earlier to skip TryDisableMask
                 int updateMask = threadNeighborMasks[ni];
@@ -439,7 +441,7 @@ namespace Sudoku
 
         protected virtual List<BaseCell> GetCommonNeighbors(List<BaseCell> candidateNeighbors, BaseCell[] neighborCells)
         {
-            int total = SudokuForm.TotalCellCount;
+            int total = settings.TotalCellCount;
             // rent stamp array
             var intPool2 = System.Buffers.ArrayPool<int>.Shared;
             int[] stamp = intPool2.Rent(total);
@@ -448,7 +450,7 @@ namespace Sudoku
                 Array.Clear(stamp, 0, total);
                 foreach(BaseCell c in candidateNeighbors)
                 {
-                    int idx = c.Row * SudokuForm.SudokuSize + c.Col;
+                    int idx = c.Row * settings.SudokuSize + c.Col;
                     stamp[idx] = 1;
                 }
 
@@ -456,7 +458,7 @@ namespace Sudoku
                 foreach(BaseCell cell in neighborCells)
                 {
                     if(cell == this || cell.CellValue != Values.Undefined) continue;
-                    int idx = cell.Row * SudokuForm.SudokuSize + cell.Col;
+                    int idx = cell.Row * settings.SudokuSize + cell.Col;
                     if(stamp[idx] == 0) commonNeighbors.Add(cell);
                 }
 
@@ -469,18 +471,12 @@ namespace Sudoku
         }
 
         public bool CommonNeighbor(BaseCell neighbor) { bool common = false; foreach(BaseCell cell in Neighbors) common = (cell == neighbor || common); return common; }
-        public bool SameRectangle(BaseCell value) { return (Col >= value.StartCol && Col < value.StartCol + SudokuForm.RectSize && Row >= value.StartRow && Row < value.StartRow + SudokuForm.RectSize); }
+        public bool SameRectangle(BaseCell value) { return (Col >= value.StartCol && Col < value.StartCol + settings.RectSize && Row >= value.StartRow && Row < value.StartRow + settings.RectSize); }
 
-        /// <summary>
-        /// Kopiert den gesamten Zustand dieser Zelle effizient in eine Zielzelle.
-        /// Ideal für die Verwendung in BaseMatrix.CloneMatrix(), da Arrays wiederverwendet werden.
-        /// </summary>
-        /// <param name="target">Die bereits initialisierte Zielzelle.</param>
         public void CopyTo(BaseCell target)
         {
             if(target == null) throw new ArgumentNullException(nameof(target));
 
-            // 1. Primitive Typen und Flags kopieren
             target.definitiveValue = this.definitiveValue;
             target.candidatesMask = this.candidatesMask;
             target.exclusionCandidatesMask = this.exclusionCandidatesMask;
@@ -491,17 +487,11 @@ namespace Sudoku
             target.computedValue = this.computedValue;
             target.readOnly = this.readOnly;
 
-            // 2. CoreValue Inhalte übertragen 
-            // Wichtig: Row/Col der Zielzelle nicht überschreiben, da diese positionsabhängig sind.
-            // coreValue ist private, aber innerhalb der Klasse zugreifbar.
             target.coreValue.CellValue = this.coreValue.CellValue;
             target.coreValue.UnformatedValue = this.coreValue.UnformatedValue;
 
-            // 3. Arrays mittels Block-Copy übertragen (High-Performance)
-            // Wir gehen davon aus, dass target durch Init() bereits passende Arrays besitzt.
             if(this.directBlocks != null)
             {
-                // Fallback, falls Target nicht initialisiert wäre (sollte in CloneMatrix nicht passieren)
                 if(target.directBlocks == null || target.directBlocks.Length != this.directBlocks.Length)
                     target.directBlocks = (int[])this.directBlocks.Clone();
                 else
@@ -515,9 +505,6 @@ namespace Sudoku
                 else
                     Array.Copy(this.indirectBlocks, target.indirectBlocks, this.indirectBlocks.Length);
             }
-
-            // Hinweis: 'neighbors' wird absichtlich NICHT kopiert, da die Zielzelle 
-            // ihre eigenen Referenzen auf die Zellen der NEUEN Matrix behalten muss.
         }
     }
 }

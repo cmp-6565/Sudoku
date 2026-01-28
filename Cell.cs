@@ -5,7 +5,7 @@ namespace Sudoku
     [Serializable]
     internal class Cell: BaseCell
     {
-        public Cell(int row, int col) : base(row, col)
+        public Cell(int row, int col, ISudokuSettings settings) : base(row, col, settings)
         {
             neighbors = new BaseCell[20];
         }

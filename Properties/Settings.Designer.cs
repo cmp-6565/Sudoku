@@ -673,5 +673,14 @@ namespace Sudoku.Properties {
                 this["HighlightSameValues"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int RectSize {
+            get {
+                return ((int)(this["RectSize"]));
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace Sudoku
 		}
 		protected override void createMatrix()
         {
-            matrix = new SudokuMatrix();
+            matrix = new SudokuMatrix(settings);
         }
 
         protected override BaseProblem CreateInstance()

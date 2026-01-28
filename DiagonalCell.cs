@@ -6,9 +6,9 @@ namespace Sudoku
     [Serializable]
     internal class DiagonalCell: BaseCell
     {
-        public DiagonalCell(int row, int col) : base(row, col)
+        public DiagonalCell(int row, int col, ISudokuSettings settings) : base(row, col, settings)
         {
-            if(row == col && row + col == SudokuForm.SudokuSize - 1)
+            if(row == col && row + col == settings.SudokuSize - 1)
                 neighbors = new BaseCell[32];
             else
                 neighbors = new BaseCell[26];
@@ -16,7 +16,7 @@ namespace Sudoku
 
         public override Boolean Up()
         {
-            return Row + Col == SudokuForm.SudokuSize - 1;
+            return Row + Col == settings.SudokuSize - 1;
         }
 
         public override Boolean Down()

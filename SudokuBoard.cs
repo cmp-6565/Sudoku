@@ -13,8 +13,7 @@ namespace Sudoku
     internal class SudokuBoard: DataGridView
     {
         private ISudokuSettings settings;
-
-        public int SudokuSize;
+        private IUserInteraction ui;
 
         private SudokuController controller;
         private Boolean debugMode = false;
@@ -47,10 +46,8 @@ namespace Sudoku
         Color textColor;
         public SudokuBoard() { }
 
-        internal void Initialize(ISudokuSettings settings)
+        internal void Initialize(ISudokuSettings settings, IUserInteraction ui)
         {
-            SudokuSize = Columns.Count;
-
             DoubleBuffered = true;
 
             AllowUserToAddRows = false;
@@ -74,9 +71,10 @@ namespace Sudoku
             DefaultCellStyle.SelectionForeColor = Color.Black;
 
             MouseWheel += new MouseEventHandler(MouseWheelHandler);
-            Rows.Add(SudokuSize);
+            Rows.Add(settings.SudokuSize);
 
             this.settings = settings;
+            this.ui = ui;
             UpdateFonts();
 
             ResetMatrix();
@@ -250,7 +248,7 @@ namespace Sudoku
                     {
                         int currentValue = (CurrentCell.Value == null || ((String)CurrentCell.Value).Trim().Length == 0 ? 0 : Convert.ToInt32(CurrentCell.Value));
                         currentValue += Math.Sign(e.Delta);
-                        if(currentValue > 0 && currentValue <= SudokuSize)
+                        if(currentValue > 0 && currentValue <= settings.SudokuSize)
                             CurrentCell.Value = currentValue.ToString();
                         else if(currentValue == Values.Undefined)
                             CurrentCell.Value = "";
@@ -262,13 +260,12 @@ namespace Sudoku
                 }
             }
         }
-
         public void FormatCell(int row, int col)
         {
             if(this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
 
             Boolean obfuscated = ((row / 3) % 2 == 1 && (col / 3) % 2 == 0) || ((row / 3) % 2 == 0 && (col / 3) % 2 == 1);
-            this[row, col].Style.BackColor = (obfuscated ? gray : ((Controller.CurrentProblem is XSudokuProblem) && (row == col || row + col == SudokuSize - 1) ? lightGray : Color.White));
+            this[row, col].Style.BackColor = (obfuscated ? gray : ((Controller.CurrentProblem is XSudokuProblem) && (row == col || row + col == settings.SudokuSize - 1) ? lightGray : Color.White));
             this[row, col].Style.ForeColor = (obfuscated ? textColor : Color.Black);
             this[row, col].Style.SelectionBackColor = SystemColors.AppWorkspace;
         }
@@ -308,7 +305,7 @@ namespace Sudoku
             int height = 0;
             int cellSize = (int)((float)settings.Size * settings.MagnificationFactor * settings.CellWidth * .7f);
 
-            for(int i = 0; i < SudokuSize; i++)
+            for(int i = 0; i < settings.SudokuSize; i++)
             {
                 width += (Columns[i].Width = cellSize);
                 height += (Rows[i].Height = cellSize);
@@ -327,8 +324,8 @@ namespace Sudoku
 
         public void ResetMatrix()
         {
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
                 {
                     this[col, row].Style.Font = normalDisplayFont;
                     this[col, row].Value = String.Empty;
@@ -336,13 +333,14 @@ namespace Sudoku
                 }
         }
 
+        public Boolean IsCompleted { get { return FilledCells == settings.TotalCellCount; } }
         public void DisplayValues(Values values = null)
         {
             if(values == null) values = Controller?.CurrentProblem?.Matrix;
             if(values == null) return;
 
-            for(int i = 0; i < SudokuForm.SudokuSize; i++)
-                for(int j = 0; j < SudokuForm.SudokuSize; j++)
+            for(int i = 0; i < settings.SudokuSize; i++)
+                for(int j = 0; j < settings.SudokuSize; j++)
                     DisplayValue(i, j, values.GetValue(i, j));
         }
 
@@ -354,8 +352,8 @@ namespace Sudoku
 
         public void SetCellFont()
         {
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
                     SetCellFont(row, col);
         }
 
@@ -371,9 +369,9 @@ namespace Sudoku
             EndEdit();
             mouseWheelEditing = false;
 
-            string[,] grid = new string[SudokuForm.SudokuSize, SudokuForm.SudokuSize];
-            for(int row = 0; row < SudokuForm.SudokuSize; row++)
-                for(int col = 0; col < SudokuForm.SudokuSize; col++)
+            string[,] grid = new string[settings.SudokuSize, settings.SudokuSize];
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
                 {
                     this[col, row].ErrorText = String.Empty;
                     grid[row, col] = this[col, row].Value as string;
@@ -391,7 +389,7 @@ namespace Sudoku
 
                 if(!silent && !result.IsValid)
                 {
-                    MessageBox.Show(result.Errors[0].Message, Resources.SudokuError, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    ui.ShowInfo(result.Errors[0].Message);
                 }
             }
             if(settings.ShowHints) Refresh();
@@ -401,8 +399,8 @@ namespace Sudoku
         public void FormatBoard()
         {
             SetCellFont();
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
                     FormatCell(row, col);
             if(settings.MarkNeighbors)
                 MarkNeighbors();
@@ -414,8 +412,8 @@ namespace Sudoku
             {
                 int count = 0;
 
-                for(int row = 0; row < SudokuSize; row++)
-                    for(int col = 0; col < SudokuSize; col++)
+                for(int row = 0; row < settings.SudokuSize; row++)
+                    for(int col = 0; col < settings.SudokuSize; col++)
                         if(this[col, row].Value != null && (((string)this[col, row].Value).Trim()).Length > 0)
                             count++;
                 return count;
@@ -424,8 +422,8 @@ namespace Sudoku
 
         public void SetReadOnly(Boolean readOnly)
         {
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
                     Controller.SetCellReadOnly(row, col, (readOnly && this[col, row].Value.ToString().Trim() != String.Empty));
             DisplayValues();
         }
@@ -537,6 +535,12 @@ namespace Sudoku
             FormatCell(cell.Col, cell.Row);
         }
 
+        public void ClearErrorMessages()
+        {
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
+                    this[col, row].ErrorText = String.Empty;
+        }
         public void UpdateHighligts()
         {
             ClearHighlights();
@@ -559,8 +563,8 @@ namespace Sudoku
         private List<Point> GetSameValueCells(object value)
         {
             List<Point> cells = new List<Point>();
-            for(int row = 0; row < SudokuSize; row++)
-                for(int col = 0; col < SudokuSize; col++)
+            for(int row = 0; row < settings.SudokuSize; row++)
+                for(int col = 0; col < settings.SudokuSize; col++)
                     if(this[col, row].Value != null && this[col, row].Value.Equals(value))
                         cells.Add(new Point(col, row));
             return cells;
@@ -570,8 +574,8 @@ namespace Sudoku
         {
             int row, col;
 
-            for(row = 0; row < SudokuSize; row++)
-                for(col = 0; col < SudokuSize; col++)
+            for(row = 0; row < settings.SudokuSize; row++)
+                for(col = 0; col < settings.SudokuSize; col++)
                     this[row, col].Value = "";
             valuesVisible = false;
         }
@@ -596,9 +600,9 @@ namespace Sudoku
                 float cellSize = Columns[0].Width;
 
                 int startRow = Math.Max(0, (int)(e.ClipRectangle.Top / cellSize));
-                int endRow = Math.Min(SudokuSize, (int)(e.ClipRectangle.Bottom / cellSize) + 1);
+                int endRow = Math.Min(settings.SudokuSize, (int)(e.ClipRectangle.Bottom / cellSize) + 1);
                 int startCol = Math.Max(0, (int)(e.ClipRectangle.Left / cellSize));
-                int endCol = Math.Min(SudokuSize, (int)(e.ClipRectangle.Right / cellSize) + 1);
+                int endCol = Math.Min(settings.SudokuSize, (int)(e.ClipRectangle.Right / cellSize) + 1);
 
                 for(int row = startRow; row < endRow; row++)
                 {

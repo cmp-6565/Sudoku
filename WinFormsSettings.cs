@@ -254,6 +254,10 @@ namespace Sudoku
         public int MaxValues => Settings.Default.MaxValues;
         public int MaxHints => Settings.Default.MaxHints;
         public int MaxProblems => Settings.Default.MaxProblems;
+        public int RectSize => Settings.Default.RectSize;
+        public int SudokuSize => RectSize * RectSize;
+        public int TotalCellCount => SudokuSize * SudokuSize;
+
 
         /// <summary>
         /// Speichert die Benutzereinstellungen ab.
