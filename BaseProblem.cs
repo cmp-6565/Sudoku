@@ -352,7 +352,13 @@ namespace Sudoku
             {
                 problemSolved = true;
                 SaveResult();
-                return;
+                solverTask = Task.CompletedTask;
+                return solverTask;
+            }
+            if(!Resolvable())
+            {
+                solverTask = Task.CompletedTask;
+                return solverTask;
             }
 
             if(!Resolvable()) return;
@@ -409,7 +415,7 @@ namespace Sudoku
                             TryValue(currentValue.Row, currentValue.Col, value);
                             currentValue.ComputedValue = true;
 
-                            if(current < nVarValues - 1) // Resolvable Check entfernen für Performance in tiefer Rekursion
+                            if(current < nVarValues - 1) // Resolvable Check entfernen fï¿½r Performance in tiefer Rekursion
                             {
                                 if(Resolvable()) Solve(current + 1, token);
                             }
@@ -558,7 +564,23 @@ namespace Sudoku
             return count;
         }
 
-        public event EventHandler Progress;
+        internal sealed class ProgressEventArgs: EventArgs
+        {
+            public ProgressEventArgs(Int64 passCount, Int64 totalPassCount, Int32 numSolutions, Boolean preparing)
+            {
+                PassCount = passCount;
+                TotalPassCount = totalPassCount;
+                NumSolutions = numSolutions;
+                Preparing = preparing;
+            }
+
+            public Int64 PassCount { get; private set; }
+            public Int64 TotalPassCount { get; private set; }
+            public Int32 NumSolutions { get; private set; }
+            public Boolean Preparing { get; private set; }
+        }
+
+        public event EventHandler<ProgressEventArgs> Progress;
         protected virtual void OnProgress()
         {
             EventHandler handler = Progress;

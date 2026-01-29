@@ -304,7 +304,7 @@
     <value>0</value>
   </data>
   <metadata name="sudokuMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>2, 2</value>
+    <value>157, 17</value>
   </metadata>
   <data name="newNormalSudoku.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Strg+N</value>
@@ -745,7 +745,7 @@
     <value>5</value>
   </data>
   <metadata name="saveSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>255, 17</value>
+    <value>453, 17</value>
   </metadata>
   <data name="saveSudokuDialog.Filter" xml:space="preserve">
     <value>Sudoku Problems (*.sudoku) | *.sudoku</value>
@@ -754,7 +754,7 @@
     <value>Save Sudoku Problem</value>
   </data>
   <metadata name="openSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>400, 17</value>
+    <value>604, 17</value>
   </metadata>
   <data name="openSudokuDialog.Filter" xml:space="preserve">
     <value>Sudoku Problems (*.sudoku) |*.sudoku</value>
@@ -763,7 +763,7 @@
     <value>Open Sudoku Problem</value>
   </data>
   <metadata name="sudokuStatusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>2, 409</value>
+    <value>1031, 17</value>
   </metadata>
   <data name="sudokuStatusBarText.Size" type="System.Drawing.Size, System.Drawing">
     <value>39, 17</value>
@@ -796,7 +796,7 @@
     <value>4</value>
   </data>
   <metadata name="selectBookletDirectory.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>811, 4</value>
+    <value>281, 17</value>
   </metadata>
   <data name="selectBookletDirectory.SelectedPath" xml:space="preserve">
     <value>C:\Dokumente und Einstellungen\Clemens\Desktop</value>
@@ -1599,24 +1599,6 @@
     <value>toolStripSeparator10</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator10.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pause.Name" xml:space="preserve">
-    <value>pause</value>
-  </data>
-  <data name="&gt;&gt;pause.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;resetTimer.Name" xml:space="preserve">
-    <value>resetTimer</value>
-  </data>
-  <data name="&gt;&gt;resetTimer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator6.Name" xml:space="preserve">
-    <value>toolStripSeparator6</value>
-  </data>
-  <data name="&gt;&gt;toolStripSeparator6.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;sudokuOptionsToolStripMenuItem.Name" xml:space="preserve">

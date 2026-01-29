@@ -105,7 +105,7 @@ namespace Sudoku
             sudokuStatusBarText.Text = String.Format(cultureInfo, Resources.LoadingFiles);
             sudokuStatusBar.Update();
 
-            // avoid Application.DoEvents(); — respect cooperative cancellation
+            // avoid Application.DoEvents(); â€” respect cooperative cancellation
             if(AbortRequested) return;
 
             foreach(FileInfo fileInfo in directoryInfo.GetFiles())

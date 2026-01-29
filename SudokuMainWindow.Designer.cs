@@ -97,9 +97,6 @@ namespace Sudoku
             this.highlightSameValues = new System.Windows.Forms.ToolStripMenuItem();
             this.markNeighbors = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.pause = new System.Windows.Forms.ToolStripMenuItem();
-            this.resetTimer = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.sudokuOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.help = new System.Windows.Forms.ToolStripMenuItem();
             this.showCellInfo = new System.Windows.Forms.ToolStripMenuItem();
@@ -580,13 +577,9 @@ namespace Sudoku
             this.highlightSameValues,
             this.markNeighbors,
             this.toolStripSeparator10,
-            this.pause,
-            this.resetTimer,
-            this.toolStripSeparator6,
             this.sudokuOptionsToolStripMenuItem});
             this.options.Name = "options";
             resources.ApplyResources(this.options, "options");
-            this.options.DropDownOpening += new System.EventHandler(this.OptionsMenuOpening);
             // 
             // undo
             // 
@@ -658,25 +651,6 @@ namespace Sudoku
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
             resources.ApplyResources(this.toolStripSeparator10, "toolStripSeparator10");
-            // 
-            // pause
-            // 
-            this.pause.Name = "pause";
-            resources.ApplyResources(this.pause, "pause");
-            this.pause.Tag = "disable=1";
-            this.pause.Click += new System.EventHandler(this.PauseClick);
-            // 
-            // resetTimer
-            // 
-            this.resetTimer.Name = "resetTimer";
-            resources.ApplyResources(this.resetTimer, "resetTimer");
-            this.resetTimer.Tag = "disable=1";
-            this.resetTimer.Click += new System.EventHandler(this.ResetTimerClick);
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            resources.ApplyResources(this.toolStripSeparator6, "toolStripSeparator6");
             // 
             // sudokuOptionsToolStripMenuItem
             // 
@@ -846,7 +820,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem existingBooklet;
         private System.Windows.Forms.FolderBrowserDialog selectBookletDirectory;
         private System.Windows.Forms.ToolStripMenuItem sudokuOptionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem autoCheck;
         private System.Windows.Forms.ToolStripMenuItem definiteValues;
         private System.Windows.Forms.ToolStripMenuItem showHints;
@@ -866,8 +839,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem visitHomepage;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
-        private System.Windows.Forms.ToolStripMenuItem pause;
-        private System.Windows.Forms.ToolStripMenuItem resetTimer;
         private System.Windows.Forms.ToolStripMenuItem EditComment;
         private SudokuBoard SudokuGrid;
         private System.Windows.Forms.ToolStripMenuItem newItem;

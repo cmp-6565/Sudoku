@@ -37,8 +37,10 @@ namespace Sudoku
         private SudokuController controller;
         public CancellationTokenSource FormCTS { get; set; }
 
-        // Für das Pause-Overlay
+        // FÃ¼r das Pause-Overlay
         private Label pauseOverlay;
+
+        public delegate void SudokuAction();
 
         /// <summary>
         /// Constructor for the form, mainly used for defaulting some variables and initializing of the gui.
@@ -362,6 +364,7 @@ namespace Sudoku
         }
         private void ShowDefiniteValues()
         {
+            CancelSolving();
             if(!PreCheck()) return;
 
             controller.BackupProblem();
@@ -417,7 +420,7 @@ namespace Sudoku
         private void DisplayCellInfo(int row, int col)
         {
             // TODO:
-            // Die Gründe für die indirekten Blocks ausgeben (pair, ...)
+            // Die GrÃ¼nde fÃ¼r die indirekten Blocks ausgeben (pair, ...)
             String cellInfo=controller.GetCellInfoText(row, col);
             ShowInfo(cellInfo);
             return;
@@ -622,7 +625,6 @@ namespace Sudoku
             SudokuGrid.SetCellFont();
             ResetUndo();
         }
-
         private Boolean SaveProblem(String filename)
         {
             Boolean returnCode = true;
@@ -811,7 +813,6 @@ namespace Sudoku
             ResetDetachedProcess();
             controller.CurrentProblem.Dirty = false;
         }
-
         // Menu handling
         private void EnableGUI(Boolean enable)
         {
