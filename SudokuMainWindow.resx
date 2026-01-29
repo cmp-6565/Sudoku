@@ -199,7 +199,7 @@
     <value>SudokuGrid</value>
   </data>
   <data name="&gt;&gt;SudokuGrid.Type" xml:space="preserve">
-    <value>Sudoku.SudokuBoard, Sudoku, Version=5.0.9522.21780, Culture=neutral, PublicKeyToken=null</value>
+    <value>Sudoku.SudokuBoard, Sudoku, Version=5.0.9525.24706, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;SudokuGrid.Parent" xml:space="preserve">
     <value>$this</value>
@@ -795,9 +795,6 @@
   <data name="&gt;&gt;sudokuStatusBar.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
-  <metadata name="printSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>661, 17</value>
-  </metadata>
   <metadata name="selectBookletDirectory.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>811, 4</value>
   </metadata>
@@ -1687,12 +1684,6 @@
   </data>
   <data name="&gt;&gt;sudokuStatusBarText.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;printSudokuDialog.Name" xml:space="preserve">
-    <value>printSudokuDialog</value>
-  </data>
-  <data name="&gt;&gt;printSudokuDialog.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PrintDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;selectBookletDirectory.Name" xml:space="preserve">
     <value>selectBookletDirectory</value>

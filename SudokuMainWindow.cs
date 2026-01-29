@@ -377,9 +377,6 @@ namespace Sudoku
         {
             if(!PreCheck()) return;
 
-            int count;
-            Color hintColor = Color.Red;
-
             List<BaseCell> hints = controller.GetHints();
             if(hints.Count == 0)
             {
@@ -387,18 +384,8 @@ namespace Sudoku
                 return;
             }
 
-            DataGridViewSelectedCellCollection cells = SudokuGrid.SelectedCells;
-            foreach(DataGridViewCell cell in cells)
-                cell.Selected = false;
-
-            for(count = 0; count < hints.Count; count++)
-                await ShowHint(hints[count]); // Await statt synchronem Aufruf
-
-            foreach(DataGridViewCell cell in cells)
-                cell.Selected = true;
-            SudokuGrid.Update();
+            await SudokuGrid.VisualizeHints(hints);
         }
-
         // Neue asynchrone Methode
         private async Task ShowHint(BaseCell hint)
         {
@@ -811,7 +798,14 @@ namespace Sudoku
         private async void GenerationBookletProblemFinished(String s)
         {
             status.Text = s;
-            PrintBooklet();
+            try
+            {
+                PrintBooklet();
+            }
+            catch(Exception ex)
+            {
+                ShowError("Error printing booklet: " + ex.Message);
+            }
             PublishTrickyProblems();
             ResetTexts();
             ResetDetachedProcess();
@@ -1407,7 +1401,6 @@ namespace Sudoku
         // Exit Sudoku
         private void ExitSudoku(object sender, FormClosingEventArgs e)
         {
-            // Synchroner Fallback für das Schließen der Anwendung
             if(controller.CurrentProblem != null)
             {
                 try { FormCTS.Cancel(); } catch { }
@@ -1419,12 +1412,7 @@ namespace Sudoku
             {
                 if(settings.AutoSaveState)
                 {
-                    if(controller.IsTimerRunning)
-                    {
-                        controller.StopTimer();
-                    }
-                    settings.State = controller.SerializeProblem(true);
-                    settings.Save();
+                    controller.SaveApplicationState();
                 }
                 else
                 {

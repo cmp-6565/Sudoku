@@ -684,5 +684,23 @@ namespace Sudoku
             else
                 controller.CurrentProblem.Matrix.CellChanged -= OnCellChanged;
         }
+        public async Task VisualizeHints(List<BaseCell> hints)
+        {
+            var selectedPositions = new List<Point>();
+            foreach(DataGridViewCell cell in SelectedCells)
+                selectedPositions.Add(new Point(cell.ColumnIndex, cell.RowIndex));
+
+            ClearSelection();
+
+            foreach(var hint in hints)
+            {
+                await AnimateHint(hint.Row, hint.Col, hint.nPossibleValues == 1);
+            }
+
+            foreach(var pos in selectedPositions)
+                this[pos.X, pos.Y].Selected = true;
+
+            this.Update();
+        }
     }
 }

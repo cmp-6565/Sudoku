@@ -784,7 +784,16 @@ namespace Sudoku
 					ui.ShowError(Resources.NotPrinted + Environment.NewLine + PrintErrorMessage);
 			}
 		}
-		public int NumberOfProblems => printerService.NumberOfProblems;
+        public void SaveApplicationState()
+        {
+            if(IsTimerRunning)
+            {
+                StopTimer();
+            }
+            settings.State = SerializeProblem(true);
+            settings.Save();
+        }
+        public int NumberOfProblems => printerService.NumberOfProblems;
     }
     public class GenerationProgressState
     {

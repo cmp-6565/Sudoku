@@ -112,7 +112,6 @@ namespace Sudoku
             this.openSudokuDialog = new System.Windows.Forms.OpenFileDialog();
             this.sudokuStatusBar = new System.Windows.Forms.StatusStrip();
             this.sudokuStatusBarText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.printSudokuDialog = new System.Windows.Forms.PrintDialog();
             this.selectBookletDirectory = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.SudokuGrid)).BeginInit();
             this.sudokuMenu.SuspendLayout();
@@ -763,11 +762,6 @@ namespace Sudoku
             this.sudokuStatusBarText.Name = "sudokuStatusBarText";
             resources.ApplyResources(this.sudokuStatusBarText, "sudokuStatusBarText");
             // 
-            // printSudokuDialog
-            // 
-            this.printSudokuDialog.AllowSelection = true;
-            this.printSudokuDialog.AllowSomePages = true;
-            // 
             // selectBookletDirectory
             // 
             resources.ApplyResources(this.selectBookletDirectory, "selectBookletDirectory");
@@ -835,7 +829,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem print;
-        private System.Windows.Forms.PrintDialog printSudokuDialog;
         /*
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
