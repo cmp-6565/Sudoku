@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Dynamic;
@@ -38,7 +39,7 @@ namespace Sudoku
             undoStack = new Stack<CoreValue>();
             trickyProblems = new TrickyProblems(settings, ui);
             generationParameters = new GenerationParameters(settings);
-            printerService = new SudokuPrinterService(settings.SudokuSize, settings);
+            printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
             this.settings = settings;
             this.ui = ui;
         }
@@ -123,7 +124,7 @@ namespace Sudoku
             try
             {
                 SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
-                fileService.InitProblem(settings.State.Substring(1, settings.TotalCellCount).ToCharArray(), settings.State.Substring(settings.TotalCellCount + 1, 16).ToCharArray(), null);
+                fileService.InitProblem(settings.State.Substring(1, WinFormsSettings.TotalCellCount).ToCharArray(), settings.State.Substring(WinFormsSettings.TotalCellCount + 1, 16).ToCharArray(), null);
                 if(settings.State.IndexOf('\n') > 0)
                 {
                     fileService.LoadCandidates(settings.State.Substring(settings.State.IndexOf('\n') + 1), false);
@@ -154,7 +155,7 @@ namespace Sudoku
         {
             get
             {
-                return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), SerializeProblem(false).Substring(1, settings.TotalCellCount)); 
+                return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), SerializeProblem(false).Substring(1, WinFormsSettings.TotalCellCount)); 
             }
         }
     
@@ -200,22 +201,6 @@ namespace Sudoku
 
             return result;
         }
-        public void PrintDocument()
-        {
-            Boolean sc;
-            if((sc = CurrentProblem.HasCandidates()) && settings.PrintHints)
-                sc = ui.Confirm(Resources.PrintCandidates) == DialogResult.Yes;
-
-            SudokuPrinterService printerService = new SudokuPrinterService(settings.SudokuSize, settings);
-            if(ui.ShowPrintDialog(printerService.Document))
-            {
-                CurrentProblem.ResetMatrix();
-                printerService.AddProblem(CurrentProblem);
-                printerService.ShowCandidates = sc;
-                PrintDocument();
-            }
-        }
-
         public void AddProblem(BaseProblem problem)
         {
             printerService.AddProblem(problem);
@@ -397,7 +382,7 @@ namespace Sudoku
                             }
                         }
 
-                    } while(!token.IsCancellationRequested && (generationParameters.Reset || CurrentProblem.NumDistinctValues() < settings.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
+                    } while(!token.IsCancellationRequested && (generationParameters.Reset || CurrentProblem.NumDistinctValues() < WinFormsSettings.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
                 }, token);
             }
 
@@ -559,16 +544,16 @@ namespace Sudoku
         public ValidationResult ParseAndSync(string[,] grid)
         {
             if(grid == null) throw new ArgumentNullException(nameof(grid));
-            if(grid.GetLength(0) != settings.SudokuSize || grid.GetLength(1) != settings.SudokuSize)
+            if(grid.GetLength(0) != WinFormsSettings.SudokuSize || grid.GetLength(1) != WinFormsSettings.SudokuSize)
                 throw new ArgumentException("grid must be SudokuSize x SudokuSize", nameof(grid));
 
             ValidationResult result = new ValidationResult();
 
             BackupProblem();
 
-            for(int row = 0; row < settings.SudokuSize; row++)
+            for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
             {
-                for(int col = 0; col < settings.SudokuSize; col++)
+                for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
                 {
                     string raw = grid[row, col];
                     if(string.IsNullOrEmpty(raw)) continue;
@@ -705,7 +690,7 @@ namespace Sudoku
             String directBlockedCells = "";
             String indirectBlockedCells = "";
 
-            for(int i = 1; i <= settings.SudokuSize; i++)
+            for(int i = 1; i <= WinFormsSettings.SudokuSize; i++)
             {
                 if(i != cell.DefinitiveValue && i != cell.CellValue)
                 {
@@ -765,19 +750,41 @@ namespace Sudoku
                 ui.ShowInfo(Resources.NoProblems);
             else
             {
-                if(ui.ShowPrintDialog(printerService.Document))
+                try
                 {
-                    printerService.SortProblems();
-                    PrintDocument();
+                    printerService.Print();
                 }
+                catch(Win32Exception)
+                {
+                    if(PrintResult != 0)
+                        ui.ShowError(Resources.NotPrinted + Environment.NewLine + PrintErrorMessage);
+                    return;
+				}
             }
         }
         public void InitializePrinterService()
         {
             printerService?.Dispose();
-            printerService = new SudokuPrinterService(settings.SudokuSize, settings);
+            printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
         }
-        public int NumberOfProblems => printerService.NumberOfProblems;
+        public void PrintSingleProblem(Boolean showCandidates)
+        {
+			SudokuPrinterService printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
+			printerService.ShowCandidates = showCandidates;
+			CurrentProblem.ResetMatrix();
+			printerService.AddProblem(CurrentProblem);
+
+			try
+			{
+				printerService.Print();
+			}
+			catch(Win32Exception)
+			{
+				if(PrintResult != 0)
+					ui.ShowError(Resources.NotPrinted + Environment.NewLine + PrintErrorMessage);
+			}
+		}
+		public int NumberOfProblems => printerService.NumberOfProblems;
     }
     public class GenerationProgressState
     {

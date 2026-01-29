@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ namespace Sudoku
         private System.Drawing.Printing.PrintDocument printSudoku;
         internal PrintParameters printParameters;
         private CultureInfo cultureInfo;
+        private PrintDialog printDialog = new PrintDialog();
         public int SudokuSize { get; set; }
         public Boolean ShowCandidates { get; set; }
 
@@ -27,12 +29,16 @@ namespace Sudoku
 
         public SudokuPrinterService(int sudokuSize, ISudokuSettings settings)
         {
+            this.settings = settings;
+
+            printDialog.AllowSelection=true;
+            printDialog.AllowSomePages=true;
+
             printSudoku = new System.Drawing.Printing.PrintDocument();
             printSudoku.PrintPage += PrintSudokuEvent;
             cultureInfo = Thread.CurrentThread.CurrentUICulture;
             printParameters = new PrintParameters(settings);
             SudokuSize = sudokuSize;
-            this.settings = settings;
         }
         public void Dispose()
         {
@@ -41,6 +47,15 @@ namespace Sudoku
         }
         public System.Drawing.Printing.PrintDocument Document => printSudoku;
 
+        public void Print()
+        {
+            printDialog.UseEXDialog = true;
+            printDialog.Document = Document;
+            if(printDialog.ShowDialog() == DialogResult.OK)
+            {
+                PrintDocument();
+            }
+        }
         public void AddProblem(BaseProblem problem)
         {
             printParameters.Problems.Add(problem);
@@ -264,5 +279,27 @@ namespace Sudoku
             }
             printParameters.CurrentSolution++;
         }
+        public void PrintDocument()
+        {
+            try
+            {
+                printDialog.Document.Print();
+            }
+            catch(System.Runtime.InteropServices.ExternalException)
+            {
+                // This happens in the case the user presses "Cancel" while printing
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                // Known problem: The FinePrint-Dialog is not deleted from the screen:-(
+                printDialog.Document.Dispose();
+                printDialog.Dispose();
+            }
+        }
+
     }
 }

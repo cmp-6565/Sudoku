@@ -27,6 +27,9 @@ namespace Sudoku
 
             InitializeComponent();
 
+            this.settings = settings;
+            this.ui = ui;
+
             hard.Text = Resources.Hard;
             easy.Text = Resources.Easy;
             intermediate.Text = Resources.Intermediate;
@@ -81,8 +84,6 @@ namespace Sudoku
             for(i = 0; i < supportedCultures.Length; i++)
                 language.Items.Add(CultureInfo.GetCultureInfoByIetfLanguageTag(supportedCultures[i]).DisplayName);
             language.Text = CultureInfo.GetCultureInfoByIetfLanguageTag(settings.DisplayLanguage).DisplayName;
-            this.settings = settings;
-            this.ui = ui;
         }
 
         public int MinBookletSize

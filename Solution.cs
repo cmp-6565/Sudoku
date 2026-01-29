@@ -11,16 +11,16 @@ namespace Sudoku
 
         public Solution(ISudokuSettings settings)
         {
-            values = new byte[settings.SudokuSize][];
-            for(int row = 0; row < settings.SudokuSize; row++)
-                values[row] = new byte[settings.SudokuSize];
+            values = new byte[WinFormsSettings.SudokuSize][];
+            for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
+                values[row] = new byte[WinFormsSettings.SudokuSize];
             Init();
             this.settings = settings;
         }
 
         public override void SetValue(int row, int col, byte value, Boolean fixedValue)
         {
-            if(((value < 1 || value > settings.SudokuSize) && value != Values.Undefined) || row < 0 || col < 0 || row > settings.SudokuSize || col > settings.SudokuSize)
+            if(((value < 1 || value > WinFormsSettings.SudokuSize) && value != Values.Undefined) || row < 0 || col < 0 || row > WinFormsSettings.SudokuSize || col > WinFormsSettings.SudokuSize)
                 throw new InvalidSudokuValueException();
             values[row][col] = value;
         }
@@ -49,8 +49,8 @@ namespace Sudoku
         {
             int row, col;
 
-            for(row = 0; row < settings.SudokuSize; row++)
-                for(col = 0; col < settings.SudokuSize; col++)
+            for(row = 0; row < WinFormsSettings.SudokuSize; row++)
+                for(col = 0; col < WinFormsSettings.SudokuSize; col++)
                     values[row][col] = Values.Undefined;
         }
     }

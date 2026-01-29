@@ -27,7 +27,7 @@ namespace Sudoku
         private Stopwatch generationTimer = new Stopwatch();
 
         private int currentSolution = 0;
-        private Boolean abortRequested = false;
+        private Boolean AbortRequested {  get { return FormCTS.Token.IsCancellationRequested; }  }
         private Boolean applicationExiting = false;
         private CultureInfo cultureInfo;
         private OptionsDialog optionsDialog = null;
@@ -222,7 +222,6 @@ namespace Sudoku
         {
             status.Text = controller.GenerationAborted();
             status.Update();
-            abortRequested = false;
             ResetDetachedProcess();
             controller.RestoreProblem();
             SudokuGrid.DisplayValues();
@@ -302,7 +301,6 @@ namespace Sudoku
             severityLevel = controller.GetSeverityLevel(nProblems);
             if(severityLevel == 0) return; // Abbrechen
 
-            abortRequested = false;
             DisableGUI();
 
             var progress = new Progress<GenerationProgressState>(state =>
@@ -803,7 +801,7 @@ namespace Sudoku
         {
             TimeSpan elapsed = generationTimer.Elapsed;
 
-            status.Text = usePrecalculatedProblem? Resources.ProblemRetrieved : String.Format(cultureInfo, s, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
+            status.Text = usePrecalculatedProblem? Resources.ProblemRetrieved : s+Environment.NewLine+ String.Format(cultureInfo, Resources.NeededTime, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
             SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
             PublishTrickyProblems();
             ResetDetachedProcess();
@@ -967,17 +965,18 @@ namespace Sudoku
             try
             {
                 await controller.Solve(findallSolutions.Checked, progress, FormCTS.Token);
+                TimeSpan elapsed = DateTime.Now - computingStart;
 
                 if(controller.CurrentProblem.ProblemSolved || controller.CurrentProblem.NumberOfSolutions > 0)
                 {
                     if(controller.CurrentProblem.NumberOfSolutions > 0)
                     {
-                        status.Text = Resources.ProblemSolved + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutions + controller.CurrentProblem.NumberOfSolutions.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + controller.CurrentProblem.TotalPassCounter.ToString("n0", cultureInfo);
+                        status.Text = Resources.ProblemSolved + Environment.NewLine + String.Format(Resources.NeededTime, cultureInfo, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds) + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutions + controller.CurrentProblem.NumberOfSolutions.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + controller.CurrentProblem.TotalPassCounter.ToString("n0", cultureInfo);
                         currentSolution = -1;
                         NextSolution();
                     }
                     else
-                        status.Text = Resources.NotResolvable + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + Environment.NewLine + Resources.NeededPasses + controller.CurrentProblem.TotalPassCounter.ToString("n0", cultureInfo);
+                        status.Text = Resources.NotResolvable + Environment.NewLine + String.Format(Resources.NeededTime, cultureInfo, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds) + Environment.NewLine + Resources.NeededPasses + controller.CurrentProblem.TotalPassCounter.ToString("n0", cultureInfo);
 
                     sudokuStatusBarText.Text = Resources.Ready;
 
@@ -998,7 +997,9 @@ namespace Sudoku
                 sudokuStatusBarText.Text = Resources.GenerationAborted;
                 if(controller.CurrentProblem.NumberOfSolutions > 0)
                 {
-                    status.Text = String.Format(cultureInfo, Resources.SolutionsFound, (controller.CurrentProblem.TotalPassCounter > 0 ? Resources.Plural : String.Empty)) + Environment.NewLine + Resources.NeededTime + (DateTime.Now - computingStart).ToString() + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutionsSoFar + controller.CurrentProblem.NumberOfSolutions.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + controller.CurrentProblem.TotalPassCounter.ToString("n0", cultureInfo);
+                    TimeSpan elapsed = DateTime.Now - computingStart;
+
+                    status.Text = String.Format(cultureInfo, Resources.SolutionsFound, (controller.CurrentProblem.TotalPassCounter > 0 ? Resources.Plural : String.Empty)) + Environment.NewLine + String.Format(Resources.NeededTime, cultureInfo, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds) + (findallSolutions.Checked ? Environment.NewLine + Resources.TotalNumberOfSolutionsSoFar + controller.CurrentProblem.NumberOfSolutions.ToString("n0", cultureInfo) : String.Empty) + Environment.NewLine + Resources.NeededPasses + controller.CurrentProblem.TotalPassCounter.ToString("n0", cultureInfo);
                     currentSolution = -1;
                     NextSolution();
                 }
@@ -1125,7 +1126,7 @@ namespace Sudoku
                 try { await Task.Run(() => controller.CurrentProblem.SolverTask.Wait(500)); } catch { }
             }
 
-            abortRequested = true;
+            FormCTS.Cancel();
             try
             {
                 SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);

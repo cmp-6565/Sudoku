@@ -305,7 +305,7 @@
     <value>Solutions so far: {0:n0}</value>
   </data>
   <data name="NeededTime" xml:space="preserve">
-    <value>Time used: </value>
+    <value>Time needed: {0:0#}:{1:0#}:{2:0#},{3:0#}</value>
   </data>
   <data name="Solution" xml:space="preserve">
     <value>Solution</value>
@@ -347,7 +347,7 @@
     <value>Interrupt!\nTime past: {0}\nPasses made: {1:n0}</value>
   </data>
   <data name="NewProblemGenerated" xml:space="preserve">
-    <value>New Problem generated! ({0})\nProblem has {1:n0} pre-allocated cells\nProblems analyzed: {2:n0}\nPasses needed: {3:n0}\nTime needed: {4:0#}:{5:0#}:{6:0#},{7:0#}</value>
+    <value>New Problem generated! ({0})\nProblem has {1:n0} pre-allocated cells\nProblems analyzed: {2:n0}\nPasses needed: {3:n0}</value>
   </data>
   <data name="PrintCandidates" xml:space="preserve">
     <value>Print candidates instead of the possible values?</value>

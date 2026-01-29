@@ -13,7 +13,6 @@ namespace Sudoku
         void ShowError(string message);
         void ShowInfo(string message);
         DialogResult Confirm(string message, MessageBoxButtons buttons=MessageBoxButtons.YesNo);
-        Boolean ShowPrintDialog(PrintDocument printDocument);
         int GetSeverity();
         string AskForFilename(string defaultExt);
     }

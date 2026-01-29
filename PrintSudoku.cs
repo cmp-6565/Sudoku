@@ -13,36 +13,9 @@ namespace Sudoku
 {
     public partial class SudokuForm: Form
     {
-        private void PrintDocument()
-        {
-            try
-            {
-                printSudokuDialog.Document.Print();
-            }
-            catch(Win32Exception)
-            {
-                if(controller.PrintResult != 0)
-                    ShowError(Resources.NotPrinted + Environment.NewLine + controller.PrintErrorMessage);
-            }
-            catch(System.Runtime.InteropServices.ExternalException)
-            {
-                // This happens in the case the user presses "Cancel" while printing
-            }
-            catch(Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                // Known problem: The FinePrint-Dialog is not deleted from the screen:-(
-                printSudokuDialog.Document.Dispose();
-                printSudokuDialog.Dispose();
-            }
-        }
-
         private async Task PrintDialog()
         {
-            if(!SudokuGrid.SyncProblemWithGUI(true, false))
+            if(!SudokuGrid.InSync || !SudokuGrid.SyncProblemWithGUI(true, false))
             {
                 ShowInfo(Resources.InvalidProblem + Environment.NewLine + Resources.PrintNotPossible);
                 return;
@@ -66,29 +39,11 @@ namespace Sudoku
                 if((sc = controller.CurrentProblem.HasCandidates()) && settings.PrintHints)
                     sc = Confirm(Resources.PrintCandidates) == DialogResult.Yes;
 
-                printSudokuDialog.UseEXDialog = true;
-                if(printSudokuDialog.ShowDialog() == DialogResult.OK)
-                {
-                    SudokuPrinterService printerService = new SudokuPrinterService(settings.SudokuSize, settings);
-
-                    printSudokuDialog.Document = printerService.Document;
-
-                    controller.CurrentProblem.ResetMatrix();
-                    printerService.AddProblem(controller.CurrentProblem);
-                    printerService.ShowCandidates=sc;
-                    PrintDocument();
-                }
+                controller.PrintSingleProblem(sc);
             }
 
             controller.UpdateProblem(tmp);
         }
-        public Boolean ShowPrintDialog(PrintDocument printDocument)
-        {
-            printSudokuDialog.UseEXDialog = true;
-            printSudokuDialog.Document = printDocument;
-            return printSudokuDialog.ShowDialog() == DialogResult.OK;
-        }  
-
         private void PrintBooklet()
         {
             controller.PrintBooklet();
@@ -117,9 +72,8 @@ namespace Sudoku
 
                 DisableGUI();
 
-                abortRequested = false;
                 LoadProblemFilenames(new DirectoryInfo(selectBookletDirectory.SelectedPath), filenames);
-                if(!abortRequested)
+                if(!AbortRequested)
                 {
 
                     int totalNumber = filenames.Count;
@@ -128,7 +82,7 @@ namespace Sudoku
                     else
                     {
                         int count = LoadProblems(filenames);
-                        if(!abortRequested)
+                        if(!AbortRequested)
                         {
                             sudokuStatusBarText.Text = String.Format(cultureInfo, Resources.ProblemsLoaded, count, totalNumber);
                             sudokuStatusBar.Update();
@@ -152,7 +106,7 @@ namespace Sudoku
             sudokuStatusBar.Update();
 
             // avoid Application.DoEvents(); — respect cooperative cancellation
-            if(abortRequested) return;
+            if(AbortRequested) return;
 
             foreach(FileInfo fileInfo in directoryInfo.GetFiles())
                 filenames.Add(fileInfo.FullName);
@@ -193,7 +147,7 @@ namespace Sudoku
                             sudokuStatusBar.Update();
 
                             // cooperative cancellation check instead of Application.DoEvents
-                            if(abortRequested) break;
+                            if(AbortRequested) break;
                         }
                     }
                 }
@@ -203,7 +157,7 @@ namespace Sudoku
                 }
 
                 filenames.RemoveAt(problemNumber);
-                ready = (controller.NumberOfProblems == settings.BookletSizeExisting && !settings.BookletSizeUnlimited) || filenames.Count == 0 || abortRequested;
+                ready = (controller.NumberOfProblems == settings.BookletSizeExisting && !settings.BookletSizeUnlimited) || filenames.Count == 0 || AbortRequested;
             }
             controller.UpdateProblem(tmp);
 

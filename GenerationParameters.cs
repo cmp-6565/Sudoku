@@ -87,9 +87,9 @@ namespace Sudoku
         public void NewValue()
         {
             Random rand = new Random();
-            generatedValue = (Byte)rand.Next(1, settings.SudokuSize + 1);
-            row = rand.Next(0, settings.SudokuSize);
-            col = rand.Next(0, settings.SudokuSize);
+            generatedValue = (Byte)rand.Next(1, WinFormsSettings.SudokuSize + 1);
+            row = rand.Next(0, WinFormsSettings.SudokuSize);
+            col = rand.Next(0, WinFormsSettings.SudokuSize);
         }
     }
 }

@@ -181,8 +181,8 @@ namespace Sudoku
             byte offset = (byte)'0';
 
             serializedProblem = SudokuTypeIdentifier.ToString();
-            for(int i = 0; i < settings.SudokuSize; i++)
-                for(int j = 0; j < settings.SudokuSize; j++)
+            for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
+                for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
                     serializedProblem += (char)(GetValue(i, j) + (Matrix.Cell(i, j).ReadOnly && includeROFlag ? ReadOnlyOffset : 0) + offset);
             serializedProblem += SolvingTime.ToString().PadRight(16, '0');
             serializedProblem += Comment;
@@ -198,10 +198,10 @@ namespace Sudoku
             Byte bit = 0;
             String serializedCandidates = "";
 
-            for(int row = 0; row < settings.SudokuSize; row++)
-                for(int col = 0; col < settings.SudokuSize; col++)
+            for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
+                for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
                 {
-                    for(int candidate = 1; candidate <= settings.SudokuSize; candidate++)
+                    for(int candidate = 1; candidate <= WinFormsSettings.SudokuSize; candidate++)
                     {
                         if(GetCandidate(row, col, candidate, exclusionCandidate))
                             oneCandidate += (Byte)(1 << bit);
@@ -233,13 +233,13 @@ namespace Sudoku
                 {
                     if((oneCandidate & (1 << bit)) > 0)
                         SetCandidate(row, col, candidate, exclusionCandidates);
-                    if(++candidate > settings.SudokuSize)
+                    if(++candidate > WinFormsSettings.SudokuSize)
                     {
                         candidate = 1;
-                        if(++col >= settings.SudokuSize)
+                        if(++col >= WinFormsSettings.SudokuSize)
                         {
                             col = 0;
-                            if(++row >= settings.SudokuSize)
+                            if(++row >= WinFormsSettings.SudokuSize)
                                 return;
                         }
                     }
@@ -294,7 +294,7 @@ namespace Sudoku
 
             try
             {
-                char[] values = new char[settings.TotalCellCount];
+                char[] values = new char[WinFormsSettings.TotalCellCount];
                 char[] elapsedTime = new char[16];
 
                 sr.Read(values, 0, values.Length);
@@ -318,10 +318,10 @@ namespace Sudoku
                     Sudoku.Comment = String.Empty;
 
                 Sudoku.Matrix.SetPredefinedValues = false;
-                for(int i = 0; i < settings.SudokuSize; i++)
-                    for(int j = 0; j < settings.SudokuSize; j++)
+                for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
+                    for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
                     {
-                        v = Convert.ToByte(values[i * settings.SudokuSize + j] - offset);
+                        v = Convert.ToByte(values[i * WinFormsSettings.SudokuSize + j] - offset);
                         if(v >= ReadOnlyOffset)
                         {
                             Sudoku.Matrix.Cell(i, j).ReadOnly = (v > ReadOnlyOffset);

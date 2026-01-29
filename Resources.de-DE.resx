@@ -305,7 +305,7 @@
     <value>Lösungen bisher: {0:n0}</value>
   </data>
   <data name="NeededTime" xml:space="preserve">
-    <value>Benötigte Zeit: </value>
+    <value>Benötigte Zeit: {0:0#}:{1:0#}:{2:0#},{3:0#}</value>
   </data>
   <data name="Solution" xml:space="preserve">
     <value>Lösung</value>
@@ -347,7 +347,7 @@
     <value>Abgebrochen!\nVergangen: {0}\nDurchgänge: {1:n0}</value>
   </data>
   <data name="NewProblemGenerated" xml:space="preserve">
-    <value>Neues Problem generiert! ({0})\nProblem hat {1:n0} vorbelegte Felder\nProbleme analysiert: {2:n0}\nBenötigte Durchgänge: {3:n0}\n Benötigte Zeit: {4:0#}:{5:0#}:{6:0#},{7:0#}</value>
+    <value>Neues Problem generiert! ({0})\nProblem hat {1:n0} vorbelegte Felder\nProbleme analysiert: {2:n0}\nBenötigte Durchgänge: {3:n0}</value>
   </data>
   <data name="PrintCandidates" xml:space="preserve">
     <value>Drucken der Kandidaten anstelle der möglichen Werte?</value>
