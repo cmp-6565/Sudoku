@@ -305,7 +305,7 @@
     <value>Lösungen bisher: {0:n0}</value>
   </data>
   <data name="NeededTime" xml:space="preserve">
-    <value>Benötigte Zeit: </value>
+    <value>Benötigte Zeit: {0:0#}:{1:0#}:{2:0#},{3:0#}</value>
   </data>
   <data name="Solution" xml:space="preserve">
     <value>Lösung</value>
@@ -474,5 +474,14 @@
   </data>
   <data name="Homepage" xml:space="preserve">
     <value>https://sudoku.pi-c-it.de/index.php/de/</value>
+  </data>
+  <data name="PausedMessage" xml:space="preserve">
+    <value>Pausiert!\n\nKlicken um Fortzusetzen!</value>
+  </data>
+  <data name="ClearContent" xml:space="preserve">
+    <value>Inhalt löschen</value>
+  </data>
+  <data name="ClearCandidates" xml:space="preserve">
+    <value>Kandidaten zurücksetzen</value>
   </data>
 </root>

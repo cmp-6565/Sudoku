@@ -1,11 +1,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Sudoku;
 
 namespace Sudoku.Tests
 {
     [TestClass]
     public class MaskTests
     {
+        private ISudokuSettings settings = new WinFormsSettings();
+
         [TestMethod]
         public void ToggleAndGetViaCell()
         {
@@ -29,10 +30,10 @@ namespace Sudoku.Tests
         {
             var m = new SudokuMatrix();
             m.Init();
-            m.SetCandidate(0,0,2,false);
-            Assert.IsTrue(m.GetCandidate(0,0,2,false));
-            m.SetCandidate(0,0,2,false);
-            Assert.IsFalse(m.GetCandidate(0,0,2,false));
+            m.SetCandidate(0, 0, 2, false);
+            Assert.IsTrue(m.GetCandidate(0, 0, 2, false));
+            m.SetCandidate(0, 0, 2, false);
+            Assert.IsFalse(m.GetCandidate(0, 0, 2, false));
         }
     }
 }

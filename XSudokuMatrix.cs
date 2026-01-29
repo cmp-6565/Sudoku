@@ -6,27 +6,29 @@ namespace Sudoku
     [Serializable]
     internal class XSudokuMatrix: BaseMatrix
     {
-        protected BaseCell[] UpDiagonal=new BaseCell[SudokuForm.SudokuSize];
-        protected BaseCell[] DownDiagonal=new BaseCell[SudokuForm.SudokuSize];
+        protected BaseCell[] UpDiagonal;
+        protected BaseCell[] DownDiagonal;
 
-        public XSudokuMatrix(): base()
+        public XSudokuMatrix() : base()
         {
-            for(int row=0; row<SudokuForm.SudokuSize; row++)
-                for(int i=0; i<SudokuForm.SudokuSize; i++)
+            UpDiagonal = new BaseCell[WinFormsSettings.SudokuSize];
+            DownDiagonal = new BaseCell[WinFormsSettings.SudokuSize];
+            for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
+                for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
                 {
                     if(!Cell(row, row).SameRectangle(Cell(i, i))) Cell(row, row).AddNeighbor(ref Matrix[i][i]);
-                    if(!Cell(row, SudokuForm.SudokuSize-1-row).SameRectangle(Cell(i, SudokuForm.SudokuSize-1-i))) Cell(row, SudokuForm.SudokuSize-1-row).AddNeighbor(ref Matrix[i][SudokuForm.SudokuSize-1-i]);
+                    if(!Cell(row, WinFormsSettings.SudokuSize - 1 - row).SameRectangle(Cell(i, WinFormsSettings.SudokuSize - 1 - i))) Cell(row, WinFormsSettings.SudokuSize - 1 - row).AddNeighbor(ref Matrix[i][WinFormsSettings.SudokuSize - 1 - i]);
                 }
-            for(int i=0; i<SudokuForm.SudokuSize; i++)
+            for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
             {
-                DownDiagonal[i]=Cell(i, i);
-                UpDiagonal[i]=Cell(i, SudokuForm.SudokuSize-1-i);
+                DownDiagonal[i] = Cell(i, i);
+                UpDiagonal[i] = Cell(i, WinFormsSettings.SudokuSize - 1 - i);
             }
         }
 
         public override BaseCell CreateValue(int row, int col)
         {
-            if(row==col||row+col==SudokuForm.SudokuSize-1)
+            if(row == col || row + col == WinFormsSettings.SudokuSize - 1)
                 return new DiagonalCell(row, col);
             else
                 return new Cell(row, col);
@@ -34,7 +36,7 @@ namespace Sudoku
 
         protected override BaseCell[] GetDiagonal(SudokuPart direction)
         {
-            if(direction==SudokuPart.DownDiagonal)
+            if(direction == SudokuPart.DownDiagonal)
                 return DownDiagonal;
             else
                 return UpDiagonal;
@@ -42,24 +44,24 @@ namespace Sudoku
 
         public Boolean CheckDiagonals()
         {
-            return Check(GetDiagonal(SudokuPart.DownDiagonal))&&Check(GetDiagonal(SudokuPart.UpDiagonal));
+            return Check(GetDiagonal(SudokuPart.DownDiagonal)) && Check(GetDiagonal(SudokuPart.UpDiagonal));
         }
 
         protected override Boolean BlockOtherCells(List<BaseCell> cells, int block)
         {
-            Boolean rc=base.BlockOtherCells(cells, block);
-            Boolean proceed=true;
+            Boolean rc = base.BlockOtherCells(cells, block);
+            Boolean proceed = true;
             BaseCell[] neighborCells;
 
             foreach(BaseCell cell in cells)
-                proceed&=cell is DiagonalCell&&cell.Up()==cells[0].Up();
+                proceed &= cell is DiagonalCell && cell.Up() == cells[0].Up();
             if(proceed)
             {
-                neighborCells=(cells[0].Up()&&cells[cells.Count-1].Up() ? UpDiagonal: DownDiagonal);
+                neighborCells = (cells[0].Up() && cells[cells.Count - 1].Up() ? UpDiagonal : DownDiagonal);
                 foreach(BaseCell cell in neighborCells)
                     if(!cells.Contains(cell))
                     {
-                        rc|=cell.Enabled(block);
+                        rc |= cell.Enabled(block);
                         cell.SetBlock(block, false, false);
                     }
             }
@@ -75,9 +77,9 @@ namespace Sudoku
         {
             get
             {
-                if((severityLevel=base.SeverityLevel)==float.NaN)
+                if((severityLevel = base.SeverityLevel) == float.NaN)
                     return float.NaN;
-                severityLevel/=1.1f;
+                severityLevel /= 1.1f;
 
                 return severityLevel;
             }

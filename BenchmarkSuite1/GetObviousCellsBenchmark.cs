@@ -1,6 +1,4 @@
-using System;
 using BenchmarkDotNet.Attributes;
-using Sudoku;
 
 namespace Sudoku.Benchmarks
 {

@@ -1,5 +1,5 @@
-using System;
 using BenchmarkDotNet.Attributes;
+
 using Microsoft.VSDiagnostics;
 
 namespace Sudoku.Benchmarks
@@ -8,8 +8,8 @@ namespace Sudoku.Benchmarks
     public class CandidateMaskVsArrayBenchmark
     {
         private SudokuMatrix matrix;
-        private bool[,, ] arrayCandidates;
-        private bool[,, ] arrayExclusion;
+        private bool[,,] arrayCandidates;
+        private bool[,,] arrayExclusion;
         private int size;
         // deterministic sequences to avoid RNG overhead during benchmarks
         private int[] seqR;
@@ -30,7 +30,7 @@ namespace Sudoku.Benchmarks
             seqC = new int[ops];
             seqV = new int[ops];
             int total = size * size * size;
-            for (int i = 0; i < ops; i++)
+            for(int i = 0; i < ops; i++)
             {
                 int idx = i % total; // cycle through all combinations
                 seqR[i] = idx / (size * size);
@@ -44,13 +44,13 @@ namespace Sudoku.Benchmarks
         public int Mask_SetGet()
         {
             int local = 0;
-            for (int i = 0; i < ops; i++)
+            for(int i = 0; i < ops; i++)
             {
                 int r = seqR[i];
                 int c = seqC[i];
                 int v = seqV[i];
                 matrix.SetCandidate(r, c, v, false);
-                if (matrix.GetCandidate(r, c, v, false))
+                if(matrix.GetCandidate(r, c, v, false))
                     local++;
             }
 
@@ -62,7 +62,7 @@ namespace Sudoku.Benchmarks
         public int Array_SetGet()
         {
             int local = 0;
-            for (int i = 0; i < ops; i++)
+            for(int i = 0; i < ops; i++)
             {
                 int r = seqR[i];
                 int c = seqC[i];
@@ -70,7 +70,7 @@ namespace Sudoku.Benchmarks
                 // toggle semantics: flip and clear mutually exclusive
                 arrayCandidates[r, c, v] = !arrayCandidates[r, c, v];
                 arrayExclusion[r, c, v] = false;
-                if (arrayCandidates[r, c, v])
+                if(arrayCandidates[r, c, v])
                     local++;
             }
 

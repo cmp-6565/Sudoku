@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
+
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Diagnosers;
-using Sudoku;
 
 namespace Sudoku.Benchmarks
 {
     // Derived class to expose protected BlockOtherCells for benchmarking
-    internal class DerivedSudokuMatrix : SudokuMatrix
+    internal class DerivedSudokuMatrix: SudokuMatrix
     {
         public bool CallBlockOtherCells(List<BaseCell> enabledCells, int block)
         {
@@ -35,17 +34,17 @@ namespace Sudoku.Benchmarks
             matrix.Init();
             enabledCells = new List<BaseCell>();
             // collect enabled cells for block 'block' from first row
-            foreach (BaseCell cell in matrix.Rows[0])
+            foreach(BaseCell cell in matrix.Rows[0])
             {
-                if (cell.nPossibleValues > 0 && cell.Enabled(block))
+                if(cell.nPossibleValues > 0 && cell.Enabled(block))
                     enabledCells.Add(cell);
             }
 
             // Ensure at least some cells are present; if not, pick first two
-            if (enabledCells.Count == 0)
+            if(enabledCells.Count == 0)
             {
                 enabledCells.Add(matrix.Cell(0, 0));
-                if (matrix.Cell(0, 1) != null)
+                if(matrix.Cell(0, 1) != null)
                     enabledCells.Add(matrix.Cell(0, 1));
             }
         }

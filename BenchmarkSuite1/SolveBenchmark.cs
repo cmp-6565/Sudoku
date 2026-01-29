@@ -1,6 +1,8 @@
-using System;
-using BenchmarkDotNet.Attributes;
 using System.Collections.Generic;
+using System.Threading;
+
+using BenchmarkDotNet.Attributes;
+
 using Microsoft.VSDiagnostics;
 
 namespace Sudoku.Benchmarks
@@ -8,6 +10,8 @@ namespace Sudoku.Benchmarks
     [CPUUsageDiagnoser]
     public class SolveBenchmark
     {
+        ISudokuSettings settings = new WinFormsSettings();
+
         private List<SudokuProblem> preparedProblems;
         private int checksum = 0;
         private int[][] puzzles;
@@ -186,14 +190,14 @@ namespace Sudoku.Benchmarks
                 0
             };
             int size = SudokuForm.SudokuSize;
-            for (int p = 0; p < puzzles.Length; p++)
+            for(int p = 0; p < puzzles.Length; p++)
             {
                 // keep puzzles in memory; do not pre-create SudokuProblem instances to avoid cloning issues
                 // initialization of problem instances will happen in each benchmark iteration
                 // (preparing puzzles array only)
                 // nothing to do here besides storing the puzzle
                 // preparedProblems list kept for backward compatibility but left empty
-                
+
                 // no-op
             }
         }
@@ -202,7 +206,8 @@ namespace Sudoku.Benchmarks
         public int Solve_Puzzle1()
         {
             var prob = CreateProblemFromArray(puzzles[0]);
-            prob.FindSolutions(1UL);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            prob.FindSolutions(1, cts.Token);
             int local = prob.Solutions.Count;
             checksum ^= local;
             return local;
@@ -212,7 +217,8 @@ namespace Sudoku.Benchmarks
         public int Solve_Puzzle2()
         {
             var prob = CreateProblemFromArray(puzzles[1]);
-            prob.FindSolutions(1UL);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            prob.FindSolutions(1, cts.Token);
             int local = prob.Solutions.Count;
             checksum ^= local;
             return local;
@@ -222,10 +228,11 @@ namespace Sudoku.Benchmarks
         public int Solve_All()
         {
             int total = 0;
-            for (int i = 0; i < puzzles.Length; i++)
+            for(int i = 0; i < puzzles.Length; i++)
             {
                 var prob = CreateProblemFromArray(puzzles[i]);
-                prob.FindSolutions(1UL);
+                CancellationTokenSource cts = new CancellationTokenSource();
+                prob.FindSolutions(1, cts.Token);
                 total += prob.Solutions.Count;
             }
 
@@ -241,17 +248,17 @@ namespace Sudoku.Benchmarks
 
         private SudokuProblem CreateProblemFromArray(int[] arr)
         {
-            var prob = new SudokuProblem();
+            var prob = new SudokuProblem(settings);
             int size = SudokuForm.SudokuSize;
             prob.Matrix.Init();
             prob.Matrix.SetPredefinedValues = false;
-            for (int i = 0; i < arr.Length; i++)
+            for(int i = 0; i < arr.Length; i++)
             {
                 int v = arr[i];
-                if (v != 0) prob.SetValue(i / size, i % size, (byte)v);
+                if(v != 0) prob.SetValue(i / size, i % size, (byte)v);
             }
             prob.Matrix.SetPredefinedValues = true;
             return prob;
         }
     }
- }
+}

@@ -138,8 +138,13 @@
     </Compile>
     <Compile Include="CoreValue.cs" />
     <Compile Include="DiagonalCell.cs" />
+    <Compile Include="FlatColorTable.cs" />
+    <Compile Include="FlatRenderer.cs" />
     <Compile Include="GenerationParameters.cs" />
     <Compile Include="InvalidSudokuValueException.cs" />
+    <Compile Include="ISudokuSettings.cs" />
+    <Compile Include="IUserInteraction.cs" />
+    <Compile Include="MinimizationUpdate.cs" />
     <Compile Include="OptionsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -222,6 +227,7 @@
     <None Include="app.config" />
     <BaseApplicationManifest Include="Properties\app.manifest" />
     <None Include="html\example.pdf" />
+    <None Include="html\Load.php" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -255,7 +261,10 @@
     </Compile>
     <Compile Include="Solution.cs" />
     <Compile Include="Sudoku.Tests\MaskTests.cs" />
-    <Compile Include="Sudoku.Tests\SudokuSolverTests.cs" />
+    <Compile Include="SudokuBoard.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SudokuController.cs" />
     <Compile Include="SudokuMainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -263,17 +272,20 @@
       <DependentUpon>SudokuMainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="SudokuMatrix.cs" />
+    <Compile Include="SudokuPrinterService.cs" />
     <Compile Include="SudokuProblem.cs" />
     <Compile Include="BaseMatrix.cs" />
     <Compile Include="BaseCell.cs" />
     <Compile Include="Cell.cs" />
-    <Compile Include="SudokuSolver.cs" />
-    <Compile Include="SyncHelper.cs" />
+    <Compile Include="SudokuRenderer.cs" />
+    <Compile Include="SudokuFileService.cs" />
     <Compile Include="TrickyProblems.cs" />
     <Compile Include="Values.cs" />
+    <Compile Include="WinFormsSettings.cs" />
     <Compile Include="XSudokuMatrix.cs" />
     <Compile Include="XSudokuProblem.cs" />
     <None Include="Sudoku.Tests\Sudoku.Tests.csproj" />
+    <None Include="html\SudokuOfTheDay.php" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

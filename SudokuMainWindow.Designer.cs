@@ -33,7 +33,7 @@ namespace Sudoku
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.SudokuTable = new System.Windows.Forms.DataGridView();
+            this.SudokuGrid = new Sudoku.SudokuBoard();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -65,7 +65,7 @@ namespace Sudoku
             this.existingBooklet = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.exit = new System.Windows.Forms.ToolStripMenuItem();
-            this.sudokuProblem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SudokuProblem = new System.Windows.Forms.ToolStripMenuItem();
             this.generate = new System.Windows.Forms.ToolStripMenuItem();
             this.generateNormalSudoku = new System.Windows.Forms.ToolStripMenuItem();
             this.generateXSudoku = new System.Windows.Forms.ToolStripMenuItem();
@@ -93,6 +93,8 @@ namespace Sudoku
             this.findallSolutions = new System.Windows.Forms.ToolStripMenuItem();
             this.showPossibleValues = new System.Windows.Forms.ToolStripMenuItem();
             this.autoCheck = new System.Windows.Forms.ToolStripMenuItem();
+            this.pencilMode = new System.Windows.Forms.ToolStripMenuItem();
+            this.highlightSameValues = new System.Windows.Forms.ToolStripMenuItem();
             this.markNeighbors = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.sudokuOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,22 +109,20 @@ namespace Sudoku
             this.openSudokuDialog = new System.Windows.Forms.OpenFileDialog();
             this.sudokuStatusBar = new System.Windows.Forms.StatusStrip();
             this.sudokuStatusBarText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.printSudokuDialog = new System.Windows.Forms.PrintDialog();
-            this.printSudoku = new System.Drawing.Printing.PrintDocument();
             this.selectBookletDirectory = new System.Windows.Forms.FolderBrowserDialog();
-            ((System.ComponentModel.ISupportInitialize)(this.SudokuTable)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SudokuGrid)).BeginInit();
             this.sudokuMenu.SuspendLayout();
             this.sudokuStatusBar.SuspendLayout();
             this.SuspendLayout();
             // 
-            // SudokuTable
+            // SudokuGrid
             // 
-            this.SudokuTable.AllowUserToAddRows = false;
-            this.SudokuTable.AllowUserToDeleteRows = false;
-            this.SudokuTable.AllowUserToResizeColumns = false;
-            this.SudokuTable.AllowUserToResizeRows = false;
-            this.SudokuTable.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.SudokuTable.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
+            this.SudokuGrid.AllowUserToAddRows = false;
+            this.SudokuGrid.AllowUserToDeleteRows = false;
+            this.SudokuGrid.AllowUserToResizeColumns = false;
+            this.SudokuGrid.AllowUserToResizeRows = false;
+            this.SudokuGrid.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.SudokuGrid.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.Sunken;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -131,11 +131,11 @@ namespace Sudoku
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
-            resources.ApplyResources(this.SudokuTable, "SudokuTable");
-            this.SudokuTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
-            this.SudokuTable.ColumnHeadersVisible = false;
-            this.SudokuTable.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.SudokuGrid.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            resources.ApplyResources(this.SudokuGrid, "SudokuGrid");
+            this.SudokuGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            this.SudokuGrid.ColumnHeadersVisible = false;
+            this.SudokuGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3,
@@ -154,9 +154,9 @@ namespace Sudoku
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.ButtonShadow;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.DefaultCellStyle = dataGridViewCellStyle2;
-            this.SudokuTable.MultiSelect = false;
-            this.SudokuTable.Name = "SudokuTable";
+            this.SudokuGrid.DefaultCellStyle = dataGridViewCellStyle2;
+            this.SudokuGrid.MultiSelect = false;
+            this.SudokuGrid.Name = "SudokuGrid";
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -165,23 +165,16 @@ namespace Sudoku
             dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.SudokuTable.RowHeadersVisible = false;
-            this.SudokuTable.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
+            this.SudokuGrid.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.SudokuGrid.RowHeadersVisible = false;
+            this.SudokuGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             dataGridViewCellStyle4.FormatProvider = new System.Globalization.CultureInfo("de-DE");
             dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.RowsDefaultCellStyle = dataGridViewCellStyle4;
-            this.SudokuTable.RowTemplate.Height = 30;
-            this.SudokuTable.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.SudokuTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.SudokuTable.StandardTab = true;
-            this.SudokuTable.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.BeginEdit);
-            this.SudokuTable.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.EndEdit);
-            this.SudokuTable.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.CellEnter);
-            this.SudokuTable.CellLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.CellLeave);
-            this.SudokuTable.Paint += new System.Windows.Forms.PaintEventHandler(this.ShowCellHints);
-            this.SudokuTable.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HandleSpecialChar);
-            this.SudokuTable.KeyUp += new System.Windows.Forms.KeyEventHandler(this.KeyUp);
+            this.SudokuGrid.RowsDefaultCellStyle = dataGridViewCellStyle4;
+            this.SudokuGrid.RowTemplate.Height = 30;
+            this.SudokuGrid.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.SudokuGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.SudokuGrid.StandardTab = true;
             // 
             // Column1
             // 
@@ -277,7 +270,7 @@ namespace Sudoku
             this.sudokuMenu.BackColor = System.Drawing.SystemColors.MenuBar;
             this.sudokuMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.file,
-            this.sudokuProblem,
+            this.SudokuProblem,
             this.options,
             this.help});
             resources.ApplyResources(this.sudokuMenu, "sudokuMenu");
@@ -414,9 +407,9 @@ namespace Sudoku
             resources.ApplyResources(this.exit, "exit");
             this.exit.Click += new System.EventHandler(this.ExitClick);
             // 
-            // sudokuProblem
+            // SudokuProblem
             // 
-            this.sudokuProblem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.SudokuProblem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generate,
             this.solve,
             this.mimimalAllocation,
@@ -435,8 +428,8 @@ namespace Sudoku
             this.clearCandidates,
             this.toolStripSeparator4,
             this.abort});
-            this.sudokuProblem.Name = "sudokuProblem";
-            resources.ApplyResources(this.sudokuProblem, "sudokuProblem");
+            this.SudokuProblem.Name = "SudokuProblem";
+            resources.ApplyResources(this.SudokuProblem, "SudokuProblem");
             // 
             // generate
             // 
@@ -523,6 +516,7 @@ namespace Sudoku
             this.startSolveProblem.Name = "startSolveProblem";
             resources.ApplyResources(this.startSolveProblem, "startSolveProblem");
             this.startSolveProblem.Tag = "disable=1";
+            this.startSolveProblem.Click += new System.EventHandler(this.StartGameClick);
             // 
             // fixCurrentValues
             // 
@@ -579,6 +573,8 @@ namespace Sudoku
             this.findallSolutions,
             this.showPossibleValues,
             this.autoCheck,
+            this.pencilMode,
+            this.highlightSameValues,
             this.markNeighbors,
             this.toolStripSeparator10,
             this.sudokuOptionsToolStripMenuItem});
@@ -628,6 +624,20 @@ namespace Sudoku
             resources.ApplyResources(this.autoCheck, "autoCheck");
             this.autoCheck.Tag = "disable=1";
             this.autoCheck.Click += new System.EventHandler(this.AutoCheckClick);
+            // 
+            // pencilMode
+            // 
+            this.pencilMode.Name = "pencilMode";
+            resources.ApplyResources(this.pencilMode, "pencilMode");
+            this.pencilMode.Tag = "disable=1";
+            this.pencilMode.Click += new System.EventHandler(this.TogglePencilModeClick);
+            // 
+            // highlightSameValues
+            // 
+            this.highlightSameValues.Name = "highlightSameValues";
+            resources.ApplyResources(this.highlightSameValues, "highlightSameValues");
+            this.highlightSameValues.Tag = "disable=1";
+            this.highlightSameValues.Click += new System.EventHandler(this.ToggleHighlightSameValuesClicked);
             // 
             // markNeighbors
             // 
@@ -726,16 +736,6 @@ namespace Sudoku
             this.sudokuStatusBarText.Name = "sudokuStatusBarText";
             resources.ApplyResources(this.sudokuStatusBarText, "sudokuStatusBarText");
             // 
-            // printSudokuDialog
-            // 
-            this.printSudokuDialog.AllowSelection = true;
-            this.printSudokuDialog.AllowSomePages = true;
-            this.printSudokuDialog.Document = this.printSudoku;
-            // 
-            // printSudoku
-            // 
-            this.printSudoku.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.PrintSudokuEvent);
-            // 
             // selectBookletDirectory
             // 
             resources.ApplyResources(this.selectBookletDirectory, "selectBookletDirectory");
@@ -749,7 +749,7 @@ namespace Sudoku
             this.Controls.Add(this.prior);
             this.Controls.Add(this.next);
             this.Controls.Add(this.status);
-            this.Controls.Add(this.SudokuTable);
+            this.Controls.Add(this.SudokuGrid);
             this.Controls.Add(this.sudokuStatusBar);
             this.Controls.Add(this.sudokuMenu);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
@@ -762,7 +762,7 @@ namespace Sudoku
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.DropProblem);
             this.DragOver += new System.Windows.Forms.DragEventHandler(this.DragOverForm);
             this.Resize += new System.EventHandler(this.ResizeForm);
-            ((System.ComponentModel.ISupportInitialize)(this.SudokuTable)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.SudokuGrid)).EndInit();
             this.sudokuMenu.ResumeLayout(false);
             this.sudokuMenu.PerformLayout();
             this.sudokuStatusBar.ResumeLayout(false);
@@ -779,7 +779,7 @@ namespace Sudoku
         private System.Windows.Forms.Button prior;
         private System.Windows.Forms.MenuStrip sudokuMenu;
         private System.Windows.Forms.ToolStripMenuItem file;
-        private System.Windows.Forms.ToolStripMenuItem sudokuProblem;
+        private System.Windows.Forms.ToolStripMenuItem SudokuProblem;
         private System.Windows.Forms.ToolStripMenuItem help;
         private System.Windows.Forms.ToolStripMenuItem aboutSudoku;
         private System.Windows.Forms.ToolStripMenuItem open;
@@ -803,7 +803,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem print;
-        private System.Windows.Forms.PrintDialog printSudokuDialog;
         /*
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
@@ -841,7 +840,7 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem EditComment;
-        private System.Windows.Forms.DataGridView SudokuTable;
+        private SudokuBoard SudokuGrid;
         private System.Windows.Forms.ToolStripMenuItem newItem;
         private System.Windows.Forms.ToolStripMenuItem newNormalSudoku;
         private System.Windows.Forms.ToolStripMenuItem newXSudoku;
@@ -850,7 +849,6 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem versionHistory;
         private System.Windows.Forms.ToolStripMenuItem clearCandidates;
         private System.Windows.Forms.ToolStripMenuItem showCellInfo;
-        private System.Drawing.Printing.PrintDocument printSudoku;
         private System.Windows.Forms.ToolStripMenuItem export;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem mimimalAllocation;
@@ -862,5 +860,7 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem sudokuOfTheDayToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem startSolveProblem;
         private System.Windows.Forms.ToolStripMenuItem twitter;
+        private System.Windows.Forms.ToolStripMenuItem pencilMode;
+        private System.Windows.Forms.ToolStripMenuItem highlightSameValues;
     }
 }
