@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Sudoku
 {
@@ -28,8 +29,7 @@ namespace Sudoku
         {
             problems.Clear();
         }
-
-        public Boolean Publish()
+        public async Task<Boolean> Publish()
         {
             if(Empty) return true;
 
@@ -39,9 +39,7 @@ namespace Sudoku
                 foreach(BaseProblem problem in problems)
                 {
                     SudokuFileService fileService = new SudokuFileService(problem, settings, ui);
-                    String sudoku = fileService.Serialize().Substring(0, WinFormsSettings.TotalCellCount + 1);
-                    if(client.UploadString("http://sudoku.pi-c-it.de/misc/Hard%20Games/Original/Upload/upload.aspx", sudoku).Trim() != sudoku)
-                        return false;
+                    return await fileService.Upload();
                 }
             }
             catch(Exception) { return false; }

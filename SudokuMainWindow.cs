@@ -455,13 +455,13 @@ namespace Sudoku
             SudokuGrid.ShowValues();
             controller.StartTimer();
         }
-        private void PublishTrickyProblems()
+        private async void PublishTrickyProblems()
         {
             if(!controller.HasTrickyProblems()) return;
 
             if(Confirm((controller.GenerateBooklet ? Resources.OneOrMoreProblems : Resources.OneProblem) + Resources.Publish) == DialogResult.Yes)
             {
-                if(controller.PublishTrickyProblems())
+                if(await controller.PublishTrickyProblems())
                     ShowInfo(String.Format(Resources.PublishOK, controller.NumberOfTrickyProblems));
                 else
                     ShowInfo(String.Format(Resources.PublishFailed, settings.MailAddress));
@@ -525,9 +525,9 @@ namespace Sudoku
             SudokuGrid.ClearErrorMessages();
             SudokuGrid.DisplayValues();
         }
-        private Boolean SudokuOfTheDay()
+        private async Task<Boolean> SudokuOfTheDay()
         {
-            if(controller.SudokuOfTheDay())
+            if(await controller.SudokuOfTheDay())
             {
                 UpdateGUI();
                 SudokuGrid.SetCellFont();
@@ -1342,7 +1342,7 @@ namespace Sudoku
             controller = new SudokuController(settings, this);
             controller.Generating += (s, e) => OnGenerating(s, e);
             if(settings.State.Length > 0)
-                controller.RestoreProblemState(false);
+                controller.Deserialize();
             else
                 controller.CreateNewProblem(false, false);
             SudokuGrid.Controller = controller;
@@ -1381,9 +1381,9 @@ namespace Sudoku
             pause.Enabled = resetTimer.Enabled= controller.IsTimerRunning;
         }
 
-        private void SudokuOfTheDayClicked(object sender, EventArgs e)
+        private async void SudokuOfTheDayClicked(object sender, EventArgs e)
         {
-            if(SudokuOfTheDay())
+            if(await SudokuOfTheDay())
                 ShowInfo(String.Format(Resources.SudokuOfTheDayInfo, controller.CurrentProblem.SeverityLevelText));
             else
                 ShowError(Resources.SudokuOfTheDayNotLoaded);
@@ -1403,7 +1403,7 @@ namespace Sudoku
         {
             if(controller.CurrentProblem != null)
             {
-                try { FormCTS.Cancel(); } catch { }
+                try { FormCTS?.Cancel(); } catch { }
                 if(controller.CurrentProblem.SolverTask != null && !controller.CurrentProblem.SolverTask.IsCompleted)
                     try { controller.CurrentProblem.SolverTask.Wait(2000); } catch { } // Einfaches Join statt DoEvents-Loop
             }

@@ -5,10 +5,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Text.Json;
 using Sudoku.Properties;
 
 namespace Sudoku
@@ -16,7 +17,8 @@ namespace Sudoku
     internal class SudokuFileService
     {
         private readonly ISudokuSettings settings;
-        private IUserInteraction ui; 
+        private IUserInteraction ui;
+        private static readonly HttpClient httpClient = new HttpClient();
 
         private static byte ReadOnlyOffset = 64;
         public Char SudokuTypeIdentifier { get { return Sudoku.SudokuTypeIdentifier; } }
@@ -55,7 +57,7 @@ namespace Sudoku
             try
             {
                 sw = new StreamWriter(file);
-                sw.Write(Serialize());
+                sw.Write(Serialize(false));
                 sw.Close();
                 Sudoku.Filename = file;
                 Sudoku.Dirty = false;
@@ -73,7 +75,7 @@ namespace Sudoku
         public void SaveToHTMLFile(String file)
         {
             StreamWriter sw;
-            Char[] problem = Serialize().ToCharArray();
+            Char[] problem = SerializeLegacy(false).ToCharArray();
             int offset = (int)'0' + ReadOnlyOffset;
 
             try
@@ -174,24 +176,71 @@ namespace Sudoku
             catch(Exception) { throw; }
             return;
         }
+        public string Serialize(Boolean includeROFlag)
+        {
+            var state = new SudokuSaveState
+            {
+                Type = SudokuTypeIdentifier.ToString(),
+                GridData = SerializeMatrix(includeROFlag),
+                Time = SolvingTime,
+                Comment = Sudoku.Comment,
+                Candidates = SerializeCandiates()
+            };
 
-        public String Serialize(Boolean includeROFlag = true)
+            return System.Text.Json.JsonSerializer.Serialize(state);
+        }
+        public void Deserialize(string jsonState, SudokuController controller)
+        {
+            if(string.IsNullOrEmpty(jsonState)) return;
+
+            try
+            {
+                var state = System.Text.Json.JsonSerializer.Deserialize<SudokuSaveState>(jsonState);
+
+                controller.CreateNewProblem(state.Type == XSudokuProblem.ProblemIdentifier.ToString(), false);
+                Sudoku = controller.CurrentProblem;
+
+                InitMatrix(state.GridData.ToCharArray());
+                Sudoku.SolvingTime = state.Time;
+                Sudoku.Comment = state.Comment;
+                LoadCandidates(state.Candidates.Substring(state.Candidates.IndexOf('\n') + 1), false);
+                LoadCandidates(state.Candidates.Substring(state.Candidates.LastIndexOf('\n') + 1), true);
+            }
+            catch
+            {
+                throw;
+            }
+            return;
+        }
+        public String SerializeLegacy(Boolean includeROFlag = true)
         {
             String serializedProblem;
-            byte offset = (byte)'0';
 
             serializedProblem = SudokuTypeIdentifier.ToString();
-            for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
-                for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
-                    serializedProblem += (char)(GetValue(i, j) + (Matrix.Cell(i, j).ReadOnly && includeROFlag ? ReadOnlyOffset : 0) + offset);
+            serializedProblem += SerializeMatrix(includeROFlag);
             serializedProblem += SolvingTime.ToString().PadRight(16, '0');
             serializedProblem += Comment;
             if(Matrix.HasCandidates())
-                serializedProblem += (Environment.NewLine + SerializeCandiates(false) + Environment.NewLine + SerializeCandiates(true));
+                serializedProblem += (Environment.NewLine + SerializeCandiates());
+
+            return serializedProblem;
+        }
+        public String SerializeMatrix(Boolean includeROFlag = true)
+        {
+            String serializedProblem=String.Empty;
+            byte offset = (byte)'0';
+
+            for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
+                for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
+                    serializedProblem += (char)(GetValue(i, j) + (Matrix.Cell(i, j).ReadOnly && includeROFlag ? ReadOnlyOffset : 0) + offset);
 
             return serializedProblem;
         }
 
+        private String SerializeCandiates()
+        {
+            return SerializeCandiates(false) + Environment.NewLine + SerializeCandiates(true);
+        }
         private String SerializeCandiates(Boolean exclusionCandidate)
         {
             Byte oneCandidate = 64;
@@ -248,25 +297,42 @@ namespace Sudoku
             return;
         }
 
-        public Boolean SudokuOfTheDay()
+        public async Task<Boolean> SudokuOfTheDay()
         {
-            return Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/SudokuOfTheDay.php");
+            return await Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/SudokuOfTheDay.php");
         }
 
-        public Boolean Load()
+        public async Task<Boolean> Load()
         {
-            return Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/Load.php");
+            return await Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/Load.php");
         }
+        public async Task<Boolean> Upload()
+        {
+            try
+            {
+                var content = new StringContent(SerializeLegacy().Substring(0, WinFormsSettings.TotalCellCount + 1), Encoding.UTF8, "application/x-www-form-urlencoded");
 
-        private Boolean Load(String URL)
+                HttpResponseMessage response = await httpClient.PostAsync("https://sudoku.pi-c-it.de/misc/TrickyProblems/Upload.php", content);
+
+                String result = (await response.Content.ReadAsStringAsync()).Trim();
+                if (result.IndexOf("ERROR") != 0)
+                    return true;
+                else
+                    return false;
+            }
+            catch (Exception) { return false; }
+        }
+        public async Task<Boolean> Load(String URL)
         {
             Sudoku.Matrix.Init();
             SolvingTime = TimeSpan.Zero;
-            WebClient client = new WebClient();
             try
             {
-                client.Encoding = System.Text.Encoding.UTF8;
-                String sudoku = client.UploadString(URL, "POST", new String(SudokuTypeIdentifier, 1)).Trim();
+                var content = new StringContent(new String(SudokuTypeIdentifier, 1),Encoding.UTF8,"application/x-www-form-urlencoded");
+
+                HttpResponseMessage response = await httpClient.PostAsync(URL, content);
+
+                String sudoku = (await response.Content.ReadAsStringAsync()).Trim();
                 if(sudoku.IndexOf("ERROR") != 0)
                 {
                     InitProblem(sudoku.ToCharArray(), "".ToCharArray(), "");
@@ -308,14 +374,23 @@ namespace Sudoku
         {
             try
             {
-                byte offset = (byte)'0';
-                byte v = 0;
                 TimeSpan ts = TimeSpan.Zero;
 
                 if(TimeSpan.TryParse(new String(elapsedTime), out ts))
                     SolvingTime = ts;
                 if((Sudoku.Comment = initialComment) == null) // for compability reasons
                     Sudoku.Comment = String.Empty;
+
+                InitMatrix(values);
+            }
+            catch(Exception) { throw; }
+        }
+        private void InitMatrix(char[] values)
+        {
+            try
+            {
+                byte offset = (byte)'0';
+                byte v = 0;
 
                 Sudoku.Matrix.SetPredefinedValues = false;
                 for(int i = 0; i < WinFormsSettings.SudokuSize; i++)

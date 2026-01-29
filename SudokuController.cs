@@ -141,11 +141,11 @@ namespace Sudoku
             return trickyProblems.Count > 0;
         }
         public int NumberOfTrickyProblems { get { return trickyProblems.Count; } }
-        public Boolean PublishTrickyProblems()
+        public async Task<Boolean> PublishTrickyProblems()
         {
             if(trickyProblems.Count > 0)
             {
-                trickyProblems.Publish();
+                await trickyProblems.Publish();
                 trickyProblems.Clear();
                 return true;
             }
@@ -268,11 +268,11 @@ namespace Sudoku
             generationParameters = new GenerationParameters(settings);
         }
 
-        public Boolean SudokuOfTheDay()
+        public async Task<Boolean> SudokuOfTheDay()
         {
             CreateNewProblem(settings.SudokuOfTheDay);
             SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
-            if(fileService.SudokuOfTheDay())
+            if(await fileService.SudokuOfTheDay())
             {
                 BackupProblem();
                 NotifyMatrixChanged();
@@ -310,7 +310,7 @@ namespace Sudoku
 
             if(usePrecalculated)
             {
-                if(LoadProblem(CurrentProblem is XSudokuProblem))
+                if(await LoadProblem(CurrentProblem is XSudokuProblem))
                 {
                     NotifyMatrixChanged();
                     BackupProblem();
@@ -623,11 +623,11 @@ namespace Sudoku
         {
             return CurrentProblem.GetNeighbors(row, col);
         }
-        private Boolean LoadProblem(Boolean xSudoku)
+        private async Task<Boolean> LoadProblem(Boolean xSudoku)
         {
             CreateNewProblem(xSudoku);
             SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
-            return fileService.Load();
+            return await fileService.Load();
         }
         public void UpdateProblem(BaseProblem problem)
         {
@@ -793,8 +793,21 @@ namespace Sudoku
             settings.State = SerializeProblem(true);
             settings.Save();
         }
+        public void Deserialize()
+        {
+            try
+            {
+                SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+                fileService.Deserialize(settings.State, this);
+            }
+            catch(Exception)
+            {
+                RestoreProblemState();
+            }
+        }
         public int NumberOfProblems => printerService.NumberOfProblems;
     }
+
     public class GenerationProgressState
     {
         public long PassCount { get; set; }
