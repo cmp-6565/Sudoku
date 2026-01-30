@@ -15,12 +15,12 @@ namespace Sudoku
             get
             {
                 // Get all Title attributes on this assembly
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+                object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
                 // If there is at least one Title attribute
                 if(attributes.Length > 0)
                 {
                     // Select the first one
-                    AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+                    AssemblyTitleAttribute titleAttribute=(AssemblyTitleAttribute)attributes[0];
                     // If it is not an empty string, return it
                     if(!String.IsNullOrEmpty(titleAttribute.Title))
                         return titleAttribute.Title;
@@ -34,8 +34,8 @@ namespace Sudoku
         {
             get
             {
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
-                AssemblyFileVersionAttribute t = (AssemblyFileVersionAttribute)attributes[0];
+                object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
+                AssemblyFileVersionAttribute t=(AssemblyFileVersionAttribute)attributes[0];
                 return t.Version;
             }
         }
@@ -44,9 +44,9 @@ namespace Sudoku
         {
             get
             {
-                System.Version v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-                DateTime t = new DateTime((v.Build - 1) * TimeSpan.TicksPerDay + v.Revision * TimeSpan.TicksPerSecond * 2).AddYears(1999);
-                if(t.IsDaylightSavingTime()) t = t.Add(new TimeSpan(1, 0, 0));
+                System.Version v=System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                DateTime t=new DateTime((v.Build - 1) * TimeSpan.TicksPerDay + v.Revision * TimeSpan.TicksPerSecond * 2).AddYears(1999);
+                if(t.IsDaylightSavingTime()) t=t.Add(new TimeSpan(1, 0, 0));
                 return t.ToString(Thread.CurrentThread.CurrentUICulture);
             }
         }
@@ -56,7 +56,7 @@ namespace Sudoku
             get
             {
                 // Get all Description attributes on this assembly
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+                object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
                 // If there aren't any Description attributes, return an empty string
                 if(attributes.Length == 0)
                     return String.Empty;
@@ -70,7 +70,7 @@ namespace Sudoku
             get
             {
                 // Get all Product attributes on this assembly
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+                object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
                 // If there aren't any Product attributes, return an empty string
                 if(attributes.Length == 0)
                     return String.Empty;
@@ -84,7 +84,7 @@ namespace Sudoku
             get
             {
                 // Get all Copyright attributes on this assembly
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+                object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
                 // If there aren't any Copyright attributes, return an empty string
                 if(attributes.Length == 0)
                     return String.Empty;
@@ -98,7 +98,7 @@ namespace Sudoku
             get
             {
                 // Get all Company attributes on this assembly
-                object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+                object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
                 // If there aren't any Company attributes, return an empty string
                 if(attributes.Length == 0)
                     return String.Empty;

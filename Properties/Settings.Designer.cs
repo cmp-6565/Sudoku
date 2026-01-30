@@ -13,9 +13,9 @@ namespace Sudoku.Properties {
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+    internal sealed partial class Settings: global::System.Configuration.ApplicationSettingsBase {
         
-        private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
+        private static Settings defaultInstance=((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
         
         public static Settings Default {
             get {
@@ -31,7 +31,7 @@ namespace Sudoku.Properties {
                 return ((string)(this["DisplayLanguage"]));
             }
             set {
-                this["DisplayLanguage"] = value;
+                this["DisplayLanguage"]=value;
             }
         }
         
@@ -43,7 +43,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["BookletSizeNew"]));
             }
             set {
-                this["BookletSizeNew"] = value;
+                this["BookletSizeNew"]=value;
             }
         }
         
@@ -55,7 +55,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["PrintSolution"]));
             }
             set {
-                this["PrintSolution"] = value;
+                this["PrintSolution"]=value;
             }
         }
         
@@ -67,7 +67,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["MaxSolutions"]));
             }
             set {
-                this["MaxSolutions"] = value;
+                this["MaxSolutions"]=value;
             }
         }
         
@@ -79,7 +79,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["MinValues"]));
             }
             set {
-                this["MinValues"] = value;
+                this["MinValues"]=value;
             }
         }
         
@@ -118,7 +118,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["AutoSaveBooklet"]));
             }
             set {
-                this["AutoSaveBooklet"] = value;
+                this["AutoSaveBooklet"]=value;
             }
         }
         
@@ -130,7 +130,7 @@ namespace Sudoku.Properties {
                 return ((string)(this["ProblemDirectory"]));
             }
             set {
-                this["ProblemDirectory"] = value;
+                this["ProblemDirectory"]=value;
             }
         }
         
@@ -187,7 +187,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["Size"]));
             }
             set {
-                this["Size"] = value;
+                this["Size"]=value;
             }
         }
         
@@ -226,7 +226,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["PrintHints"]));
             }
             set {
-                this["PrintHints"] = value;
+                this["PrintHints"]=value;
             }
         }
         
@@ -238,7 +238,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["ShowHints"]));
             }
             set {
-                this["ShowHints"] = value;
+                this["ShowHints"]=value;
             }
         }
         
@@ -250,7 +250,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["HorizontalProblems"]));
             }
             set {
-                this["HorizontalProblems"] = value;
+                this["HorizontalProblems"]=value;
             }
         }
         
@@ -262,7 +262,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["HorizontalSolutions"]));
             }
             set {
-                this["HorizontalSolutions"] = value;
+                this["HorizontalSolutions"]=value;
             }
         }
         
@@ -301,7 +301,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["AutoCheck"]));
             }
             set {
-                this["AutoCheck"] = value;
+                this["AutoCheck"]=value;
             }
         }
         
@@ -313,7 +313,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["Debug"]));
             }
             set {
-                this["Debug"] = value;
+                this["Debug"]=value;
             }
         }
         
@@ -325,7 +325,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["FindAllSolutions"]));
             }
             set {
-                this["FindAllSolutions"] = value;
+                this["FindAllSolutions"]=value;
             }
         }
         
@@ -337,7 +337,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["BookletSizeExisting"]));
             }
             set {
-                this["BookletSizeExisting"] = value;
+                this["BookletSizeExisting"]=value;
             }
         }
         
@@ -349,7 +349,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["BookletSizeUnlimited"]));
             }
             set {
-                this["BookletSizeUnlimited"] = value;
+                this["BookletSizeUnlimited"]=value;
             }
         }
         
@@ -361,7 +361,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["SeverityLevel"]));
             }
             set {
-                this["SeverityLevel"] = value;
+                this["SeverityLevel"]=value;
             }
         }
         
@@ -373,7 +373,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["HideWhenMinimized"]));
             }
             set {
-                this["HideWhenMinimized"] = value;
+                this["HideWhenMinimized"]=value;
             }
         }
         
@@ -385,7 +385,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["TraceFrequence"]));
             }
             set {
-                this["TraceFrequence"] = value;
+                this["TraceFrequence"]=value;
             }
         }
         
@@ -397,7 +397,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["UseWatchHandHints"]));
             }
             set {
-                this["UseWatchHandHints"] = value;
+                this["UseWatchHandHints"]=value;
             }
         }
         
@@ -409,7 +409,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["GenerateXSudoku"]));
             }
             set {
-                this["GenerateXSudoku"] = value;
+                this["GenerateXSudoku"]=value;
             }
         }
         
@@ -421,7 +421,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["GenerateNormalSudoku"]));
             }
             set {
-                this["GenerateNormalSudoku"] = value;
+                this["GenerateNormalSudoku"]=value;
             }
         }
         
@@ -433,7 +433,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["SelectSeverity"]));
             }
             set {
-                this["SelectSeverity"] = value;
+                this["SelectSeverity"]=value;
             }
         }
         
@@ -445,7 +445,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["XSudokuConstrast"]));
             }
             set {
-                this["XSudokuConstrast"] = value;
+                this["XSudokuConstrast"]=value;
             }
         }
         
@@ -457,7 +457,7 @@ namespace Sudoku.Properties {
                 return ((string)(this["State"]));
             }
             set {
-                this["State"] = value;
+                this["State"]=value;
             }
         }
         
@@ -469,7 +469,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["AutoSaveState"]));
             }
             set {
-                this["AutoSaveState"] = value;
+                this["AutoSaveState"]=value;
             }
         }
         
@@ -535,7 +535,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["GenerateMinimalProblems"]));
             }
             set {
-                this["GenerateMinimalProblems"] = value;
+                this["GenerateMinimalProblems"]=value;
             }
         }
         
@@ -547,7 +547,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["MarkNeighbors"]));
             }
             set {
-                this["MarkNeighbors"] = value;
+                this["MarkNeighbors"]=value;
             }
         }
         
@@ -577,7 +577,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["UsePrecalculatedProblems"]));
             }
             set {
-                this["UsePrecalculatedProblems"] = value;
+                this["UsePrecalculatedProblems"]=value;
             }
         }
         
@@ -598,7 +598,7 @@ namespace Sudoku.Properties {
                 return ((string)(this["LastVersion"]));
             }
             set {
-                this["LastVersion"] = value;
+                this["LastVersion"]=value;
             }
         }
         
@@ -610,7 +610,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["SudokuOfTheDay"]));
             }
             set {
-                this["SudokuOfTheDay"] = value;
+                this["SudokuOfTheDay"]=value;
             }
         }
         
@@ -622,7 +622,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["PrintInternalSeverity"]));
             }
             set {
-                this["PrintInternalSeverity"] = value;
+                this["PrintInternalSeverity"]=value;
             }
         }
         
@@ -634,7 +634,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["AutoPause"]));
             }
             set {
-                this["AutoPause"] = value;
+                this["AutoPause"]=value;
             }
         }
         
@@ -646,7 +646,7 @@ namespace Sudoku.Properties {
                 return ((decimal)(this["AutoPauseLag"]));
             }
             set {
-                this["AutoPauseLag"] = value;
+                this["AutoPauseLag"]=value;
             }
         }
         
@@ -658,7 +658,7 @@ namespace Sudoku.Properties {
                 return ((int)(this["Contrast"]));
             }
             set {
-                this["Contrast"] = value;
+                this["Contrast"]=value;
             }
         }
         
@@ -670,7 +670,7 @@ namespace Sudoku.Properties {
                 return ((bool)(this["HighlightSameValues"]));
             }
             set {
-                this["HighlightSameValues"] = value;
+                this["HighlightSameValues"]=value;
             }
         }
     }

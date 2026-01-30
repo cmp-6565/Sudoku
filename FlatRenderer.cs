@@ -4,6 +4,6 @@ namespace Sudoku
 {
     public class FlatRenderer: ToolStripProfessionalRenderer
     {
-        public FlatRenderer() : base(new FlatColorTable()) { }
+        public FlatRenderer(): base(new FlatColorTable()) { }
     }
 }
