@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Sudoku
+namespace Sudoku;
+
+internal class SudokuSaveState
 {
-    internal class SudokuSaveState
-    {
-        public string Type { get; set; } 
-        public string GridData { get; set; } 
-        public TimeSpan Time { get; set; }
-        public string Comment { get; set; }
-        public string Candidates { get; set; }  
-    }
+    public string Type { get; set; }
+    public string GridData { get; set; }
+    public TimeSpan Time { get; set; }
+    public string Comment { get; set; }
+    public string Candidates { get; set; }
 }

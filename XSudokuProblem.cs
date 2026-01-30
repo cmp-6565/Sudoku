@@ -1,32 +1,29 @@
 using System;
 
-using Sudoku.Properties;
+namespace Sudoku;
 
-namespace Sudoku
+internal class XSudokuProblem: BaseProblem
 {
-    internal class XSudokuProblem: BaseProblem
+    public new static Char ProblemIdentifier = 'X';
+    public override Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
+    public override Boolean IsTricky { get { return SeverityLevel > settings.UploadLevelXSudoku; } }
+
+    public XSudokuProblem(ISudokuSettings settings) : base(settings)
     {
-        public new static Char ProblemIdentifier='X';
-        public override Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
-        public override Boolean IsTricky { get { return SeverityLevel > settings.UploadLevelXSudoku; } }
+    }
+    protected override void createMatrix()
+    {
+        matrix = new XSudokuMatrix();
+    }
 
-        public XSudokuProblem(ISudokuSettings settings): base(settings)
-        {
-        }
-        protected override void createMatrix()
-        {
-            matrix=new XSudokuMatrix();
-        }
+    protected override BaseProblem CreateInstance()
+    {
+        return new XSudokuProblem(settings);
+    }
 
-        protected override BaseProblem CreateInstance()
-        {
-            return new XSudokuProblem(settings);
-        }
-
-        public override Boolean Resolvable()
-        {
-            if(!base.Resolvable()) return false;
-            return ((XSudokuMatrix)Matrix).CheckDiagonals();
-        }
+    public override Boolean Resolvable()
+    {
+        if(!base.Resolvable()) return false;
+        return ((XSudokuMatrix)Matrix).CheckDiagonals();
     }
 }

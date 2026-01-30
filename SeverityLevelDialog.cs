@@ -1,23 +1,22 @@
 using System.Windows.Forms;
 
-namespace Sudoku
+namespace Sudoku;
+
+public partial class SeverityLevelDialog: Form
 {
-    public partial class SeverityLevelDialog: Form
+    public SeverityLevelDialog()
     {
-        public SeverityLevelDialog()
-        {
-            InitializeComponent();
+        InitializeComponent();
 
-            hard.Text=Resources.Hard;
-            easy.Text=Resources.Easy;
-            intermediate.Text=Resources.Intermediate;
+        hard.Text = Resources.Hard;
+        easy.Text = Resources.Easy;
+        intermediate.Text = Resources.Intermediate;
 
-            easy.Checked=true;
-        }
+        easy.Checked = true;
+    }
 
-        public int SeverityLevel
-        {
-            get { return (easy.Checked? 2: 0) + (intermediate.Checked? 4: 0) + (hard.Checked? 8: 0); }
-        }
+    public int SeverityLevel
+    {
+        get { return (easy.Checked ? 2 : 0) + (intermediate.Checked ? 4 : 0) + (hard.Checked ? 8 : 0); }
     }
 }

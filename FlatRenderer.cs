@@ -1,9 +1,8 @@
 ﻿using System.Windows.Forms;
 
-namespace Sudoku
+namespace Sudoku;
+
+public class FlatRenderer: ToolStripProfessionalRenderer
 {
-    public class FlatRenderer: ToolStripProfessionalRenderer
-    {
-        public FlatRenderer(): base(new FlatColorTable()) { }
-    }
+    public FlatRenderer() : base(new FlatColorTable()) { }
 }
