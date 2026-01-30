@@ -11,4 +11,9 @@ namespace Sudoku
         public InvalidSudokuValueException(): base() { }
         protected InvalidSudokuValueException(SerializationInfo info, StreamingContext context): base(info, context) { }
     }
+
+    public class MaxResultsReached: Exception
+    {
+        public MaxResultsReached(): base() { }
+    }
 }

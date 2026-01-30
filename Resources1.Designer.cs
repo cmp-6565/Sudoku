@@ -39,8 +39,8 @@ namespace Sudoku {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sudoku.Resources", typeof(Resources).Assembly);
-                    resourceMan = temp;
+                    global::System.Resources.ResourceManager temp=new global::System.Resources.ResourceManager("Sudoku.Resources", typeof(Resources).Assembly);
+                    resourceMan=temp;
                 }
                 return resourceMan;
             }
@@ -56,7 +56,7 @@ namespace Sudoku {
                 return resourceCulture;
             }
             set {
-                resourceCulture = value;
+                resourceCulture=value;
             }
         }
         
@@ -129,6 +129,24 @@ namespace Sudoku {
         internal static string Classic {
             get {
                 return ResourceManager.GetString("Classic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Clear Candidates ähnelt.
+        /// </summary>
+        internal static string ClearCandidates {
+            get {
+                return ResourceManager.GetString("ClearCandidates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Clear Content ähnelt.
+        /// </summary>
+        internal static string ClearContent {
+            get {
+                return ResourceManager.GetString("ClearContent", resourceCulture);
             }
         }
         
@@ -209,7 +227,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap digitCandidates {
             get {
-                object obj = ResourceManager.GetObject("digitCandidates", resourceCulture);
+                object obj=ResourceManager.GetObject("digitCandidates", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -539,7 +557,7 @@ namespace Sudoku {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Time used:  ähnelt.
+        ///   Sucht eine lokalisierte Zeichenfolge, die Time needed: {0:0#}:{1:0#}:{2:0#},{3:0#} ähnelt.
         /// </summary>
         internal static string NeededTime {
             get {
@@ -697,6 +715,15 @@ namespace Sudoku {
         internal static string Paused {
             get {
                 return ResourceManager.GetString("Paused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Paused!\n\nClick to continue! ähnelt.
+        /// </summary>
+        internal static string PausedMessage {
+            get {
+                return ResourceManager.GetString("PausedMessage", resourceCulture);
             }
         }
         
@@ -991,7 +1018,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap SudokuProblem {
             get {
-                object obj = ResourceManager.GetObject("SudokuProblem", resourceCulture);
+                object obj=ResourceManager.GetObject("SudokuProblem", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1145,7 +1172,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap watchHandCandidates {
             get {
-                object obj = ResourceManager.GetObject("watchHandCandidates", resourceCulture);
+                object obj=ResourceManager.GetObject("watchHandCandidates", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

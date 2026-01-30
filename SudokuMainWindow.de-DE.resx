@@ -40,7 +40,7 @@
     ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
     
-    Note-application/x-microsoft.net.object.binary.base64 is the format 
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
     that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
     
@@ -308,7 +308,7 @@
     <value>208, 22</value>
   </data>
   <data name="findallSolutions.Text" xml:space="preserve">
-    <value>&amp;Alle Lösungen finden</value>
+    <value>&amp;Alle Lösungen finden (max. 100)</value>
   </data>
   <data name="showPossibleValues.Size" type="System.Drawing.Size, System.Drawing">
     <value>208, 22</value>
@@ -321,6 +321,12 @@
   </data>
   <data name="autoCheck.Text" xml:space="preserve">
     <value>Automatische &amp;Prüfung</value>
+  </data>
+  <data name="pencilMode.Text" xml:space="preserve">
+    <value>&amp;Bleistiftmodus</value>
+  </data>
+  <data name="highlightSameValues.Text" xml:space="preserve">
+    <value>&amp;Gleiche Werte hervorheben</value>
   </data>
   <data name="markNeighbors.Size" type="System.Drawing.Size, System.Drawing">
     <value>208, 22</value>

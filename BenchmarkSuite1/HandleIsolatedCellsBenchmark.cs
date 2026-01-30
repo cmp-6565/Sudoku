@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using BenchmarkDotNet.Attributes;
-using Sudoku;
 
 namespace Sudoku.Benchmarks
 {
@@ -19,7 +16,7 @@ namespace Sudoku.Benchmarks
             // Use first row as part
             part = matrix.Rows[0];
             // Ensure some enabled candidates exist
-            foreach (var c in part)
+            foreach(var c in part)
             {
                 c.InitCandidates();
                 // ensure enabled mask is initialized

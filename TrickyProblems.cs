@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Sudoku
 {
     internal class TrickyProblems
     {
+        private readonly ISudokuSettings settings;
+        private IUserInteraction ui;
+
         private List<BaseProblem> problems;
 
-        public TrickyProblems()
+        public TrickyProblems(ISudokuSettings settings, IUserInteraction ui)
         {
             problems=new List<BaseProblem>();
+            this.settings=settings;
+            this.ui=ui;
         }
 
         public void Add(BaseProblem problem)
@@ -22,19 +29,16 @@ namespace Sudoku
         {
             problems.Clear();
         }
-
-        public Boolean Publish()
+        public async Task<Boolean> Publish()
         {
             if(Empty) return true;
 
-            WebClient client=new WebClient();
             try
             {
                 foreach(BaseProblem problem in problems)
                 {
-                    String sudoku=problem.Serialize().Substring(0, SudokuForm.TotalCellCount+1);
-                    if(client.UploadString("http://sudoku.pi-c-it.de/misc/Hard%20Games/Original/Upload/upload.aspx", sudoku).Trim()!=sudoku)
-                        return false;
+                    SudokuFileService fileService=new SudokuFileService(problem, settings, ui);
+                    return await fileService.Upload();
                 }
             }
             catch(Exception) { return false; }
@@ -42,7 +46,7 @@ namespace Sudoku
             return true;
         }
 
-        public Boolean Empty { get { return problems.Count==0; } }
+        public Boolean Empty { get { return problems.Count == 0; } }
         public int Count { get { return problems.Count; } }
     }
 }

@@ -45,19 +45,19 @@
     read any of the formats listed below.
     
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
+    value  : The object must be serialized with 
+           : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+           : and then encoded with base64 encoding.
     
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
+    value  : The object must be serialized with 
+           : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+           : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
+    value  : The object must be serialized into a byte array 
+           : using a System.ComponentModel.TypeConverter
+           : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="SudokuTable.ColumnHeadersHeight" type="System.Int32, mscorlib">
+  <data name="SudokuGrid.ColumnHeadersHeight" type="System.Int32, mscorlib">
     <value>25</value>
   </data>
   <data name="Column1.HeaderText" xml:space="preserve">
@@ -176,35 +176,35 @@
     <value>30</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="SudokuTable.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="SudokuGrid.Location" type="System.Drawing.Point, System.Drawing">
     <value>9, 41</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="SudokuTable.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="SudokuGrid.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>5, 5, 5, 5</value>
   </data>
-  <data name="SudokuTable.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
+  <data name="SudokuGrid.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
     <value>None</value>
   </data>
-  <data name="SudokuTable.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="SudokuGrid.Size" type="System.Drawing.Size, System.Drawing">
     <value>271, 271</value>
   </data>
-  <data name="SudokuTable.TabIndex" type="System.Int32, mscorlib">
+  <data name="SudokuGrid.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="SudokuTable.Text" xml:space="preserve">
+  <data name="SudokuGrid.Text" xml:space="preserve">
     <value>Sudoku</value>
   </data>
-  <data name="&gt;&gt;SudokuTable.Name" xml:space="preserve">
-    <value>SudokuTable</value>
+  <data name="&gt;&gt;SudokuGrid.Name" xml:space="preserve">
+    <value>SudokuGrid</value>
   </data>
-  <data name="&gt;&gt;SudokuTable.Type" xml:space="preserve">
-    <value>System.Windows.Forms.DataGridView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;SudokuGrid.Type" xml:space="preserve">
+    <value>Sudoku.SudokuBoard, Sudoku, Version=5.0.9525.24706, Culture=neutral, PublicKeyToken=null</value>
   </data>
-  <data name="&gt;&gt;SudokuTable.Parent" xml:space="preserve">
+  <data name="&gt;&gt;SudokuGrid.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="&gt;&gt;SudokuTable.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;SudokuGrid.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
   <data name="status.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
@@ -304,7 +304,7 @@
     <value>0</value>
   </data>
   <metadata name="sudokuMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>157, 17</value>
+    <value>2, 2</value>
   </metadata>
   <data name="newNormalSudoku.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Strg+N</value>
@@ -579,59 +579,92 @@
   <data name="abort.Text" xml:space="preserve">
     <value>&amp;Abort</value>
   </data>
-  <data name="sudokuProblem.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="SudokuProblem.Size" type="System.Drawing.Size, System.Drawing">
     <value>64, 20</value>
   </data>
-  <data name="sudokuProblem.Text" xml:space="preserve">
+  <data name="SudokuProblem.Text" xml:space="preserve">
     <value>&amp;Problem</value>
   </data>
   <data name="undo.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>Strg+Z</value>
   </data>
   <data name="undo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>221, 22</value>
   </data>
   <data name="undo.Text" xml:space="preserve">
     <value>&amp;Undo</value>
   </data>
   <data name="toolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 6</value>
+    <value>218, 6</value>
   </data>
   <data name="debug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>221, 22</value>
   </data>
   <data name="debug.Text" xml:space="preserve">
     <value>&amp;Track</value>
   </data>
   <data name="findallSolutions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>221, 22</value>
   </data>
   <data name="findallSolutions.Text" xml:space="preserve">
-    <value>&amp;Find all Solutions</value>
+    <value>&amp;Find all Solutions (max. 100)</value>
   </data>
   <data name="showPossibleValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>221, 22</value>
   </data>
   <data name="showPossibleValues.Text" xml:space="preserve">
     <value>&amp;Show Possible Values</value>
   </data>
   <data name="autoCheck.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>221, 22</value>
   </data>
   <data name="autoCheck.Text" xml:space="preserve">
     <value>&amp;Auto Check</value>
   </data>
+  <data name="pencilMode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>221, 22</value>
+  </data>
+  <data name="pencilMode.Text" xml:space="preserve">
+    <value>Pencil &amp;Mode</value>
+  </data>
+  <data name="pencilMode.Visible" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="highlightSameValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>221, 22</value>
+  </data>
+  <data name="highlightSameValues.Text" xml:space="preserve">
+    <value>&amp;Highlight Same Values</value>
+  </data>
   <data name="markNeighbors.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>221, 22</value>
   </data>
   <data name="markNeighbors.Text" xml:space="preserve">
     <value>&amp;Mark Neighbors</value>
   </data>
   <data name="toolStripSeparator10.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 6</value>
+    <value>218, 6</value>
+  </data>
+  <data name="pause.ShortcutKeyDisplayString" xml:space="preserve">
+    <value />
+  </data>
+  <data name="pause.Size" type="System.Drawing.Size, System.Drawing">
+    <value>221, 22</value>
+  </data>
+  <data name="pause.Text" xml:space="preserve">
+    <value>&amp;Pause</value>
+  </data>
+  <data name="resetTimer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>221, 22</value>
+  </data>
+  <data name="resetTimer.Text" xml:space="preserve">
+    <value>&amp;Reset Timer</value>
+  </data>
+  <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
+    <value>218, 6</value>
   </data>
   <data name="sudokuOptionsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>185, 22</value>
+    <value>221, 22</value>
   </data>
   <data name="sudokuOptionsToolStripMenuItem.Text" xml:space="preserve">
     <value>Sudoku &amp;Options...</value>
@@ -712,7 +745,7 @@
     <value>5</value>
   </data>
   <metadata name="saveSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>453, 17</value>
+    <value>255, 17</value>
   </metadata>
   <data name="saveSudokuDialog.Filter" xml:space="preserve">
     <value>Sudoku Problems (*.sudoku) | *.sudoku</value>
@@ -721,7 +754,7 @@
     <value>Save Sudoku Problem</value>
   </data>
   <metadata name="openSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>604, 17</value>
+    <value>400, 17</value>
   </metadata>
   <data name="openSudokuDialog.Filter" xml:space="preserve">
     <value>Sudoku Problems (*.sudoku) |*.sudoku</value>
@@ -730,7 +763,7 @@
     <value>Open Sudoku Problem</value>
   </data>
   <metadata name="sudokuStatusBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>1031, 17</value>
+    <value>2, 409</value>
   </metadata>
   <data name="sudokuStatusBarText.Size" type="System.Drawing.Size, System.Drawing">
     <value>39, 17</value>
@@ -762,14 +795,8 @@
   <data name="&gt;&gt;sudokuStatusBar.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
-  <metadata name="printSudokuDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>878, 17</value>
-  </metadata>
-  <metadata name="printSudoku.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>759, 17</value>
-  </metadata>
   <metadata name="selectBookletDirectory.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>281, 17</value>
+    <value>811, 4</value>
   </metadata>
   <data name="selectBookletDirectory.SelectedPath" xml:space="preserve">
     <value>C:\Dokumente und Einstellungen\Clemens\Desktop</value>
@@ -1382,10 +1409,10 @@
   <data name="&gt;&gt;exit.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;sudokuProblem.Name" xml:space="preserve">
-    <value>sudokuProblem</value>
+  <data name="&gt;&gt;SudokuProblem.Name" xml:space="preserve">
+    <value>SudokuProblem</value>
   </data>
-  <data name="&gt;&gt;sudokuProblem.Type" xml:space="preserve">
+  <data name="&gt;&gt;SudokuProblem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;generate.Name" xml:space="preserve">
@@ -1550,6 +1577,18 @@
   <data name="&gt;&gt;autoCheck.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;pencilMode.Name" xml:space="preserve">
+    <value>pencilMode</value>
+  </data>
+  <data name="&gt;&gt;pencilMode.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;highlightSameValues.Name" xml:space="preserve">
+    <value>highlightSameValues</value>
+  </data>
+  <data name="&gt;&gt;highlightSameValues.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="&gt;&gt;markNeighbors.Name" xml:space="preserve">
     <value>markNeighbors</value>
   </data>
@@ -1560,6 +1599,24 @@
     <value>toolStripSeparator10</value>
   </data>
   <data name="&gt;&gt;toolStripSeparator10.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pause.Name" xml:space="preserve">
+    <value>pause</value>
+  </data>
+  <data name="&gt;&gt;pause.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;resetTimer.Name" xml:space="preserve">
+    <value>resetTimer</value>
+  </data>
+  <data name="&gt;&gt;resetTimer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator6.Name" xml:space="preserve">
+    <value>toolStripSeparator6</value>
+  </data>
+  <data name="&gt;&gt;toolStripSeparator6.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;sudokuOptionsToolStripMenuItem.Name" xml:space="preserve">
@@ -1627,18 +1684,6 @@
   </data>
   <data name="&gt;&gt;sudokuStatusBarText.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripStatusLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;printSudokuDialog.Name" xml:space="preserve">
-    <value>printSudokuDialog</value>
-  </data>
-  <data name="&gt;&gt;printSudokuDialog.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PrintDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;printSudoku.Name" xml:space="preserve">
-    <value>printSudoku</value>
-  </data>
-  <data name="&gt;&gt;printSudoku.Type" xml:space="preserve">
-    <value>System.Drawing.Printing.PrintDocument, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="&gt;&gt;selectBookletDirectory.Name" xml:space="preserve">
     <value>selectBookletDirectory</value>

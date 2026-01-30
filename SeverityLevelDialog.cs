@@ -17,7 +17,7 @@ namespace Sudoku
 
         public int SeverityLevel
         {
-            get { return (easy.Checked ? 2: 0)+(intermediate.Checked ? 4: 0)+(hard.Checked ? 8: 0); }
+            get { return (easy.Checked? 2: 0) + (intermediate.Checked? 4: 0) + (hard.Checked? 8: 0); }
         }
     }
 }
