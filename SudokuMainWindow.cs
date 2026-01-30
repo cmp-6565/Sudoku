@@ -79,15 +79,15 @@ namespace Sudoku
             ResetTexts();
 
             CheckVersion();
-            try
+            string[] args = Environment.GetCommandLineArgs();
+            if(args.Length > 1)
             {
-                String fn=AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0];
+                string fn = args[1]; 
                 if(fn.Contains("file:///"))
-                    fn=fn.Remove(0, 8);
+                    fn = fn.Remove(0, 8);
 
                 LoadProblem(fn);
             }
-            catch(Exception) { }
         }
 
         public void ShowError(string message)
