@@ -28,66 +28,66 @@ namespace Sudoku
 		/// </summary>
 		private void InitializeComponent()
 		{
-            System.ComponentModel.ComponentResourceManager resources=new System.ComponentModel.ComponentResourceManager(typeof(OptionsDialog));
-            this.cancel=new System.Windows.Forms.Button();
-            this.ok=new System.Windows.Forms.Button();
-            this.bookletSizeNew=new System.Windows.Forms.NumericUpDown();
-            this.labelBookletSizeNew=new System.Windows.Forms.Label();
-            this.printSolutions=new System.Windows.Forms.CheckBox();
-            this.minValues=new System.Windows.Forms.NumericUpDown();
-            this.labelMinValues=new System.Windows.Forms.Label();
-            this.autoSaveBooklet=new System.Windows.Forms.CheckBox();
-            this.labelBaseDirectory=new System.Windows.Forms.Label();
-            this.problemDirectory=new System.Windows.Forms.TextBox();
-            this.directorySelect=new System.Windows.Forms.Button();
-            this.selectProblemDirectoryDialog=new System.Windows.Forms.FolderBrowserDialog();
-            this.printHints=new System.Windows.Forms.CheckBox();
-            this.optionsTab=new System.Windows.Forms.TabControl();
-            this.layoutPage=new System.Windows.Forms.TabPage();
-            this.autoPauseLag=new System.Windows.Forms.NumericUpDown();
-            this.autoPause=new System.Windows.Forms.CheckBox();
-            this.saveState=new System.Windows.Forms.CheckBox();
-            this.groupBox1=new System.Windows.Forms.GroupBox();
-            this.possibleValuesExamplePicture=new System.Windows.Forms.PictureBox();
-            this.useDigits=new System.Windows.Forms.RadioButton();
-            this.useWatchHands=new System.Windows.Forms.RadioButton();
-            this.hideWhenMinimized=new System.Windows.Forms.CheckBox();
-            this.sizeGroupBox=new System.Windows.Forms.GroupBox();
-            this.largeRB=new System.Windows.Forms.RadioButton();
-            this.mediumRB=new System.Windows.Forms.RadioButton();
-            this.smallRB=new System.Windows.Forms.RadioButton();
-            this.labelLanguage=new System.Windows.Forms.Label();
-            this.constrast=new System.Windows.Forms.NumericUpDown();
-            this.labelConstrast=new System.Windows.Forms.Label();
-            this.language=new System.Windows.Forms.ComboBox();
-            this.printPage=new System.Windows.Forms.TabPage();
-            this.printInternalSeverity=new System.Windows.Forms.CheckBox();
-            this.xSudokuConstrast=new System.Windows.Forms.NumericUpDown();
-            this.xSudokuConstrastLabel=new System.Windows.Forms.Label();
-            this.solutionPrintSize=new System.Windows.Forms.GroupBox();
-            this.solutionSmall=new System.Windows.Forms.RadioButton();
-            this.solutionNormal=new System.Windows.Forms.RadioButton();
-            this.problemPrintSize=new System.Windows.Forms.GroupBox();
-            this.tiny=new System.Windows.Forms.RadioButton();
-            this.small=new System.Windows.Forms.RadioButton();
-            this.normal=new System.Windows.Forms.RadioButton();
-            this.large=new System.Windows.Forms.RadioButton();
-            this.generatePage=new System.Windows.Forms.TabPage();
-            this.precalculatedProblems=new System.Windows.Forms.CheckBox();
-            this.generateMinimalProblems=new System.Windows.Forms.CheckBox();
-            this.selectLevelBox=new System.Windows.Forms.GroupBox();
-            this.selectSeverityLevel=new System.Windows.Forms.CheckBox();
-            this.type=new System.Windows.Forms.GroupBox();
-            this.xSudoku=new System.Windows.Forms.CheckBox();
-            this.normalSudoku=new System.Windows.Forms.CheckBox();
-            this.severity=new System.Windows.Forms.GroupBox();
-            this.hard=new System.Windows.Forms.CheckBox();
-            this.intermediate=new System.Windows.Forms.CheckBox();
-            this.easy=new System.Windows.Forms.CheckBox();
-            this.bookletSize=new System.Windows.Forms.GroupBox();
-            this.unlimited=new System.Windows.Forms.CheckBox();
-            this.bookletSizeExisting=new System.Windows.Forms.NumericUpDown();
-            this.labelBookletSizeExisting=new System.Windows.Forms.Label();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsDialog));
+            this.cancel = new System.Windows.Forms.Button();
+            this.ok = new System.Windows.Forms.Button();
+            this.bookletSizeNew = new System.Windows.Forms.NumericUpDown();
+            this.labelBookletSizeNew = new System.Windows.Forms.Label();
+            this.printSolutions = new System.Windows.Forms.CheckBox();
+            this.minValues = new System.Windows.Forms.NumericUpDown();
+            this.labelMinValues = new System.Windows.Forms.Label();
+            this.autoSaveBooklet = new System.Windows.Forms.CheckBox();
+            this.labelBaseDirectory = new System.Windows.Forms.Label();
+            this.problemDirectory = new System.Windows.Forms.TextBox();
+            this.directorySelect = new System.Windows.Forms.Button();
+            this.selectProblemDirectoryDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.printHints = new System.Windows.Forms.CheckBox();
+            this.optionsTab = new System.Windows.Forms.TabControl();
+            this.layoutPage = new System.Windows.Forms.TabPage();
+            this.autoPauseLag = new System.Windows.Forms.NumericUpDown();
+            this.autoPause = new System.Windows.Forms.CheckBox();
+            this.saveState = new System.Windows.Forms.CheckBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.possibleValuesExamplePicture = new System.Windows.Forms.PictureBox();
+            this.useDigits = new System.Windows.Forms.RadioButton();
+            this.useWatchHands = new System.Windows.Forms.RadioButton();
+            this.hideWhenMinimized = new System.Windows.Forms.CheckBox();
+            this.sizeGroupBox = new System.Windows.Forms.GroupBox();
+            this.largeRB = new System.Windows.Forms.RadioButton();
+            this.mediumRB = new System.Windows.Forms.RadioButton();
+            this.smallRB = new System.Windows.Forms.RadioButton();
+            this.labelLanguage = new System.Windows.Forms.Label();
+            this.constrast = new System.Windows.Forms.NumericUpDown();
+            this.labelConstrast = new System.Windows.Forms.Label();
+            this.language = new System.Windows.Forms.ComboBox();
+            this.printPage = new System.Windows.Forms.TabPage();
+            this.printInternalSeverity = new System.Windows.Forms.CheckBox();
+            this.xSudokuConstrast = new System.Windows.Forms.NumericUpDown();
+            this.xSudokuConstrastLabel = new System.Windows.Forms.Label();
+            this.solutionPrintSize = new System.Windows.Forms.GroupBox();
+            this.solutionSmall = new System.Windows.Forms.RadioButton();
+            this.solutionNormal = new System.Windows.Forms.RadioButton();
+            this.problemPrintSize = new System.Windows.Forms.GroupBox();
+            this.tiny = new System.Windows.Forms.RadioButton();
+            this.small = new System.Windows.Forms.RadioButton();
+            this.normal = new System.Windows.Forms.RadioButton();
+            this.large = new System.Windows.Forms.RadioButton();
+            this.generatePage = new System.Windows.Forms.TabPage();
+            this.precalculatedProblems = new System.Windows.Forms.CheckBox();
+            this.generateMinimalProblems = new System.Windows.Forms.CheckBox();
+            this.selectLevelBox = new System.Windows.Forms.GroupBox();
+            this.selectSeverityLevel = new System.Windows.Forms.CheckBox();
+            this.type = new System.Windows.Forms.GroupBox();
+            this.xSudoku = new System.Windows.Forms.CheckBox();
+            this.normalSudoku = new System.Windows.Forms.CheckBox();
+            this.severity = new System.Windows.Forms.GroupBox();
+            this.hard = new System.Windows.Forms.CheckBox();
+            this.intermediate = new System.Windows.Forms.CheckBox();
+            this.easy = new System.Windows.Forms.CheckBox();
+            this.bookletSize = new System.Windows.Forms.GroupBox();
+            this.unlimited = new System.Windows.Forms.CheckBox();
+            this.bookletSizeExisting = new System.Windows.Forms.NumericUpDown();
+            this.labelBookletSizeExisting = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.bookletSizeNew)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.minValues)).BeginInit();
             this.optionsTab.SuspendLayout();
@@ -112,31 +112,31 @@ namespace Sudoku
             // cancel
             // 
             resources.ApplyResources(this.cancel, "cancel");
-            this.cancel.DialogResult=System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Name="cancel";
+            this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancel.Name = "cancel";
             // 
             // ok
             // 
             resources.ApplyResources(this.ok, "ok");
-            this.ok.DialogResult=System.Windows.Forms.DialogResult.OK;
-            this.ok.Name="ok";
+            this.ok.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.ok.Name = "ok";
             this.ok.Click += new System.EventHandler(this.ok_Click);
             // 
             // bookletSizeNew
             // 
             resources.ApplyResources(this.bookletSizeNew, "bookletSizeNew");
-            this.bookletSizeNew.Maximum=new decimal(new int[] {
+            this.bookletSizeNew.Maximum = new decimal(new int[] {
             9999,
             0,
             0,
             0});
-            this.bookletSizeNew.Minimum=new decimal(new int[] {
+            this.bookletSizeNew.Minimum = new decimal(new int[] {
             2,
             0,
             0,
             0});
-            this.bookletSizeNew.Name="bookletSizeNew";
-            this.bookletSizeNew.Value=new decimal(new int[] {
+            this.bookletSizeNew.Name = "bookletSizeNew";
+            this.bookletSizeNew.Value = new decimal(new int[] {
             2,
             0,
             0,
@@ -146,28 +146,28 @@ namespace Sudoku
             // labelBookletSizeNew
             // 
             resources.ApplyResources(this.labelBookletSizeNew, "labelBookletSizeNew");
-            this.labelBookletSizeNew.Name="labelBookletSizeNew";
+            this.labelBookletSizeNew.Name = "labelBookletSizeNew";
             // 
             // printSolutions
             // 
             resources.ApplyResources(this.printSolutions, "printSolutions");
-            this.printSolutions.Name="printSolutions";
+            this.printSolutions.Name = "printSolutions";
             // 
             // minValues
             // 
             resources.ApplyResources(this.minValues, "minValues");
-            this.minValues.Maximum=new decimal(new int[] {
+            this.minValues.Maximum = new decimal(new int[] {
             35,
             0,
             0,
             0});
-            this.minValues.Minimum=new decimal(new int[] {
+            this.minValues.Minimum = new decimal(new int[] {
             17,
             0,
             0,
             0});
-            this.minValues.Name="minValues";
-            this.minValues.Value=new decimal(new int[] {
+            this.minValues.Name = "minValues";
+            this.minValues.Value = new decimal(new int[] {
             17,
             0,
             0,
@@ -176,30 +176,30 @@ namespace Sudoku
             // labelMinValues
             // 
             resources.ApplyResources(this.labelMinValues, "labelMinValues");
-            this.labelMinValues.Name="labelMinValues";
+            this.labelMinValues.Name = "labelMinValues";
             // 
             // autoSaveBooklet
             // 
             resources.ApplyResources(this.autoSaveBooklet, "autoSaveBooklet");
-            this.autoSaveBooklet.Name="autoSaveBooklet";
+            this.autoSaveBooklet.Name = "autoSaveBooklet";
             // 
             // labelBaseDirectory
             // 
             resources.ApplyResources(this.labelBaseDirectory, "labelBaseDirectory");
-            this.labelBaseDirectory.Name="labelBaseDirectory";
+            this.labelBaseDirectory.Name = "labelBaseDirectory";
             // 
             // problemDirectory
             // 
             resources.ApplyResources(this.problemDirectory, "problemDirectory");
-            this.problemDirectory.AutoCompleteSource=System.Windows.Forms.AutoCompleteSource.FileSystemDirectories;
-            this.problemDirectory.Name="problemDirectory";
-            this.problemDirectory.ReadOnly=true;
-            this.problemDirectory.TabStop=false;
+            this.problemDirectory.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.FileSystemDirectories;
+            this.problemDirectory.Name = "problemDirectory";
+            this.problemDirectory.ReadOnly = true;
+            this.problemDirectory.TabStop = false;
             // 
             // directorySelect
             // 
             resources.ApplyResources(this.directorySelect, "directorySelect");
-            this.directorySelect.Name="directorySelect";
+            this.directorySelect.Name = "directorySelect";
             this.directorySelect.Click += new System.EventHandler(this.directorySelect_Click);
             // 
             // selectProblemDirectoryDialog
@@ -209,7 +209,7 @@ namespace Sudoku
             // printHints
             // 
             resources.ApplyResources(this.printHints, "printHints");
-            this.printHints.Name="printHints";
+            this.printHints.Name = "printHints";
             // 
             // optionsTab
             // 
@@ -217,14 +217,14 @@ namespace Sudoku
             this.optionsTab.Controls.Add(this.layoutPage);
             this.optionsTab.Controls.Add(this.printPage);
             this.optionsTab.Controls.Add(this.generatePage);
-            this.optionsTab.Name="optionsTab";
-            this.optionsTab.SelectedIndex=0;
+            this.optionsTab.Name = "optionsTab";
+            this.optionsTab.SelectedIndex = 0;
             // 
             // layoutPage
             // 
             resources.ApplyResources(this.layoutPage, "layoutPage");
-            this.layoutPage.BackColor=System.Drawing.SystemColors.ControlLight;
-            this.layoutPage.BorderStyle=System.Windows.Forms.BorderStyle.Fixed3D;
+            this.layoutPage.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.layoutPage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.layoutPage.Controls.Add(this.autoPauseLag);
             this.layoutPage.Controls.Add(this.autoPause);
             this.layoutPage.Controls.Add(this.saveState);
@@ -235,19 +235,19 @@ namespace Sudoku
             this.layoutPage.Controls.Add(this.constrast);
             this.layoutPage.Controls.Add(this.labelConstrast);
             this.layoutPage.Controls.Add(this.language);
-            this.layoutPage.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.layoutPage.Name="layoutPage";
+            this.layoutPage.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.layoutPage.Name = "layoutPage";
             // 
             // autoPauseLag
             // 
             resources.ApplyResources(this.autoPauseLag, "autoPauseLag");
-            this.autoPauseLag.Minimum=new decimal(new int[] {
+            this.autoPauseLag.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.autoPauseLag.Name="autoPauseLag";
-            this.autoPauseLag.Value=new decimal(new int[] {
+            this.autoPauseLag.Name = "autoPauseLag";
+            this.autoPauseLag.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -256,15 +256,15 @@ namespace Sudoku
             // autoPause
             // 
             resources.ApplyResources(this.autoPause, "autoPause");
-            this.autoPause.Name="autoPause";
-            this.autoPause.UseVisualStyleBackColor=true;
+            this.autoPause.Name = "autoPause";
+            this.autoPause.UseVisualStyleBackColor = true;
             this.autoPause.CheckedChanged += new System.EventHandler(this.autoPauseCheckedChanged);
             // 
             // saveState
             // 
             resources.ApplyResources(this.saveState, "saveState");
-            this.saveState.Name="saveState";
-            this.saveState.UseVisualStyleBackColor=true;
+            this.saveState.Name = "saveState";
+            this.saveState.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
@@ -272,36 +272,36 @@ namespace Sudoku
             this.groupBox1.Controls.Add(this.possibleValuesExamplePicture);
             this.groupBox1.Controls.Add(this.useDigits);
             this.groupBox1.Controls.Add(this.useWatchHands);
-            this.groupBox1.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.groupBox1.Name="groupBox1";
-            this.groupBox1.TabStop=false;
+            this.groupBox1.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.TabStop = false;
             // 
             // possibleValuesExamplePicture
             // 
             resources.ApplyResources(this.possibleValuesExamplePicture, "possibleValuesExamplePicture");
-            this.possibleValuesExamplePicture.Name="possibleValuesExamplePicture";
-            this.possibleValuesExamplePicture.TabStop=false;
+            this.possibleValuesExamplePicture.Name = "possibleValuesExamplePicture";
+            this.possibleValuesExamplePicture.TabStop = false;
             // 
             // useDigits
             // 
             resources.ApplyResources(this.useDigits, "useDigits");
-            this.useDigits.Name="useDigits";
-            this.useDigits.TabStop=true;
-            this.useDigits.UseVisualStyleBackColor=true;
+            this.useDigits.Name = "useDigits";
+            this.useDigits.TabStop = true;
+            this.useDigits.UseVisualStyleBackColor = true;
             // 
             // useWatchHands
             // 
             resources.ApplyResources(this.useWatchHands, "useWatchHands");
-            this.useWatchHands.Name="useWatchHands";
-            this.useWatchHands.TabStop=true;
-            this.useWatchHands.UseVisualStyleBackColor=true;
+            this.useWatchHands.Name = "useWatchHands";
+            this.useWatchHands.TabStop = true;
+            this.useWatchHands.UseVisualStyleBackColor = true;
             this.useWatchHands.CheckedChanged += new System.EventHandler(this.exchangePicture);
             // 
             // hideWhenMinimized
             // 
             resources.ApplyResources(this.hideWhenMinimized, "hideWhenMinimized");
-            this.hideWhenMinimized.Name="hideWhenMinimized";
-            this.hideWhenMinimized.UseVisualStyleBackColor=true;
+            this.hideWhenMinimized.Name = "hideWhenMinimized";
+            this.hideWhenMinimized.UseVisualStyleBackColor = true;
             // 
             // sizeGroupBox
             // 
@@ -309,56 +309,56 @@ namespace Sudoku
             this.sizeGroupBox.Controls.Add(this.largeRB);
             this.sizeGroupBox.Controls.Add(this.mediumRB);
             this.sizeGroupBox.Controls.Add(this.smallRB);
-            this.sizeGroupBox.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.sizeGroupBox.Name="sizeGroupBox";
-            this.sizeGroupBox.TabStop=false;
+            this.sizeGroupBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.sizeGroupBox.Name = "sizeGroupBox";
+            this.sizeGroupBox.TabStop = false;
             // 
             // largeRB
             // 
             resources.ApplyResources(this.largeRB, "largeRB");
-            this.largeRB.Name="largeRB";
-            this.largeRB.Tag="3";
+            this.largeRB.Name = "largeRB";
+            this.largeRB.Tag = "3";
             // 
             // mediumRB
             // 
             resources.ApplyResources(this.mediumRB, "mediumRB");
-            this.mediumRB.Name="mediumRB";
-            this.mediumRB.Tag="2";
+            this.mediumRB.Name = "mediumRB";
+            this.mediumRB.Tag = "2";
             // 
             // smallRB
             // 
             resources.ApplyResources(this.smallRB, "smallRB");
-            this.smallRB.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.smallRB.Name="smallRB";
-            this.smallRB.Tag="1";
+            this.smallRB.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.smallRB.Name = "smallRB";
+            this.smallRB.Tag = "1";
             // 
             // labelLanguage
             // 
             resources.ApplyResources(this.labelLanguage, "labelLanguage");
-            this.labelLanguage.Name="labelLanguage";
+            this.labelLanguage.Name = "labelLanguage";
             // 
             // constrast
             // 
             resources.ApplyResources(this.constrast, "constrast");
-            this.constrast.Name="constrast";
+            this.constrast.Name = "constrast";
             // 
             // labelConstrast
             // 
             resources.ApplyResources(this.labelConstrast, "labelConstrast");
-            this.labelConstrast.Name="labelConstrast";
+            this.labelConstrast.Name = "labelConstrast";
             // 
             // language
             // 
             resources.ApplyResources(this.language, "language");
-            this.language.DropDownStyle=System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.language.Name="language";
+            this.language.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.language.Name = "language";
             this.language.Validating += new System.ComponentModel.CancelEventHandler(this.checkUI);
             // 
             // printPage
             // 
             resources.ApplyResources(this.printPage, "printPage");
-            this.printPage.BackColor=System.Drawing.SystemColors.ControlLight;
-            this.printPage.BorderStyle=System.Windows.Forms.BorderStyle.Fixed3D;
+            this.printPage.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.printPage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.printPage.Controls.Add(this.printInternalSeverity);
             this.printPage.Controls.Add(this.xSudokuConstrast);
             this.printPage.Controls.Add(this.xSudokuConstrastLabel);
@@ -366,53 +366,53 @@ namespace Sudoku
             this.printPage.Controls.Add(this.printSolutions);
             this.printPage.Controls.Add(this.printHints);
             this.printPage.Controls.Add(this.problemPrintSize);
-            this.printPage.Name="printPage";
+            this.printPage.Name = "printPage";
             // 
             // printInternalSeverity
             // 
             resources.ApplyResources(this.printInternalSeverity, "printInternalSeverity");
-            this.printInternalSeverity.Name="printInternalSeverity";
-            this.printInternalSeverity.UseVisualStyleBackColor=true;
+            this.printInternalSeverity.Name = "printInternalSeverity";
+            this.printInternalSeverity.UseVisualStyleBackColor = true;
             // 
             // xSudokuConstrast
             // 
             resources.ApplyResources(this.xSudokuConstrast, "xSudokuConstrast");
-            this.xSudokuConstrast.Maximum=new decimal(new int[] {
+            this.xSudokuConstrast.Maximum = new decimal(new int[] {
             50,
             0,
             0,
             0});
-            this.xSudokuConstrast.Name="xSudokuConstrast";
+            this.xSudokuConstrast.Name = "xSudokuConstrast";
             // 
             // xSudokuConstrastLabel
             // 
             resources.ApplyResources(this.xSudokuConstrastLabel, "xSudokuConstrastLabel");
-            this.xSudokuConstrastLabel.Name="xSudokuConstrastLabel";
+            this.xSudokuConstrastLabel.Name = "xSudokuConstrastLabel";
             // 
             // solutionPrintSize
             // 
             resources.ApplyResources(this.solutionPrintSize, "solutionPrintSize");
             this.solutionPrintSize.Controls.Add(this.solutionSmall);
             this.solutionPrintSize.Controls.Add(this.solutionNormal);
-            this.solutionPrintSize.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.solutionPrintSize.Name="solutionPrintSize";
-            this.solutionPrintSize.TabStop=false;
+            this.solutionPrintSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.solutionPrintSize.Name = "solutionPrintSize";
+            this.solutionPrintSize.TabStop = false;
             // 
             // solutionSmall
             // 
             resources.ApplyResources(this.solutionSmall, "solutionSmall");
-            this.solutionSmall.Name="solutionSmall";
-            this.solutionSmall.TabStop=true;
-            this.solutionSmall.Tag="50";
-            this.solutionSmall.UseVisualStyleBackColor=true;
+            this.solutionSmall.Name = "solutionSmall";
+            this.solutionSmall.TabStop = true;
+            this.solutionSmall.Tag = "50";
+            this.solutionSmall.UseVisualStyleBackColor = true;
             // 
             // solutionNormal
             // 
             resources.ApplyResources(this.solutionNormal, "solutionNormal");
-            this.solutionNormal.Name="solutionNormal";
-            this.solutionNormal.TabStop=true;
-            this.solutionNormal.Tag="40";
-            this.solutionNormal.UseVisualStyleBackColor=true;
+            this.solutionNormal.Name = "solutionNormal";
+            this.solutionNormal.TabStop = true;
+            this.solutionNormal.Tag = "40";
+            this.solutionNormal.UseVisualStyleBackColor = true;
             // 
             // problemPrintSize
             // 
@@ -421,47 +421,47 @@ namespace Sudoku
             this.problemPrintSize.Controls.Add(this.small);
             this.problemPrintSize.Controls.Add(this.normal);
             this.problemPrintSize.Controls.Add(this.large);
-            this.problemPrintSize.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.problemPrintSize.Name="problemPrintSize";
-            this.problemPrintSize.TabStop=false;
+            this.problemPrintSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.problemPrintSize.Name = "problemPrintSize";
+            this.problemPrintSize.TabStop = false;
             // 
             // tiny
             // 
             resources.ApplyResources(this.tiny, "tiny");
-            this.tiny.Name="tiny";
-            this.tiny.TabStop=true;
-            this.tiny.Tag="40";
-            this.tiny.UseVisualStyleBackColor=true;
+            this.tiny.Name = "tiny";
+            this.tiny.TabStop = true;
+            this.tiny.Tag = "40";
+            this.tiny.UseVisualStyleBackColor = true;
             // 
             // small
             // 
             resources.ApplyResources(this.small, "small");
-            this.small.Name="small";
-            this.small.TabStop=true;
-            this.small.Tag="30";
-            this.small.UseVisualStyleBackColor=true;
+            this.small.Name = "small";
+            this.small.TabStop = true;
+            this.small.Tag = "30";
+            this.small.UseVisualStyleBackColor = true;
             // 
             // normal
             // 
             resources.ApplyResources(this.normal, "normal");
-            this.normal.Name="normal";
-            this.normal.TabStop=true;
-            this.normal.Tag="20";
-            this.normal.UseVisualStyleBackColor=true;
+            this.normal.Name = "normal";
+            this.normal.TabStop = true;
+            this.normal.Tag = "20";
+            this.normal.UseVisualStyleBackColor = true;
             // 
             // large
             // 
             resources.ApplyResources(this.large, "large");
-            this.large.Name="large";
-            this.large.TabStop=true;
-            this.large.Tag="10";
-            this.large.UseVisualStyleBackColor=true;
+            this.large.Name = "large";
+            this.large.TabStop = true;
+            this.large.Tag = "10";
+            this.large.UseVisualStyleBackColor = true;
             // 
             // generatePage
             // 
             resources.ApplyResources(this.generatePage, "generatePage");
-            this.generatePage.BackColor=System.Drawing.SystemColors.ControlLight;
-            this.generatePage.BorderStyle=System.Windows.Forms.BorderStyle.Fixed3D;
+            this.generatePage.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.generatePage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.generatePage.Controls.Add(this.precalculatedProblems);
             this.generatePage.Controls.Add(this.generateMinimalProblems);
             this.generatePage.Controls.Add(this.selectLevelBox);
@@ -474,56 +474,56 @@ namespace Sudoku
             this.generatePage.Controls.Add(this.minValues);
             this.generatePage.Controls.Add(this.autoSaveBooklet);
             this.generatePage.Controls.Add(this.bookletSize);
-            this.generatePage.Name="generatePage";
+            this.generatePage.Name = "generatePage";
             // 
             // precalculatedProblems
             // 
             resources.ApplyResources(this.precalculatedProblems, "precalculatedProblems");
-            this.precalculatedProblems.Name="precalculatedProblems";
-            this.precalculatedProblems.UseVisualStyleBackColor=true;
+            this.precalculatedProblems.Name = "precalculatedProblems";
+            this.precalculatedProblems.UseVisualStyleBackColor = true;
             this.precalculatedProblems.CheckedChanged += new System.EventHandler(this.precalculatedCheckedChanged);
             // 
             // generateMinimalProblems
             // 
             resources.ApplyResources(this.generateMinimalProblems, "generateMinimalProblems");
-            this.generateMinimalProblems.Name="generateMinimalProblems";
-            this.generateMinimalProblems.UseVisualStyleBackColor=true;
+            this.generateMinimalProblems.Name = "generateMinimalProblems";
+            this.generateMinimalProblems.UseVisualStyleBackColor = true;
             this.generateMinimalProblems.CheckedChanged += new System.EventHandler(this.generateMinimumProblemsChanged);
             // 
             // selectLevelBox
             // 
             resources.ApplyResources(this.selectLevelBox, "selectLevelBox");
             this.selectLevelBox.Controls.Add(this.selectSeverityLevel);
-            this.selectLevelBox.Name="selectLevelBox";
-            this.selectLevelBox.TabStop=false;
+            this.selectLevelBox.Name = "selectLevelBox";
+            this.selectLevelBox.TabStop = false;
             // 
             // selectSeverityLevel
             // 
             resources.ApplyResources(this.selectSeverityLevel, "selectSeverityLevel");
-            this.selectSeverityLevel.Name="selectSeverityLevel";
-            this.selectSeverityLevel.UseVisualStyleBackColor=true;
+            this.selectSeverityLevel.Name = "selectSeverityLevel";
+            this.selectSeverityLevel.UseVisualStyleBackColor = true;
             // 
             // type
             // 
             resources.ApplyResources(this.type, "type");
             this.type.Controls.Add(this.xSudoku);
             this.type.Controls.Add(this.normalSudoku);
-            this.type.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.type.Name="type";
-            this.type.TabStop=false;
+            this.type.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.type.Name = "type";
+            this.type.TabStop = false;
             // 
             // xSudoku
             // 
             resources.ApplyResources(this.xSudoku, "xSudoku");
-            this.xSudoku.Name="xSudoku";
-            this.xSudoku.UseVisualStyleBackColor=true;
+            this.xSudoku.Name = "xSudoku";
+            this.xSudoku.UseVisualStyleBackColor = true;
             this.xSudoku.CheckedChanged += new System.EventHandler(this.sudokuTypeCheckedChanged);
             // 
             // normalSudoku
             // 
             resources.ApplyResources(this.normalSudoku, "normalSudoku");
-            this.normalSudoku.Name="normalSudoku";
-            this.normalSudoku.UseVisualStyleBackColor=true;
+            this.normalSudoku.Name = "normalSudoku";
+            this.normalSudoku.UseVisualStyleBackColor = true;
             this.normalSudoku.CheckedChanged += new System.EventHandler(this.sudokuTypeCheckedChanged);
             // 
             // severity
@@ -532,29 +532,29 @@ namespace Sudoku
             this.severity.Controls.Add(this.hard);
             this.severity.Controls.Add(this.intermediate);
             this.severity.Controls.Add(this.easy);
-            this.severity.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.severity.Name="severity";
-            this.severity.TabStop=false;
+            this.severity.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.severity.Name = "severity";
+            this.severity.TabStop = false;
             // 
             // hard
             // 
             resources.ApplyResources(this.hard, "hard");
-            this.hard.Name="hard";
-            this.hard.UseVisualStyleBackColor=true;
+            this.hard.Name = "hard";
+            this.hard.UseVisualStyleBackColor = true;
             this.hard.CheckedChanged += new System.EventHandler(this.severityLevelCheckedChanged);
             // 
             // intermediate
             // 
             resources.ApplyResources(this.intermediate, "intermediate");
-            this.intermediate.Name="intermediate";
-            this.intermediate.UseVisualStyleBackColor=true;
+            this.intermediate.Name = "intermediate";
+            this.intermediate.UseVisualStyleBackColor = true;
             this.intermediate.CheckedChanged += new System.EventHandler(this.severityLevelCheckedChanged);
             // 
             // easy
             // 
             resources.ApplyResources(this.easy, "easy");
-            this.easy.Name="easy";
-            this.easy.UseVisualStyleBackColor=true;
+            this.easy.Name = "easy";
+            this.easy.UseVisualStyleBackColor = true;
             this.easy.CheckedChanged += new System.EventHandler(this.severityLevelCheckedChanged);
             // 
             // bookletSize
@@ -565,34 +565,34 @@ namespace Sudoku
             this.bookletSize.Controls.Add(this.labelBookletSizeNew);
             this.bookletSize.Controls.Add(this.labelBookletSizeExisting);
             this.bookletSize.Controls.Add(this.bookletSizeNew);
-            this.bookletSize.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.bookletSize.Name="bookletSize";
-            this.bookletSize.TabStop=false;
+            this.bookletSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.bookletSize.Name = "bookletSize";
+            this.bookletSize.TabStop = false;
             // 
             // unlimited
             // 
             resources.ApplyResources(this.unlimited, "unlimited");
-            this.unlimited.Checked=true;
-            this.unlimited.CheckState=System.Windows.Forms.CheckState.Checked;
-            this.unlimited.Name="unlimited";
-            this.unlimited.UseVisualStyleBackColor=true;
+            this.unlimited.Checked = true;
+            this.unlimited.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.unlimited.Name = "unlimited";
+            this.unlimited.UseVisualStyleBackColor = true;
             this.unlimited.CheckedChanged += new System.EventHandler(this.unlimitedCheckedChanged);
             // 
             // bookletSizeExisting
             // 
             resources.ApplyResources(this.bookletSizeExisting, "bookletSizeExisting");
-            this.bookletSizeExisting.Maximum=new decimal(new int[] {
+            this.bookletSizeExisting.Maximum = new decimal(new int[] {
             99999999,
             0,
             0,
             0});
-            this.bookletSizeExisting.Minimum=new decimal(new int[] {
+            this.bookletSizeExisting.Minimum = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.bookletSizeExisting.Name="bookletSizeExisting";
-            this.bookletSizeExisting.Value=new decimal(new int[] {
+            this.bookletSizeExisting.Name = "bookletSizeExisting";
+            this.bookletSizeExisting.Value = new decimal(new int[] {
             1,
             0,
             0,
@@ -601,24 +601,24 @@ namespace Sudoku
             // labelBookletSizeExisting
             // 
             resources.ApplyResources(this.labelBookletSizeExisting, "labelBookletSizeExisting");
-            this.labelBookletSizeExisting.Name="labelBookletSizeExisting";
+            this.labelBookletSizeExisting.Name = "labelBookletSizeExisting";
             // 
             // OptionsDialog
             // 
-            this.AcceptButton=this.ok;
+            this.AcceptButton = this.ok;
             resources.ApplyResources(this, "$this");
-            this.AutoScaleMode=System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor=System.Drawing.SystemColors.Control;
-            this.CancelButton=this.cancel;
-            this.ControlBox=false;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.CancelButton = this.cancel;
+            this.ControlBox = false;
             this.Controls.Add(this.optionsTab);
             this.Controls.Add(this.ok);
             this.Controls.Add(this.cancel);
-            this.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.FormBorderStyle=System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox=false;
-            this.MinimizeBox=false;
-            this.Name="OptionsDialog";
+            this.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "OptionsDialog";
             ((System.ComponentModel.ISupportInitialize)(this.bookletSizeNew)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.minValues)).EndInit();
             this.optionsTab.ResumeLayout(false);

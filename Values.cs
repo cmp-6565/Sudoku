@@ -7,15 +7,15 @@ namespace Sudoku
     [Serializable]
     public abstract class Values: ICloneable
     {
-        private Int64 count=0;
+        private Int64 count = 0;
 
         public Int64 Counter
         {
             get { return count; }
-            set { count=value; }
+            set { count = value; }
         }
 
-        public const byte Undefined=0;
+        public const byte Undefined = 0;
 
         public abstract void SetValue(int row, int col, byte value, Boolean fixedValue);
 
@@ -31,8 +31,8 @@ namespace Sudoku
 
         public object Clone()
         {
-            MemoryStream memoryStream=new MemoryStream();
-            BinaryFormatter binaryFormatter=new BinaryFormatter();
+            MemoryStream memoryStream = new MemoryStream();
+            BinaryFormatter binaryFormatter = new BinaryFormatter();
 
             binaryFormatter.Serialize(memoryStream, this);
             memoryStream.Seek(0, SeekOrigin.Begin);

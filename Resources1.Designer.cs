@@ -39,8 +39,8 @@ namespace Sudoku {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp=new global::System.Resources.ResourceManager("Sudoku.Resources", typeof(Resources).Assembly);
-                    resourceMan=temp;
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sudoku.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
                 }
                 return resourceMan;
             }
@@ -56,7 +56,7 @@ namespace Sudoku {
                 return resourceCulture;
             }
             set {
-                resourceCulture=value;
+                resourceCulture = value;
             }
         }
         
@@ -227,7 +227,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap digitCandidates {
             get {
-                object obj=ResourceManager.GetObject("digitCandidates", resourceCulture);
+                object obj = ResourceManager.GetObject("digitCandidates", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1018,7 +1018,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap SudokuProblem {
             get {
-                object obj=ResourceManager.GetObject("SudokuProblem", resourceCulture);
+                object obj = ResourceManager.GetObject("SudokuProblem", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1172,7 +1172,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap watchHandCandidates {
             get {
-                object obj=ResourceManager.GetObject("watchHandCandidates", resourceCulture);
+                object obj = ResourceManager.GetObject("watchHandCandidates", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
