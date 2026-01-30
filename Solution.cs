@@ -11,18 +11,18 @@ namespace Sudoku
 
         public Solution(ISudokuSettings settings)
         {
-            values = new byte[WinFormsSettings.SudokuSize][];
-            for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-                values[row] = new byte[WinFormsSettings.SudokuSize];
+            values=new byte[WinFormsSettings.SudokuSize][];
+            for(int row=0; row < WinFormsSettings.SudokuSize; row++)
+                values[row]=new byte[WinFormsSettings.SudokuSize];
             Init();
-            this.settings = settings;
+            this.settings=settings;
         }
 
         public override void SetValue(int row, int col, byte value, Boolean fixedValue)
         {
             if(((value < 1 || value > WinFormsSettings.SudokuSize) && value != Values.Undefined) || row < 0 || col < 0 || row > WinFormsSettings.SudokuSize || col > WinFormsSettings.SudokuSize)
                 throw new InvalidSudokuValueException();
-            values[row][col] = value;
+            values[row][col]=value;
         }
 
         public override byte GetValue(int row, int col)
@@ -49,9 +49,9 @@ namespace Sudoku
         {
             int row, col;
 
-            for(row = 0; row < WinFormsSettings.SudokuSize; row++)
-                for(col = 0; col < WinFormsSettings.SudokuSize; col++)
-                    values[row][col] = Values.Undefined;
+            for(row=0; row < WinFormsSettings.SudokuSize; row++)
+                for(col=0; col < WinFormsSettings.SudokuSize; col++)
+                    values[row][col]=Values.Undefined;
         }
     }
 }

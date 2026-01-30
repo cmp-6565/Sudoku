@@ -33,15 +33,15 @@ namespace Sudoku
         public event EventHandler MatrixChanged;
         public event EventHandler Generating;
 
-        private Stopwatch solvingTimer = new Stopwatch();
+        private Stopwatch solvingTimer=new Stopwatch();
         public SudokuController(ISudokuSettings settings, IUserInteraction ui)
         {
-            undoStack = new Stack<CoreValue>();
-            trickyProblems = new TrickyProblems(settings, ui);
-            generationParameters = new GenerationParameters(settings);
-            printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
-            this.settings = settings;
-            this.ui = ui;
+            undoStack=new Stack<CoreValue>();
+            trickyProblems=new TrickyProblems(settings, ui);
+            generationParameters=new GenerationParameters(settings);
+            printerService=new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
+            this.settings=settings;
+            this.ui=ui;
         }
 
         public SudokuController(String filenname, Boolean loadCandidates, ISudokuSettings settings, IUserInteraction ui): this(settings, ui)
@@ -49,9 +49,9 @@ namespace Sudoku
             CreateProblemFromFile(filenname, settings.GenerateNormalSudoku, settings.GenerateXSudoku, loadCandidates);
             BackupProblem();
         }
-        public void CreateNewProblem(bool xSudoku, bool notify = true)
+        public void CreateNewProblem(bool xSudoku, bool notify=true)
         {
-            CurrentProblem = xSudoku ? (BaseProblem)new XSudokuProblem(settings) : new SudokuProblem(settings);
+            CurrentProblem=xSudoku? (BaseProblem)new XSudokuProblem(settings): new SudokuProblem(settings);
             BackupProblem();
             if(notify) NotifyMatrixChanged();
         }
@@ -60,8 +60,8 @@ namespace Sudoku
         {
             if(CurrentProblem == null) return;
 
-            int maxSolutions = findAllSolutions ? int.MaxValue : 1;
-            var stopwatch = Stopwatch.StartNew();
+            int maxSolutions=findAllSolutions? int.MaxValue: 1;
+            var stopwatch=Stopwatch.StartNew();
 
             CurrentProblem.FindSolutions(maxSolutions, token);
             if(CurrentProblem.SolverTask != null)
@@ -72,10 +72,10 @@ namespace Sudoku
 
                     progress?.Report(new GenerationProgressState
                     {
-                        StatusText = Resources.Thinking,
-                        PassCount = CurrentProblem.TotalPassCounter,
-                        SolutionCount = CurrentProblem.NumberOfSolutions,
-                        Elapsed = stopwatch.Elapsed
+                        StatusText=Resources.Thinking,
+                        PassCount=CurrentProblem.TotalPassCounter,
+                        SolutionCount=CurrentProblem.NumberOfSolutions,
+                        Elapsed=stopwatch.Elapsed
                     });
 
                     await Task.Delay(50);
@@ -84,7 +84,7 @@ namespace Sudoku
                 await CurrentProblem.SolverTask;
             }
             stopwatch.Stop();
-            CurrentProblem.SolvingTime = stopwatch.Elapsed;
+            CurrentProblem.SolvingTime=stopwatch.Elapsed;
             NotifyMatrixChanged();
         }
 
@@ -115,15 +115,15 @@ namespace Sudoku
         }
         public TimeSpan ElapsedTime { get { return solvingTimer.Elapsed; }  }
         public Boolean IsTimerRunning { get { return solvingTimer.IsRunning; } }
-        public void RestoreProblemState(bool notify = true)
+        public void RestoreProblemState(bool notify=true)
         {
-            Char sudokuType = (Char)settings.State[0];
+            Char sudokuType=(Char)settings.State[0];
             if(sudokuType != SudokuProblem.ProblemIdentifier && sudokuType != XSudokuProblem.ProblemIdentifier)
                 throw new InvalidDataException();
             CreateNewProblem(sudokuType == XSudokuProblem.ProblemIdentifier, notify);
             try
             {
-                SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+                SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
                 fileService.InitProblem(settings.State.Substring(1, WinFormsSettings.TotalCellCount).ToCharArray(), settings.State.Substring(WinFormsSettings.TotalCellCount + 1, 16).ToCharArray(), null);
                 if(settings.State.IndexOf('\n') > 0)
                 {
@@ -155,7 +155,7 @@ namespace Sudoku
         {
             get
             {
-                return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), SerializeProblem(false).Substring(1, WinFormsSettings.TotalCellCount)); 
+                return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem? "X": ""), SerializeProblem(false).Substring(1, WinFormsSettings.TotalCellCount)); 
             }
         }
     
@@ -164,8 +164,8 @@ namespace Sudoku
             if(CurrentProblem == null) return false;
 
             BackupProblem();
-            var stopwatch = Stopwatch.StartNew();
-            bool result = false;
+            var stopwatch=Stopwatch.StartNew();
+            bool result=false;
 
             try
             {
@@ -179,10 +179,10 @@ namespace Sudoku
 
                         progress?.Report(new GenerationProgressState
                         {
-                            StatusText = Resources.Checking,
-                            PassCount = CurrentProblem.TotalPassCounter,
-                            SolutionCount = CurrentProblem.NumberOfSolutions,
-                            Elapsed = stopwatch.Elapsed
+                            StatusText=Resources.Checking,
+                            PassCount=CurrentProblem.TotalPassCounter,
+                            SolutionCount=CurrentProblem.NumberOfSolutions,
+                            Elapsed=stopwatch.Elapsed
                         });
 
                         await Task.Delay(50);
@@ -190,7 +190,7 @@ namespace Sudoku
                     await CurrentProblem.SolverTask;
                 }
 
-                result = CurrentProblem.ProblemSolved;
+                result=CurrentProblem.ProblemSolved;
             }
             finally
             {
@@ -212,14 +212,14 @@ namespace Sudoku
                 printerService.AddProblem(problem);
                 if(settings.AutoSaveBooklet)
                 {
-                    string filename = generationParameters.BaseDirectory + Path.DirectorySeparatorChar + "Problem-" + (index + 1).ToString() + "(" + problem.SeverityLevelText + ") (" + problem.SeverityLevel + ")" + settings.DefaultFileExtension;
-                    if(!SaveProblem(filename)) settings.AutoSaveBooklet = false;
+                    string filename=generationParameters.BaseDirectory + Path.DirectorySeparatorChar + "Problem-" + (index + 1).ToString() + "(" + problem.SeverityLevelText + ") (" + problem.SeverityLevel + ")" + settings.DefaultFileExtension;
+                    if(!SaveProblem(filename)) settings.AutoSaveBooklet=false;
                 }
             }
         }
         public Boolean NewSudokuType()
         {
-            Random rand = new Random(unchecked((int)DateTime.Now.Ticks));
+            Random rand=new Random(unchecked((int)DateTime.Now.Ticks));
 
             if(settings.GenerateXSudoku && settings.GenerateNormalSudoku)
                 return rand.Next() % 2 == 0;
@@ -237,18 +237,18 @@ namespace Sudoku
         }
         public async Task GenerateBatch(int severityLevel, bool usePrecalculated, Action<object, String> finalize, IProgress<GenerationProgressState> progress, IProgress<MinimizationUpdate> minimizeProgress, CancellationToken token)
         {
-            int count = generationParameters.GenerateBooklet? settings.BookletSizeNew: 1;
+            int count=generationParameters.GenerateBooklet? settings.BookletSizeNew: 1;
             trickyProblems.Clear();
-            generationParameters.CurrentProblem = 0;
+            generationParameters.CurrentProblem=0;
 
-            for(int i = 0; i < count; i++)
+            for(int i=0; i < count; i++)
             {
                 CreateNewProblem((i == 0)? (CurrentProblem is XSudokuProblem): NewSudokuType());
 
-                generationParameters.Reset = false;
-                generationParameters.PreAllocatedValues = 0;
+                generationParameters.Reset=false;
+                generationParameters.PreAllocatedValues=0;
 
-                bool success = await GenerateCompleteProblem(generationParameters, severityLevel, progress, minimizeProgress, token);
+                bool success=await GenerateCompleteProblem(generationParameters, severityLevel, progress, minimizeProgress, token);
 
                 if(!success || token.IsCancellationRequested) return;
 
@@ -259,19 +259,19 @@ namespace Sudoku
 
             String statusMessage;
             if(generationParameters.GenerateBooklet)
-                statusMessage = String.Format(Thread.CurrentThread.CurrentCulture, Resources.NewProblems, generationParameters.CurrentProblem);
+                statusMessage=String.Format(Thread.CurrentThread.CurrentCulture, Resources.NewProblems, generationParameters.CurrentProblem);
             else
             {
                 statusMessage=String.Format(Thread.CurrentThread.CurrentCulture, Resources.NewProblemGenerated.Replace("\\n", Environment.NewLine), CurrentProblem.SeverityLevelText, CurrentProblem.nValues, generationParameters.CheckedProblems, generationParameters.TotalPasses);
             }
             finalize?.Invoke(this, statusMessage);
-            generationParameters = new GenerationParameters(settings);
+            generationParameters=new GenerationParameters(settings);
         }
 
         public async Task<Boolean> SudokuOfTheDay()
         {
             CreateNewProblem(settings.SudokuOfTheDay);
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+            SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
             if(await fileService.SudokuOfTheDay())
             {
                 BackupProblem();
@@ -286,27 +286,27 @@ namespace Sudoku
 
         public List<BaseCell> GetHints()
         {
-            List<BaseCell> values = CurrentProblem.GetObviousCells();
+            List<BaseCell> values=CurrentProblem.GetObviousCells();
             if(values.Count == 0)
-                values = CurrentProblem.GetHints();
+                values=CurrentProblem.GetHints();
             if(values.Count > settings.MaxHints)
             {
-                List<BaseCell> hints = new List<BaseCell>();
-                Random rand = new Random();
+                List<BaseCell> hints=new List<BaseCell>();
+                Random rand=new Random();
                 int index;
                 do
-                    if(!hints.Contains(values[(index = rand.Next(values.Count))]))
+                    if(!hints.Contains(values[(index=rand.Next(values.Count))]))
                         hints.Add(values[index]);
                 while(hints.Count < settings.MaxHints);
-                values = hints;
+                values=hints;
             }
             return values;
         }
         public async Task<bool> GenerateBaseProblem(GenerationParameters generationParameters, bool usePrecalculated, IProgress<GenerationProgressState> progress, CancellationToken token)
         {
-            var stopwatch = Stopwatch.StartNew();
-            int counter = 0;
-            int minPreAllocations = CurrentProblem.Matrix.MinimumValues;
+            var stopwatch=Stopwatch.StartNew();
+            int counter=0;
+            int minPreAllocations=CurrentProblem.Matrix.MinimumValues;
 
             if(usePrecalculated)
             {
@@ -317,7 +317,7 @@ namespace Sudoku
                     return true;
                 }
                 else
-                    usePrecalculated = false;
+                    usePrecalculated=false;
             }
 
             if(!usePrecalculated)
@@ -334,14 +334,14 @@ namespace Sudoku
                         if(generationParameters.Reset)
                         {
                             CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, Values.Undefined);
-                            CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = false;
+                            CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly=false;
 
                             progress?.Report(new GenerationProgressState
                             {
-                                Row = generationParameters.Row,
-                                Col = generationParameters.Col,
-                                Value = Values.Undefined,
-                                StatusText = null
+                                Row=generationParameters.Row,
+                                Col=generationParameters.Col,
+                                Value=Values.Undefined,
+                                StatusText=null
                             });
                         }
 
@@ -349,29 +349,29 @@ namespace Sudoku
                         try
                         {
                             CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue);
-                            CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = true;
+                            CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly=true;
 
-                            bool updateText = (counter % 100) == 0;
+                            bool updateText=(counter % 100) == 0;
 
                             progress?.Report(new GenerationProgressState
                             {
-                                Row = generationParameters.Row,
-                                Col = generationParameters.Col,
-                                Value = generationParameters.GeneratedValue,
-                                ReadOnly = true,
-                                Elapsed = TotalGenerationTime,
-                                StatusText = updateText ? Resources.Generating : null
+                                Row=generationParameters.Row,
+                                Col=generationParameters.Col,
+                                Value=generationParameters.GeneratedValue,
+                                ReadOnly=true,
+                                Elapsed=TotalGenerationTime,
+                                StatusText=updateText? Resources.Generating: null
                             });
 
                             if(generationParameters.PreAllocatedValues >= minPreAllocations)
                                 generationParameters.CheckedProblems += 1;
 
-                            generationParameters.PreAllocatedValues = CurrentProblem.nValues - CurrentProblem.nComputedValues;
-                            generationParameters.Reset = !CurrentProblem.Resolvable();
+                            generationParameters.PreAllocatedValues=CurrentProblem.nValues - CurrentProblem.nComputedValues;
+                            generationParameters.Reset=!CurrentProblem.Resolvable();
                         }
                         catch(ArgumentException)
                         {
-                            generationParameters.Reset = true;
+                            generationParameters.Reset=true;
                         }
 
                         if((counter % 100) == 0)
@@ -395,9 +395,9 @@ namespace Sudoku
 
         private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, IProgress<GenerationProgressState> progress, IProgress<MinimizationUpdate> mimimizeProgress, CancellationToken token)
         {
-            var stopwatch = Stopwatch.StartNew();
-            int counter = 0;
-            TotalGenerationTime = TimeSpan.Zero;
+            var stopwatch=Stopwatch.StartNew();
+            int counter=0;
+            TotalGenerationTime=TimeSpan.Zero;
 
             while(!token.IsCancellationRequested)
             {
@@ -416,25 +416,25 @@ namespace Sudoku
 
                 if(CurrentProblem.NumberOfSolutions == 0)
                 {
-                    generationParameters.Reset = true;
+                    generationParameters.Reset=true;
                 }
                 else if(CurrentProblem.NumberOfSolutions == 1 && !token.IsCancellationRequested)
                 {
-                    bool processProblem = true;
+                    bool processProblem=true;
 
                     if(settings.GenerateMinimalProblems)
                     {
                         if(SeverityLevelInt() <= targetSeverity)
                         {
-                            var minimized = await Minimize(targetSeverity, mimimizeProgress, token);
+                            var minimized=await Minimize(targetSeverity, mimimizeProgress, token);
                             if(minimized != null)
                             {
-                                CurrentProblem = minimized;
-                                processProblem = true;
+                                CurrentProblem=minimized;
+                                processProblem=true;
                             }
                             else
                             {
-                                processProblem = false; // Minimierung fehlgeschlagen
+                                processProblem=false; // Minimierung fehlgeschlagen
                             }
                         }
                     }
@@ -461,11 +461,11 @@ namespace Sudoku
                             return true; // ERFOLG
                         }
                     }
-                    generationParameters.Reset = true;
+                    generationParameters.Reset=true;
                 }
                 else
                 {
-                    generationParameters.Reset = false;
+                    generationParameters.Reset=false;
                 }
             }
 
@@ -479,14 +479,14 @@ namespace Sudoku
             BackupProblem();
 
             // Lokale Event-Handler, die an IProgress weiterleiten
-            Action<object, BaseCell> onTestCell = (s, cell) =>
-                progress?.Report(new MinimizationUpdate { Type = MinimizationUpdateType.TestCell, Cell = cell });
+            Action<object, BaseCell> onTestCell=(s, cell) =>
+                progress?.Report(new MinimizationUpdate { Type=MinimizationUpdateType.TestCell, Cell=cell });
 
-            Action<object, BaseCell> onResetCell = (s, cell) =>
-                progress?.Report(new MinimizationUpdate { Type = MinimizationUpdateType.ResetCell, Cell = cell });
+            Action<object, BaseCell> onResetCell=(s, cell) =>
+                progress?.Report(new MinimizationUpdate { Type=MinimizationUpdateType.ResetCell, Cell=cell });
 
-            Action<object, BaseProblem> onMinimizing = (s, problem) =>
-                progress?.Report(new MinimizationUpdate { Type = MinimizationUpdateType.Status, Problem = problem });
+            Action<object, BaseProblem> onMinimizing=(s, problem) =>
+                progress?.Report(new MinimizationUpdate { Type=MinimizationUpdateType.Status, Problem=problem });
 
             // Events abonnieren
             CurrentProblem.TestCell += onTestCell;
@@ -506,7 +506,7 @@ namespace Sudoku
         }
         private void FillCells(GenerationParameters generationParameters, int targetSeverity, Stopwatch stopwatch, CancellationToken token)
         {
-            int counter = 0;
+            int counter=0;
             CurrentProblem.ResetMatrix();
 
             // Fülle bis MinValues oder TargetSeverity
@@ -517,9 +517,9 @@ namespace Sudoku
                 generationParameters.NewValue();
                 if(CurrentProblem.GetValue(generationParameters.Row, generationParameters.Col) == Values.Undefined && !token.IsCancellationRequested)
                 {
-                    byte solValue = CurrentProblem.Solutions[0].GetValue(generationParameters.Row, generationParameters.Col);
+                    byte solValue=CurrentProblem.Solutions[0].GetValue(generationParameters.Row, generationParameters.Col);
                     CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, solValue);
-                    CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = true;
+                    CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly=true;
                 }
             }
             while((SeverityLevelInt() & targetSeverity) == 0 && CurrentProblem.nValues < settings.MaxValues && !token.IsCancellationRequested)
@@ -529,16 +529,16 @@ namespace Sudoku
                 generationParameters.NewValue();
                 if(CurrentProblem.GetValue(generationParameters.Row, generationParameters.Col) == Values.Undefined)
                 {
-                    byte solValue = CurrentProblem.Solutions[0].GetValue(generationParameters.Row, generationParameters.Col);
+                    byte solValue=CurrentProblem.Solutions[0].GetValue(generationParameters.Row, generationParameters.Col);
                     CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, solValue);
-                    CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly = true;
+                    CurrentProblem.Matrix.Cell(generationParameters.Row, generationParameters.Col).ReadOnly=true;
                 }
             }
         }
 
         private int SeverityLevelInt()
         {
-            CurrentProblem.SeverityLevel = float.NaN;
+            CurrentProblem.SeverityLevel=float.NaN;
             return CurrentProblem.SeverityLevelInt;
         }
         public ValidationResult ParseAndSync(string[,] grid)
@@ -547,18 +547,18 @@ namespace Sudoku
             if(grid.GetLength(0) != WinFormsSettings.SudokuSize || grid.GetLength(1) != WinFormsSettings.SudokuSize)
                 throw new ArgumentException("grid must be SudokuSize x SudokuSize", nameof(grid));
 
-            ValidationResult result = new ValidationResult();
+            ValidationResult result=new ValidationResult();
 
             BackupProblem();
 
-            for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for(int row=0; row < WinFormsSettings.SudokuSize; row++)
             {
-                for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+                for(int col=0; col < WinFormsSettings.SudokuSize; col++)
                 {
-                    string raw = grid[row, col];
+                    string raw=grid[row, col];
                     if(string.IsNullOrEmpty(raw)) continue;
 
-                    string value = raw.Trim();
+                    string value=raw.Trim();
                     if(value.Length == 0)
                     {
                         CurrentProblem.SetValue(row, col, Values.Undefined);
@@ -567,12 +567,12 @@ namespace Sudoku
 
                     if(!byte.TryParse(value, NumberStyles.Integer, Thread.CurrentThread.CurrentUICulture, out byte parsed))
                     {
-                        result.IsValid = false;
+                        result.IsValid=false;
                         result.addError(new ValidationResult.Error
                         {
-                            Row = row,
-                            Col = col,
-                            Message = String.Format(Thread.CurrentThread.CurrentUICulture, Resources.InvalidValue, value, row + 1, col + 1)
+                            Row=row,
+                            Col=col,
+                            Message=String.Format(Thread.CurrentThread.CurrentUICulture, Resources.InvalidValue, value, row + 1, col + 1)
                         });
                     }
 
@@ -582,12 +582,12 @@ namespace Sudoku
                     }
                     catch(ArgumentException)
                     {
-                        result.IsValid = false;
+                        result.IsValid=false;
                         result.addError(new ValidationResult.Error
                         {
-                            Row = row,
-                            Col = col,
-                            Message = String.Format(Thread.CurrentThread.CurrentUICulture, Resources.InvalidValue, value, row + 1, col + 1)
+                            Row=row,
+                            Col=col,
+                            Message=String.Format(Thread.CurrentThread.CurrentUICulture, Resources.InvalidValue, value, row + 1, col + 1)
                         });
                     }
                 }
@@ -598,11 +598,11 @@ namespace Sudoku
         }
         public void CreateProblemFromFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
         {
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+            SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
             fileService.ReadProblem += (b) =>
             {
                 CreateNewProblem(b);
-                fileService.Sudoku = CurrentProblem;
+                fileService.Sudoku=CurrentProblem;
             };
             fileService.CreateProblemFromFile(filename, normalSudoku, xSudoku, loadCandidates);
 
@@ -614,7 +614,7 @@ namespace Sudoku
         }
         public void SetCellReadOnly(int row, int col, bool readOnly)
         {
-            CurrentProblem.Matrix.Cell(row, col).ReadOnly = readOnly;
+            CurrentProblem.Matrix.Cell(row, col).ReadOnly=readOnly;
         }
         public int GetFilledCellCount { get { return CurrentProblem.nValues; } }
         public int GetComputedCellCount { get { return CurrentProblem.nComputedValues; } }
@@ -626,20 +626,20 @@ namespace Sudoku
         private async Task<Boolean> LoadProblem(Boolean xSudoku)
         {
             CreateNewProblem(xSudoku);
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+            SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
             return await fileService.Load();
         }
         public void UpdateProblem(BaseProblem problem)
         {
-            CurrentProblem = problem.Clone();
+            CurrentProblem=problem.Clone();
         }
         public void RestoreProblem()
         {
-            CurrentProblem = Backup.Clone();
+            CurrentProblem=Backup.Clone();
         }
         public void BackupProblem()
         {
-            Backup = CurrentProblem.Clone();
+            Backup=CurrentProblem.Clone();
         }
         public Boolean IsProblemResolvable()
         {
@@ -658,7 +658,7 @@ namespace Sudoku
         public void ClearUndo()
         {
             undoStack.Clear();
-            CurrentProblem.Dirty = false;
+            CurrentProblem.Dirty=false;
         }
         public Boolean CanUndo()
         {
@@ -667,59 +667,59 @@ namespace Sudoku
         public Boolean SaveProblem(String filename)
         {
             StopTimer();
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+            SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
             return fileService.SaveToFile(filename);
         }
         public void ExportHTML(String filename)
         {
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+            SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
             fileService.SaveToHTMLFile(filename);
         }
         public string GetCellInfoText(int row, int col)
         {
-            CultureInfo cultureInfo = Thread.CurrentThread.CurrentUICulture;
-            BaseCell cell = CurrentProblem.Matrix.Cell(row, col);
+            CultureInfo cultureInfo=Thread.CurrentThread.CurrentUICulture;
+            BaseCell cell=CurrentProblem.Matrix.Cell(row, col);
 
-            String cellInfo = String.Format(cultureInfo, Resources.Cellinfo, row + 1, col + 1, (cell.ReadOnly ? " (" + Resources.ReadOnly + ") " : "")) + Environment.NewLine;
+            String cellInfo=String.Format(cultureInfo, Resources.Cellinfo, row + 1, col + 1, (cell.ReadOnly? " (" + Resources.ReadOnly + ") ": "")) + Environment.NewLine;
             if(cell.DefinitiveValue != Values.Undefined)
                 cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.DefiniteValue) + cell.DefinitiveValue.ToString();
             else
                 if(cell.FixedValue)
                 cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.CellValue) + cell.CellValue.ToString();
 
-            String directBlockedCells = "";
-            String indirectBlockedCells = "";
+            String directBlockedCells="";
+            String indirectBlockedCells="";
 
-            for(int i = 1; i <= WinFormsSettings.SudokuSize; i++)
+            for(int i=1; i <= WinFormsSettings.SudokuSize; i++)
             {
                 if(i != cell.DefinitiveValue && i != cell.CellValue)
                 {
                     if(cell.Blocked(i))
-                        directBlockedCells += (directBlockedCells.Length == 0 ? i.ToString() : ", " + i.ToString());
+                        directBlockedCells += (directBlockedCells.Length == 0? i.ToString(): ", " + i.ToString());
                     else
-                        if(cell.IndirectlyBlocked(i)) indirectBlockedCells += (indirectBlockedCells.Length == 0 ? i.ToString() : ", " + i.ToString());
+                        if(cell.IndirectlyBlocked(i)) indirectBlockedCells += (indirectBlockedCells.Length == 0? i.ToString(): ", " + i.ToString());
                 }
             }
 
-            cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.DirectBlocks) + (directBlockedCells.Length == 0 ? Resources.None : directBlockedCells) +
-                Environment.NewLine + String.Format(cultureInfo, Resources.IndirectBlocks) + (indirectBlockedCells.Length == 0 ? Resources.None : indirectBlockedCells);
+            cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.DirectBlocks) + (directBlockedCells.Length == 0? Resources.None: directBlockedCells) +
+                Environment.NewLine + String.Format(cultureInfo, Resources.IndirectBlocks) + (indirectBlockedCells.Length == 0? Resources.None: indirectBlockedCells);
 
             return cellInfo;
         }
         public void CreateBookletDirectory()
         {
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+            SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
             fileService.CreateBookletDirectory(generationParameters);
         }
         public String SerializeProblem(Boolean includeROFlag)
         {
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+            SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
             return fileService.Serialize(includeROFlag);
         }
         public String GenerationStatus(Boolean usePrecalculatedProblem, TimeSpan elapsed)
         {
-            return (usePrecalculatedProblem ? String.Format(Thread.CurrentThread.CurrentCulture, Resources.RetrieveProblem) :
-                    (generationParameters.GenerateBooklet ? String.Format(Thread.CurrentThread.CurrentCulture, Resources.GeneratedProblems, generationParameters.CurrentProblem, settings.BookletSizeNew) + Environment.NewLine : String.Empty) +
+            return (usePrecalculatedProblem? String.Format(Thread.CurrentThread.CurrentCulture, Resources.RetrieveProblem):
+                    (generationParameters.GenerateBooklet? String.Format(Thread.CurrentThread.CurrentCulture, Resources.GeneratedProblems, generationParameters.CurrentProblem, settings.BookletSizeNew) + Environment.NewLine: String.Empty) +
                     String.Format(Thread.CurrentThread.CurrentCulture, Resources.GeneratingStatus, generationParameters.CheckedProblems) + Environment.NewLine + String.Format(Thread.CurrentThread.CurrentCulture, Resources.CheckingStatus, generationParameters.TotalPasses + CurrentProblem.TotalPassCounter) +
                     Environment.NewLine +
                     Resources.PreAllocatedValues + generationParameters.PreAllocatedValues.ToString(Thread.CurrentThread.CurrentCulture)) +
@@ -728,15 +728,15 @@ namespace Sudoku
         public String GenerationAborted()
         {
             String result=String.Format(Thread.CurrentThread.CurrentCulture, Resources.GenerationAborted.Replace("\\n", Environment.NewLine),
-                generationParameters.GenerateBooklet ? String.Format(Thread.CurrentThread.CurrentCulture, Resources.GeneratedProblems.Replace("\\n", Environment.NewLine), generationParameters.CurrentProblem, settings.BookletSizeNew) + Environment.NewLine : String.Empty,
+                generationParameters.GenerateBooklet? String.Format(Thread.CurrentThread.CurrentCulture, Resources.GeneratedProblems.Replace("\\n", Environment.NewLine), generationParameters.CurrentProblem, settings.BookletSizeNew) + Environment.NewLine: String.Empty,
                 generationParameters.CheckedProblems, generationParameters.TotalPasses);
-            generationParameters = new GenerationParameters(settings);
+            generationParameters=new GenerationParameters(settings);
 
             return result;
         }
         public int GetSeverityLevel(int nProblems)
         {
-            if(!(generationParameters.GenerateBooklet = (nProblems != 1)))
+            if(!(generationParameters.GenerateBooklet=(nProblems != 1)))
                 return ui.GetSeverity();
             else
                 return settings.SeverityLevel;
@@ -745,7 +745,7 @@ namespace Sudoku
         public String PrintErrorMessage { get { return printerService.PrintErrorMessage; } }
         public void PrintBooklet()
         {
-            printerService.ShowCandidates = false;
+            printerService.ShowCandidates=false;
             if(NumberOfProblems < 1)
                 ui.ShowInfo(Resources.NoProblems);
             else
@@ -765,12 +765,12 @@ namespace Sudoku
         public void InitializePrinterService()
         {
             printerService?.Dispose();
-            printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
+            printerService=new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
         }
         public void PrintSingleProblem(Boolean showCandidates)
         {
-			SudokuPrinterService printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
-			printerService.ShowCandidates = showCandidates;
+			SudokuPrinterService printerService=new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
+			printerService.ShowCandidates=showCandidates;
 			CurrentProblem.ResetMatrix();
 			printerService.AddProblem(CurrentProblem);
 
@@ -790,14 +790,14 @@ namespace Sudoku
             {
                 StopTimer();
             }
-            settings.State = SerializeProblem(true);
+            settings.State=SerializeProblem(true);
             settings.Save();
         }
         public void Deserialize()
         {
             try
             {
-                SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+                SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
                 fileService.Deserialize(settings.State, this);
             }
             catch(Exception)
@@ -837,9 +837,9 @@ namespace Sudoku
         }
         public ValidationResult()
         {
-            IsValid = true;
-            Message = string.Empty;
-            Errors = new List<Error>();
+            IsValid=true;
+            Message=string.Empty;
+            Errors=new List<Error>();
         }
     }
 }

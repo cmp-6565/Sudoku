@@ -39,8 +39,8 @@ namespace Sudoku.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sudoku.Properties.Resources", typeof(Resources).Assembly);
-                    resourceMan = temp;
+                    global::System.Resources.ResourceManager temp=new global::System.Resources.ResourceManager("Sudoku.Properties.Resources", typeof(Resources).Assembly);
+                    resourceMan=temp;
                 }
                 return resourceMan;
             }
@@ -56,7 +56,7 @@ namespace Sudoku.Properties {
                 return resourceCulture;
             }
             set {
-                resourceCulture = value;
+                resourceCulture=value;
             }
         }
     }
