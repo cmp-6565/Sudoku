@@ -350,15 +350,14 @@ public partial class SudokuForm: Form, IUserInteraction
         }
         catch(OperationCanceledException)
         {
-            GenerationAborted();
         }
         catch(Exception ex)
         {
             ShowError("Error generating: " + ex.Message);
-            GenerationAborted();
         }
         finally
         {
+            GenerationAborted();
             generationTimer.Stop();
             generationTimer.Reset();
             EnableGUI();
@@ -792,14 +791,14 @@ public partial class SudokuForm: Form, IUserInteraction
     private void StatusUpdateTick(object sender, EventArgs e)
     {
         TimeSpan elapsed=controller.ElapsedTime + controller.CurrentProblem.SolvingTime;
-        sudokuStatusBarText.Text=Resources.SolutionTime + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#}", elapsed.Hours * 24 + elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
+        sudokuStatusBarText.Text=Resources.SolutionTime + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#},{3:0#}", elapsed.Hours * 24 + elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
     }
 
     private void GenerationSingleProblemFinished(String s)
     {
         TimeSpan elapsed=generationTimer.Elapsed;
 
-        status.Text=usePrecalculatedProblem? Resources.ProblemRetrieved: s + Environment.NewLine + String.Format(cultureInfo, Resources.NeededTime, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
+        status.Text=usePrecalculatedProblem? Resources.ProblemRetrieved: s + Environment.NewLine + Resources.TimeNeeded+ String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#},{3:0#}", elapsed.Hours * 24 + elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
         SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
         PublishTrickyProblems();
         ResetDetachedProcess();
@@ -1131,9 +1130,9 @@ public partial class SudokuForm: Form, IUserInteraction
             try { await Task.Run(() => controller.CurrentProblem.SolverTask.Wait(500)); } catch { }
         }
 
-        FormCTS.Cancel();
         try
         {
+            FormCTS.Cancel();
             SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
             if(controller.CurrentProblem.NumberOfSolutions > 0)
             {
@@ -1295,6 +1294,7 @@ public partial class SudokuForm: Form, IUserInteraction
             }
         });
 
+        DisableGUI();
         controller.BackupProblem();
         FormCTS=new CancellationTokenSource();
 

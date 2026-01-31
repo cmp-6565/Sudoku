@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -86,7 +87,8 @@ internal class SudokuController
     }
     private async void NotifyGeneration(Stopwatch stopwatch, CancellationToken token)
     {
-        await Task.Delay(10, token);
+        if(token.IsCancellationRequested) return;
+
         CurrentProblem.GenerationTime += stopwatch.Elapsed;
         stopwatch.Restart();
         Generating?.Invoke(this, EventArgs.Empty);

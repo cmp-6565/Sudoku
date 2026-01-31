@@ -46,8 +46,9 @@ internal class SudokuBoard: DataGridView
     internal void Initialize(ISudokuSettings settings, IUserInteraction ui)
     {
         DoubleBuffered=true;
+        ShowCellToolTips=false;
 
-        AllowUserToAddRows=false;
+        AllowUserToAddRows =false;
         AllowUserToDeleteRows=false;
         AllowUserToResizeColumns=false;
         AllowUserToResizeRows=false;
@@ -258,12 +259,14 @@ internal class SudokuBoard: DataGridView
             }
         }
     }
-    public void FormatCell(int row, int col)
+    public void FormatCell(int row, int col, Boolean clearHighlight=false)
     {
-        if(this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
+        if(!clearHighlight && this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
+
+        Boolean xSudoku=(Controller != null && Controller.CurrentProblem is XSudokuProblem);
 
         Boolean obfuscated =((row / 3) % 2 == 1 && (col / 3) % 2 == 0) || ((row / 3) % 2 == 0 && (col / 3) % 2 == 1);
-        this[row, col].Style.BackColor=(obfuscated? gray: ((Controller.CurrentProblem is XSudokuProblem) && (row == col || row + col == WinFormsSettings.SudokuSize - 1)? lightGray: Color.White));
+        this[row, col].Style.BackColor=(obfuscated? gray: ((xSudoku && (row == col || row + col == WinFormsSettings.SudokuSize - 1))? lightGray: Color.White));
         this[row, col].Style.ForeColor=(obfuscated? textColor: Color.Black);
         this[row, col].Style.SelectionBackColor=SystemColors.AppWorkspace;
     }
@@ -328,6 +331,7 @@ internal class SudokuBoard: DataGridView
                 this[col, row].Style.Font=normalDisplayFont;
                 this[col, row].Value=String.Empty;
                 this[col, row].ErrorText=String.Empty;
+                FormatCell(row, col, true);  
             }
         ClearHighlights();
         ClearErrorMessages();
@@ -557,7 +561,7 @@ internal class SudokuBoard: DataGridView
     public void ClearHighlights()
     {
         foreach(Point p in highlightedCells)
-            FormatCell(p.X, p.Y);
+            FormatCell(p.X, p.Y, true);
         highlightedCells.Clear();
     }
 
@@ -631,6 +635,7 @@ internal class SudokuBoard: DataGridView
     public void CreateNewProblem(Boolean xSudoku)
     {
         Controller.CreateNewProblem(xSudoku);
+        ResetMatrix();
         SetDebugMode(debugMode);
         InSync=true;
     }
