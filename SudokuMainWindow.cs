@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using Sudoku.Properties;
+
 namespace Sudoku;
 
 public enum SudokuPart { Row, Column, Block, UpDiagonal, DownDiagonal };
@@ -180,16 +182,17 @@ public partial class SudokuForm: Form, IUserInteraction
 
     private void ResizeForm()
     {
-        int height=SudokuGrid.ResizeBoard();
-        status.Location=new Point(status.Location.X, SudokuGrid.Location.Y + height + 10);
-        next.Location=new Point(next.Location.X, SudokuGrid.Location.Y + height + 10);
-        prior.Location=new Point(prior.Location.X, SudokuGrid.Location.Y + height + 10);
-    }
+        int height = SudokuGrid.ResizeBoard();
 
-    /// <summary>
-    /// Displays the current status of the controller.CurrentProblem is the status line; 
-    /// if requested (option 'autocheck') a check whether the controller.CurrentProblem is solvable is done.
-    /// </summary>
+        int newClientWidth = SudokuGrid.Location.X + SudokuGrid.Width + SudokuGrid.Location.X;
+        int newClientHeight = height + 140 + (60 * settings.Size);
+
+        ClientSize = new Size(newClientWidth, newClientHeight);
+
+        status.Location = new Point(status.Location.X, SudokuGrid.Bottom + 10);
+        next.Location = new Point(SudokuGrid.Location.X + SudokuGrid.Width - next.Width, status.Location.Y);
+        prior.Location = new Point(SudokuGrid.Location.X + SudokuGrid.Width - next.Width - prior.Width - 5, status.Location.Y);
+    }
     private void CurrentStatus(Boolean silent)
     {
         if(!controller.IsTimerRunning)
@@ -350,14 +353,15 @@ public partial class SudokuForm: Form, IUserInteraction
         }
         catch(OperationCanceledException)
         {
+            GenerationAborted();
         }
         catch(Exception ex)
         {
             ShowError("Error generating: " + ex.Message);
+            GenerationAborted();
         }
         finally
         {
-            GenerationAborted();
             generationTimer.Stop();
             generationTimer.Reset();
             EnableGUI();
@@ -397,10 +401,6 @@ public partial class SudokuForm: Form, IUserInteraction
         await SudokuGrid.VisualizeHints(hints);
     }
     // Neue asynchrone Methode
-    private async Task ShowHint(BaseCell hint)
-    {
-        await SudokuGrid.AnimateHint(hint.Row, hint.Col, hint.nPossibleValues == 1);
-    }
     private void DisplayProblemInfo()
     {
         String problemInfo;

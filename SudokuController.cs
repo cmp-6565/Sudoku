@@ -49,6 +49,13 @@ internal class SudokuController
         if(notify) NotifyMatrixChanged();
     }
 
+    public Action<Object> MinimizedFailed;
+    protected virtual void OnMinimizedFailed(Object o)
+    {
+        Action<Object> handler = MinimizedFailed;
+        if(handler != null) handler(o);
+    }
+
     public async Task Solve(bool findAllSolutions, IProgress<GenerationProgressState> progress, CancellationToken token)
     {
         if(CurrentProblem == null) return;
@@ -81,11 +88,11 @@ internal class SudokuController
         NotifyMatrixChanged();
     }
 
-    private async void NotifyMatrixChanged()
+    private void NotifyMatrixChanged()
     {
         MatrixChanged?.Invoke(this, EventArgs.Empty);
     }
-    private async void NotifyGeneration(Stopwatch stopwatch, CancellationToken token)
+    private void NotifyGeneration(Stopwatch stopwatch, CancellationToken token)
     {
         if(token.IsCancellationRequested) return;
 
@@ -428,7 +435,8 @@ internal class SudokuController
                         }
                         else
                         {
-                            processProblem=false; // Minimierung fehlgeschlagen
+                            MinimizedFailed(this);
+                            processProblem =false; // Minimierung fehlgeschlagen
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -44,10 +45,18 @@ static class AssemblyInfo
     {
         get
         {
-            System.Version v=System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            DateTime t=new DateTime((v.Build - 1) * TimeSpan.TicksPerDay + v.Revision * TimeSpan.TicksPerSecond * 2).AddYears(1999);
-            if(t.IsDaylightSavingTime()) t=t.Add(new TimeSpan(1, 0, 0));
-            return t.ToString(Thread.CurrentThread.CurrentUICulture);
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyMetadataAttribute), false);
+            foreach(AssemblyMetadataAttribute attribute in attributes)
+            {
+                if(attribute.Key == "BuildDate")
+                {
+                    if(DateTime.TryParse(attribute.Value, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime dt))
+                    {
+                        return dt.ToLocalTime().ToString(Thread.CurrentThread.CurrentUICulture);
+                    }
+                }
+            }
+            return String.Empty;
         }
     }
 
@@ -56,12 +65,28 @@ static class AssemblyInfo
         get
         {
             // Get all Description attributes on this assembly
-            object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
             // If there aren't any Description attributes, return an empty string
             if(attributes.Length == 0)
                 return String.Empty;
             // If there is a Description attribute, return its value
             return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+        }
+    }
+
+    public static string AssemblyGitRepository
+    {
+        get
+        {
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyMetadataAttribute), false);
+            foreach(AssemblyMetadataAttribute attribute in attributes)
+            {
+                if(attribute.Key == "RepositoryUrl")
+                {
+                    return attribute.Value;
+                }
+            }
+            return String.Empty;
         }
     }
 

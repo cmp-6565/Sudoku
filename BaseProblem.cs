@@ -53,7 +53,6 @@ internal abstract class BaseProblem: EventArgs, IComparable
         Action<Object, BaseCell> handler=ResetCell;
         if(handler != null) handler(o, c);
     }
-
     public event EventHandler SolutionFound;
     private void NotifySolutionFound()
     {
@@ -448,6 +447,8 @@ internal abstract class BaseProblem: EventArgs, IComparable
         minimalProblem=Clone();
 
         List<BaseCell> candidates=await GetCandidates(Matrix.Cells, 0, CancellationToken.None);
+        candidates.Sort(new NeighborCountComparer());
+
         if(await MinimizeRecursive(candidates, maxSeverity, token))
         {
             minimalProblem.severityLevel=float.NaN;
@@ -498,25 +499,25 @@ internal abstract class BaseProblem: EventArgs, IComparable
     // Private helper now async
     private async Task<List<BaseCell>> GetCandidates(List<BaseCell> source, int start, CancellationToken token)
     {
-        List<BaseCell> candiates=new List<BaseCell>();
+        List<BaseCell> candidates=new List<BaseCell>();
 
         for(int i=start; i < source.Count; i++)
         {
-            if(nValues - candiates.Count - (source.Count - i) > minimalProblem.nValues) return null;
+            if(nValues - candidates.Count - (source.Count - i) > minimalProblem.nValues) return null;
 
             byte cellValue=source[i].CellValue;
             if(cellValue != Values.Undefined)
             {
                 SetValue(source[i], Values.Undefined);
                 if(source[i].DefinitiveValue == cellValue)
-                    candiates.Add(source[i]);
+                    candidates.Add(source[i]);
                 else
                 {
                     if(token.IsCancellationRequested) return null;
 
                     await FindSolutionsAsync(2, token);
 
-                    if(NumberOfSolutions == 1) candiates.Add(source[i]);
+                    if(NumberOfSolutions == 1) candidates.Add(source[i]);
                 }
                 ResetMatrix();
                 SetValue(source[i], cellValue);
@@ -525,7 +526,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
             if(token.IsCancellationRequested) return null;
         }
 
-        return candiates;
+        return candidates;
     }
 
     public virtual Boolean Resolvable()

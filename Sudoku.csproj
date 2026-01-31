@@ -45,6 +45,17 @@
     <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Title>pi-c-it Sudoku</Title>
+    <Description>An application to generate and solve both normal and X-Sudokus</Description>
+    <Copyright>© Clemens Pichl</Copyright>
+    <PackageProjectUrl>https://github.com/cmp-6565/Sudoku/</PackageProjectUrl>
+    <PackageIcon></PackageIcon>
+    <RepositoryUrl></RepositoryUrl>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <AssemblyVersion>5.0.0.0</AssemblyVersion>
+    <FileVersion>5.0.0.0</FileVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoWarn>1701;1702;1709</NoWarn>
@@ -343,5 +354,29 @@
       <Progid>sudoku</Progid>
       <DefaultIcon>Problem.ico</DefaultIcon>
     </FileAssociation>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="icon.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$([System.DateTime]::UtcNow.ToString("O"))</_Parameter2>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>RepositoryUrl</_Parameter1>
+      <_Parameter2>https://github.com/cmp-6565/Sudoku</_Parameter2>
+    </AssemblyAttribute>
   </ItemGroup>
 </Project>

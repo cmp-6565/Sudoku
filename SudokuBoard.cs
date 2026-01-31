@@ -23,6 +23,7 @@ internal class SudokuBoard: DataGridView
     public event EventHandler<Boolean> UpdateStatus;
     public event EventHandler<Boolean> UpdateHints;
     public event EventHandler<string> StatusTextChanged;
+    public Action<object> MinimizeFailed;
 
     // Kontextmenü Variable
     private ContextMenuStrip cellContextMenu;
@@ -94,6 +95,7 @@ internal class SudokuBoard: DataGridView
                 controller.MatrixChanged -= OnMatrixChanged;
                 if(controller.CurrentProblem != null)
                 {
+                    controller.MinimizedFailed -= OnMinimizeFailed;
                     controller.CurrentProblem.SolutionFound -= OnSolutionFound;
                     controller.CurrentProblem.Matrix.CellChanged -= OnCellChanged;
                 }
@@ -106,6 +108,7 @@ internal class SudokuBoard: DataGridView
                 controller.MatrixChanged += OnMatrixChanged;
                 if(controller.CurrentProblem != null)
                 {
+                    controller.MinimizedFailed += OnMinimizeFailed;
                     controller.CurrentProblem.SolutionFound += OnSolutionFound;
                     DisplayValues(controller.CurrentProblem.Matrix);
                     if(debugMode)
@@ -113,6 +116,17 @@ internal class SudokuBoard: DataGridView
                 }
             }
         }
+    }
+
+    private void OnMinimizeFailed(object s)
+    {
+        if(InvokeRequired)
+        {
+            Invoke(new Action<object>(OnMinimizeFailed), s);
+            return;
+        }
+        ResetMatrix();
+        MinimizeFailed?.Invoke(s);
     }
 
     private void OnMatrixChanged(object s, EventArgs e)

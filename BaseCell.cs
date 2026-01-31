@@ -118,7 +118,25 @@ internal abstract class BaseCell: EventArgs, IComparable
     public bool ComputedValue { get => computedValue; set => computedValue=value; }
 
     public BaseCell(int row, int col) { Row=row; Col=col; Init(); }
-
+    
+    public int FilledNeighborCount
+    {
+        get
+        {
+            int count = 0;
+            if(neighbors != null)
+            {
+                foreach(var neighbor in neighbors)
+                {
+                    if(neighbor.CellValue != Values.Undefined)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+    }
     public void AddNeighbor(ref BaseCell neighbor) { neighbors[nNeighbors++]=neighbor; }
 
     public int CompareTo(object obj)
@@ -501,5 +519,15 @@ internal abstract class BaseCell: EventArgs, IComparable
             else
                 Array.Copy(this.indirectBlocks, target.indirectBlocks, this.indirectBlocks.Length);
         }
+    }
+}
+internal class NeighborCountComparer: IComparer<BaseCell>
+{
+    public int Compare(BaseCell x, BaseCell y)
+    {
+        if(x == null || y == null) return 0;
+
+        // Absteigend sortieren (Meiste Nachbarn zuerst)
+        return y.FilledNeighborCount.CompareTo(x.FilledNeighborCount);
     }
 }
