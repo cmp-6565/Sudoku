@@ -8,21 +8,21 @@ partial class AboutSudoku: Form
     private readonly ISudokuSettings settings;
     public AboutSudoku(ISudokuSettings settings)
     {
-        System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(settings.DisplayLanguage);
+        System.Threading.Thread.CurrentThread.CurrentUICulture=new System.Globalization.CultureInfo(settings.DisplayLanguage);
         InitializeComponent();
 
         //  Initialize the AboutBox to display the product information from the assembly information.
         //  Change assembly information settings for your application through either:
         // -Project->Properties->Application->Assembly Information
         // -AssemblyInfo.cs
-        this.Text = String.Format(System.Threading.Thread.CurrentThread.CurrentUICulture, "About {0}", AssemblyInfo.AssemblyTitle);
-        this.labelProductName.Text = AssemblyInfo.AssemblyProduct;
-        this.labelVersion.Text = String.Format(System.Threading.Thread.CurrentThread.CurrentUICulture, "Version {0} ({1})", AssemblyInfo.AssemblyVersion, AssemblyInfo.AssemblyDate);
-        this.labelCopyright.Text = AssemblyInfo.AssemblyCopyright;
-        this.labelCompanyName.Text = Resources.picit;
-        this.textBoxDescription.Text = Resources.Description.Replace("\\n", Environment.NewLine);
-        this.logoPictureBox.Image = Resources.SudokuProblem;
-        this.settings = settings;
+        this.Text=String.Format(System.Threading.Thread.CurrentThread.CurrentUICulture, "About {0}", AssemblyInfo.AssemblyTitle);
+        this.labelProductName.Text=AssemblyInfo.AssemblyProduct;
+        this.labelVersion.Text=String.Format(System.Threading.Thread.CurrentThread.CurrentUICulture, "Version {0} ({1})", AssemblyInfo.AssemblyVersion, AssemblyInfo.AssemblyDate);
+        this.labelCopyright.Text=AssemblyInfo.AssemblyCopyright;
+        this.labelCompanyName.Text=Resources.picit;
+        this.textBoxDescription.Text=Resources.Description.Replace("\\n", Environment.NewLine);
+        this.logoPictureBox.Image=Resources.SudokuProblem;
+        this.settings=settings;
     }
 
     private void contact_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

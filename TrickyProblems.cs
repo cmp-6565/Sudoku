@@ -13,9 +13,9 @@ internal class TrickyProblems
 
     public TrickyProblems(ISudokuSettings settings, IUserInteraction ui)
     {
-        problems = new List<BaseProblem>();
-        this.settings = settings;
-        this.ui = ui;
+        problems=new List<BaseProblem>();
+        this.settings=settings;
+        this.ui=ui;
     }
 
     public void Add(BaseProblem problem)
@@ -35,7 +35,7 @@ internal class TrickyProblems
         {
             foreach(BaseProblem problem in problems)
             {
-                SudokuFileService fileService = new SudokuFileService(problem, settings, ui);
+                SudokuFileService fileService=new SudokuFileService(problem, settings, ui);
                 return await fileService.Upload();
             }
         }

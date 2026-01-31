@@ -7,15 +7,24 @@ namespace Sudoku;
 [Serializable]
 public abstract class Values: ICloneable
 {
-    private Int64 count = 0;
+    private Int64 count=0;
 
     public Int64 Counter
     {
         get { return count; }
-        set { count = value; }
+        set { count=value; }
     }
 
-    public const byte Undefined = 0;
+    protected Values() { }
+
+    // Kopierkonstruktor für abgeleitete Klassen
+    protected Values(Values clone)
+    {
+        this.count = clone.count;
+    }
+
+
+    public const byte Undefined=0;
 
     public abstract void SetValue(int row, int col, byte value, Boolean fixedValue);
 

@@ -5,9 +5,9 @@ namespace Sudoku;
 [Serializable]
 internal class Cell: BaseCell
 {
-    public Cell(int row, int col) : base(row, col)
+    public Cell(int row, int col): base(row, col)
     {
-        neighbors = new BaseCell[20];
+        neighbors=new BaseCell[20];
     }
 
     public override Boolean Up()

@@ -10,47 +10,47 @@ internal abstract class BaseProblem: EventArgs, IComparable
 {
     protected readonly ISudokuSettings settings;
 
-    private Int64 totalPassCount = 0;
-    private Int64 passCount = 0;
-    private int nVarValues = 0;
-    private Boolean findAll = false;
+    private Int64 totalPassCount=0;
+    private Int64 passCount=0;
+    private int nVarValues=0;
+    private Boolean findAll=false;
     protected BaseMatrix matrix;
     private List<Solution> solutions;
-    private Boolean checkWellDefined = false;
-    private Boolean problemSolved = false;
+    private Boolean checkWellDefined=false;
+    private Boolean problemSolved=false;
 
-    private Task solverTask = null;
+    private Task solverTask=null;
 
-    private float severityLevel = float.NaN;
-    private String filename = String.Empty;
-    private String comment = String.Empty;
-    private Boolean dirty = false;
-    private Boolean preparing = false;
+    private float severityLevel=float.NaN;
+    private String filename=String.Empty;
+    private String comment=String.Empty;
+    private Boolean dirty=false;
+    private Boolean preparing=false;
     private TimeSpan solvingTime;
     private TimeSpan generationTime;
     private BaseProblem minimalProblem;
 
-    public static Char ProblemIdentifier = ' ';
+    public static Char ProblemIdentifier=' ';
     public virtual Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
 
     public Action<Object, BaseProblem> Minimizing;
     protected virtual void OnMinimizing(Object o, BaseProblem p)
     {
-        Action<Object, BaseProblem> handler = Minimizing;
+        Action<Object, BaseProblem> handler=Minimizing;
         if(handler != null) handler(o, p);
     }
 
     public Action<Object, BaseCell> TestCell;
     protected virtual void OnTestCell(Object o, BaseCell c)
     {
-        Action<Object, BaseCell> handler = TestCell;
+        Action<Object, BaseCell> handler=TestCell;
         if(handler != null) handler(o, c);
     }
 
     public Action<Object, BaseCell> ResetCell;
     protected virtual void OnResetCell(Object o, BaseCell c)
     {
-        Action<Object, BaseCell> handler = ResetCell;
+        Action<Object, BaseCell> handler=ResetCell;
         if(handler != null) handler(o, c);
     }
 
@@ -62,11 +62,11 @@ internal abstract class BaseProblem: EventArgs, IComparable
     public BaseProblem(ISudokuSettings settings)
     {
         createMatrix();
-        solutions = new List<Solution>();
-        solverTask = null;
-        solvingTime = TimeSpan.Zero;
-        generationTime = TimeSpan.Zero;
-        this.settings = settings;
+        solutions=new List<Solution>();
+        solverTask=null;
+        solvingTime=TimeSpan.Zero;
+        generationTime=TimeSpan.Zero;
+        this.settings=settings;
     }
 
     protected abstract void createMatrix();
@@ -83,7 +83,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     public Int64 TotalPassCounter
     {
         get { return totalPassCount; }
-        set { totalPassCount = value; }
+        set { totalPassCount=value; }
     }
     public int NumberOfSolutions { get { return Solutions.Count; } }
     public Task SolverTask
@@ -100,58 +100,58 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         get
         {
-            severityLevel = Matrix.SeverityLevel;
+            severityLevel=Matrix.SeverityLevel;
             return severityLevel;
         }
-        set { severityLevel = value; }
+        set { severityLevel=value; }
     }
 
     public String SeverityLevelText
     {
-        get { return float.IsNaN(SeverityLevel) ? "-" : (SeverityLevel > settings.Hard ? Resources.Hard : (SeverityLevel > settings.Intermediate ? Resources.Intermediate : (SeverityLevel > settings.Trivial ? Resources.Easy : Resources.Trivial))); }
+        get { return float.IsNaN(SeverityLevel)? "-": (SeverityLevel > settings.Hard? Resources.Hard: (SeverityLevel > settings.Intermediate? Resources.Intermediate: (SeverityLevel > settings.Trivial? Resources.Easy: Resources.Trivial))); }
     }
 
     public int SeverityLevelInt
     {
-        get { return float.IsNaN(SeverityLevel) ? 0 : (SeverityLevel > settings.Hard ? 8 : (SeverityLevel > settings.Intermediate ? 4 : (SeverityLevel > settings.Trivial ? 2 : 1))); }
+        get { return float.IsNaN(SeverityLevel)? 0: (SeverityLevel > settings.Hard? 8: (SeverityLevel > settings.Intermediate? 4: (SeverityLevel > settings.Trivial? 2: 1))); }
     }
 
-    public String Filename { get { return filename; } set { filename = value; } }
-    public String Comment { get { return comment; } set { comment = value; } }
-    public Boolean Dirty { get { return dirty; } set { dirty = value; } }
-    public Boolean Preparing { get { return preparing; } set { preparing = value; } }
-    public TimeSpan SolvingTime { get { return solvingTime; } set { solvingTime = value; } }
-    public TimeSpan GenerationTime { get { return generationTime; } set { generationTime = value; } }
+    public String Filename { get { return filename; } set { filename=value; } }
+    public String Comment { get { return comment; } set { comment=value; } }
+    public Boolean Dirty { get { return dirty; } set { dirty=value; } }
+    public Boolean Preparing { get { return preparing; } set { preparing=value; } }
+    public TimeSpan SolvingTime { get { return solvingTime; } set { solvingTime=value; } }
+    public TimeSpan GenerationTime { get { return generationTime; } set { generationTime=value; } }
 
     public int CompareTo(System.Object obj)
     {
         if(obj == null) return -1;
         BaseProblem tmpProblem;
-        if(!((tmpProblem = (BaseProblem)obj) is BaseProblem)) throw new ArgumentException(obj.ToString());
+        if(!((tmpProblem=(BaseProblem)obj) is BaseProblem)) throw new ArgumentException(obj.ToString());
         return SeverityLevel.CompareTo(tmpProblem.SeverityLevel);
     }
 
     public void ResetSolutions()
     {
-        solutions = new List<Solution>();
+        solutions=new List<Solution>();
     }
 
     public BaseProblem Clone()
     {
-        BaseProblem dest = CreateInstance();
-        dest.matrix = CloneMatrix();
+        BaseProblem dest=CreateInstance();
+        dest.matrix=CloneMatrix();
 
         dest.ResetSolutions();
-        for(int i = 0; i < NumberOfSolutions && i < settings.MaxSolutions; i++)
+        for(int i=0; i < NumberOfSolutions && i < settings.MaxSolutions; i++)
             dest.Solutions.Add(Solutions[i]);
 
-        dest.severityLevel = SeverityLevel;
-        dest.problemSolved = ProblemSolved;
-        dest.Filename = Filename;
-        dest.Comment = Comment;
-        dest.Dirty = Dirty;
-        dest.SolvingTime = SolvingTime;
-        dest.GenerationTime = GenerationTime;
+        dest.severityLevel=SeverityLevel;
+        dest.problemSolved=ProblemSolved;
+        dest.Filename=Filename;
+        dest.Comment=Comment;
+        dest.Dirty=Dirty;
+        dest.SolvingTime=SolvingTime;
+        dest.GenerationTime=GenerationTime;
 
         return dest;
     }
@@ -163,12 +163,12 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
     public Solution CopyTo(ref Solution dest)
     {
-        dest = new Solution(settings);
+        dest=new Solution(settings);
         dest.Init();
-        dest.Counter = passCount;
+        dest.Counter=passCount;
 
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for(int row=0; row < WinFormsSettings.SudokuSize; row++)
+            for(int col=0; col < WinFormsSettings.SudokuSize; col++)
                 dest.SetValue(row, col, Matrix.GetValue(row, col), true);
 
         return dest;
@@ -193,7 +193,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         if(NumberOfSolutions < settings.MaxSolutions)
         {
-            Solution solution = null;
+            Solution solution=null;
             Solutions.Add((Solution)CopyTo(ref solution));
             NotifySolutionFound();
         }
@@ -201,7 +201,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
         {
             throw new MaxResultsReached();
         }
-        passCount = 0;
+        passCount=0;
     }
 
     public void PrepareMatrix()
@@ -254,15 +254,15 @@ internal abstract class BaseProblem: EventArgs, IComparable
         if(GetValue(row, col) != value || FixedValue(row, col) != fix)
         {
             Matrix.SetValue(row, col, value, fix);
-            severityLevel = float.NaN;
-            problemSolved = false;
-            filename = String.Empty;
+            severityLevel=float.NaN;
+            problemSolved=false;
+            filename=String.Empty;
         }
     }
 
     public void SetValue(int row, int col, byte value)
     {
-        dirty = dirty || (value != GetValue(row, col));
+        dirty=dirty || (value != GetValue(row, col));
         SetValue(row, col, value, value != Values.Undefined);
     }
 
@@ -273,18 +273,18 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
     private void ResetValue(int row, int col)
     {
-        float sv = severityLevel;
-        dirty = dirty || (GetValue(row, col) != Values.Undefined);
+        float sv=severityLevel;
+        dirty=dirty || (GetValue(row, col) != Values.Undefined);
         SetValue(row, col, Values.Undefined, false);
-        severityLevel = sv;
+        severityLevel=sv;
     }
 
     private void TryValue(int row, int col, byte value)
     {
-        float sv = severityLevel;
-        dirty = dirty || (value != GetValue(row, col));
+        float sv=severityLevel;
+        dirty=dirty || (value != GetValue(row, col));
         SetValue(row, col, value, true);
-        severityLevel = sv;
+        severityLevel=sv;
     }
 
     public BaseCell Cell(int row, int col)
@@ -313,7 +313,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         if(NumberOfSolutions >= maxSolutions) return;
 
-        solverTask = FindSolutionsAsync(maxSolutions, token);
+        solverTask=FindSolutionsAsync(maxSolutions, token);
         solverTask.Wait(10);
     }
 
@@ -321,16 +321,16 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         if(token.IsCancellationRequested) return;
 
-        preparing = true;
-        findAll = (maxSolutions == int.MaxValue);
-        checkWellDefined = (maxSolutions == 2);
-        passCount = 0;
-        totalPassCount = 0;
-        problemSolved = false;
-        solvingTime = TimeSpan.Zero;
+        preparing=true;
+        findAll=(maxSolutions == int.MaxValue);
+        checkWellDefined=(maxSolutions == 2);
+        passCount=0;
+        totalPassCount=0;
+        problemSolved=false;
+        solvingTime=TimeSpan.Zero;
 
         ResetSolutions();
-        severityLevel = Matrix.SeverityLevel;
+        severityLevel=Matrix.SeverityLevel;
 
         try
         {
@@ -338,17 +338,17 @@ internal abstract class BaseProblem: EventArgs, IComparable
         }
         catch(ArgumentException)
         {
-            preparing = false;
+            preparing=false;
             return;
         }
         finally
         {
-            preparing = false;
+            preparing=false;
         }
 
         if(Matrix.nVariableValues == 0)
         {
-            problemSolved = true;
+            problemSolved=true;
             SaveResult();
             return;
         }
@@ -360,10 +360,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
     private void Solve(CancellationToken token)
     {
-        Thread.CurrentThread.CurrentUICulture = new CultureInfo(settings.DisplayLanguage);
+        Thread.CurrentThread.CurrentUICulture=new CultureInfo(settings.DisplayLanguage);
         try
         {
-            nVarValues = Matrix.nVariableValues;
+            nVarValues=Matrix.nVariableValues;
             if(token.IsCancellationRequested) return;
 
             Solve(0, token);
@@ -379,13 +379,13 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         if(token.IsCancellationRequested) return;
 
-        BaseCell currentValue = Matrix.Get(current);
-        byte value = 0;
+        BaseCell currentValue=Matrix.Get(current);
+        byte value=0;
 
         passCount++;
         totalPassCount++;
 
-        const int progressInterval = 2000;
+        const int progressInterval=2000;
 
         if(passCount % progressInterval == 0)
         {
@@ -405,7 +405,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
                     try
                     {
                         TryValue(currentValue.Row, currentValue.Col, value);
-                        currentValue.ComputedValue = true;
+                        currentValue.ComputedValue=true;
 
                         if(current < nVarValues - 1) // Resolvable Check entfernen für Performance in tiefer Rekursion
                         {
@@ -413,8 +413,8 @@ internal abstract class BaseProblem: EventArgs, IComparable
                         }
                         else
                         {
-                            if(problemSolved = IsSolved()) SaveResult();
-                            if(findAll || (checkWellDefined && NumberOfSolutions < 2)) problemSolved = false;
+                            if(problemSolved=IsSolved()) SaveResult();
+                            if(findAll || (checkWellDefined && NumberOfSolutions < 2)) problemSolved=false;
                         }
                     }
                     catch(ArgumentException) { }
@@ -426,35 +426,35 @@ internal abstract class BaseProblem: EventArgs, IComparable
             if(token.IsCancellationRequested) return;
 
             TryValue(currentValue.Row, currentValue.Col, currentValue.DefinitiveValue);
-            currentValue.ComputedValue = true;
+            currentValue.ComputedValue=true;
 
             if(current < nVarValues - 1 && Resolvable())
                 Solve(current + 1, token);
             else
             {
-                if(problemSolved = IsSolved()) SaveResult();
-                if(findAll || (checkWellDefined && NumberOfSolutions < 2)) problemSolved = false;
+                if(problemSolved=IsSolved()) SaveResult();
+                if(findAll || (checkWellDefined && NumberOfSolutions < 2)) problemSolved=false;
             }
         }
 
         if(!problemSolved) ResetValue(currentValue.Row, currentValue.Col);
 
-        if((findAll || checkWellDefined) && current == 0) problemSolved = (NumberOfSolutions > 0);
+        if((findAll || checkWellDefined) && current == 0) problemSolved=(NumberOfSolutions > 0);
     }
     public async Task<BaseProblem> Minimize(int maxSeverity, CancellationToken token)
     {
         ResetMatrix();
 
-        minimalProblem = Clone();
+        minimalProblem=Clone();
 
-        List<BaseCell> candidates = await GetCandidates(Matrix.Cells, 0, CancellationToken.None);
+        List<BaseCell> candidates=await GetCandidates(Matrix.Cells, 0, CancellationToken.None);
         if(await MinimizeRecursive(candidates, maxSeverity, token))
         {
-            minimalProblem.severityLevel = float.NaN;
+            minimalProblem.severityLevel=float.NaN;
 
             await minimalProblem.FindSolutionsAsync(2, token);
 
-            return (minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null);
+            return (minimalProblem.NumberOfSolutions == 1? minimalProblem: null);
         }
         else
             return null;
@@ -465,7 +465,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         if(candidates == null) return true;
 
-        int start = 0;
+        int start=0;
         foreach(BaseCell cell in candidates)
         {
             if(token.IsCancellationRequested) return false;
@@ -474,15 +474,15 @@ internal abstract class BaseProblem: EventArgs, IComparable
             if(nValues - (candidates.Count - start) < minimalProblem.nValues)
             {
                 OnTestCell(this, cell);
-                byte cellValue = cell.CellValue;
+                byte cellValue=cell.CellValue;
                 SetValue(cell, Values.Undefined);
 
                 ResetMatrix();
-                if(nValues < minimalProblem.nValues) minimalProblem = Clone();
+                if(nValues < minimalProblem.nValues) minimalProblem=Clone();
 
                 OnMinimizing(this, minimalProblem);
 
-                var nextCandidates = await GetCandidates(candidates, ++start, token);
+                var nextCandidates=await GetCandidates(candidates, ++start, token);
 
                 if(token.IsCancellationRequested) return false;
                 if(!await MinimizeRecursive(nextCandidates, maxSeverity, token)) return false;
@@ -498,13 +498,13 @@ internal abstract class BaseProblem: EventArgs, IComparable
     // Private helper now async
     private async Task<List<BaseCell>> GetCandidates(List<BaseCell> source, int start, CancellationToken token)
     {
-        List<BaseCell> candiates = new List<BaseCell>();
+        List<BaseCell> candiates=new List<BaseCell>();
 
-        for(int i = start; i < source.Count; i++)
+        for(int i=start; i < source.Count; i++)
         {
             if(nValues - candiates.Count - (source.Count - i) > minimalProblem.nValues) return null;
 
-            byte cellValue = source[i].CellValue;
+            byte cellValue=source[i].CellValue;
             if(cellValue != Values.Undefined)
             {
                 SetValue(source[i], Values.Undefined);
@@ -530,11 +530,11 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
     public virtual Boolean Resolvable()
     {
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for(int row=0; row < WinFormsSettings.SudokuSize; row++)
+            for(int col=0; col < WinFormsSettings.SudokuSize; col++)
                 if(!Check(row, col)) return false;
 
-        for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
+        for(int i=0; i < WinFormsSettings.SudokuSize; i++)
             if(!Matrix.Check(Matrix.Rows[i]) || !Matrix.Check(Matrix.Cols[i]) || !Matrix.Check(Matrix.Rectangles[i])) return false;
 
         return true;
@@ -543,14 +543,14 @@ internal abstract class BaseProblem: EventArgs, IComparable
     public int NumDistinctValues()
     {
         int i, j;
-        int count = 0;
-        Boolean[] exists = new Boolean[WinFormsSettings.SudokuSize + 1];
+        int count=0;
+        Boolean[] exists=new Boolean[WinFormsSettings.SudokuSize + 1];
 
-        for(i = 0; i <= WinFormsSettings.SudokuSize; i++) exists[i] = false;
-        for(i = 0; i < WinFormsSettings.SudokuSize; i++)
-            for(j = 0; j < WinFormsSettings.SudokuSize; j++)
-                exists[GetValue(i, j)] = true;
-        for(i = 1; i <= WinFormsSettings.SudokuSize; i++)
+        for(i=0; i <= WinFormsSettings.SudokuSize; i++) exists[i]=false;
+        for(i=0; i < WinFormsSettings.SudokuSize; i++)
+            for(j=0; j < WinFormsSettings.SudokuSize; j++)
+                exists[GetValue(i, j)]=true;
+        for(i=1; i <= WinFormsSettings.SudokuSize; i++)
             if(exists[i]) count++;
 
         return count;
@@ -559,15 +559,15 @@ internal abstract class BaseProblem: EventArgs, IComparable
     public event EventHandler Progress;
     protected virtual void OnProgress()
     {
-        EventHandler handler = Progress;
+        EventHandler handler=Progress;
         if(handler != null) handler(this, EventArgs.Empty);
     }
 
     private Boolean IsSolved()
     {
         int i, j;
-        for(i = 0; i < WinFormsSettings.SudokuSize; i++)
-            for(j = 0; j < WinFormsSettings.SudokuSize; j++)
+        for(i=0; i < WinFormsSettings.SudokuSize; i++)
+            for(j=0; j < WinFormsSettings.SudokuSize; j++)
                 if(GetValue(i, j) == Values.Undefined || !Check(i, j)) return false;
 
         return true;
