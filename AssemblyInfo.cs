@@ -45,16 +45,9 @@ static class AssemblyInfo
     {
         get
         {
-            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyMetadataAttribute), false);
-            foreach(AssemblyMetadataAttribute attribute in attributes)
+            if(DateTime.TryParse(AssemblyMetadata.Get("BuildDate"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime dt))
             {
-                if(attribute.Key == "BuildDate")
-                {
-                    if(DateTime.TryParse(attribute.Value, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.RoundtripKind, out DateTime dt))
-                    {
-                        return dt.ToLocalTime().ToString(Thread.CurrentThread.CurrentUICulture);
-                    }
-                }
+                return dt.ToLocalTime().ToString(Thread.CurrentThread.CurrentUICulture);
             }
             return String.Empty;
         }
@@ -78,15 +71,7 @@ static class AssemblyInfo
     {
         get
         {
-            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyMetadataAttribute), false);
-            foreach(AssemblyMetadataAttribute attribute in attributes)
-            {
-                if(attribute.Key == "RepositoryUrl")
-                {
-                    return attribute.Value;
-                }
-            }
-            return String.Empty;
+            return AssemblyMetadata.Get("PackageProjectUrl");
         }
     }
 
