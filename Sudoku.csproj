@@ -93,6 +93,11 @@
     <PreferNativeArm64>true</PreferNativeArm64>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Sudoku.Tests\**" />
+    <EmbeddedResource Remove="Sudoku.Tests\**" />
+    <None Remove="Sudoku.Tests\**" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="Resources1.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -110,7 +115,6 @@
     <Compile Update="SudokuBoard.cs">
       <SubType>Component</SubType>
     </Compile>
-    <None Include="Sudoku.Tests\Sudoku.Tests.csproj" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
