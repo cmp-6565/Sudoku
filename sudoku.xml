@@ -7,9 +7,9 @@
 	</MASTER_PAD_VERSION_INFO>
 	<Company_Info>
 		<Company_Name>pi-c-it</Company_Name>
-		<Address_1>Tharauer Allee 22e</Address_1>
+		<Address_1>Sandhauser Str. 46c</Address_1>
 		<Address_2/>
-		<Zip_Postal_Code>14055</Zip_Postal_Code>
+		<Zip_Postal_Code>13505</Zip_Postal_Code>
 		<City_Town>Berlin</City_Town>
 		<Country>Deutschland</Country>
 		<State_Province/>
@@ -40,21 +40,21 @@
 	</Company_Info>
 	<Program_Info>
 		<Program_Name>Sudoku</Program_Name>
-		<Program_Version>4.9.0.0</Program_Version>
+		<Program_Version>5.0.0</Program_Version>
 		<Program_Type>Freeware</Program_Type>
-		<Program_Release_Status>Minor Update</Program_Release_Status>
+		<Program_Release_Status>Major Update</Program_Release_Status>
 		<Program_Category_Class>Games &amp; Entertainment::Puzzle &amp; Word Games</Program_Category_Class>
-		<Program_Release_Year>2018</Program_Release_Year>
+		<Program_Release_Year>2026</Program_Release_Year>
 		<Program_Release_Month>02</Program_Release_Month>
-		<Program_Release_Day>26</Program_Release_Day>
+		<Program_Release_Day>01</Program_Release_Day>
 		<Program_Cost_Other>0.00</Program_Cost_Other>
 		<Program_Cost_Other_Code>EUR</Program_Cost_Other_Code>
 		<Program_Cost_Dollars>0.00</Program_Cost_Dollars>
 		<Program_Change_Info/>
 		<Program_Language>German,English</Program_Language>
-		<Program_OS_Support>Windows 8, Windows 10</Program_OS_Support>
+		<Program_OS_Support>Windows 10, Windows 11</Program_OS_Support>
 		<Program_Install_Support>Install and Uninstall</Program_Install_Support>
-		<Program_System_Requirements>.net Framework 3.5</Program_System_Requirements>
+		<Program_System_Requirements>.net Framework 8.0</Program_System_Requirements>
 		<File_Info>
 			<File_Size_Bytes>457000</File_Size_Bytes>
 			<File_Size_K>446</File_Size_K>
@@ -87,7 +87,7 @@
 			<Keywords>Sudoku</Keywords>
 			<Char_Desc_45>Generates and solves Sudoku Problems</Char_Desc_45>
 			<Char_Desc_80/>
-			<Char_Desc_250>Generates and solves classic and X-Sudoku Problems. Enables printout of problems for offline solving. Generation of problem booklet also possible. Diverse options and an integrated help facility makes this program best of class.</Char_Desc_250>
+			<Char_Desc_250>Generates and solves both classic and X-Sudoku Problems. Enables printout of problems for offline solving. Generation of problem booklet also possible. Diverse options and an integrated help facility makes this program best of class.</Char_Desc_250>
 			<Char_Desc_450/>
 			<Char_Desc_2000/>
 		</English>

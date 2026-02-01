@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Sudoku.Tests;
+namespace Sudoku.Sudoku.Tests;
 
 [TestClass]
 public class MaskTests

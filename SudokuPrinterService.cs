@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Sudoku;
 
-internal class SudokuPrinterService
+internal class SudokuPrinterService: IDisposable
 {
     private readonly ISudokuSettings settings;
 
@@ -36,6 +36,8 @@ internal class SudokuPrinterService
     {
         printSudoku.PrintPage -= PrintSudokuEvent;
         printSudoku.Dispose();
+        printParameters.Dispose();
+        printDialog.Dispose();
     }
     public System.Drawing.Printing.PrintDocument Document => printSudoku;
 

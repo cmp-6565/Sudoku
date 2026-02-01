@@ -16,7 +16,7 @@ public interface ISudokuSettings
     int HorizontalProblems { get; set; }
     int HorizontalSolutions { get; set; }
     bool AutoCheck { get; set; }
-    bool Debug { get; set; }
+    bool TraceMode { get; set; }
     bool FindAllSolutions { get; set; }
     int BookletSizeExisting { get; set; }
     bool BookletSizeUnlimited { get; set; }

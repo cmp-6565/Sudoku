@@ -89,7 +89,7 @@ namespace Sudoku
             options = new System.Windows.Forms.ToolStripMenuItem();
             undo = new System.Windows.Forms.ToolStripMenuItem();
             toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
-            debug = new System.Windows.Forms.ToolStripMenuItem();
+            traceMode = new System.Windows.Forms.ToolStripMenuItem();
             findallSolutions = new System.Windows.Forms.ToolStripMenuItem();
             showPossibleValues = new System.Windows.Forms.ToolStripMenuItem();
             autoCheck = new System.Windows.Forms.ToolStripMenuItem();
@@ -519,7 +519,7 @@ namespace Sudoku
             // options
             // 
             options.CheckOnClick = true;
-            options.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { undo, toolStripSeparator8, debug, findallSolutions, showPossibleValues, autoCheck, pencilMode, highlightSameValues, markNeighbors, toolStripSeparator10, pause, resetTimer, toolStripSeparator6, sudokuOptionsToolStripMenuItem });
+            options.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] { undo, toolStripSeparator8, traceMode, findallSolutions, showPossibleValues, autoCheck, pencilMode, highlightSameValues, markNeighbors, toolStripSeparator10, pause, resetTimer, toolStripSeparator6, sudokuOptionsToolStripMenuItem });
             options.Name = "options";
             resources.ApplyResources(options, "options");
             options.DropDownOpening += OptionsMenuOpening;
@@ -538,11 +538,11 @@ namespace Sudoku
             // 
             // debug
             // 
-            debug.CheckOnClick = true;
-            debug.Name = "debug";
-            resources.ApplyResources(debug, "debug");
-            debug.Tag = "disable=1";
-            debug.Click += DebugClick;
+            traceMode.CheckOnClick = true;
+            traceMode.Name = "debug";
+            resources.ApplyResources(traceMode, "debug");
+            traceMode.Tag = "disable=1";
+            traceMode.Click += DebugClick;
             // 
             // findallSolutions
             // 
@@ -744,7 +744,7 @@ namespace Sudoku
         private System.Windows.Forms.ToolStripMenuItem solve;
         private System.Windows.Forms.ToolStripMenuItem reset;
         private System.Windows.Forms.ToolStripMenuItem options;
-        private System.Windows.Forms.ToolStripMenuItem debug;
+        private System.Windows.Forms.ToolStripMenuItem traceMode;
         private System.Windows.Forms.ToolStripMenuItem findallSolutions;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.SaveFileDialog saveSudokuDialog;

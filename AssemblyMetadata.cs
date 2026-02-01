@@ -10,20 +10,20 @@ namespace Sudoku;
 /// </summary>
 public static class AssemblyMetadata
 {
-    private static readonly Lazy<Dictionary<string, string>> _metadata =
+    private static readonly Lazy<Dictionary<string, string>> metadata =
         new Lazy<Dictionary<string, string>>(LoadMetadata);
 
     /// <summary>
     /// Liefert alle Metadaten als Dictionary.
     /// </summary>
-    public static IReadOnlyDictionary<string, string> All => _metadata.Value;
+    public static IReadOnlyDictionary<string, string> All => metadata.Value;
 
     /// <summary>
     /// Liefert einen einzelnen Wert oder null, wenn der Schlüssel nicht existiert.
     /// </summary>
-    public static string? Get(string key)
+    public static string Get(string key)
     {
-        _metadata.Value.TryGetValue(key, out var value);
+        metadata.Value.TryGetValue(key, out var value);
         return value;
     }
 

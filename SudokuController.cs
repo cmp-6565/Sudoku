@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Sudoku;
 
-internal class SudokuController
+internal class SudokuController: IDisposable
 {
     private readonly ISudokuSettings settings;
     private IUserInteraction ui;
@@ -41,6 +41,10 @@ internal class SudokuController
     {
         CreateProblemFromFile(filenname, settings.GenerateNormalSudoku, settings.GenerateXSudoku, loadCandidates);
         BackupProblem();
+    }
+    public void Dispose()
+    {
+        printerService?.Dispose();
     }
     public void CreateNewProblem(bool xSudoku, bool notify=true)
     {

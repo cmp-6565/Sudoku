@@ -15,12 +15,13 @@ namespace Sudoku;
 
 public enum SudokuPart { Row, Column, Block, UpDiagonal, DownDiagonal };
 
-public partial class SudokuForm: Form, IUserInteraction
+public partial class SudokuForm: Form, IUserInteraction, IDisposable
 {
     ISudokuSettings settings=new WinFormsSettings();
 
     private System.Windows.Forms.Timer autoPauseTimer;
     private System.Windows.Forms.Timer statusUpdateTimer;
+
     private Stopwatch generationTimer=new Stopwatch();
 
     private int currentSolution=0;
@@ -50,7 +51,7 @@ public partial class SudokuForm: Form, IUserInteraction
 
         sudokuMenu.Renderer=new FlatRenderer();
 
-        debug.Checked=settings.Debug;
+        traceMode.Checked=settings.TraceMode;
         autoCheck.Checked=settings.AutoCheck;
         showPossibleValues.Checked=settings.ShowHints;
         findallSolutions.Checked=settings.FindAllSolutions;
@@ -86,7 +87,15 @@ public partial class SudokuForm: Form, IUserInteraction
             LoadProblem(fn);
         }
     }
-
+    public new void Dispose()
+    {
+        base.Dispose();
+        autoPauseTimer?.Dispose();
+        statusUpdateTimer?.Dispose();
+        optionsDialog?.Dispose();
+        pauseOverlay?.Dispose();
+        controller?.Dispose();
+    }
     /// <summary>
     /// Helper method to safely open URLs in .NET Core/.NET 8+
     /// In .NET 8 UseShellExecute defaults to false, which prevents URLs from opening without this flag.
@@ -500,7 +509,7 @@ public partial class SudokuForm: Form, IUserInteraction
         {
             status.Text=String.Format(cultureInfo, Resources.CheckingStatus, state.PassCount) + Environment.NewLine + Resources.TimeElapsed + state.Elapsed.ToString(); // Formatierung ggf. anpassen
             status.Update();
-            if(debug.Checked) SudokuGrid.Update();
+            if(traceMode.Checked) SudokuGrid.Update();
         });
 
         try
@@ -1003,7 +1012,7 @@ public partial class SudokuForm: Form, IUserInteraction
             {
                 TimeSpan elapsed=DateTime.Now - computingStart;
 
-                status.Text=String.Format(cultureInfo, Resources.SolutionsFound, (controller.CurrentProblem.TotalPassCounter > 0? Resources.Plural: String.Empty)) + Environment.NewLine + String.Format(Resources.NeededTime, cultureInfo, elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds) + (findallSolutions.Checked? Environment.NewLine + Resources.TotalNumberOfSolutionsSoFar + controller.CurrentProblem.NumberOfSolutions.ToString("n0", cultureInfo): String.Empty) + Environment.NewLine + Resources.NeededPasses + controller.CurrentProblem.TotalPassCounter.ToString("n0", cultureInfo);
+                status.Text=String.Format(cultureInfo, Resources.SolutionsFound, (controller.CurrentProblem.TotalPassCounter > 0? Resources.Plural: String.Empty)) + Environment.NewLine + Resources.TimeNeeded + String.Format("{0:0#}:{1:0#}:{2:0#},{3:0#}", elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds) + (findallSolutions.Checked? Environment.NewLine + Resources.TotalNumberOfSolutionsSoFar + controller.CurrentProblem.NumberOfSolutions.ToString("n0", cultureInfo): String.Empty) + Environment.NewLine + Resources.NeededPasses + controller.CurrentProblem.TotalPassCounter.ToString("n0", cultureInfo);
                 currentSolution=-1;
                 NextSolution();
             }
@@ -1190,8 +1199,8 @@ public partial class SudokuForm: Form, IUserInteraction
 
     private void DebugClick(object sender, EventArgs e)
     {
-        settings.Debug=debug.Checked;
-        SudokuGrid.SetDebugMode(debug.Checked);
+        settings.TraceMode=traceMode.Checked;
+        SudokuGrid.SetDebugMode(traceMode.Checked);
     }
 
     private void FindallSolutionsClick(object sender, EventArgs e)
@@ -1438,5 +1447,6 @@ public partial class SudokuForm: Form, IUserInteraction
             }
         }
         applicationExiting=!e.Cancel;
+        if(applicationExiting) { Dispose(); }
     }
 }

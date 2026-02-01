@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace Sudoku;
 
-internal class SudokuBoard: DataGridView
+internal class SudokuBoard: DataGridView, IDisposable
 {
     private ISudokuSettings settings;
     private IUserInteraction ui;
@@ -84,7 +84,14 @@ internal class SudokuBoard: DataGridView
         InitializeInputValidation();
         InitializeEvents();
     }
-
+    public new void Dispose()
+    {
+        base.Dispose();
+        normalDisplayFont?.Dispose(); normalDisplayFont = null;
+        boldDisplayFont?.Dispose(); boldDisplayFont = null;
+        strikethroughFont?.Dispose(); strikethroughFont = null;
+        cellContextMenu?.Dispose(); cellContextMenu = null;
+    }
     internal SudokuController Controller
     {
         get { return controller; }

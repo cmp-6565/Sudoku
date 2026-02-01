@@ -71,7 +71,7 @@ static class AssemblyInfo
     {
         get
         {
-            return AssemblyMetadata.Get("PackageProjectUrl");
+            return AssemblyMetadata.Get("RepositoryUrl");
         }
     }
 

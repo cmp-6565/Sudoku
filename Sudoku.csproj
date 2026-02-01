@@ -48,14 +48,21 @@
     <Title>pi-c-it Sudoku</Title>
     <Description>An application to generate and solve both normal and X-Sudokus</Description>
     <Copyright>© Clemens Pichl</Copyright>
-    <PackageProjectUrl>https://github.com/cmp-6565/Sudoku/</PackageProjectUrl>
+    <PackageProjectUrl></PackageProjectUrl>
     <PackageIcon></PackageIcon>
-    <RepositoryUrl></RepositoryUrl>
+    <RepositoryUrl>https://github.com/cmp-6565/Sudoku/</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>5.0.0.0</AssemblyVersion>
-    <FileVersion>5.0.0.0</FileVersion>
+    <AssemblyVersion>5.0.0</AssemblyVersion>
+    <FileVersion>5.0.0</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <AssemblyTitle>$(MSBuildProjectName)</AssemblyTitle>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <Authors>Clemens Pichl</Authors>
+    <Company>pi-c-it</Company>
+    <PackageTags>Sudoku;X-Sudoku</PackageTags>
+    <Version>$(FileVersion)</Version>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoWarn>1701;1702;1709</NoWarn>
@@ -86,12 +93,20 @@
     <PreferNativeArm64>true</PreferNativeArm64>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Resources1.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Accessibility" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
     <BaseApplicationManifest Include="Properties\app.manifest" />
     <None Include="html\example.pdf" />
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="SudokuBoard.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -377,8 +392,14 @@
   </ItemGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
-      <_Parameter1>PackageProjectUrl</_Parameter1>
-      <_Parameter2>$(PackageProjectUrl)</_Parameter2>
+      <_Parameter1>RepositoryUrl</_Parameter1>
+      <_Parameter2>$(RepositoryUrl)</_Parameter2>
     </AssemblyAttribute>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

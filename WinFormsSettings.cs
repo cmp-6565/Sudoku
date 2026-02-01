@@ -84,7 +84,7 @@ public class WinFormsSettings: ISudokuSettings
         set => Settings.Default.AutoCheck=value;
     }
 
-    public bool Debug
+    public bool TraceMode
     {
         get => Settings.Default.Debug;
         set => Settings.Default.Debug=value;

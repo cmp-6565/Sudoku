@@ -39,8 +39,8 @@ namespace Sudoku {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp=new global::System.Resources.ResourceManager("Sudoku.Resources", typeof(Resources).Assembly);
-                    resourceMan=temp;
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sudoku.Resources", typeof(Resources).Assembly);
+                    resourceMan = temp;
                 }
                 return resourceMan;
             }
@@ -56,7 +56,7 @@ namespace Sudoku {
                 return resourceCulture;
             }
             set {
-                resourceCulture=value;
+                resourceCulture = value;
             }
         }
         
@@ -178,11 +178,29 @@ namespace Sudoku {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Crash ähnelt.
+        /// </summary>
+        internal static string Crash {
+            get {
+                return ResourceManager.GetString("Crash", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Directory {0} could not be created, Booklet problems will not be saved! ähnelt.
         /// </summary>
         internal static string CreateDirectoryFailed {
             get {
                 return ResourceManager.GetString("CreateDirectoryFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Critical Error ähnelt.
+        /// </summary>
+        internal static string CriticalError {
+            get {
+                return ResourceManager.GetString("CriticalError", resourceCulture);
             }
         }
         
@@ -227,7 +245,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap digitCandidates {
             get {
-                object obj=ResourceManager.GetObject("digitCandidates", resourceCulture);
+                object obj = ResourceManager.GetObject("digitCandidates", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -265,6 +283,15 @@ namespace Sudoku {
         internal static string EnterValues {
             get {
                 return ResourceManager.GetString("EnterValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Error ähnelt.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
             }
         }
         
@@ -553,15 +580,6 @@ namespace Sudoku {
         internal static string NeededPasses {
             get {
                 return ResourceManager.GetString("NeededPasses", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Zeichenfolge, die Time needed: {0:0#}:{1:0#}:{2:0#},{3:0#} ähnelt.
-        /// </summary>
-        internal static string NeededTime {
-            get {
-                return ResourceManager.GetString("NeededTime", resourceCulture);
             }
         }
         
@@ -1018,7 +1036,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap SudokuProblem {
             get {
-                object obj=ResourceManager.GetObject("SudokuProblem", resourceCulture);
+                object obj = ResourceManager.GetObject("SudokuProblem", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1123,6 +1141,15 @@ namespace Sudoku {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die An unexpected error occured:  ähnelt.
+        /// </summary>
+        internal static string UnexpectedError {
+            get {
+                return ResourceManager.GetString("UnexpectedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Unknown Error ähnelt.
         /// </summary>
         internal static string UnknownError {
@@ -1172,7 +1199,7 @@ namespace Sudoku {
         /// </summary>
         internal static System.Drawing.Bitmap watchHandCandidates {
             get {
-                object obj=ResourceManager.GetObject("watchHandCandidates", resourceCulture);
+                object obj = ResourceManager.GetObject("watchHandCandidates", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

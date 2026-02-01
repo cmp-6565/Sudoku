@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace Sudoku;
 
-internal class PrintParameters
+internal class PrintParameters : IDisposable
 {
     private readonly ISudokuSettings settings;
 
@@ -80,6 +80,30 @@ internal class PrintParameters
         this.settings=settings;
     }
 
+    public void Dispose()
+    {
+        thickSolidLine.Dispose();
+        thinSolidLine.Dispose();
+        tinySolidLine.Dispose();
+        redTinySolidLine.Dispose();
+        greenTinySolidLine.Dispose();
+        solidBrush.Dispose();
+        lightGraySolidBrush.Dispose();
+        redSolidBrush.Dispose();
+        greenSolidBrush.Dispose();
+        titleFont.Dispose();
+        headerFont.Dispose();
+        largeFont.Dispose();
+        normalFont.Dispose();
+        normalBoldFont.Dispose();
+        smallFont.Dispose();
+        smallBoldFont.Dispose();
+        smallFixedFont.Dispose();
+        centered.Dispose();
+        vertical.Dispose();
+        leftBounded.Dispose();
+        rightBounded.Dispose();
+    }
     public static String PrintError(int errorCode)
     {
         String[] errors={ Resources.InvalidSize, Resources.UnknownError };

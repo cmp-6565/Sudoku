@@ -481,4 +481,16 @@
   <data name="ClearCandidates" xml:space="preserve">
     <value>Clear Candidates</value>
   </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occured: </value>
+  </data>
+  <data name="CriticalError" xml:space="preserve">
+    <value>Critical Error</value>
+  </data>
+  <data name="Crash" xml:space="preserve">
+    <value>Crash</value>
+  </data>
 </root>
