@@ -51,7 +51,7 @@ internal class SudokuFileService
         try
         {
             sw=new StreamWriter(file);
-            sw.Write(Serialize(false));
+            sw.Write(Serialize(true));
             sw.Close();
             Sudoku.Filename=file;
             Sudoku.Dirty=false;
@@ -183,16 +183,14 @@ internal class SudokuFileService
 
         return System.Text.Json.JsonSerializer.Serialize(state);
     }
-    public void Deserialize(string jsonState, SudokuController controller)
+    public void Deserialize(string jsonState)
     {
         if(string.IsNullOrEmpty(jsonState)) return;
 
         try
         {
             var state=System.Text.Json.JsonSerializer.Deserialize<SudokuSaveState>(jsonState);
-
-            controller.CreateNewProblem(state.Type == XSudokuProblem.ProblemIdentifier.ToString(), false);
-            Sudoku=controller.CurrentProblem;
+            NotifyReadProblem(state.Type[0] == XSudokuProblem.ProblemIdentifier);
 
             InitMatrix(state.GridData.ToCharArray());
             Sudoku.SolvingTime=state.Time;
@@ -402,7 +400,36 @@ internal class SudokuFileService
         }
         catch(Exception) { throw; }
     }
-    public void CreateProblemFromFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
+
+    public void LoadProblem(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
+    {
+        try
+        {
+            CreateProblemFromJsonFile(filename, normalSudoku, xSudoku, loadCandidates);
+        }
+        catch(Exception) 
+        {
+            CreateProblemFromLegacyFile(filename, normalSudoku, xSudoku, loadCandidates);
+        }
+        finally { Sudoku.Filename = filename; }
+    }
+
+    public void CreateProblemFromJsonFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
+    {
+        StreamReader sr=null;
+        try
+        {
+            sr=new StreamReader(filename.Replace("%20", " "), System.Text.Encoding.Default);
+            String jsonState=sr.ReadToEnd();
+            sr.Close();
+     
+            Deserialize(jsonState);
+        }
+        catch(Exception) { throw; }
+        finally { sr.Close(); }
+        Sudoku.Filename=filename;
+    }
+    public void CreateProblemFromLegacyFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
     {
         StreamReader sr=null;
         try
@@ -424,7 +451,6 @@ internal class SudokuFileService
         }
         catch(Exception) { throw; }
         finally { sr.Close(); }
-        Sudoku.Filename=filename;
     }
     public void CreateBookletDirectory(GenerationParameters generationParameters)
     {

@@ -588,7 +588,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         Boolean rc=true;
         DialogResult dialogResult;
 
-        if(controller.CurrentProblem.Dirty && SudokuGrid.IsCompleted)
+        if(controller.CurrentProblem.Dirty && !SudokuGrid.IsCompleted)
         {
             dialogResult=Confirm(Resources.UnsavedChanges, MessageBoxButtons.YesNoCancel);
             if(dialogResult == DialogResult.Yes)
@@ -680,7 +680,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             return false;
         }
 
-        if(ShowSaveDialog(settings.DefaultFileExtension) == DialogResult.OK)
+        if(AskForFilename(settings.DefaultFileExtension) != String.Empty)
             return SaveProblem(saveSudokuDialog.FileName);
         else
             return false;
@@ -694,7 +694,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             return false;
         }
 
-        if(ShowSaveDialog(settings.HTMLFileExtension) == DialogResult.OK)
+        if(AskForFilename(settings.HTMLFileExtension) != String.Empty)
             return ExportProblem(saveSudokuDialog.FileName);
         else
             return false;
@@ -711,18 +711,6 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         OpenUrl(controller.TwitterURL);
 
         return true;
-    }
-
-    private DialogResult ShowSaveDialog(String Extension)
-    {
-        DialogResult result=DialogResult.OK;
-        saveSudokuDialog.InitialDirectory=settings.ProblemDirectory;
-        saveSudokuDialog.RestoreDirectory=true;
-        saveSudokuDialog.DefaultExt="*" + Extension;
-        saveSudokuDialog.Filter=String.Format(cultureInfo, Resources.FilterString, Extension);
-        saveSudokuDialog.FileName="Problem-" + DateTime.Now.ToString("yyyy.MM.dd-hh-mm", cultureInfo);
-        result=saveSudokuDialog.ShowDialog();
-        return result;
     }
 
     // Diverse Events

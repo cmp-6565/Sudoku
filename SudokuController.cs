@@ -610,7 +610,7 @@ internal class SudokuController: IDisposable
             CreateNewProblem(b);
             fileService.Sudoku=CurrentProblem;
         };
-        fileService.CreateProblemFromFile(filename, normalSudoku, xSudoku, loadCandidates);
+        fileService.LoadProblem(filename, normalSudoku, xSudoku, loadCandidates);
 
         NotifyMatrixChanged();
     }
@@ -804,7 +804,12 @@ internal class SudokuController: IDisposable
         try
         {
             SudokuFileService fileService=new SudokuFileService(CurrentProblem, settings, ui);
-            fileService.Deserialize(settings.State, this);
+            fileService.ReadProblem += (b) =>
+            {
+                CreateNewProblem(b);
+                fileService.Sudoku = CurrentProblem;
+            };
+            fileService.Deserialize(settings.State);
         }
         catch(Exception)
         {
