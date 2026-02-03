@@ -52,8 +52,8 @@
     <PackageIcon></PackageIcon>
     <RepositoryUrl>https://github.com/cmp-6565/Sudoku/</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <AssemblyVersion>5.0.0</AssemblyVersion>
-    <FileVersion>5.0.0</FileVersion>
+    <AssemblyVersion>5.1.0</AssemblyVersion>
+    <FileVersion>5.1.0</FileVersion>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <AssemblyTitle>$(MSBuildProjectName)</AssemblyTitle>
