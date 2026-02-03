@@ -16,7 +16,7 @@ public partial class SudokuForm: Form
             return;
         }
 
-        BaseProblem tmp=controller.CurrentProblem.Clone();
+        BaseProblem tmp = controller.CurrentProblem.Clone();
 
         SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
         if(controller.CurrentProblem.NumberOfSolutions == 0)
@@ -31,8 +31,8 @@ public partial class SudokuForm: Form
         if(!FormCTS.Token.IsCancellationRequested)
         {
             Boolean sc;
-            if((sc=controller.CurrentProblem.HasCandidates()) && settings.PrintHints)
-                sc=Confirm(Resources.PrintCandidates) == DialogResult.Yes;
+            if((sc = controller.CurrentProblem.HasCandidates()) && settings.PrintHints)
+                sc = Confirm(Resources.PrintCandidates) == DialogResult.Yes;
 
             controller.PrintSingleProblem(sc);
         }
@@ -57,29 +57,34 @@ public partial class SudokuForm: Form
     {
         controller.InitializePrinterService();
 
-        selectBookletDirectory.SelectedPath=settings.ProblemDirectory;
-        selectBookletDirectory.ShowNewFolderButton=false;
+        selectBookletDirectory.SelectedPath = settings.ProblemDirectory;
+        selectBookletDirectory.ShowNewFolderButton = false;
 
         if(selectBookletDirectory.ShowDialog() == DialogResult.OK)
         {
-            DateTime interactiveStartReset=DateTime.MinValue;
-            List<String> filenames=new List<string>();
-
             DisableGUI();
 
-            LoadProblemFilenames(new DirectoryInfo(selectBookletDirectory.SelectedPath), filenames);
+            List<String> filenames = new List<string>();
+
+            controller.LoadProblemFilenames(new DirectoryInfo(selectBookletDirectory.SelectedPath), filenames, FormCTS.Token);
             if(!AbortRequested)
             {
 
-                int totalNumber=filenames.Count;
+                int totalNumber = filenames.Count;
                 if(totalNumber < 1)
                     ShowInfo(Resources.NoProblems);
                 else
                 {
-                    int count=LoadProblems(filenames);
+                    int count = controller.LoadProblems(filenames, new Action<Object>(o =>
+                        {
+                            int remainder;
+                            Math.DivRem(controller.NumberOfProblems / 10, 25, out remainder);
+                            sudokuStatusBarText.Text = Resources.LoadingFiles.PadRight(Resources.LoadingFiles.Length + remainder, '.');
+                            sudokuStatusBar.Update();
+                        }), FormCTS.Token);
                     if(!AbortRequested)
                     {
-                        sudokuStatusBarText.Text=String.Format(cultureInfo, Resources.ProblemsLoaded, count, totalNumber);
+                        sudokuStatusBarText.Text = String.Format(cultureInfo, Resources.ProblemsLoaded, count, totalNumber);
                         sudokuStatusBar.Update();
 
                         PrintBooklet();
@@ -89,73 +94,9 @@ public partial class SudokuForm: Form
             if(!applicationExiting)
             {
                 CurrentStatus(true);
-                sudokuStatusBarText.Text=Resources.Ready;
+                sudokuStatusBarText.Text = Resources.Ready;
                 EnableGUI();
             }
         }
-    }
-
-    private void LoadProblemFilenames(DirectoryInfo directoryInfo, List<String> filenames)
-    {
-        sudokuStatusBarText.Text=String.Format(cultureInfo, Resources.LoadingFiles);
-        sudokuStatusBar.Update();
-
-        // avoid Application.DoEvents(); — respect cooperative cancellation
-        if(AbortRequested) return;
-
-        foreach(FileInfo fileInfo in directoryInfo.GetFiles())
-            filenames.Add(fileInfo.FullName);
-
-        foreach(DirectoryInfo di in directoryInfo.GetDirectories())
-            LoadProblemFilenames(di, filenames);
-    }
-
-    private int LoadProblems(List<String> filenames)
-    {
-        Boolean ready=false;
-        Random rand=new Random();
-
-        BaseProblem tmp=controller.CurrentProblem.Clone();
-
-        while(!ready)
-        {
-            int problemNumber=rand.Next(0, filenames.Count - 1);
-            try
-            {
-                SudokuController bookletController=new SudokuController(filenames[problemNumber], false, settings, this);
-                if(bookletController.CurrentProblem != null && (bookletController.CurrentProblem.SeverityLevelInt & settings.SeverityLevel) != 0)
-                {
-                    bookletController.CurrentProblem.FindSolutions(2, FormCTS.Token);
-
-                    if(bookletController.CurrentProblem.SolverTask != null && !bookletController.CurrentProblem.SolverTask.IsCompleted)
-                        bookletController.CurrentProblem.SolverTask.Wait();
-
-                    if(bookletController.CurrentProblem.NumberOfSolutions == 1)
-                    {
-                        bookletController.CurrentProblem.ResetMatrix();
-                        bookletController.CurrentProblem.Filename=filenames[problemNumber];
-                        controller.AddProblem(bookletController.CurrentProblem);
-
-                        int remainder;
-                        Math.DivRem(controller.NumberOfProblems / 10, 25, out remainder);
-                        sudokuStatusBarText.Text=Resources.LoadingFiles.PadRight(Resources.LoadingFiles.Length + remainder, '.');
-                        sudokuStatusBar.Update();
-
-                        // cooperative cancellation check instead of Application.DoEvents
-                        if(AbortRequested) break;
-                    }
-                }
-            }
-            catch
-            {
-                // do nothing
-            }
-
-            filenames.RemoveAt(problemNumber);
-            ready=(controller.NumberOfProblems == settings.BookletSizeExisting && !settings.BookletSizeUnlimited) || filenames.Count == 0 || AbortRequested;
-        }
-        controller.UpdateProblem(tmp);
-
-        return controller.NumberOfProblems;
     }
 }

@@ -9,223 +9,223 @@ public class WinFormsSettings: ISudokuSettings
     public string DisplayLanguage
     {
         get => Settings.Default.DisplayLanguage;
-        set => Settings.Default.DisplayLanguage=value;
+        set => Settings.Default.DisplayLanguage = value;
     }
 
     public int BookletSizeNew
     {
         get => Settings.Default.BookletSizeNew;
-        set => Settings.Default.BookletSizeNew=value;
+        set => Settings.Default.BookletSizeNew = value;
     }
 
     public bool PrintSolution
     {
         get => Settings.Default.PrintSolution;
-        set => Settings.Default.PrintSolution=value;
+        set => Settings.Default.PrintSolution = value;
     }
 
     public int MaxSolutions
     {
         get => Settings.Default.MaxSolutions;
-        set => Settings.Default.MaxSolutions=value;
+        set => Settings.Default.MaxSolutions = value;
     }
 
     public int MinValues
     {
         get => Settings.Default.MinValues;
-        set => Settings.Default.MinValues=value;
+        set => Settings.Default.MinValues = value;
     }
 
     public bool AutoSaveBooklet
     {
         get => Settings.Default.AutoSaveBooklet;
-        set => Settings.Default.AutoSaveBooklet=value;
+        set => Settings.Default.AutoSaveBooklet = value;
     }
 
     public string ProblemDirectory
     {
         get => Settings.Default.ProblemDirectory;
-        set => Settings.Default.ProblemDirectory=value;
+        set => Settings.Default.ProblemDirectory = value;
     }
 
     public int Size
     {
         get => Settings.Default.Size;
-        set => Settings.Default.Size=value;
+        set => Settings.Default.Size = value;
     }
 
     public bool PrintHints
     {
         get => Settings.Default.PrintHints;
-        set => Settings.Default.PrintHints=value;
+        set => Settings.Default.PrintHints = value;
     }
 
     public bool ShowHints
     {
         get => Settings.Default.ShowHints;
-        set => Settings.Default.ShowHints=value;
+        set => Settings.Default.ShowHints = value;
     }
 
     public int HorizontalProblems
     {
         get => Settings.Default.HorizontalProblems;
-        set => Settings.Default.HorizontalProblems=value;
+        set => Settings.Default.HorizontalProblems = value;
     }
 
     public int HorizontalSolutions
     {
         get => Settings.Default.HorizontalSolutions;
-        set => Settings.Default.HorizontalSolutions=value;
+        set => Settings.Default.HorizontalSolutions = value;
     }
 
     public bool AutoCheck
     {
         get => Settings.Default.AutoCheck;
-        set => Settings.Default.AutoCheck=value;
+        set => Settings.Default.AutoCheck = value;
     }
 
     public bool TraceMode
     {
         get => Settings.Default.Debug;
-        set => Settings.Default.Debug=value;
+        set => Settings.Default.Debug = value;
     }
 
     public bool FindAllSolutions
     {
         get => Settings.Default.FindAllSolutions;
-        set => Settings.Default.FindAllSolutions=value;
+        set => Settings.Default.FindAllSolutions = value;
     }
 
     public int BookletSizeExisting
     {
         get => Settings.Default.BookletSizeExisting;
-        set => Settings.Default.BookletSizeExisting=value;
+        set => Settings.Default.BookletSizeExisting = value;
     }
 
     public bool BookletSizeUnlimited
     {
         get => Settings.Default.BookletSizeUnlimited;
-        set => Settings.Default.BookletSizeUnlimited=value;
+        set => Settings.Default.BookletSizeUnlimited = value;
     }
 
     public int SeverityLevel
     {
         get => Settings.Default.SeverityLevel;
-        set => Settings.Default.SeverityLevel=value;
+        set => Settings.Default.SeverityLevel = value;
     }
 
     public bool HideWhenMinimized
     {
         get => Settings.Default.HideWhenMinimized;
-        set => Settings.Default.HideWhenMinimized=value;
+        set => Settings.Default.HideWhenMinimized = value;
     }
 
     public int TraceFrequence
     {
         get => Settings.Default.TraceFrequence;
-        set => Settings.Default.TraceFrequence=value;
+        set => Settings.Default.TraceFrequence = value;
     }
 
     public bool UseWatchHandHints
     {
         get => Settings.Default.UseWatchHandHints;
-        set => Settings.Default.UseWatchHandHints=value;
+        set => Settings.Default.UseWatchHandHints = value;
     }
 
     public bool GenerateXSudoku
     {
         get => Settings.Default.GenerateXSudoku;
-        set => Settings.Default.GenerateXSudoku=value;
+        set => Settings.Default.GenerateXSudoku = value;
     }
 
     public bool GenerateNormalSudoku
     {
         get => Settings.Default.GenerateNormalSudoku;
-        set => Settings.Default.GenerateNormalSudoku=value;
+        set => Settings.Default.GenerateNormalSudoku = value;
     }
 
     public bool SelectSeverity
     {
         get => Settings.Default.SelectSeverity;
-        set => Settings.Default.SelectSeverity=value;
+        set => Settings.Default.SelectSeverity = value;
     }
 
     public int XSudokuConstrast
     {
         get => Settings.Default.XSudokuConstrast;
-        set => Settings.Default.XSudokuConstrast=value;
+        set => Settings.Default.XSudokuConstrast = value;
     }
 
     public string State
     {
         get => Settings.Default.State;
-        set => Settings.Default.State=value;
+        set => Settings.Default.State = value;
     }
 
     public bool AutoSaveState
     {
         get => Settings.Default.AutoSaveState;
-        set => Settings.Default.AutoSaveState=value;
+        set => Settings.Default.AutoSaveState = value;
     }
 
     public bool GenerateMinimalProblems
     {
         get => Settings.Default.GenerateMinimalProblems;
-        set => Settings.Default.GenerateMinimalProblems=value;
+        set => Settings.Default.GenerateMinimalProblems = value;
     }
 
     public bool MarkNeighbors
     {
         get => Settings.Default.MarkNeighbors;
-        set => Settings.Default.MarkNeighbors=value;
+        set => Settings.Default.MarkNeighbors = value;
     }
 
     public bool UsePrecalculatedProblems
     {
         get => Settings.Default.UsePrecalculatedProblems;
-        set => Settings.Default.UsePrecalculatedProblems=value;
+        set => Settings.Default.UsePrecalculatedProblems = value;
     }
 
     public string LastVersion
     {
         get => Settings.Default.LastVersion;
-        set => Settings.Default.LastVersion=value;
+        set => Settings.Default.LastVersion = value;
     }
 
     public bool SudokuOfTheDay
     {
         get => Settings.Default.SudokuOfTheDay;
-        set => Settings.Default.SudokuOfTheDay=value;
+        set => Settings.Default.SudokuOfTheDay = value;
     }
 
     public bool PrintInternalSeverity
     {
         get => Settings.Default.PrintInternalSeverity;
-        set => Settings.Default.PrintInternalSeverity=value;
+        set => Settings.Default.PrintInternalSeverity = value;
     }
 
     public bool AutoPause
     {
         get => Settings.Default.AutoPause;
-        set => Settings.Default.AutoPause=value;
+        set => Settings.Default.AutoPause = value;
     }
 
     public decimal AutoPauseLag
     {
         get => Settings.Default.AutoPauseLag;
-        set => Settings.Default.AutoPauseLag=value;
+        set => Settings.Default.AutoPauseLag = value;
     }
 
     public int Contrast
     {
         get => Settings.Default.Contrast;
-        set => Settings.Default.Contrast=value;
+        set => Settings.Default.Contrast = value;
     }
 
     public bool HighlightSameValues
     {
         get => Settings.Default.HighlightSameValues;
-        set => Settings.Default.HighlightSameValues=value;
+        set => Settings.Default.HighlightSameValues = value;
     }
 
     // --- Anwendungs-Einstellungen (Read-Only) ---

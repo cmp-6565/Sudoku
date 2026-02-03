@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows8.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>false</SignManifests>
@@ -63,6 +63,7 @@
     <Company>pi-c-it</Company>
     <PackageTags>Sudoku;X-Sudoku</PackageTags>
     <Version>$(FileVersion)</Version>
+    <SignAssembly>True</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoWarn>1701;1702;1709</NoWarn>
@@ -93,12 +94,18 @@
     <PreferNativeArm64>true</PreferNativeArm64>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Benchmarks\**" />
     <Compile Remove="Sudoku.Tests\**" />
+    <EmbeddedResource Remove="Benchmarks\**" />
     <EmbeddedResource Remove="Sudoku.Tests\**" />
+    <None Remove="Benchmarks\**" />
     <None Remove="Sudoku.Tests\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Resources1.Designer.cs" />
+    <Compile Remove="CandidateSearchBenchmark.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Sudoku.csproj.Backup.tmp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />

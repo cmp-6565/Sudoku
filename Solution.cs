@@ -11,15 +11,15 @@ public class Solution: Values
 
     public Solution(ISudokuSettings settings)
     {
-        values=new byte[WinFormsSettings.SudokuSize][];
-        for(int row=0; row < WinFormsSettings.SudokuSize; row++)
-            values[row]=new byte[WinFormsSettings.SudokuSize];
+        values = new byte[WinFormsSettings.SudokuSize][];
+        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            values[row] = new byte[WinFormsSettings.SudokuSize];
         Init();
-        this.settings=settings;
+        this.settings = settings;
     }
 
     // Neuer Kopierkonstruktor
-    protected Solution(Solution clone): base(clone)
+    protected Solution(Solution clone) : base(clone)
     {
         this.settings = clone.settings;
         this.Counter = clone.Counter;
@@ -39,7 +39,7 @@ public class Solution: Values
     {
         if(((value < 1 || value > WinFormsSettings.SudokuSize) && value != Values.Undefined) || row < 0 || col < 0 || row > WinFormsSettings.SudokuSize || col > WinFormsSettings.SudokuSize)
             throw new InvalidSudokuValueException();
-        values[row][col]=value;
+        values[row][col] = value;
     }
 
     public override byte GetValue(int row, int col)
@@ -66,8 +66,8 @@ public class Solution: Values
     {
         int row, col;
 
-        for(row=0; row < WinFormsSettings.SudokuSize; row++)
-            for(col=0; col < WinFormsSettings.SudokuSize; col++)
-                values[row][col]=Values.Undefined;
+        for(row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for(col = 0; col < WinFormsSettings.SudokuSize; col++)
+                values[row][col] = Values.Undefined;
     }
 }

@@ -20,642 +20,594 @@ namespace Sudoku
 			base.Dispose(disposing);
 		}
 
-		#region Windows Form Designer generated code
+        #region Windows Form Designer generated code
 
-		/// <summary>
-		/// Required method for Designer support-do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
-            System.ComponentModel.ComponentResourceManager resources=new System.ComponentModel.ComponentResourceManager(typeof(OptionsDialog));
-            this.cancel=new System.Windows.Forms.Button();
-            this.ok=new System.Windows.Forms.Button();
-            this.bookletSizeNew=new System.Windows.Forms.NumericUpDown();
-            this.labelBookletSizeNew=new System.Windows.Forms.Label();
-            this.printSolutions=new System.Windows.Forms.CheckBox();
-            this.minValues=new System.Windows.Forms.NumericUpDown();
-            this.labelMinValues=new System.Windows.Forms.Label();
-            this.autoSaveBooklet=new System.Windows.Forms.CheckBox();
-            this.labelBaseDirectory=new System.Windows.Forms.Label();
-            this.problemDirectory=new System.Windows.Forms.TextBox();
-            this.directorySelect=new System.Windows.Forms.Button();
-            this.selectProblemDirectoryDialog=new System.Windows.Forms.FolderBrowserDialog();
-            this.printHints=new System.Windows.Forms.CheckBox();
-            this.optionsTab=new System.Windows.Forms.TabControl();
-            this.layoutPage=new System.Windows.Forms.TabPage();
-            this.autoPauseLag=new System.Windows.Forms.NumericUpDown();
-            this.autoPause=new System.Windows.Forms.CheckBox();
-            this.saveState=new System.Windows.Forms.CheckBox();
-            this.groupBox1=new System.Windows.Forms.GroupBox();
-            this.possibleValuesExamplePicture=new System.Windows.Forms.PictureBox();
-            this.useDigits=new System.Windows.Forms.RadioButton();
-            this.useWatchHands=new System.Windows.Forms.RadioButton();
-            this.hideWhenMinimized=new System.Windows.Forms.CheckBox();
-            this.sizeGroupBox=new System.Windows.Forms.GroupBox();
-            this.largeRB=new System.Windows.Forms.RadioButton();
-            this.mediumRB=new System.Windows.Forms.RadioButton();
-            this.smallRB=new System.Windows.Forms.RadioButton();
-            this.labelLanguage=new System.Windows.Forms.Label();
-            this.constrast=new System.Windows.Forms.NumericUpDown();
-            this.labelConstrast=new System.Windows.Forms.Label();
-            this.language=new System.Windows.Forms.ComboBox();
-            this.printPage=new System.Windows.Forms.TabPage();
-            this.printInternalSeverity=new System.Windows.Forms.CheckBox();
-            this.xSudokuConstrast=new System.Windows.Forms.NumericUpDown();
-            this.xSudokuConstrastLabel=new System.Windows.Forms.Label();
-            this.solutionPrintSize=new System.Windows.Forms.GroupBox();
-            this.solutionSmall=new System.Windows.Forms.RadioButton();
-            this.solutionNormal=new System.Windows.Forms.RadioButton();
-            this.problemPrintSize=new System.Windows.Forms.GroupBox();
-            this.tiny=new System.Windows.Forms.RadioButton();
-            this.small=new System.Windows.Forms.RadioButton();
-            this.normal=new System.Windows.Forms.RadioButton();
-            this.large=new System.Windows.Forms.RadioButton();
-            this.generatePage=new System.Windows.Forms.TabPage();
-            this.precalculatedProblems=new System.Windows.Forms.CheckBox();
-            this.generateMinimalProblems=new System.Windows.Forms.CheckBox();
-            this.selectLevelBox=new System.Windows.Forms.GroupBox();
-            this.selectSeverityLevel=new System.Windows.Forms.CheckBox();
-            this.type=new System.Windows.Forms.GroupBox();
-            this.xSudoku=new System.Windows.Forms.CheckBox();
-            this.normalSudoku=new System.Windows.Forms.CheckBox();
-            this.severity=new System.Windows.Forms.GroupBox();
-            this.hard=new System.Windows.Forms.CheckBox();
-            this.intermediate=new System.Windows.Forms.CheckBox();
-            this.easy=new System.Windows.Forms.CheckBox();
-            this.bookletSize=new System.Windows.Forms.GroupBox();
-            this.unlimited=new System.Windows.Forms.CheckBox();
-            this.bookletSizeExisting=new System.Windows.Forms.NumericUpDown();
-            this.labelBookletSizeExisting=new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.bookletSizeNew)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minValues)).BeginInit();
-            this.optionsTab.SuspendLayout();
-            this.layoutPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.autoPauseLag)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.possibleValuesExamplePicture)).BeginInit();
-            this.sizeGroupBox.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.constrast)).BeginInit();
-            this.printPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.xSudokuConstrast)).BeginInit();
-            this.solutionPrintSize.SuspendLayout();
-            this.problemPrintSize.SuspendLayout();
-            this.generatePage.SuspendLayout();
-            this.selectLevelBox.SuspendLayout();
-            this.type.SuspendLayout();
-            this.severity.SuspendLayout();
-            this.bookletSize.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bookletSizeExisting)).BeginInit();
-            this.SuspendLayout();
+        /// <summary>
+        /// Required method for Designer support-do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OptionsDialog));
+            cancel = new System.Windows.Forms.Button();
+            ok = new System.Windows.Forms.Button();
+            bookletSizeNew = new System.Windows.Forms.NumericUpDown();
+            labelBookletSizeNew = new System.Windows.Forms.Label();
+            printSolutions = new System.Windows.Forms.CheckBox();
+            minValues = new System.Windows.Forms.NumericUpDown();
+            labelMinValues = new System.Windows.Forms.Label();
+            autoSaveBooklet = new System.Windows.Forms.CheckBox();
+            labelBaseDirectory = new System.Windows.Forms.Label();
+            problemDirectory = new System.Windows.Forms.TextBox();
+            directorySelect = new System.Windows.Forms.Button();
+            selectProblemDirectoryDialog = new System.Windows.Forms.FolderBrowserDialog();
+            printHints = new System.Windows.Forms.CheckBox();
+            optionsTab = new System.Windows.Forms.TabControl();
+            layoutPage = new System.Windows.Forms.TabPage();
+            autoPauseLag = new System.Windows.Forms.NumericUpDown();
+            autoPause = new System.Windows.Forms.CheckBox();
+            saveState = new System.Windows.Forms.CheckBox();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            possibleValuesExamplePicture = new System.Windows.Forms.PictureBox();
+            useDigits = new System.Windows.Forms.RadioButton();
+            useWatchHands = new System.Windows.Forms.RadioButton();
+            hideWhenMinimized = new System.Windows.Forms.CheckBox();
+            sizeGroupBox = new System.Windows.Forms.GroupBox();
+            largeRB = new System.Windows.Forms.RadioButton();
+            mediumRB = new System.Windows.Forms.RadioButton();
+            smallRB = new System.Windows.Forms.RadioButton();
+            labelLanguage = new System.Windows.Forms.Label();
+            constrast = new System.Windows.Forms.NumericUpDown();
+            labelConstrast = new System.Windows.Forms.Label();
+            language = new System.Windows.Forms.ComboBox();
+            printPage = new System.Windows.Forms.TabPage();
+            printInternalSeverity = new System.Windows.Forms.CheckBox();
+            xSudokuConstrast = new System.Windows.Forms.NumericUpDown();
+            xSudokuConstrastLabel = new System.Windows.Forms.Label();
+            solutionPrintSize = new System.Windows.Forms.GroupBox();
+            solutionSmall = new System.Windows.Forms.RadioButton();
+            solutionNormal = new System.Windows.Forms.RadioButton();
+            problemPrintSize = new System.Windows.Forms.GroupBox();
+            tiny = new System.Windows.Forms.RadioButton();
+            small = new System.Windows.Forms.RadioButton();
+            normal = new System.Windows.Forms.RadioButton();
+            large = new System.Windows.Forms.RadioButton();
+            generatePage = new System.Windows.Forms.TabPage();
+            precalculatedProblems = new System.Windows.Forms.CheckBox();
+            generateMinimalProblems = new System.Windows.Forms.CheckBox();
+            selectLevelBox = new System.Windows.Forms.GroupBox();
+            selectSeverityLevel = new System.Windows.Forms.CheckBox();
+            type = new System.Windows.Forms.GroupBox();
+            xSudoku = new System.Windows.Forms.CheckBox();
+            normalSudoku = new System.Windows.Forms.CheckBox();
+            severity = new System.Windows.Forms.GroupBox();
+            hard = new System.Windows.Forms.CheckBox();
+            intermediate = new System.Windows.Forms.CheckBox();
+            easy = new System.Windows.Forms.CheckBox();
+            bookletSize = new System.Windows.Forms.GroupBox();
+            unlimited = new System.Windows.Forms.CheckBox();
+            bookletSizeExisting = new System.Windows.Forms.NumericUpDown();
+            labelBookletSizeExisting = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)bookletSizeNew).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)minValues).BeginInit();
+            optionsTab.SuspendLayout();
+            layoutPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)autoPauseLag).BeginInit();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)possibleValuesExamplePicture).BeginInit();
+            sizeGroupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)constrast).BeginInit();
+            printPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)xSudokuConstrast).BeginInit();
+            solutionPrintSize.SuspendLayout();
+            problemPrintSize.SuspendLayout();
+            generatePage.SuspendLayout();
+            selectLevelBox.SuspendLayout();
+            type.SuspendLayout();
+            severity.SuspendLayout();
+            bookletSize.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)bookletSizeExisting).BeginInit();
+            SuspendLayout();
             // 
             // cancel
             // 
-            resources.ApplyResources(this.cancel, "cancel");
-            this.cancel.DialogResult=System.Windows.Forms.DialogResult.Cancel;
-            this.cancel.Name="cancel";
+            resources.ApplyResources(cancel, "cancel");
+            cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            cancel.Name = "cancel";
             // 
             // ok
             // 
-            resources.ApplyResources(this.ok, "ok");
-            this.ok.DialogResult=System.Windows.Forms.DialogResult.OK;
-            this.ok.Name="ok";
-            this.ok.Click += new System.EventHandler(this.ok_Click);
+            resources.ApplyResources(ok, "ok");
+            ok.DialogResult = System.Windows.Forms.DialogResult.OK;
+            ok.Name = "ok";
+            ok.Click += ok_Click;
             // 
             // bookletSizeNew
             // 
-            resources.ApplyResources(this.bookletSizeNew, "bookletSizeNew");
-            this.bookletSizeNew.Maximum=new decimal(new int[] {
-            9999,
-            0,
-            0,
-            0});
-            this.bookletSizeNew.Minimum=new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            this.bookletSizeNew.Name="bookletSizeNew";
-            this.bookletSizeNew.Value=new decimal(new int[] {
-            2,
-            0,
-            0,
-            0});
-            this.bookletSizeNew.ValueChanged += new System.EventHandler(this.bookletSizeNewChanged);
+            resources.ApplyResources(bookletSizeNew, "bookletSizeNew");
+            bookletSizeNew.Maximum = new decimal(new int[] { 9999, 0, 0, 0 });
+            bookletSizeNew.Minimum = new decimal(new int[] { 2, 0, 0, 0 });
+            bookletSizeNew.Name = "bookletSizeNew";
+            bookletSizeNew.Value = new decimal(new int[] { 2, 0, 0, 0 });
+            bookletSizeNew.ValueChanged += bookletSizeNewChanged;
             // 
             // labelBookletSizeNew
             // 
-            resources.ApplyResources(this.labelBookletSizeNew, "labelBookletSizeNew");
-            this.labelBookletSizeNew.Name="labelBookletSizeNew";
+            resources.ApplyResources(labelBookletSizeNew, "labelBookletSizeNew");
+            labelBookletSizeNew.Name = "labelBookletSizeNew";
             // 
             // printSolutions
             // 
-            resources.ApplyResources(this.printSolutions, "printSolutions");
-            this.printSolutions.Name="printSolutions";
+            resources.ApplyResources(printSolutions, "printSolutions");
+            printSolutions.Name = "printSolutions";
             // 
             // minValues
             // 
-            resources.ApplyResources(this.minValues, "minValues");
-            this.minValues.Maximum=new decimal(new int[] {
-            35,
-            0,
-            0,
-            0});
-            this.minValues.Minimum=new decimal(new int[] {
-            17,
-            0,
-            0,
-            0});
-            this.minValues.Name="minValues";
-            this.minValues.Value=new decimal(new int[] {
-            17,
-            0,
-            0,
-            0});
+            resources.ApplyResources(minValues, "minValues");
+            minValues.Maximum = new decimal(new int[] { 35, 0, 0, 0 });
+            minValues.Minimum = new decimal(new int[] { 17, 0, 0, 0 });
+            minValues.Name = "minValues";
+            minValues.Value = new decimal(new int[] { 17, 0, 0, 0 });
             // 
             // labelMinValues
             // 
-            resources.ApplyResources(this.labelMinValues, "labelMinValues");
-            this.labelMinValues.Name="labelMinValues";
+            resources.ApplyResources(labelMinValues, "labelMinValues");
+            labelMinValues.Name = "labelMinValues";
             // 
             // autoSaveBooklet
             // 
-            resources.ApplyResources(this.autoSaveBooklet, "autoSaveBooklet");
-            this.autoSaveBooklet.Name="autoSaveBooklet";
+            resources.ApplyResources(autoSaveBooklet, "autoSaveBooklet");
+            autoSaveBooklet.Name = "autoSaveBooklet";
             // 
             // labelBaseDirectory
             // 
-            resources.ApplyResources(this.labelBaseDirectory, "labelBaseDirectory");
-            this.labelBaseDirectory.Name="labelBaseDirectory";
+            resources.ApplyResources(labelBaseDirectory, "labelBaseDirectory");
+            labelBaseDirectory.Name = "labelBaseDirectory";
             // 
             // problemDirectory
             // 
-            resources.ApplyResources(this.problemDirectory, "problemDirectory");
-            this.problemDirectory.AutoCompleteSource=System.Windows.Forms.AutoCompleteSource.FileSystemDirectories;
-            this.problemDirectory.Name="problemDirectory";
-            this.problemDirectory.ReadOnly=true;
-            this.problemDirectory.TabStop=false;
+            resources.ApplyResources(problemDirectory, "problemDirectory");
+            problemDirectory.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.FileSystemDirectories;
+            problemDirectory.Name = "problemDirectory";
+            problemDirectory.ReadOnly = true;
+            problemDirectory.TabStop = false;
             // 
             // directorySelect
             // 
-            resources.ApplyResources(this.directorySelect, "directorySelect");
-            this.directorySelect.Name="directorySelect";
-            this.directorySelect.Click += new System.EventHandler(this.directorySelect_Click);
+            resources.ApplyResources(directorySelect, "directorySelect");
+            directorySelect.Name = "directorySelect";
+            directorySelect.Click += directorySelect_Click;
             // 
             // selectProblemDirectoryDialog
             // 
-            resources.ApplyResources(this.selectProblemDirectoryDialog, "selectProblemDirectoryDialog");
+            resources.ApplyResources(selectProblemDirectoryDialog, "selectProblemDirectoryDialog");
             // 
             // printHints
             // 
-            resources.ApplyResources(this.printHints, "printHints");
-            this.printHints.Name="printHints";
+            resources.ApplyResources(printHints, "printHints");
+            printHints.Name = "printHints";
             // 
             // optionsTab
             // 
-            resources.ApplyResources(this.optionsTab, "optionsTab");
-            this.optionsTab.Controls.Add(this.layoutPage);
-            this.optionsTab.Controls.Add(this.printPage);
-            this.optionsTab.Controls.Add(this.generatePage);
-            this.optionsTab.Name="optionsTab";
-            this.optionsTab.SelectedIndex=0;
+            resources.ApplyResources(optionsTab, "optionsTab");
+            optionsTab.Controls.Add(layoutPage);
+            optionsTab.Controls.Add(printPage);
+            optionsTab.Controls.Add(generatePage);
+            optionsTab.Name = "optionsTab";
+            optionsTab.SelectedIndex = 0;
             // 
             // layoutPage
             // 
-            resources.ApplyResources(this.layoutPage, "layoutPage");
-            this.layoutPage.BackColor=System.Drawing.SystemColors.ControlLight;
-            this.layoutPage.BorderStyle=System.Windows.Forms.BorderStyle.Fixed3D;
-            this.layoutPage.Controls.Add(this.autoPauseLag);
-            this.layoutPage.Controls.Add(this.autoPause);
-            this.layoutPage.Controls.Add(this.saveState);
-            this.layoutPage.Controls.Add(this.groupBox1);
-            this.layoutPage.Controls.Add(this.hideWhenMinimized);
-            this.layoutPage.Controls.Add(this.sizeGroupBox);
-            this.layoutPage.Controls.Add(this.labelLanguage);
-            this.layoutPage.Controls.Add(this.constrast);
-            this.layoutPage.Controls.Add(this.labelConstrast);
-            this.layoutPage.Controls.Add(this.language);
-            this.layoutPage.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.layoutPage.Name="layoutPage";
+            resources.ApplyResources(layoutPage, "layoutPage");
+            layoutPage.BackColor = System.Drawing.SystemColors.ControlLight;
+            layoutPage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            layoutPage.Controls.Add(autoPauseLag);
+            layoutPage.Controls.Add(autoPause);
+            layoutPage.Controls.Add(saveState);
+            layoutPage.Controls.Add(groupBox1);
+            layoutPage.Controls.Add(hideWhenMinimized);
+            layoutPage.Controls.Add(sizeGroupBox);
+            layoutPage.Controls.Add(labelLanguage);
+            layoutPage.Controls.Add(constrast);
+            layoutPage.Controls.Add(labelConstrast);
+            layoutPage.Controls.Add(language);
+            layoutPage.ForeColor = System.Drawing.SystemColors.ControlText;
+            layoutPage.Name = "layoutPage";
             // 
             // autoPauseLag
             // 
-            resources.ApplyResources(this.autoPauseLag, "autoPauseLag");
-            this.autoPauseLag.Minimum=new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.autoPauseLag.Name="autoPauseLag";
-            this.autoPauseLag.Value=new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            resources.ApplyResources(autoPauseLag, "autoPauseLag");
+            autoPauseLag.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            autoPauseLag.Name = "autoPauseLag";
+            autoPauseLag.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // autoPause
             // 
-            resources.ApplyResources(this.autoPause, "autoPause");
-            this.autoPause.Name="autoPause";
-            this.autoPause.UseVisualStyleBackColor=true;
-            this.autoPause.CheckedChanged += new System.EventHandler(this.autoPauseCheckedChanged);
+            resources.ApplyResources(autoPause, "autoPause");
+            autoPause.Name = "autoPause";
+            autoPause.UseVisualStyleBackColor = true;
+            autoPause.CheckedChanged += autoPauseCheckedChanged;
             // 
             // saveState
             // 
-            resources.ApplyResources(this.saveState, "saveState");
-            this.saveState.Name="saveState";
-            this.saveState.UseVisualStyleBackColor=true;
+            resources.ApplyResources(saveState, "saveState");
+            saveState.Name = "saveState";
+            saveState.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
-            resources.ApplyResources(this.groupBox1, "groupBox1");
-            this.groupBox1.Controls.Add(this.possibleValuesExamplePicture);
-            this.groupBox1.Controls.Add(this.useDigits);
-            this.groupBox1.Controls.Add(this.useWatchHands);
-            this.groupBox1.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.groupBox1.Name="groupBox1";
-            this.groupBox1.TabStop=false;
+            resources.ApplyResources(groupBox1, "groupBox1");
+            groupBox1.Controls.Add(possibleValuesExamplePicture);
+            groupBox1.Controls.Add(useDigits);
+            groupBox1.Controls.Add(useWatchHands);
+            groupBox1.ForeColor = System.Drawing.SystemColors.ControlText;
+            groupBox1.Name = "groupBox1";
+            groupBox1.TabStop = false;
             // 
             // possibleValuesExamplePicture
             // 
-            resources.ApplyResources(this.possibleValuesExamplePicture, "possibleValuesExamplePicture");
-            this.possibleValuesExamplePicture.Name="possibleValuesExamplePicture";
-            this.possibleValuesExamplePicture.TabStop=false;
+            resources.ApplyResources(possibleValuesExamplePicture, "possibleValuesExamplePicture");
+            possibleValuesExamplePicture.Name = "possibleValuesExamplePicture";
+            possibleValuesExamplePicture.TabStop = false;
             // 
             // useDigits
             // 
-            resources.ApplyResources(this.useDigits, "useDigits");
-            this.useDigits.Name="useDigits";
-            this.useDigits.TabStop=true;
-            this.useDigits.UseVisualStyleBackColor=true;
+            resources.ApplyResources(useDigits, "useDigits");
+            useDigits.Name = "useDigits";
+            useDigits.TabStop = true;
+            useDigits.UseVisualStyleBackColor = true;
             // 
             // useWatchHands
             // 
-            resources.ApplyResources(this.useWatchHands, "useWatchHands");
-            this.useWatchHands.Name="useWatchHands";
-            this.useWatchHands.TabStop=true;
-            this.useWatchHands.UseVisualStyleBackColor=true;
-            this.useWatchHands.CheckedChanged += new System.EventHandler(this.exchangePicture);
+            resources.ApplyResources(useWatchHands, "useWatchHands");
+            useWatchHands.Name = "useWatchHands";
+            useWatchHands.TabStop = true;
+            useWatchHands.UseVisualStyleBackColor = true;
+            useWatchHands.CheckedChanged += exchangePicture;
             // 
             // hideWhenMinimized
             // 
-            resources.ApplyResources(this.hideWhenMinimized, "hideWhenMinimized");
-            this.hideWhenMinimized.Name="hideWhenMinimized";
-            this.hideWhenMinimized.UseVisualStyleBackColor=true;
+            resources.ApplyResources(hideWhenMinimized, "hideWhenMinimized");
+            hideWhenMinimized.Name = "hideWhenMinimized";
+            hideWhenMinimized.UseVisualStyleBackColor = true;
             // 
             // sizeGroupBox
             // 
-            resources.ApplyResources(this.sizeGroupBox, "sizeGroupBox");
-            this.sizeGroupBox.Controls.Add(this.largeRB);
-            this.sizeGroupBox.Controls.Add(this.mediumRB);
-            this.sizeGroupBox.Controls.Add(this.smallRB);
-            this.sizeGroupBox.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.sizeGroupBox.Name="sizeGroupBox";
-            this.sizeGroupBox.TabStop=false;
+            resources.ApplyResources(sizeGroupBox, "sizeGroupBox");
+            sizeGroupBox.Controls.Add(largeRB);
+            sizeGroupBox.Controls.Add(mediumRB);
+            sizeGroupBox.Controls.Add(smallRB);
+            sizeGroupBox.ForeColor = System.Drawing.SystemColors.ControlText;
+            sizeGroupBox.Name = "sizeGroupBox";
+            sizeGroupBox.TabStop = false;
             // 
             // largeRB
             // 
-            resources.ApplyResources(this.largeRB, "largeRB");
-            this.largeRB.Name="largeRB";
-            this.largeRB.Tag="3";
+            resources.ApplyResources(largeRB, "largeRB");
+            largeRB.Name = "largeRB";
+            largeRB.Tag = "3";
             // 
             // mediumRB
             // 
-            resources.ApplyResources(this.mediumRB, "mediumRB");
-            this.mediumRB.Name="mediumRB";
-            this.mediumRB.Tag="2";
+            resources.ApplyResources(mediumRB, "mediumRB");
+            mediumRB.Name = "mediumRB";
+            mediumRB.Tag = "2";
             // 
             // smallRB
             // 
-            resources.ApplyResources(this.smallRB, "smallRB");
-            this.smallRB.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.smallRB.Name="smallRB";
-            this.smallRB.Tag="1";
+            resources.ApplyResources(smallRB, "smallRB");
+            smallRB.ForeColor = System.Drawing.SystemColors.ControlText;
+            smallRB.Name = "smallRB";
+            smallRB.Tag = "1";
             // 
             // labelLanguage
             // 
-            resources.ApplyResources(this.labelLanguage, "labelLanguage");
-            this.labelLanguage.Name="labelLanguage";
+            resources.ApplyResources(labelLanguage, "labelLanguage");
+            labelLanguage.Name = "labelLanguage";
             // 
             // constrast
             // 
-            resources.ApplyResources(this.constrast, "constrast");
-            this.constrast.Name="constrast";
+            resources.ApplyResources(constrast, "constrast");
+            constrast.Name = "constrast";
             // 
             // labelConstrast
             // 
-            resources.ApplyResources(this.labelConstrast, "labelConstrast");
-            this.labelConstrast.Name="labelConstrast";
+            resources.ApplyResources(labelConstrast, "labelConstrast");
+            labelConstrast.Name = "labelConstrast";
             // 
             // language
             // 
-            resources.ApplyResources(this.language, "language");
-            this.language.DropDownStyle=System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.language.Name="language";
-            this.language.Validating += new System.ComponentModel.CancelEventHandler(this.checkUI);
+            resources.ApplyResources(language, "language");
+            language.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            language.Name = "language";
+            language.Validating += checkUI;
             // 
             // printPage
             // 
-            resources.ApplyResources(this.printPage, "printPage");
-            this.printPage.BackColor=System.Drawing.SystemColors.ControlLight;
-            this.printPage.BorderStyle=System.Windows.Forms.BorderStyle.Fixed3D;
-            this.printPage.Controls.Add(this.printInternalSeverity);
-            this.printPage.Controls.Add(this.xSudokuConstrast);
-            this.printPage.Controls.Add(this.xSudokuConstrastLabel);
-            this.printPage.Controls.Add(this.solutionPrintSize);
-            this.printPage.Controls.Add(this.printSolutions);
-            this.printPage.Controls.Add(this.printHints);
-            this.printPage.Controls.Add(this.problemPrintSize);
-            this.printPage.Name="printPage";
+            resources.ApplyResources(printPage, "printPage");
+            printPage.BackColor = System.Drawing.SystemColors.ControlLight;
+            printPage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            printPage.Controls.Add(printInternalSeverity);
+            printPage.Controls.Add(xSudokuConstrast);
+            printPage.Controls.Add(xSudokuConstrastLabel);
+            printPage.Controls.Add(solutionPrintSize);
+            printPage.Controls.Add(printSolutions);
+            printPage.Controls.Add(printHints);
+            printPage.Controls.Add(problemPrintSize);
+            printPage.Name = "printPage";
             // 
             // printInternalSeverity
             // 
-            resources.ApplyResources(this.printInternalSeverity, "printInternalSeverity");
-            this.printInternalSeverity.Name="printInternalSeverity";
-            this.printInternalSeverity.UseVisualStyleBackColor=true;
+            resources.ApplyResources(printInternalSeverity, "printInternalSeverity");
+            printInternalSeverity.Name = "printInternalSeverity";
+            printInternalSeverity.UseVisualStyleBackColor = true;
             // 
             // xSudokuConstrast
             // 
-            resources.ApplyResources(this.xSudokuConstrast, "xSudokuConstrast");
-            this.xSudokuConstrast.Maximum=new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.xSudokuConstrast.Name="xSudokuConstrast";
+            resources.ApplyResources(xSudokuConstrast, "xSudokuConstrast");
+            xSudokuConstrast.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
+            xSudokuConstrast.Name = "xSudokuConstrast";
             // 
             // xSudokuConstrastLabel
             // 
-            resources.ApplyResources(this.xSudokuConstrastLabel, "xSudokuConstrastLabel");
-            this.xSudokuConstrastLabel.Name="xSudokuConstrastLabel";
+            resources.ApplyResources(xSudokuConstrastLabel, "xSudokuConstrastLabel");
+            xSudokuConstrastLabel.Name = "xSudokuConstrastLabel";
             // 
             // solutionPrintSize
             // 
-            resources.ApplyResources(this.solutionPrintSize, "solutionPrintSize");
-            this.solutionPrintSize.Controls.Add(this.solutionSmall);
-            this.solutionPrintSize.Controls.Add(this.solutionNormal);
-            this.solutionPrintSize.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.solutionPrintSize.Name="solutionPrintSize";
-            this.solutionPrintSize.TabStop=false;
+            resources.ApplyResources(solutionPrintSize, "solutionPrintSize");
+            solutionPrintSize.Controls.Add(solutionSmall);
+            solutionPrintSize.Controls.Add(solutionNormal);
+            solutionPrintSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            solutionPrintSize.Name = "solutionPrintSize";
+            solutionPrintSize.TabStop = false;
             // 
             // solutionSmall
             // 
-            resources.ApplyResources(this.solutionSmall, "solutionSmall");
-            this.solutionSmall.Name="solutionSmall";
-            this.solutionSmall.TabStop=true;
-            this.solutionSmall.Tag="50";
-            this.solutionSmall.UseVisualStyleBackColor=true;
+            resources.ApplyResources(solutionSmall, "solutionSmall");
+            solutionSmall.Name = "solutionSmall";
+            solutionSmall.TabStop = true;
+            solutionSmall.Tag = "50";
+            solutionSmall.UseVisualStyleBackColor = true;
             // 
             // solutionNormal
             // 
-            resources.ApplyResources(this.solutionNormal, "solutionNormal");
-            this.solutionNormal.Name="solutionNormal";
-            this.solutionNormal.TabStop=true;
-            this.solutionNormal.Tag="40";
-            this.solutionNormal.UseVisualStyleBackColor=true;
+            resources.ApplyResources(solutionNormal, "solutionNormal");
+            solutionNormal.Name = "solutionNormal";
+            solutionNormal.TabStop = true;
+            solutionNormal.Tag = "40";
+            solutionNormal.UseVisualStyleBackColor = true;
             // 
             // problemPrintSize
             // 
-            resources.ApplyResources(this.problemPrintSize, "problemPrintSize");
-            this.problemPrintSize.Controls.Add(this.tiny);
-            this.problemPrintSize.Controls.Add(this.small);
-            this.problemPrintSize.Controls.Add(this.normal);
-            this.problemPrintSize.Controls.Add(this.large);
-            this.problemPrintSize.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.problemPrintSize.Name="problemPrintSize";
-            this.problemPrintSize.TabStop=false;
+            resources.ApplyResources(problemPrintSize, "problemPrintSize");
+            problemPrintSize.Controls.Add(tiny);
+            problemPrintSize.Controls.Add(small);
+            problemPrintSize.Controls.Add(normal);
+            problemPrintSize.Controls.Add(large);
+            problemPrintSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            problemPrintSize.Name = "problemPrintSize";
+            problemPrintSize.TabStop = false;
             // 
             // tiny
             // 
-            resources.ApplyResources(this.tiny, "tiny");
-            this.tiny.Name="tiny";
-            this.tiny.TabStop=true;
-            this.tiny.Tag="40";
-            this.tiny.UseVisualStyleBackColor=true;
+            resources.ApplyResources(tiny, "tiny");
+            tiny.Name = "tiny";
+            tiny.TabStop = true;
+            tiny.Tag = "40";
+            tiny.UseVisualStyleBackColor = true;
             // 
             // small
             // 
-            resources.ApplyResources(this.small, "small");
-            this.small.Name="small";
-            this.small.TabStop=true;
-            this.small.Tag="30";
-            this.small.UseVisualStyleBackColor=true;
+            resources.ApplyResources(small, "small");
+            small.Name = "small";
+            small.TabStop = true;
+            small.Tag = "30";
+            small.UseVisualStyleBackColor = true;
             // 
             // normal
             // 
-            resources.ApplyResources(this.normal, "normal");
-            this.normal.Name="normal";
-            this.normal.TabStop=true;
-            this.normal.Tag="20";
-            this.normal.UseVisualStyleBackColor=true;
+            resources.ApplyResources(normal, "normal");
+            normal.Name = "normal";
+            normal.TabStop = true;
+            normal.Tag = "20";
+            normal.UseVisualStyleBackColor = true;
             // 
             // large
             // 
-            resources.ApplyResources(this.large, "large");
-            this.large.Name="large";
-            this.large.TabStop=true;
-            this.large.Tag="10";
-            this.large.UseVisualStyleBackColor=true;
+            resources.ApplyResources(large, "large");
+            large.Name = "large";
+            large.TabStop = true;
+            large.Tag = "10";
+            large.UseVisualStyleBackColor = true;
             // 
             // generatePage
             // 
-            resources.ApplyResources(this.generatePage, "generatePage");
-            this.generatePage.BackColor=System.Drawing.SystemColors.ControlLight;
-            this.generatePage.BorderStyle=System.Windows.Forms.BorderStyle.Fixed3D;
-            this.generatePage.Controls.Add(this.precalculatedProblems);
-            this.generatePage.Controls.Add(this.generateMinimalProblems);
-            this.generatePage.Controls.Add(this.selectLevelBox);
-            this.generatePage.Controls.Add(this.type);
-            this.generatePage.Controls.Add(this.severity);
-            this.generatePage.Controls.Add(this.labelMinValues);
-            this.generatePage.Controls.Add(this.directorySelect);
-            this.generatePage.Controls.Add(this.problemDirectory);
-            this.generatePage.Controls.Add(this.labelBaseDirectory);
-            this.generatePage.Controls.Add(this.minValues);
-            this.generatePage.Controls.Add(this.autoSaveBooklet);
-            this.generatePage.Controls.Add(this.bookletSize);
-            this.generatePage.Name="generatePage";
+            resources.ApplyResources(generatePage, "generatePage");
+            generatePage.BackColor = System.Drawing.SystemColors.ControlLight;
+            generatePage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            generatePage.Controls.Add(precalculatedProblems);
+            generatePage.Controls.Add(generateMinimalProblems);
+            generatePage.Controls.Add(selectLevelBox);
+            generatePage.Controls.Add(type);
+            generatePage.Controls.Add(severity);
+            generatePage.Controls.Add(labelMinValues);
+            generatePage.Controls.Add(directorySelect);
+            generatePage.Controls.Add(problemDirectory);
+            generatePage.Controls.Add(labelBaseDirectory);
+            generatePage.Controls.Add(minValues);
+            generatePage.Controls.Add(autoSaveBooklet);
+            generatePage.Controls.Add(bookletSize);
+            generatePage.Name = "generatePage";
             // 
             // precalculatedProblems
             // 
-            resources.ApplyResources(this.precalculatedProblems, "precalculatedProblems");
-            this.precalculatedProblems.Name="precalculatedProblems";
-            this.precalculatedProblems.UseVisualStyleBackColor=true;
-            this.precalculatedProblems.CheckedChanged += new System.EventHandler(this.precalculatedCheckedChanged);
+            resources.ApplyResources(precalculatedProblems, "precalculatedProblems");
+            precalculatedProblems.Name = "precalculatedProblems";
+            precalculatedProblems.UseVisualStyleBackColor = true;
+            precalculatedProblems.CheckedChanged += precalculatedCheckedChanged;
             // 
             // generateMinimalProblems
             // 
-            resources.ApplyResources(this.generateMinimalProblems, "generateMinimalProblems");
-            this.generateMinimalProblems.Name="generateMinimalProblems";
-            this.generateMinimalProblems.UseVisualStyleBackColor=true;
-            this.generateMinimalProblems.CheckedChanged += new System.EventHandler(this.generateMinimumProblemsChanged);
+            resources.ApplyResources(generateMinimalProblems, "generateMinimalProblems");
+            generateMinimalProblems.Name = "generateMinimalProblems";
+            generateMinimalProblems.UseVisualStyleBackColor = true;
+            generateMinimalProblems.CheckedChanged += generateMinimumProblemsChanged;
             // 
             // selectLevelBox
             // 
-            resources.ApplyResources(this.selectLevelBox, "selectLevelBox");
-            this.selectLevelBox.Controls.Add(this.selectSeverityLevel);
-            this.selectLevelBox.Name="selectLevelBox";
-            this.selectLevelBox.TabStop=false;
+            resources.ApplyResources(selectLevelBox, "selectLevelBox");
+            selectLevelBox.Controls.Add(selectSeverityLevel);
+            selectLevelBox.Name = "selectLevelBox";
+            selectLevelBox.TabStop = false;
             // 
             // selectSeverityLevel
             // 
-            resources.ApplyResources(this.selectSeverityLevel, "selectSeverityLevel");
-            this.selectSeverityLevel.Name="selectSeverityLevel";
-            this.selectSeverityLevel.UseVisualStyleBackColor=true;
+            resources.ApplyResources(selectSeverityLevel, "selectSeverityLevel");
+            selectSeverityLevel.Name = "selectSeverityLevel";
+            selectSeverityLevel.UseVisualStyleBackColor = true;
             // 
             // type
             // 
-            resources.ApplyResources(this.type, "type");
-            this.type.Controls.Add(this.xSudoku);
-            this.type.Controls.Add(this.normalSudoku);
-            this.type.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.type.Name="type";
-            this.type.TabStop=false;
+            resources.ApplyResources(type, "type");
+            type.Controls.Add(xSudoku);
+            type.Controls.Add(normalSudoku);
+            type.ForeColor = System.Drawing.SystemColors.ControlText;
+            type.Name = "type";
+            type.TabStop = false;
             // 
             // xSudoku
             // 
-            resources.ApplyResources(this.xSudoku, "xSudoku");
-            this.xSudoku.Name="xSudoku";
-            this.xSudoku.UseVisualStyleBackColor=true;
-            this.xSudoku.CheckedChanged += new System.EventHandler(this.sudokuTypeCheckedChanged);
+            resources.ApplyResources(xSudoku, "xSudoku");
+            xSudoku.Name = "xSudoku";
+            xSudoku.UseVisualStyleBackColor = true;
+            xSudoku.CheckedChanged += sudokuTypeCheckedChanged;
             // 
             // normalSudoku
             // 
-            resources.ApplyResources(this.normalSudoku, "normalSudoku");
-            this.normalSudoku.Name="normalSudoku";
-            this.normalSudoku.UseVisualStyleBackColor=true;
-            this.normalSudoku.CheckedChanged += new System.EventHandler(this.sudokuTypeCheckedChanged);
+            resources.ApplyResources(normalSudoku, "normalSudoku");
+            normalSudoku.Name = "normalSudoku";
+            normalSudoku.UseVisualStyleBackColor = true;
+            normalSudoku.CheckedChanged += sudokuTypeCheckedChanged;
             // 
             // severity
             // 
-            resources.ApplyResources(this.severity, "severity");
-            this.severity.Controls.Add(this.hard);
-            this.severity.Controls.Add(this.intermediate);
-            this.severity.Controls.Add(this.easy);
-            this.severity.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.severity.Name="severity";
-            this.severity.TabStop=false;
+            resources.ApplyResources(severity, "severity");
+            severity.Controls.Add(hard);
+            severity.Controls.Add(intermediate);
+            severity.Controls.Add(easy);
+            severity.ForeColor = System.Drawing.SystemColors.ControlText;
+            severity.Name = "severity";
+            severity.TabStop = false;
             // 
             // hard
             // 
-            resources.ApplyResources(this.hard, "hard");
-            this.hard.Name="hard";
-            this.hard.UseVisualStyleBackColor=true;
-            this.hard.CheckedChanged += new System.EventHandler(this.severityLevelCheckedChanged);
+            resources.ApplyResources(hard, "hard");
+            hard.Name = "hard";
+            hard.UseVisualStyleBackColor = true;
+            hard.CheckedChanged += severityLevelCheckedChanged;
             // 
             // intermediate
             // 
-            resources.ApplyResources(this.intermediate, "intermediate");
-            this.intermediate.Name="intermediate";
-            this.intermediate.UseVisualStyleBackColor=true;
-            this.intermediate.CheckedChanged += new System.EventHandler(this.severityLevelCheckedChanged);
+            resources.ApplyResources(intermediate, "intermediate");
+            intermediate.Name = "intermediate";
+            intermediate.UseVisualStyleBackColor = true;
+            intermediate.CheckedChanged += severityLevelCheckedChanged;
             // 
             // easy
             // 
-            resources.ApplyResources(this.easy, "easy");
-            this.easy.Name="easy";
-            this.easy.UseVisualStyleBackColor=true;
-            this.easy.CheckedChanged += new System.EventHandler(this.severityLevelCheckedChanged);
+            resources.ApplyResources(easy, "easy");
+            easy.Name = "easy";
+            easy.UseVisualStyleBackColor = true;
+            easy.CheckedChanged += severityLevelCheckedChanged;
             // 
             // bookletSize
             // 
-            resources.ApplyResources(this.bookletSize, "bookletSize");
-            this.bookletSize.Controls.Add(this.unlimited);
-            this.bookletSize.Controls.Add(this.bookletSizeExisting);
-            this.bookletSize.Controls.Add(this.labelBookletSizeNew);
-            this.bookletSize.Controls.Add(this.labelBookletSizeExisting);
-            this.bookletSize.Controls.Add(this.bookletSizeNew);
-            this.bookletSize.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.bookletSize.Name="bookletSize";
-            this.bookletSize.TabStop=false;
+            resources.ApplyResources(bookletSize, "bookletSize");
+            bookletSize.Controls.Add(unlimited);
+            bookletSize.Controls.Add(bookletSizeExisting);
+            bookletSize.Controls.Add(labelBookletSizeNew);
+            bookletSize.Controls.Add(labelBookletSizeExisting);
+            bookletSize.Controls.Add(bookletSizeNew);
+            bookletSize.ForeColor = System.Drawing.SystemColors.ControlText;
+            bookletSize.Name = "bookletSize";
+            bookletSize.TabStop = false;
             // 
             // unlimited
             // 
-            resources.ApplyResources(this.unlimited, "unlimited");
-            this.unlimited.Checked=true;
-            this.unlimited.CheckState=System.Windows.Forms.CheckState.Checked;
-            this.unlimited.Name="unlimited";
-            this.unlimited.UseVisualStyleBackColor=true;
-            this.unlimited.CheckedChanged += new System.EventHandler(this.unlimitedCheckedChanged);
+            resources.ApplyResources(unlimited, "unlimited");
+            unlimited.Checked = true;
+            unlimited.CheckState = System.Windows.Forms.CheckState.Checked;
+            unlimited.Name = "unlimited";
+            unlimited.UseVisualStyleBackColor = true;
+            unlimited.CheckedChanged += unlimitedCheckedChanged;
             // 
             // bookletSizeExisting
             // 
-            resources.ApplyResources(this.bookletSizeExisting, "bookletSizeExisting");
-            this.bookletSizeExisting.Maximum=new decimal(new int[] {
-            99999999,
-            0,
-            0,
-            0});
-            this.bookletSizeExisting.Minimum=new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.bookletSizeExisting.Name="bookletSizeExisting";
-            this.bookletSizeExisting.Value=new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            resources.ApplyResources(bookletSizeExisting, "bookletSizeExisting");
+            bookletSizeExisting.Maximum = new decimal(new int[] { 99999999, 0, 0, 0 });
+            bookletSizeExisting.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            bookletSizeExisting.Name = "bookletSizeExisting";
+            bookletSizeExisting.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // labelBookletSizeExisting
             // 
-            resources.ApplyResources(this.labelBookletSizeExisting, "labelBookletSizeExisting");
-            this.labelBookletSizeExisting.Name="labelBookletSizeExisting";
+            resources.ApplyResources(labelBookletSizeExisting, "labelBookletSizeExisting");
+            labelBookletSizeExisting.Name = "labelBookletSizeExisting";
             // 
             // OptionsDialog
             // 
-            this.AcceptButton=this.ok;
+            AcceptButton = ok;
             resources.ApplyResources(this, "$this");
-            this.AutoScaleMode=System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor=System.Drawing.SystemColors.Control;
-            this.CancelButton=this.cancel;
-            this.ControlBox=false;
-            this.Controls.Add(this.optionsTab);
-            this.Controls.Add(this.ok);
-            this.Controls.Add(this.cancel);
-            this.ForeColor=System.Drawing.SystemColors.ControlText;
-            this.FormBorderStyle=System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox=false;
-            this.MinimizeBox=false;
-            this.Name="OptionsDialog";
-            ((System.ComponentModel.ISupportInitialize)(this.bookletSizeNew)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.minValues)).EndInit();
-            this.optionsTab.ResumeLayout(false);
-            this.layoutPage.ResumeLayout(false);
-            this.layoutPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.autoPauseLag)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.possibleValuesExamplePicture)).EndInit();
-            this.sizeGroupBox.ResumeLayout(false);
-            this.sizeGroupBox.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.constrast)).EndInit();
-            this.printPage.ResumeLayout(false);
-            this.printPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.xSudokuConstrast)).EndInit();
-            this.solutionPrintSize.ResumeLayout(false);
-            this.solutionPrintSize.PerformLayout();
-            this.problemPrintSize.ResumeLayout(false);
-            this.problemPrintSize.PerformLayout();
-            this.generatePage.ResumeLayout(false);
-            this.generatePage.PerformLayout();
-            this.selectLevelBox.ResumeLayout(false);
-            this.selectLevelBox.PerformLayout();
-            this.type.ResumeLayout(false);
-            this.type.PerformLayout();
-            this.severity.ResumeLayout(false);
-            this.severity.PerformLayout();
-            this.bookletSize.ResumeLayout(false);
-            this.bookletSize.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bookletSizeExisting)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.SystemColors.Control;
+            CancelButton = cancel;
+            ControlBox = false;
+            Controls.Add(optionsTab);
+            Controls.Add(ok);
+            Controls.Add(cancel);
+            ForeColor = System.Drawing.SystemColors.ControlText;
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "OptionsDialog";
+            ((System.ComponentModel.ISupportInitialize)bookletSizeNew).EndInit();
+            ((System.ComponentModel.ISupportInitialize)minValues).EndInit();
+            optionsTab.ResumeLayout(false);
+            layoutPage.ResumeLayout(false);
+            layoutPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)autoPauseLag).EndInit();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)possibleValuesExamplePicture).EndInit();
+            sizeGroupBox.ResumeLayout(false);
+            sizeGroupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)constrast).EndInit();
+            printPage.ResumeLayout(false);
+            printPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)xSudokuConstrast).EndInit();
+            solutionPrintSize.ResumeLayout(false);
+            solutionPrintSize.PerformLayout();
+            problemPrintSize.ResumeLayout(false);
+            problemPrintSize.PerformLayout();
+            generatePage.ResumeLayout(false);
+            generatePage.PerformLayout();
+            selectLevelBox.ResumeLayout(false);
+            selectLevelBox.PerformLayout();
+            type.ResumeLayout(false);
+            type.PerformLayout();
+            severity.ResumeLayout(false);
+            severity.PerformLayout();
+            bookletSize.ResumeLayout(false);
+            bookletSize.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)bookletSizeExisting).EndInit();
+            ResumeLayout(false);
 
-		}
+        }
 
-		#endregion
+        #endregion
 
-		private System.Windows.Forms.Button cancel;
+        private System.Windows.Forms.Button cancel;
 		private System.Windows.Forms.Button ok;
 		private System.Windows.Forms.NumericUpDown bookletSizeNew;
 		private System.Windows.Forms.Label labelBookletSizeNew;

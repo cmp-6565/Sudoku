@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,38 +26,38 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value : The object must be serialized with 
-          : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-          : and then encoded with base64 encoding.
-    
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value : The object must be serialized with 
-          : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-          : and then encoded with base64 encoding.
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value : The object must be serialized into a byte array 
-          : using a System.ComponentModel.TypeConverter
-          : and then encoded with base64 encoding.
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
     -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -117,362 +117,461 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="&gt;&gt;normal.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="saveState.Text" xml:space="preserve">
+    <value>Save State</value>
   </data>
-  <data name="&gt;&gt;hard.Parent" xml:space="preserve">
-    <value>severity</value>
+  <data name="&gt;&gt;ok.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="useWatchHands.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="printInternalSeverity.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="unlimited.Text" xml:space="preserve">
+    <value>Unlimited</value>
   </data>
   <data name="&gt;&gt;minValues.Name" xml:space="preserve">
     <value>minValues</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="printInternalSeverity.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 17</value>
-  </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="problemDirectory.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="xSudoku.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="&gt;&gt;layoutPage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;printPage.Name" xml:space="preserve">
-    <value>printPage</value>
-  </data>
-  <data name="&gt;&gt;printInternalSeverity.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="labelLanguage.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;labelConstrast.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="smallRB.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 20</value>
-  </data>
-  <data name="easy.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 19</value>
-  </data>
-  <data name="labelLanguage.Text" xml:space="preserve">
-    <value>&amp;Language</value>
-  </data>
-  <data name="&gt;&gt;constrast.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="&gt;&gt;labelBookletSizeExisting.Parent" xml:space="preserve">
-    <value>bookletSize</value>
-  </data>
-  <data name="&gt;&gt;saveState.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="bookletSize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 179</value>
-  </data>
-  <data name="solutionNormal.Text" xml:space="preserve">
-    <value>Normal</value>
-  </data>
-  <data name="&gt;&gt;largeRB.Name" xml:space="preserve">
-    <value>largeRB</value>
-  </data>
-  <data name="layoutPage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 25</value>
-  </data>
-  <data name="selectSeverityLevel.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="hideWhenMinimized.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 130</value>
-  </data>
-  <data name="smallRB.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 17</value>
-  </data>
-  <data name="&gt;&gt;severity.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;mediumRB.Name" xml:space="preserve">
-    <value>mediumRB</value>
-  </data>
-  <data name="xSudoku.TabIndex" type="System.Int32, mscorlib">
+  <data name="sizeGroupBox.TabIndex" type="System.Int32, mscorlib">
     <value>7</value>
   </data>
-  <data name="&gt;&gt;printSolutions.Parent" xml:space="preserve">
-    <value>printPage</value>
-  </data>
-  <data name="normalSudoku.AutoSize" type="System.Boolean, mscorlib">
+  <data name="hideWhenMinimized.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
-  </data>
-  <data name="&gt;&gt;cancel.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="bookletSizeNew.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 35</value>
-  </data>
-  <data name="selectLevelBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>95, 45</value>
-  </data>
-  <data name="&gt;&gt;normalSudoku.Parent" xml:space="preserve">
-    <value>type</value>
-  </data>
-  <data name="ok.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="labelBaseDirectory.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="directorySelect.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="printPage.Text" xml:space="preserve">
-    <value>Print</value>
-  </data>
-  <data name="&gt;&gt;printSolutions.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;selectProblemDirectoryDialog.Type" xml:space="preserve">
-    <value>System.Windows.Forms.FolderBrowserDialog, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;hard.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="solutionPrintSize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>125, 62</value>
-  </data>
-  <data name="ok.Text" xml:space="preserve">
-    <value>&amp;OK</value>
-  </data>
-  <data name="labelBookletSizeNew.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;xSudokuConstrastLabel.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;selectLevelBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="autoSaveBooklet.Size" type="System.Drawing.Size, System.Drawing">
-    <value>161, 17</value>
-  </data>
-  <data name="&gt;&gt;autoPauseLag.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="&gt;&gt;autoSaveBooklet.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="printHints.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;layoutPage.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;directorySelect.ZOrder" xml:space="preserve">
-    <value>6</value>
-  </data>
-  <data name="constrast.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;useWatchHands.Parent" xml:space="preserve">
-    <value>groupBox1</value>
-  </data>
-  <data name="&gt;&gt;precalculatedProblems.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;bookletSize.Name" xml:space="preserve">
-    <value>bookletSize</value>
-  </data>
-  <data name="problemDirectory.Size" type="System.Drawing.Size, System.Drawing">
-    <value>349, 20</value>
-  </data>
-  <data name="&gt;&gt;bookletSizeNew.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;language.ZOrder" xml:space="preserve">
-    <value>9</value>
-  </data>
-  <data name="solutionSmall.Text" xml:space="preserve">
-    <value>Small</value>
-  </data>
-  <data name="constrast.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 20</value>
-  </data>
-  <data name="&gt;&gt;easy.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="unlimited.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="normal.Text" xml:space="preserve">
-    <value>Normal</value>
-  </data>
-  <data name="precalculatedProblems.Size" type="System.Drawing.Size, System.Drawing">
-    <value>159, 17</value>
-  </data>
-  <data name="&gt;&gt;solutionSmall.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="language.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="autoSaveBooklet.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="constrast.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 75</value>
-  </data>
-  <data name="possibleValuesExamplePicture.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
-    <value>Zoom</value>
-  </data>
-  <data name="severity.Text" xml:space="preserve">
-    <value>Severity</value>
-  </data>
-  <data name="layoutPage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
-  </data>
-  <data name="bookletSizeExisting.Enabled" type="System.Boolean, mscorlib">
-    <value>False</value>
-  </data>
-  <data name="&gt;&gt;xSudokuConstrast.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;groupBox1.Name" xml:space="preserve">
-    <value>groupBox1</value>
-  </data>
-  <data name="&gt;&gt;language.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="&gt;&gt;ok.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;selectProblemDirectoryDialog.Name" xml:space="preserve">
-    <value>selectProblemDirectoryDialog</value>
-  </data>
-  <data name="generatePage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 0</value>
-  </data>
-  <data name="useWatchHands.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 20</value>
-  </data>
-  <data name="&gt;&gt;sizeGroupBox.Name" xml:space="preserve">
-    <value>sizeGroupBox</value>
-  </data>
-  <data name="normalSudoku.Size" type="System.Drawing.Size, System.Drawing">
-    <value>59, 17</value>
-  </data>
-  <data name="&gt;&gt;largeRB.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="problemDirectory.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
-  </data>
-  <data name="&gt;&gt;solutionNormal.Name" xml:space="preserve">
-    <value>solutionNormal</value>
-  </data>
-  <data name="&gt;&gt;ok.Name" xml:space="preserve">
-    <value>ok</value>
-  </data>
-  <data name="&gt;&gt;layoutPage.Name" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="saveState.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 153</value>
-  </data>
-  <data name="&gt;&gt;printPage.Parent" xml:space="preserve">
-    <value>optionsTab</value>
-  </data>
-  <data name="tiny.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 88</value>
-  </data>
-  <data name="autoPauseLag.Size" type="System.Drawing.Size, System.Drawing">
-    <value>46, 20</value>
-  </data>
-  <data name="xSudoku.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;optionsTab.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="precalculatedProblems.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="intermediate.Location" type="System.Drawing.Point, System.Drawing">
-    <value>91, 19</value>
-  </data>
-  <data name="bookletSizeExisting.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 20</value>
-  </data>
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>421, 385</value>
-  </data>
-  <data name="labelBaseDirectory.Size" type="System.Drawing.Size, System.Drawing">
-    <value>90, 13</value>
-  </data>
-  <data name="largeRB.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="severity.Size" type="System.Drawing.Size, System.Drawing">
-    <value>250, 45</value>
-  </data>
-  <data name="&gt;&gt;tiny.Parent" xml:space="preserve">
-    <value>problemPrintSize</value>
-  </data>
-  <data name="&gt;&gt;labelBookletSizeNew.Parent" xml:space="preserve">
-    <value>bookletSize</value>
-  </data>
-  <data name="language.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;unlimited.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="mediumRB.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 45</value>
-  </data>
-  <data name="selectSeverityLevel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 19</value>
-  </data>
-  <data name="labelConstrast.Text" xml:space="preserve">
-    <value>&amp;Contrast</value>
-  </data>
-  <data name="&gt;&gt;directorySelect.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;autoPauseLag.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="mediumRB.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="printPage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 25</value>
-  </data>
-  <data name="&gt;&gt;possibleValuesExamplePicture.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="solutionPrintSize.Text" xml:space="preserve">
-    <value>Size-Solution</value>
-  </data>
-  <data name="&gt;&gt;sizeGroupBox.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="printSolutions.Text" xml:space="preserve">
-    <value>&amp;Print Solutions</value>
-  </data>
-  <data name="&gt;&gt;severity.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="&gt;&gt;useWatchHands.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="printInternalSeverity.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
   </data>
+  <data name="generatePage.Text" xml:space="preserve">
+    <value>Generate</value>
+  </data>
+  <data name="&gt;&gt;sizeGroupBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="bookletSizeExisting.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 20</value>
+  </data>
+  <data name="&gt;&gt;printPage.Name" xml:space="preserve">
+    <value>printPage</value>
+  </data>
+  <data name="saveState.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="useWatchHands.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;selectLevelBox.Name" xml:space="preserve">
+    <value>selectLevelBox</value>
+  </data>
+  <data name="&gt;&gt;layoutPage.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="useWatchHands.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;problemPrintSize.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="solutionPrintSize.Text" xml:space="preserve">
+    <value>Size-Solution</value>
+  </data>
+  <data name="largeRB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 68</value>
+  </data>
+  <data name="&gt;&gt;bookletSizeNew.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;selectSeverityLevel.Parent" xml:space="preserve">
+    <value>selectLevelBox</value>
+  </data>
+  <data name="&gt;&gt;constrast.Parent" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
   <data name="solutionPrintSize.Size" type="System.Drawing.Size, System.Drawing">
     <value>113, 113</value>
+  </data>
+  <data name="layoutPage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>392, 314</value>
+  </data>
+  <data name="generateMinimalProblems.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;useWatchHands.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;normal.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="smallRB.Text" xml:space="preserve">
+    <value>Small</value>
+  </data>
+  <data name="hideWhenMinimized.Text" xml:space="preserve">
+    <value>Hide when minimized</value>
+  </data>
+  <data name="&gt;&gt;sizeGroupBox.Name" xml:space="preserve">
+    <value>sizeGroupBox</value>
+  </data>
+  <data name="problemPrintSize.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;xSudoku.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="layoutPage.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;layoutPage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="printPage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>392, 314</value>
+  </data>
+  <data name="labelBookletSizeExisting.Text" xml:space="preserve">
+    <value>E&amp;xisting Problems</value>
+  </data>
+  <data name="labelLanguage.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="mediumRB.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelBookletSizeNew.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 18</value>
+  </data>
+  <data name="groupBox1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>206, 130</value>
+  </data>
+  <data name="&gt;&gt;autoPause.Parent" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
+  <data name="autoSaveBooklet.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;largeRB.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="small.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="labelLanguage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 14</value>
+  </data>
+  <data name="autoPauseLag.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;saveState.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;mediumRB.Name" xml:space="preserve">
+    <value>mediumRB</value>
+  </data>
+  <data name="problemDirectory.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;cancel.Name" xml:space="preserve">
+    <value>cancel</value>
+  </data>
+  <data name="labelBaseDirectory.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;unlimited.Parent" xml:space="preserve">
+    <value>bookletSize</value>
+  </data>
+  <data name="&gt;&gt;hideWhenMinimized.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;xSudokuConstrast.Parent" xml:space="preserve">
+    <value>printPage</value>
+  </data>
+  <data name="smallRB.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="bookletSize.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="large.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="type.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;labelBookletSizeNew.Name" xml:space="preserve">
+    <value>labelBookletSizeNew</value>
+  </data>
+  <data name="&gt;&gt;selectLevelBox.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="printSolutions.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="possibleValuesExamplePicture.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;printPage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="mediumRB.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;small.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="hard.Text" xml:space="preserve">
+    <value>Hard</value>
+  </data>
+  <data name="minValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>45, 20</value>
+  </data>
+  <data name="&gt;&gt;labelConstrast.Name" xml:space="preserve">
+    <value>labelConstrast</value>
+  </data>
+  <data name="&gt;&gt;possibleValuesExamplePicture.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;printInternalSeverity.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="selectSeverityLevel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 19</value>
+  </data>
+  <data name="xSudokuConstrastLabel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;small.Name" xml:space="preserve">
+    <value>small</value>
+  </data>
+  <data name="&gt;&gt;easy.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="solutionNormal.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;hideWhenMinimized.Name" xml:space="preserve">
+    <value>hideWhenMinimized</value>
+  </data>
+  <data name="labelBaseDirectory.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelBookletSizeNew.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;solutionNormal.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;printInternalSeverity.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="autoSaveBooklet.Size" type="System.Drawing.Size, System.Drawing">
+    <value>161, 17</value>
+  </data>
+  <data name="largeRB.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="type.Size" type="System.Drawing.Size, System.Drawing">
+    <value>349, 45</value>
+  </data>
+  <data name="intermediate.Location" type="System.Drawing.Point, System.Drawing">
+    <value>91, 19</value>
+  </data>
+  <data name="generatePage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 25</value>
+  </data>
+  <data name="small.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 65</value>
+  </data>
+  <data name="&gt;&gt;problemPrintSize.Name" xml:space="preserve">
+    <value>problemPrintSize</value>
+  </data>
+  <data name="&gt;&gt;autoPauseLag.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;autoSaveBooklet.Name" xml:space="preserve">
+    <value>autoSaveBooklet</value>
+  </data>
+  <data name="&gt;&gt;normal.Name" xml:space="preserve">
+    <value>normal</value>
+  </data>
+  <data name="generateMinimalProblems.Size" type="System.Drawing.Size, System.Drawing">
+    <value>160, 17</value>
+  </data>
+  <data name="&gt;&gt;selectLevelBox.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;optionsTab.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;precalculatedProblems.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="&gt;&gt;labelLanguage.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="ok.Location" type="System.Drawing.Point, System.Drawing">
+    <value>334, 354</value>
+  </data>
+  <data name="language.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;xSudokuConstrastLabel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;problemPrintSize.Parent" xml:space="preserve">
+    <value>printPage</value>
+  </data>
+  <data name="problemDirectory.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="cancel.TabIndex" type="System.Int32, mscorlib">
+    <value>999</value>
+  </data>
+  <data name="optionsTab.TabIndex" type="System.Int32, mscorlib">
+    <value>11</value>
+  </data>
+  <data name="bookletSizeExisting.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="normal.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 42</value>
+  </data>
+  <data name="&gt;&gt;minValues.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;useDigits.Name" xml:space="preserve">
+    <value>useDigits</value>
+  </data>
+  <data name="solutionSmall.Text" xml:space="preserve">
+    <value>Small</value>
+  </data>
+  <data name="&gt;&gt;minValues.ZOrder" xml:space="preserve">
+    <value>9</value>
+  </data>
+  <data name="&gt;&gt;labelBookletSizeExisting.Parent" xml:space="preserve">
+    <value>bookletSize</value>
+  </data>
+  <data name="&gt;&gt;unlimited.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="ok.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="&gt;&gt;useDigits.Parent" xml:space="preserve">
+    <value>groupBox1</value>
+  </data>
+  <data name="printSolutions.Size" type="System.Drawing.Size, System.Drawing">
+    <value>93, 17</value>
+  </data>
+  <data name="autoPause.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;labelBookletSizeNew.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mediumRB.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="language.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 34</value>
+  </data>
+  <data name="labelBookletSizeNew.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 13</value>
+  </data>
+  <data name="labelBaseDirectory.Size" type="System.Drawing.Size, System.Drawing">
+    <value>90, 13</value>
+  </data>
+  <data name="solutionSmall.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelConstrast.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;groupBox1.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="unlimited.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="xSudokuConstrastLabel.Text" xml:space="preserve">
+    <value>&amp;Contrast for X-Sudokus</value>
+  </data>
+  <data name="&gt;&gt;hideWhenMinimized.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="large.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 19</value>
+  </data>
+  <data name="&gt;&gt;intermediate.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelBookletSizeNew.Parent" xml:space="preserve">
+    <value>bookletSize</value>
+  </data>
+  <data name="&gt;&gt;problemDirectory.ZOrder" xml:space="preserve">
+    <value>7</value>
+  </data>
+  <data name="autoSaveBooklet.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="&gt;&gt;language.Name" xml:space="preserve">
+    <value>language</value>
+  </data>
+  <data name="solutionSmall.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="mediumRB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 45</value>
+  </data>
+  <data name="labelConstrast.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 59</value>
+  </data>
+  <data name="&gt;&gt;layoutPage.Parent" xml:space="preserve">
+    <value>optionsTab</value>
+  </data>
+  <data name="autoPauseLag.Location" type="System.Drawing.Point, System.Drawing">
+    <value>96, 175</value>
+  </data>
+  <data name="precalculatedProblems.Size" type="System.Drawing.Size, System.Drawing">
+    <value>159, 17</value>
+  </data>
+  <data name="autoSaveBooklet.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 246</value>
+  </data>
+  <data name="&gt;&gt;largeRB.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;labelMinValues.Name" xml:space="preserve">
+    <value>labelMinValues</value>
+  </data>
+  <data name="&gt;&gt;useWatchHands.Name" xml:space="preserve">
+    <value>useWatchHands</value>
+  </data>
+  <data name="&gt;&gt;useDigits.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="possibleValuesExamplePicture.Size" type="System.Drawing.Size, System.Drawing">
+    <value>47, 41</value>
+  </data>
+  <data name="&gt;&gt;solutionNormal.Name" xml:space="preserve">
+    <value>solutionNormal</value>
+  </data>
+  <data name="labelBookletSizeExisting.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
+  </data>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>421, 385</value>
+  </data>
+  <data name="&gt;&gt;generateMinimalProblems.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bookletSizeExisting.Location" type="System.Drawing.Point, System.Drawing">
+    <value>231, 35</value>
+  </data>
+  <data name="&gt;&gt;optionsTab.Name" xml:space="preserve">
+    <value>optionsTab</value>
   </data>
   <data name="groupBox1.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
@@ -480,794 +579,1095 @@
   <data name="groupBox1.Text" xml:space="preserve">
     <value>Possible Values</value>
   </data>
-  <data name="small.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
+  <data name="&gt;&gt;large.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="printHints.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 36</value>
-  </data>
-  <data name="smallRB.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="selectSeverityLevel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="smallRB.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="&gt;&gt;labelConstrast.ZOrder" xml:space="preserve">
-    <value>8</value>
+  <data name="&gt;&gt;normalSudoku.Name" xml:space="preserve">
+    <value>normalSudoku</value>
   </data>
-  <data name="&gt;&gt;printInternalSeverity.Name" xml:space="preserve">
-    <value>printInternalSeverity</value>
+  <data name="possibleValuesExamplePicture.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
+    <value>Zoom</value>
   </data>
-  <data name="printPage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
+  <data name="useDigits.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
   </data>
-  <data name="&gt;&gt;generateMinimalProblems.Name" xml:space="preserve">
-    <value>generateMinimalProblems</value>
+  <data name="bookletSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>349, 61</value>
   </data>
-  <data name="mediumRB.Size" type="System.Drawing.Size, System.Drawing">
-    <value>62, 17</value>
+  <data name="smallRB.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
   </data>
-  <data name="&gt;&gt;largeRB.Parent" xml:space="preserve">
-    <value>sizeGroupBox</value>
+  <data name="&gt;&gt;autoSaveBooklet.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;labelBaseDirectory.ZOrder" xml:space="preserve">
-    <value>8</value>
+  <data name="minValues.Location" type="System.Drawing.Point, System.Drawing">
+    <value>270, 31</value>
   </data>
-  <data name="autoPause.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="labelConstrast.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="large.Text" xml:space="preserve">
-    <value>Large</value>
-  </data>
-  <data name="&gt;&gt;labelMinValues.Name" xml:space="preserve">
-    <value>labelMinValues</value>
-  </data>
-  <data name="&gt;&gt;normalSudoku.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;unlimited.Name" xml:space="preserve">
-    <value>unlimited</value>
-  </data>
-  <data name="useDigits.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 44</value>
-  </data>
-  <data name="autoPauseLag.Location" type="System.Drawing.Point, System.Drawing">
-    <value>96, 175</value>
-  </data>
-  <data name="&gt;&gt;minValues.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;cancel.Name" xml:space="preserve">
-    <value>cancel</value>
-  </data>
-  <data name="&gt;&gt;printInternalSeverity.Parent" xml:space="preserve">
-    <value>printPage</value>
-  </data>
-  <data name="&gt;&gt;autoPauseLag.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;generatePage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;autoPause.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="&gt;&gt;selectSeverityLevel.Name" xml:space="preserve">
-    <value>selectSeverityLevel</value>
-  </data>
-  <data name="printSolutions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>93, 17</value>
+  <data name="printHints.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
   </data>
   <data name="&gt;&gt;large.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <data name="labelBookletSizeExisting.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="xSudoku.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
   </data>
-  <data name="largeRB.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="autoPauseLag.Size" type="System.Drawing.Size, System.Drawing">
+    <value>46, 20</value>
   </data>
-  <data name="&gt;&gt;mediumRB.Parent" xml:space="preserve">
-    <value>sizeGroupBox</value>
-  </data>
-  <data name="&gt;&gt;solutionNormal.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;xSudokuConstrast.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="sizeGroupBox.Text" xml:space="preserve">
-    <value>&amp;Size</value>
+  <data name="&gt;&gt;ok.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="mediumRB.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="generateMinimalProblems.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;printHints.Parent" xml:space="preserve">
+    <value>printPage</value>
   </data>
   <data name="&gt;&gt;directorySelect.Name" xml:space="preserve">
     <value>directorySelect</value>
   </data>
-  <data name="&gt;&gt;precalculatedProblems.Name" xml:space="preserve">
-    <value>precalculatedProblems</value>
+  <data name="saveState.Size" type="System.Drawing.Size, System.Drawing">
+    <value>79, 17</value>
   </data>
-  <data name="&gt;&gt;hideWhenMinimized.Name" xml:space="preserve">
-    <value>hideWhenMinimized</value>
+  <data name="solutionNormal.Text" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="&gt;&gt;printSolutions.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;small.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;printInternalSeverity.Name" xml:space="preserve">
+    <value>printInternalSeverity</value>
+  </data>
+  <data name="solutionPrintSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>125, 62</value>
+  </data>
+  <data name="&gt;&gt;solutionPrintSize.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;hard.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="labelMinValues.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;labelConstrast.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="printHints.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 36</value>
+  </data>
+  <data name="&gt;&gt;hard.Parent" xml:space="preserve">
+    <value>severity</value>
+  </data>
+  <data name="sizeGroupBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>206, 14</value>
+  </data>
+  <data name="tiny.Text" xml:space="preserve">
+    <value>Tiny</value>
+  </data>
+  <data name="&gt;&gt;solutionPrintSize.Name" xml:space="preserve">
+    <value>solutionPrintSize</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="layoutPage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="&gt;&gt;useWatchHands.Parent" xml:space="preserve">
+    <value>groupBox1</value>
+  </data>
+  <data name="problemPrintSize.Text" xml:space="preserve">
+    <value>Size-Problem</value>
+  </data>
+  <data name="&gt;&gt;selectSeverityLevel.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="labelBookletSizeNew.Text" xml:space="preserve">
+    <value>&amp;New Problems</value>
+  </data>
+  <data name="selectLevelBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>260, 76</value>
+  </data>
+  <data name="&gt;&gt;printSolutions.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;tiny.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;printPage.Parent" xml:space="preserve">
+    <value>optionsTab</value>
+  </data>
+  <data name="printPage.Text" xml:space="preserve">
+    <value>Print</value>
+  </data>
+  <data name="&gt;&gt;mediumRB.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="printSolutions.Text" xml:space="preserve">
+    <value>&amp;Print Solutions</value>
+  </data>
+  <data name="printInternalSeverity.Text" xml:space="preserve">
+    <value>Print Internal Severity</value>
+  </data>
+  <data name="&gt;&gt;problemPrintSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;normal.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="useWatchHands.Text" xml:space="preserve">
+    <value>Watch Hands</value>
+  </data>
+  <data name="normal.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;xSudokuConstrastLabel.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="saveState.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;directorySelect.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="intermediate.Size" type="System.Drawing.Size, System.Drawing">
+    <value>84, 17</value>
+  </data>
+  <data name="mediumRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>62, 17</value>
+  </data>
+  <data name="&gt;&gt;normalSudoku.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="xSudoku.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="directorySelect.Text" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="&gt;&gt;large.Parent" xml:space="preserve">
+    <value>problemPrintSize</value>
+  </data>
+  <data name="&gt;&gt;largeRB.Parent" xml:space="preserve">
+    <value>sizeGroupBox</value>
+  </data>
+  <data name="&gt;&gt;easy.Parent" xml:space="preserve">
+    <value>severity</value>
+  </data>
+  <data name="autoPause.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="easy.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 19</value>
+  </data>
+  <data name="hard.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="saveState.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 153</value>
+  </data>
+  <data name="language.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;solutionSmall.Parent" xml:space="preserve">
+    <value>solutionPrintSize</value>
+  </data>
+  <data name="&gt;&gt;large.Name" xml:space="preserve">
+    <value>large</value>
+  </data>
+  <data name="&gt;&gt;possibleValuesExamplePicture.Parent" xml:space="preserve">
+    <value>groupBox1</value>
+  </data>
+  <data name="labelBookletSizeExisting.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="selectSeverityLevel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelMinValues.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="hard.Location" type="System.Drawing.Point, System.Drawing">
+    <value>191, 19</value>
+  </data>
+  <data name="&gt;&gt;selectProblemDirectoryDialog.Type" xml:space="preserve">
+    <value>System.Windows.Forms.FolderBrowserDialog, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;directorySelect.ZOrder" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="selectProblemDirectoryDialog.SelectedPath" xml:space="preserve">
+    <value>folderBrowserDialog1</value>
+  </data>
+  <data name="normal.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;optionsTab.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;normalSudoku.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;bookletSizeNew.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mediumRB.Parent" xml:space="preserve">
+    <value>sizeGroupBox</value>
+  </data>
+  <data name="autoPause.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="cancel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="xSudokuConstrastLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>116, 13</value>
+  </data>
+  <data name="printSolutions.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;printHints.Name" xml:space="preserve">
+    <value>printHints</value>
+  </data>
+  <data name="printPage.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="solutionNormal.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 19</value>
+  </data>
+  <data name="large.Size" type="System.Drawing.Size, System.Drawing">
+    <value>52, 17</value>
+  </data>
+  <data name="xSudoku.Text" xml:space="preserve">
+    <value>X-Sudoku</value>
+  </data>
+  <data name="&gt;&gt;printHints.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;language.Parent" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
+  <data name="tiny.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 88</value>
+  </data>
+  <data name="printSolutions.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="smallRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 17</value>
+  </data>
+  <data name="&gt;&gt;language.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="severity.Size" type="System.Drawing.Size, System.Drawing">
+    <value>250, 45</value>
+  </data>
+  <data name="&gt;&gt;generateMinimalProblems.Name" xml:space="preserve">
+    <value>generateMinimalProblems</value>
+  </data>
+  <data name="largeRB.Text" xml:space="preserve">
+    <value>Large</value>
+  </data>
+  <data name="autoPause.Size" type="System.Drawing.Size, System.Drawing">
+    <value>81, 17</value>
+  </data>
+  <data name="autoSaveBooklet.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="labelLanguage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>55, 13</value>
+  </data>
+  <data name="&gt;&gt;smallRB.Parent" xml:space="preserve">
+    <value>sizeGroupBox</value>
+  </data>
+  <data name="normal.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;type.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;type.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="printInternalSeverity.Size" type="System.Drawing.Size, System.Drawing">
+    <value>126, 17</value>
+  </data>
+  <data name="&gt;&gt;generatePage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="labelBookletSizeExisting.Location" type="System.Drawing.Point, System.Drawing">
+    <value>131, 16</value>
+  </data>
+  <data name="small.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;labelMinValues.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;generateMinimalProblems.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="&gt;&gt;selectSeverityLevel.Name" xml:space="preserve">
+    <value>selectSeverityLevel</value>
+  </data>
+  <data name="problemDirectory.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 282</value>
+  </data>
+  <data name="easy.Size" type="System.Drawing.Size, System.Drawing">
+    <value>49, 17</value>
+  </data>
+  <data name="&gt;&gt;precalculatedProblems.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="labelConstrast.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="tiny.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;solutionSmall.Name" xml:space="preserve">
+    <value>solutionSmall</value>
+  </data>
+  <data name="&gt;&gt;saveState.Name" xml:space="preserve">
+    <value>saveState</value>
+  </data>
+  <data name="labelConstrast.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="bookletSizeExisting.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
+  <data name="generateMinimalProblems.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 53</value>
+  </data>
+  <data name="intermediate.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="labelConstrast.Size" type="System.Drawing.Size, System.Drawing">
+    <value>46, 13</value>
+  </data>
+  <data name="&gt;&gt;generateMinimalProblems.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;labelBaseDirectory.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="&gt;&gt;autoPause.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;autoPauseLag.Parent" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
+  <data name="selectLevelBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>95, 45</value>
+  </data>
+  <data name="cancel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>253, 354</value>
+  </data>
+  <data name="&gt;&gt;possibleValuesExamplePicture.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;type.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="precalculatedProblems.TabIndex" type="System.Int32, mscorlib">
+    <value>12</value>
+  </data>
+  <data name="&gt;&gt;selectLevelBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="selectSeverityLevel.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="unlimited.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelMinValues.Text" xml:space="preserve">
+    <value>&amp;Minimum Number of Values in generated Problems:</value>
+  </data>
+  <data name="&gt;&gt;solutionNormal.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="solutionPrintSize.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="problemPrintSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>113, 113</value>
+  </data>
+  <data name="problemDirectory.Size" type="System.Drawing.Size, System.Drawing">
+    <value>349, 20</value>
+  </data>
+  <data name="printHints.Text" xml:space="preserve">
+    <value>Print &amp;Possible Values</value>
+  </data>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="&gt;&gt;language.ZOrder" xml:space="preserve">
+    <value>9</value>
   </data>
   <data name="language.Size" type="System.Drawing.Size, System.Drawing">
     <value>185, 21</value>
   </data>
+  <data name="layoutPage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 25</value>
+  </data>
+  <data name="directorySelect.Location" type="System.Drawing.Point, System.Drawing">
+    <value>361, 280</value>
+  </data>
+  <data name="&gt;&gt;labelBookletSizeExisting.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bookletSizeNew.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 35</value>
+  </data>
+  <data name="normalSudoku.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="layoutPage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="ok.Text" xml:space="preserve">
+    <value>&amp;OK</value>
+  </data>
+  <data name="normalSudoku.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 19</value>
+  </data>
+  <data name="&gt;&gt;ok.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="autoPause.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 176</value>
+  </data>
+  <data name="&gt;&gt;labelMinValues.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="&gt;&gt;easy.Name" xml:space="preserve">
+    <value>easy</value>
+  </data>
+  <data name="precalculatedProblems.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;labelBookletSizeExisting.Name" xml:space="preserve">
+    <value>labelBookletSizeExisting</value>
+  </data>
   <data name="&gt;&gt;bookletSizeExisting.Parent" xml:space="preserve">
     <value>bookletSize</value>
   </data>
-  <data name="optionsTab.TabIndex" type="System.Int32, mscorlib">
+  <data name="solutionNormal.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;labelLanguage.Parent" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
+  <data name="&gt;&gt;severity.Name" xml:space="preserve">
+    <value>severity</value>
+  </data>
+  <data name="&gt;&gt;groupBox1.Name" xml:space="preserve">
+    <value>groupBox1</value>
+  </data>
+  <data name="&gt;&gt;ok.Name" xml:space="preserve">
+    <value>ok</value>
+  </data>
+  <data name="&gt;&gt;constrast.Name" xml:space="preserve">
+    <value>constrast</value>
+  </data>
+  <data name="&gt;&gt;intermediate.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Sudoku Options</value>
+  </data>
+  <data name="&gt;&gt;problemDirectory.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="&gt;&gt;labelBookletSizeExisting.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="generateMinimalProblems.Text" xml:space="preserve">
+    <value>Generate Minimum Problems</value>
+  </data>
+  <data name="&gt;&gt;generatePage.Parent" xml:space="preserve">
+    <value>optionsTab</value>
+  </data>
+  <data name="labelBookletSizeExisting.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="possibleValuesExamplePicture.Location" type="System.Drawing.Point, System.Drawing">
+    <value>124, 20</value>
+  </data>
+  <data name="generatePage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="&gt;&gt;easy.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="problemPrintSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 62</value>
+  </data>
+  <data name="xSudokuConstrastLabel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 178</value>
+  </data>
+  <data name="&gt;&gt;minValues.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="generatePage.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;severity.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="type.Text" xml:space="preserve">
+    <value>Sudoku Types for Booklets</value>
+  </data>
+  <data name="optionsTab.Size" type="System.Drawing.Size, System.Drawing">
+    <value>400, 343</value>
+  </data>
+  <data name="&gt;&gt;intermediate.Name" xml:space="preserve">
+    <value>intermediate</value>
+  </data>
+  <data name="labelConstrast.Text" xml:space="preserve">
+    <value>&amp;Contrast</value>
+  </data>
+  <data name="largeRB.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="bookletSizeNew.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 20</value>
+  </data>
+  <data name="selectLevelBox.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;bookletSizeExisting.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="directorySelect.Size" type="System.Drawing.Size, System.Drawing">
+    <value>25, 23</value>
+  </data>
+  <data name="&gt;&gt;xSudokuConstrastLabel.Parent" xml:space="preserve">
+    <value>printPage</value>
+  </data>
+  <data name="&gt;&gt;unlimited.Name" xml:space="preserve">
+    <value>unlimited</value>
+  </data>
+  <data name="hard.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="generateMinimalProblems.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="&gt;&gt;optionsTab.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="labelBaseDirectory.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;bookletSize.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="&gt;&gt;selectSeverityLevel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cancel.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;saveState.Parent" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
+  <data name="&gt;&gt;possibleValuesExamplePicture.Name" xml:space="preserve">
+    <value>possibleValuesExamplePicture</value>
+  </data>
+  <data name="tiny.Size" type="System.Drawing.Size, System.Drawing">
+    <value>45, 17</value>
+  </data>
+  <data name="bookletSizeNew.TabIndex" type="System.Int32, mscorlib">
+    <value>7</value>
+  </data>
+  <data name="&gt;&gt;unlimited.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="hard.Size" type="System.Drawing.Size, System.Drawing">
+    <value>49, 17</value>
+  </data>
+  <data name="constrast.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;bookletSize.ZOrder" xml:space="preserve">
     <value>11</value>
   </data>
   <data name="xSudokuConstrastLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="labelBaseDirectory.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
+  <data name="hideWhenMinimized.Size" type="System.Drawing.Size, System.Drawing">
+    <value>125, 17</value>
   </data>
-  <data name="selectProblemDirectoryDialog.SelectedPath" xml:space="preserve">
-    <value>folderBrowserDialog1</value>
+  <data name="&gt;&gt;smallRB.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="selectSeverityLevel.Text" xml:space="preserve">
-    <value>Select Level</value>
+  <data name="labelBaseDirectory.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 266</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrast.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;xSudokuConstrastLabel.Name" xml:space="preserve">
+    <value>xSudokuConstrastLabel</value>
+  </data>
+  <data name="cancel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
+  </data>
+  <data name="&gt;&gt;solutionSmall.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="small.Text" xml:space="preserve">
+    <value>Small</value>
+  </data>
+  <data name="&gt;&gt;xSudoku.Parent" xml:space="preserve">
+    <value>type</value>
+  </data>
+  <data name="&gt;&gt;labelLanguage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;groupBox1.Parent" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
+  <data name="&gt;&gt;saveState.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
+    <value>CenterParent</value>
+  </data>
+  <data name="minValues.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
+  </data>
+  <data name="labelLanguage.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;printSolutions.Parent" xml:space="preserve">
+    <value>printPage</value>
+  </data>
+  <data name="&gt;&gt;solutionNormal.Parent" xml:space="preserve">
+    <value>solutionPrintSize</value>
+  </data>
+  <data name="autoSaveBooklet.Text" xml:space="preserve">
+    <value>&amp;Auto Save Booklet Problems</value>
+  </data>
+  <data name="&gt;&gt;labelConstrast.Parent" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
+  <data name="xSudoku.Location" type="System.Drawing.Point, System.Drawing">
+    <value>91, 19</value>
+  </data>
+  <data name="directorySelect.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="constrast.Location" type="System.Drawing.Point, System.Drawing">
+    <value>10, 75</value>
+  </data>
+  <data name="easy.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="printInternalSeverity.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 221</value>
+  </data>
+  <data name="printPage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="&gt;&gt;largeRB.Name" xml:space="preserve">
+    <value>largeRB</value>
+  </data>
+  <data name="labelBookletSizeExisting.Size" type="System.Drawing.Size, System.Drawing">
+    <value>89, 13</value>
   </data>
   <data name="printPage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 0, 0</value>
   </data>
-  <data name="labelMinValues.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 33</value>
-  </data>
-  <data name="&gt;&gt;problemPrintSize.Name" xml:space="preserve">
-    <value>problemPrintSize</value>
-  </data>
-  <data name="&gt;&gt;labelBaseDirectory.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="&gt;&gt;labelLanguage.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="&gt;&gt;printPage.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;normalSudoku.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="tiny.Text" xml:space="preserve">
-    <value>Tiny</value>
-  </data>
-  <data name="&gt;&gt;largeRB.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="intermediate.Size" type="System.Drawing.Size, System.Drawing">
-    <value>84, 17</value>
-  </data>
-  <data name="ok.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 23</value>
-  </data>
-  <data name="&gt;&gt;xSudokuConstrastLabel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;easy.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;problemPrintSize.Parent" xml:space="preserve">
-    <value>printPage</value>
-  </data>
-  <data name="saveState.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;xSudoku.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;precalculatedProblems.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="mediumRB.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="&gt;&gt;solutionSmall.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
-  <data name="autoSaveBooklet.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 246</value>
+  <data name="xSudoku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>73, 17</value>
   </data>
-  <data name="&gt;&gt;bookletSizeExisting.ZOrder" xml:space="preserve">
-    <value>1</value>
+  <data name="cancel.Text" xml:space="preserve">
+    <value>&amp;Cancel</value>
   </data>
-  <data name="hard.Size" type="System.Drawing.Size, System.Drawing">
-    <value>49, 17</value>
+  <data name="&gt;&gt;xSudokuConstrast.Name" xml:space="preserve">
+    <value>xSudokuConstrast</value>
   </data>
-  <data name="intermediate.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
+  <data name="&gt;&gt;autoPause.Name" xml:space="preserve">
+    <value>autoPause</value>
   </data>
-  <data name="smallRB.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="optionsTab.Appearance" type="System.Windows.Forms.TabAppearance, System.Windows.Forms">
+    <value>FlatButtons</value>
   </data>
-  <data name="groupBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>180, 75</value>
+  <data name="&gt;&gt;normal.Parent" xml:space="preserve">
+    <value>problemPrintSize</value>
   </data>
-  <data name="xSudokuConstrast.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 20</value>
+  <data name="&gt;&gt;useDigits.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="type.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
+  <data name="solutionSmall.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 42</value>
   </data>
-  <data name="generateMinimalProblems.Text" xml:space="preserve">
-    <value>Generate Minimum Problems</value>
+  <data name="&gt;&gt;tiny.Type" xml:space="preserve">
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="directorySelect.TabIndex" type="System.Int32, mscorlib">
-    <value>11</value>
+  <data name="&gt;&gt;directorySelect.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="small.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 17</value>
+  <data name="&gt;&gt;groupBox1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="useWatchHands.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="&gt;&gt;autoPause.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;labelLanguage.Name" xml:space="preserve">
-    <value>labelLanguage</value>
+  <data name="&gt;&gt;severity.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;labelBaseDirectory.Name" xml:space="preserve">
-    <value>labelBaseDirectory</value>
+  <data name="optionsTab.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
   </data>
-  <data name="labelConstrast.Size" type="System.Drawing.Size, System.Drawing">
-    <value>46, 13</value>
+  <data name="bookletSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 179</value>
   </data>
-  <data name="printHints.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="&gt;&gt;hideWhenMinimized.Parent" xml:space="preserve">
+    <value>layoutPage</value>
   </data>
-  <data name="possibleValuesExamplePicture.Location" type="System.Drawing.Point, System.Drawing">
-    <value>124, 20</value>
-  </data>
-  <data name="unlimited.Text" xml:space="preserve">
-    <value>Unlimited</value>
-  </data>
-  <data name="&gt;&gt;intermediate.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="printSolutions.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;constrast.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="solutionNormal.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;labelConstrast.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;hideWhenMinimized.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;printSolutions.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="bookletSizeNew.Size" type="System.Drawing.Size, System.Drawing">
-    <value>65, 20</value>
-  </data>
-  <data name="largeRB.Text" xml:space="preserve">
-    <value>Large</value>
-  </data>
-  <data name="&gt;&gt;printHints.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="large.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;problemDirectory.ZOrder" xml:space="preserve">
-    <value>7</value>
-  </data>
-  <data name="&gt;&gt;ok.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="printInternalSeverity.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="type.Size" type="System.Drawing.Size, System.Drawing">
-    <value>349, 45</value>
-  </data>
-  <data name="printHints.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="solutionSmall.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="autoSaveBooklet.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
-  </data>
-  <data name="xSudokuConstrast.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;labelMinValues.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="&gt;&gt;autoSaveBooklet.Parent" xml:space="preserve">
+    <value>generatePage</value>
   </data>
   <data name="useDigits.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="&gt;&gt;precalculatedProblems.Parent" xml:space="preserve">
-    <value>generatePage</value>
+  <data name="&gt;&gt;bookletSizeExisting.Name" xml:space="preserve">
+    <value>bookletSizeExisting</value>
   </data>
-  <data name="&gt;&gt;labelBookletSizeNew.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;problemDirectory.Name" xml:space="preserve">
+    <value>problemDirectory</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>OptionsDialog</value>
+  </data>
+  <data name="&gt;&gt;hard.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="intermediate.Text" xml:space="preserve">
+    <value>Intermediate</value>
+  </data>
+  <data name="&gt;&gt;generatePage.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="hard.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+  <data name="&gt;&gt;autoPauseLag.Name" xml:space="preserve">
+    <value>autoPauseLag</value>
   </data>
-  <data name="bookletSizeExisting.Location" type="System.Drawing.Point, System.Drawing">
-    <value>231, 35</value>
+  <data name="useWatchHands.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 20</value>
   </data>
-  <data name="optionsTab.Padding" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+  <data name="smallRB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 20</value>
   </data>
-  <data name="precalculatedProblems.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;unlimited.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;printHints.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;groupBox1.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;type.Name" xml:space="preserve">
-    <value>type</value>
-  </data>
-  <data name="&gt;&gt;printHints.Parent" xml:space="preserve">
-    <value>printPage</value>
-  </data>
-  <data name="saveState.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="&gt;&gt;saveState.Parent" xml:space="preserve">
+  <data name="&gt;&gt;sizeGroupBox.Parent" xml:space="preserve">
     <value>layoutPage</value>
   </data>
-  <data name="labelBookletSizeNew.TabIndex" type="System.Int32, mscorlib">
+  <data name="layoutPage.Text" xml:space="preserve">
+    <value>Screen Layout</value>
+  </data>
+  <data name="xSudokuConstrast.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 194</value>
+  </data>
+  <data name="unlimited.Size" type="System.Drawing.Size, System.Drawing">
+    <value>69, 17</value>
+  </data>
+  <data name="&gt;&gt;labelBaseDirectory.Name" xml:space="preserve">
+    <value>labelBaseDirectory</value>
+  </data>
+  <data name="&gt;&gt;layoutPage.Name" xml:space="preserve">
+    <value>layoutPage</value>
+  </data>
+  <data name="&gt;&gt;solutionPrintSize.Parent" xml:space="preserve">
+    <value>printPage</value>
+  </data>
+  <data name="printHints.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;bookletSizeNew.Parent" xml:space="preserve">
+    <value>bookletSize</value>
+  </data>
+  <data name="small.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 17</value>
+  </data>
+  <data name="&gt;&gt;autoSaveBooklet.ZOrder" xml:space="preserve">
+    <value>10</value>
+  </data>
+  <data name="printHints.Size" type="System.Drawing.Size, System.Drawing">
+    <value>124, 17</value>
+  </data>
+  <data name="bookletSize.Text" xml:space="preserve">
+    <value>Booklet Size</value>
+  </data>
+  <data name="&gt;&gt;cancel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;autoPauseLag.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="easy.Text" xml:space="preserve">
+    <value>Easy</value>
+  </data>
+  <data name="generatePage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
+  <data name="&gt;&gt;smallRB.Name" xml:space="preserve">
+    <value>smallRB</value>
+  </data>
+  <data name="selectSeverityLevel.Text" xml:space="preserve">
+    <value>Select Level</value>
+  </data>
+  <data name="easy.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="useWatchHands.Size" type="System.Drawing.Size, System.Drawing">
+    <value>91, 17</value>
+  </data>
+  <data name="&gt;&gt;labelBaseDirectory.ZOrder" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;severity.Parent" xml:space="preserve">
+    <value>generatePage</value>
+  </data>
+  <data name="&gt;&gt;useWatchHands.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="type.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 127</value>
+  </data>
+  <data name="printSolutions.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 13</value>
+  </data>
+  <data name="severity.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 76</value>
+  </data>
+  <data name="large.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="labelBookletSizeNew.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="optionsTab.Location" type="System.Drawing.Point, System.Drawing">
+    <value>12, 8</value>
+  </data>
+  <data name="xSudokuConstrast.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
   <data name="useDigits.Text" xml:space="preserve">
     <value>Digits</value>
   </data>
-  <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>OptionsDialog</value>
-  </data>
-  <data name="&gt;&gt;solutionNormal.Parent" xml:space="preserve">
-    <value>solutionPrintSize</value>
-  </data>
-  <data name="labelLanguage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 14</value>
-  </data>
-  <data name="&gt;&gt;hideWhenMinimized.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="labelLanguage.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;constrast.Name" xml:space="preserve">
-    <value>constrast</value>
-  </data>
-  <data name="labelMinValues.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="normal.AutoSize" type="System.Boolean, mscorlib">
+  <data name="labelMinValues.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="useWatchHands.Text" xml:space="preserve">
-    <value>Watch Hands</value>
-  </data>
-  <data name="&gt;&gt;selectSeverityLevel.ZOrder" xml:space="preserve">
+  <data name="ok.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="generatePage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 3, 3, 3</value>
+  <data name="&gt;&gt;xSudokuConstrast.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="printInternalSeverity.Text" xml:space="preserve">
-    <value>Print Internal Severity</value>
+  <data name="useDigits.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 17</value>
   </data>
-  <data name="autoPause.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="precalculatedProblems.Text" xml:space="preserve">
+    <value>Use Precalculated Problems</value>
   </data>
-  <data name="labelConstrast.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 59</value>
+  <data name="precalculatedProblems.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 12</value>
   </data>
-  <data name="minValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>45, 20</value>
+  <data name="&gt;&gt;labelBaseDirectory.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;bookletSize.Parent" xml:space="preserve">
-    <value>generatePage</value>
+  <data name="xSudokuConstrastLabel.TabIndex" type="System.Int32, mscorlib">
+    <value>10</value>
   </data>
-  <data name="&gt;&gt;language.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="labelBaseDirectory.Text" xml:space="preserve">
+    <value>Problem &amp;Directory</value>
   </data>
-  <data name="labelBookletSizeNew.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 18</value>
+  <data name="&gt;&gt;tiny.Parent" xml:space="preserve">
+    <value>problemPrintSize</value>
   </data>
-  <data name="autoPause.Text" xml:space="preserve">
-    <value>Auto Pause</value>
+  <data name="normal.Size" type="System.Drawing.Size, System.Drawing">
+    <value>58, 17</value>
   </data>
   <data name="hideWhenMinimized.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="labelBookletSizeExisting.Text" xml:space="preserve">
-    <value>E&amp;xisting Problems</value>
+  <data name="tiny.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
   </data>
-  <data name="&gt;&gt;problemPrintSize.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="labelBookletSizeNew.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
   </data>
-  <data name="generateMinimalProblems.Size" type="System.Drawing.Size, System.Drawing">
-    <value>160, 17</value>
+  <data name="normalSudoku.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
   </data>
-  <data name="labelConstrast.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;severity.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="hard.Location" type="System.Drawing.Point, System.Drawing">
-    <value>191, 19</value>
-  </data>
-  <data name="solutionSmall.Size" type="System.Drawing.Size, System.Drawing">
-    <value>50, 17</value>
-  </data>
-  <data name="xSudoku.Location" type="System.Drawing.Point, System.Drawing">
-    <value>91, 19</value>
-  </data>
-  <data name="&gt;&gt;solutionNormal.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;selectLevelBox.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;normal.Parent" xml:space="preserve">
-    <value>problemPrintSize</value>
-  </data>
-  <data name="sizeGroupBox.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
-  </data>
-  <data name="&gt;&gt;printInternalSeverity.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="groupBox1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>206, 130</value>
-  </data>
-  <data name="largeRB.Size" type="System.Drawing.Size, System.Drawing">
-    <value>52, 17</value>
-  </data>
-  <data name="printHints.Text" xml:space="preserve">
-    <value>Print &amp;Possible Values</value>
-  </data>
-  <data name="&gt;&gt;smallRB.Name" xml:space="preserve">
-    <value>smallRB</value>
-  </data>
-  <data name="labelBookletSizeExisting.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
-  </data>
-  <data name="hard.Text" xml:space="preserve">
-    <value>Hard</value>
-  </data>
-  <data name="&gt;&gt;xSudokuConstrast.Name" xml:space="preserve">
-    <value>xSudokuConstrast</value>
-  </data>
-  <data name="printPage.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="generateMinimalProblems.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="printHints.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="&gt;&gt;useDigits.ZOrder" xml:space="preserve">
-    <value>1</value>
+  <data name="hideWhenMinimized.Location" type="System.Drawing.Point, System.Drawing">
+    <value>9, 130</value>
   </data>
-  <data name="generatePage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 25</value>
+  <data name="&gt;&gt;intermediate.Parent" xml:space="preserve">
+    <value>severity</value>
   </data>
-  <data name="autoSaveBooklet.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="xSudokuConstrast.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 20</value>
   </data>
-  <data name="xSudokuConstrastLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 178</value>
+  <data name="normalSudoku.Text" xml:space="preserve">
+    <value>Classic</value>
   </data>
-  <data name="&gt;&gt;autoPauseLag.Name" xml:space="preserve">
-    <value>autoPauseLag</value>
-  </data>
-  <data name="&gt;&gt;solutionPrintSize.Parent" xml:space="preserve">
-    <value>printPage</value>
-  </data>
-  <data name="cancel.Text" xml:space="preserve">
-    <value>&amp;Cancel</value>
-  </data>
-  <data name="minValues.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="cancel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>253, 354</value>
-  </data>
-  <data name="&gt;&gt;bookletSizeExisting.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="generateMinimalProblems.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;labelBookletSizeNew.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;solutionPrintSize.Name" xml:space="preserve">
-    <value>solutionPrintSize</value>
-  </data>
-  <data name="sizeGroupBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>206, 14</value>
-  </data>
-  <data name="&gt;&gt;small.Name" xml:space="preserve">
-    <value>small</value>
-  </data>
-  <data name="useWatchHands.Size" type="System.Drawing.Size, System.Drawing">
-    <value>91, 17</value>
-  </data>
-  <data name="&gt;&gt;bookletSize.ZOrder" xml:space="preserve">
+  <data name="directorySelect.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
   </data>
-  <data name="&gt;&gt;saveState.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="ok.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
-  <data name="unlimited.TabIndex" type="System.Int32, mscorlib">
+  <data name="labelMinValues.Size" type="System.Drawing.Size, System.Drawing">
+    <value>246, 13</value>
+  </data>
+  <data name="sizeGroupBox.Text" xml:space="preserve">
+    <value>&amp;Size</value>
+  </data>
+  <data name="&gt;&gt;bookletSizeNew.Name" xml:space="preserve">
+    <value>bookletSizeNew</value>
+  </data>
+  <data name="groupBox1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>180, 75</value>
+  </data>
+  <data name="labelLanguage.Text" xml:space="preserve">
+    <value>&amp;Language</value>
+  </data>
+  <data name="mediumRB.Text" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="&gt;&gt;labelConstrast.ZOrder" xml:space="preserve">
     <value>8</value>
   </data>
   <data name="sizeGroupBox.Size" type="System.Drawing.Size, System.Drawing">
     <value>180, 100</value>
   </data>
-  <data name="optionsTab.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 0</value>
+  <data name="useDigits.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 44</value>
   </data>
-  <data name="&gt;&gt;optionsTab.Name" xml:space="preserve">
-    <value>optionsTab</value>
+  <data name="&gt;&gt;printHints.ZOrder" xml:space="preserve">
+    <value>5</value>
   </data>
-  <data name="&gt;&gt;labelBookletSizeExisting.ZOrder" xml:space="preserve">
-    <value>3</value>
+  <data name="&gt;&gt;solutionPrintSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="layoutPage.Text" xml:space="preserve">
-    <value>Screen Layout</value>
-  </data>
-  <data name="intermediate.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;large.Name" xml:space="preserve">
-    <value>large</value>
-  </data>
-  <data name="&gt;&gt;bookletSizeExisting.Name" xml:space="preserve">
-    <value>bookletSizeExisting</value>
-  </data>
-  <data name="&gt;&gt;xSudoku.Parent" xml:space="preserve">
-    <value>type</value>
-  </data>
-  <data name="ok.Location" type="System.Drawing.Point, System.Drawing">
-    <value>334, 354</value>
-  </data>
-  <data name="xSudoku.Size" type="System.Drawing.Size, System.Drawing">
-    <value>73, 17</value>
-  </data>
-  <data name="&gt;&gt;unlimited.Parent" xml:space="preserve">
+  <data name="&gt;&gt;bookletSize.Name" xml:space="preserve">
     <value>bookletSize</value>
   </data>
-  <data name="generateMinimalProblems.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="small.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;xSudokuConstrast.Parent" xml:space="preserve">
-    <value>printPage</value>
-  </data>
-  <data name="problemPrintSize.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="solutionPrintSize.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="printSolutions.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="printInternalSeverity.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 221</value>
-  </data>
-  <data name="xSudoku.Text" xml:space="preserve">
-    <value>X-Sudoku</value>
-  </data>
-  <data name="normalSudoku.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 19</value>
-  </data>
-  <data name="&gt;&gt;possibleValuesExamplePicture.Name" xml:space="preserve">
-    <value>possibleValuesExamplePicture</value>
-  </data>
-  <data name="&gt;&gt;useDigits.Name" xml:space="preserve">
-    <value>useDigits</value>
-  </data>
-  <data name="&gt;&gt;large.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;problemDirectory.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="&gt;&gt;autoSaveBooklet.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="normal.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 42</value>
-  </data>
-  <data name="&gt;&gt;selectSeverityLevel.Parent" xml:space="preserve">
-    <value>selectLevelBox</value>
-  </data>
-  <data name="normal.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
-  </data>
-  <data name="generateMinimalProblems.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 53</value>
-  </data>
-  <data name="saveState.Size" type="System.Drawing.Size, System.Drawing">
-    <value>79, 17</value>
-  </data>
-  <data name="solutionNormal.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 19</value>
-  </data>
-  <data name="solutionNormal.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
-  </data>
-  <data name="saveState.Text" xml:space="preserve">
-    <value>Save State</value>
-  </data>
-  <data name="&gt;&gt;labelMinValues.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="&gt;&gt;optionsTab.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="possibleValuesExamplePicture.TabIndex" type="System.Int32, mscorlib">
+  <data name="&gt;&gt;smallRB.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="large.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 19</value>
+  <data name="printPage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 25</value>
   </data>
-  <data name="&gt;&gt;generatePage.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="&gt;&gt;labelMinValues.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;xSudoku.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="normal.Text" xml:space="preserve">
+    <value>Normal</value>
   </data>
-  <data name="large.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+  <data name="&gt;&gt;constrast.Type" xml:space="preserve">
+    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;directorySelect.Parent" xml:space="preserve">
+  <data name="constrast.Size" type="System.Drawing.Size, System.Drawing">
+    <value>65, 20</value>
+  </data>
+  <data name="&gt;&gt;generatePage.Name" xml:space="preserve">
     <value>generatePage</value>
   </data>
-  <data name="normalSudoku.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
+  <data name="selectSeverityLevel.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
   </data>
-  <data name="minValues.Location" type="System.Drawing.Point, System.Drawing">
-    <value>270, 31</value>
+  <data name="precalculatedProblems.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
-  <data name="&gt;&gt;bookletSizeNew.Name" xml:space="preserve">
-    <value>bookletSizeNew</value>
+  <data name="&gt;&gt;labelBookletSizeNew.ZOrder" xml:space="preserve">
+    <value>2</value>
   </data>
-  <data name="&gt;&gt;autoPause.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;hard.Name" xml:space="preserve">
+    <value>hard</value>
+  </data>
+  <data name="&gt;&gt;bookletSizeExisting.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="optionsTab.Size" type="System.Drawing.Size, System.Drawing">
-    <value>400, 343</value>
+  <data name="&gt;&gt;precalculatedProblems.Name" xml:space="preserve">
+    <value>precalculatedProblems</value>
   </data>
-  <data name="&gt;&gt;hard.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;sizeGroupBox.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;bookletSize.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;printSolutions.Name" xml:space="preserve">
+    <value>printSolutions</value>
+  </data>
+  <data name="optionsTab.Padding" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="severity.Text" xml:space="preserve">
+    <value>Severity</value>
+  </data>
+  <data name="&gt;&gt;xSudoku.Name" xml:space="preserve">
+    <value>xSudoku</value>
+  </data>
+  <data name="selectSeverityLevel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>85, 17</value>
+  </data>
+  <data name="&gt;&gt;cancel.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;selectProblemDirectoryDialog.Name" xml:space="preserve">
+    <value>selectProblemDirectoryDialog</value>
+  </data>
+  <data name="generatePage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>392, 314</value>
+  </data>
+  <data name="autoPause.Text" xml:space="preserve">
+    <value>Auto Pause</value>
+  </data>
+  <data name="normalSudoku.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="&gt;&gt;xSudoku.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="labelBookletSizeExisting.Location" type="System.Drawing.Point, System.Drawing">
-    <value>131, 16</value>
-  </data>
-  <data name="&gt;&gt;autoSaveBooklet.ZOrder" xml:space="preserve">
-    <value>10</value>
-  </data>
-  <data name="mediumRB.Text" xml:space="preserve">
-    <value>Medium</value>
-  </data>
-  <data name="&gt;&gt;cancel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="small.Text" xml:space="preserve">
-    <value>Small</value>
-  </data>
-  <data name="problemPrintSize.Text" xml:space="preserve">
-    <value>Size-Problem</value>
-  </data>
-  <data name="normal.Size" type="System.Drawing.Size, System.Drawing">
-    <value>58, 17</value>
-  </data>
-  <data name="&gt;&gt;possibleValuesExamplePicture.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;generateMinimalProblems.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="problemPrintSize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 62</value>
-  </data>
-  <data name="language.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 34</value>
+  <data name="largeRB.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
   <data name="&gt;&gt;small.Parent" xml:space="preserve">
     <value>problemPrintSize</value>
   </data>
-  <data name="unlimited.Location" type="System.Drawing.Point, System.Drawing">
-    <value>134, 35</value>
-  </data>
-  <data name="&gt;&gt;solutionPrintSize.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelMinValues.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="layoutPage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>392, 314</value>
-  </data>
-  <data name="&gt;&gt;labelLanguage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;possibleValuesExamplePicture.Parent" xml:space="preserve">
-    <value>groupBox1</value>
-  </data>
-  <data name="&gt;&gt;printPage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="useDigits.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="normal.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;generateMinimalProblems.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;useWatchHands.Name" xml:space="preserve">
-    <value>useWatchHands</value>
-  </data>
-  <data name="&gt;&gt;labelBookletSizeExisting.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="bookletSize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>349, 61</value>
-  </data>
-  <data name="printPage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>392, 314</value>
-  </data>
-  <data name="&gt;&gt;problemDirectory.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;autoPause.Name" xml:space="preserve">
-    <value>autoPause</value>
-  </data>
-  <data name="bookletSizeNew.TabIndex" type="System.Int32, mscorlib">
+  <data name="&gt;&gt;constrast.ZOrder" xml:space="preserve">
     <value>7</value>
-  </data>
-  <data name="&gt;&gt;problemPrintSize.ZOrder" xml:space="preserve">
-    <value>6</value>
-  </data>
-  <data name="labelBaseDirectory.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="easy.Size" type="System.Drawing.Size, System.Drawing">
-    <value>49, 17</value>
-  </data>
-  <data name="tiny.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="autoPauseLag.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="problemDirectory.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 282</value>
-  </data>
-  <data name="&gt;&gt;useDigits.Parent" xml:space="preserve">
-    <value>groupBox1</value>
-  </data>
-  <data name="&gt;&gt;labelBaseDirectory.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;solutionSmall.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="precalculatedProblems.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 12</value>
   </data>
   <data name="&gt;&gt;tiny.Name" xml:space="preserve">
     <value>tiny</value>
@@ -1275,454 +1675,58 @@
   <data name="solutionNormal.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 17</value>
   </data>
-  <data name="&gt;&gt;autoPause.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="solutionSmall.Size" type="System.Drawing.Size, System.Drawing">
+    <value>50, 17</value>
   </data>
-  <data name="smallRB.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="large.Text" xml:space="preserve">
+    <value>Large</value>
+  </data>
+  <data name="largeRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>52, 17</value>
+  </data>
+  <data name="&gt;&gt;problemDirectory.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="severity.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="&gt;&gt;normal.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="directorySelect.Size" type="System.Drawing.Size, System.Drawing">
-    <value>25, 23</value>
-  </data>
-  <data name="&gt;&gt;sizeGroupBox.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="selectLevelBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>260, 76</value>
-  </data>
-  <data name="labelMinValues.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="labelLanguage.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="layoutPage.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
+  <data name="unlimited.Location" type="System.Drawing.Point, System.Drawing">
+    <value>134, 35</value>
   </data>
-  <data name="smallRB.Text" xml:space="preserve">
-    <value>Small</value>
-  </data>
-  <data name="&gt;&gt;minValues.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="&gt;&gt;minValues.ZOrder" xml:space="preserve">
-    <value>9</value>
-  </data>
-  <data name="&gt;&gt;type.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="large.Size" type="System.Drawing.Size, System.Drawing">
-    <value>52, 17</value>
-  </data>
-  <data name="&gt;&gt;solutionPrintSize.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;large.Parent" xml:space="preserve">
-    <value>problemPrintSize</value>
-  </data>
-  <data name="cancel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 23</value>
-  </data>
-  <data name="xSudokuConstrastLabel.TabIndex" type="System.Int32, mscorlib">
-    <value>10</value>
-  </data>
-  <data name="bookletSize.Text" xml:space="preserve">
-    <value>Booklet Size</value>
-  </data>
-  <data name="optionsTab.Appearance" type="System.Windows.Forms.TabAppearance, System.Windows.Forms">
-    <value>FlatButtons</value>
-  </data>
-  <data name="&gt;&gt;easy.Name" xml:space="preserve">
-    <value>easy</value>
-  </data>
-  <data name="unlimited.Size" type="System.Drawing.Size, System.Drawing">
-    <value>69, 17</value>
-  </data>
-  <data name="largeRB.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 68</value>
-  </data>
-  <data name="&gt;&gt;labelConstrast.Name" xml:space="preserve">
-    <value>labelConstrast</value>
-  </data>
-  <data name="labelBookletSizeExisting.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="bookletSize.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="&gt;&gt;problemDirectory.Name" xml:space="preserve">
-    <value>problemDirectory</value>
-  </data>
-  <data name="xSudokuConstrast.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 194</value>
-  </data>
-  <data name="&gt;&gt;generatePage.Parent" xml:space="preserve">
-    <value>optionsTab</value>
-  </data>
-  <data name="generatePage.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;printHints.Name" xml:space="preserve">
-    <value>printHints</value>
-  </data>
-  <data name="labelBaseDirectory.Text" xml:space="preserve">
-    <value>Problem &amp;Directory</value>
-  </data>
-  <data name="hard.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="tiny.Size" type="System.Drawing.Size, System.Drawing">
-    <value>45, 17</value>
-  </data>
-  <data name="labelBaseDirectory.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 266</value>
-  </data>
-  <data name="&gt;&gt;ok.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;printPage.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="selectLevelBox.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+  <data name="&gt;&gt;type.Name" xml:space="preserve">
+    <value>type</value>
   </data>
-  <data name="autoPause.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="labelMinValues.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 33</value>
   </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Sudoku Options</value>
+  <data name="&gt;&gt;labelLanguage.Name" xml:space="preserve">
+    <value>labelLanguage</value>
   </data>
-  <data name="ok.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="&gt;&gt;normalSudoku.Parent" xml:space="preserve">
+    <value>type</value>
   </data>
-  <data name="&gt;&gt;sizeGroupBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="normalSudoku.Size" type="System.Drawing.Size, System.Drawing">
+    <value>59, 17</value>
   </data>
-  <data name="&gt;&gt;mediumRB.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;easy.Parent" xml:space="preserve">
-    <value>severity</value>
-  </data>
-  <data name="largeRB.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="printSolutions.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="xSudokuConstrastLabel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="labelMinValues.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="easy.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;optionsTab.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="possibleValuesExamplePicture.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 41</value>
-  </data>
-  <data name="generatePage.Text" xml:space="preserve">
-    <value>Generate</value>
-  </data>
-  <data name="small.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 65</value>
-  </data>
-  <data name="&gt;&gt;normalSudoku.Name" xml:space="preserve">
-    <value>normalSudoku</value>
-  </data>
-  <data name="&gt;&gt;printSolutions.Name" xml:space="preserve">
-    <value>printSolutions</value>
-  </data>
-  <data name="useDigits.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 17</value>
-  </data>
-  <data name="labelMinValues.Text" xml:space="preserve">
-    <value>&amp;Minimum Number of Values in generated Problems:</value>
-  </data>
-  <data name="xSudoku.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;severity.Name" xml:space="preserve">
-    <value>severity</value>
-  </data>
-  <data name="normalSudoku.Text" xml:space="preserve">
-    <value>Classic</value>
-  </data>
-  <data name="xSudokuConstrastLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>116, 13</value>
-  </data>
-  <data name="labelConstrast.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;smallRB.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;language.Name" xml:space="preserve">
-    <value>language</value>
-  </data>
-  <data name="easy.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="layoutPage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 0</value>
-  </data>
-  <data name="&gt;&gt;xSudokuConstrastLabel.Parent" xml:space="preserve">
+  <data name="&gt;&gt;printInternalSeverity.Parent" xml:space="preserve">
     <value>printPage</value>
   </data>
-  <data name="solutionSmall.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 42</value>
-  </data>
-  <data name="&gt;&gt;xSudokuConstrastLabel.Name" xml:space="preserve">
-    <value>xSudokuConstrastLabel</value>
-  </data>
-  <data name="&gt;&gt;layoutPage.Parent" xml:space="preserve">
-    <value>optionsTab</value>
-  </data>
-  <data name="labelBookletSizeNew.Text" xml:space="preserve">
-    <value>&amp;New Problems</value>
-  </data>
-  <data name="problemPrintSize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>113, 113</value>
-  </data>
-  <data name="autoPause.Location" type="System.Drawing.Point, System.Drawing">
-    <value>9, 176</value>
-  </data>
-  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
-    <value>CenterParent</value>
-  </data>
-  <data name="&gt;&gt;labelBookletSizeExisting.Name" xml:space="preserve">
-    <value>labelBookletSizeExisting</value>
-  </data>
-  <data name="bookletSizeExisting.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
-  </data>
-  <data name="&gt;&gt;hideWhenMinimized.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="&gt;&gt;solutionSmall.Parent" xml:space="preserve">
-    <value>solutionPrintSize</value>
-  </data>
-  <data name="intermediate.Text" xml:space="preserve">
-    <value>Intermediate</value>
-  </data>
-  <data name="type.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 127</value>
-  </data>
-  <data name="&gt;&gt;saveState.Name" xml:space="preserve">
-    <value>saveState</value>
-  </data>
-  <data name="generatePage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>392, 314</value>
-  </data>
-  <data name="labelLanguage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>55, 13</value>
-  </data>
-  <data name="&gt;&gt;bookletSize.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="xSudokuConstrastLabel.Text" xml:space="preserve">
-    <value>&amp;Contrast for X-Sudokus</value>
-  </data>
-  <data name="tiny.TabIndex" type="System.Int32, mscorlib">
-    <value>8</value>
-  </data>
-  <data name="&gt;&gt;type.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="&gt;&gt;constrast.ZOrder" xml:space="preserve">
-    <value>7</value>
-  </data>
-  <data name="&gt;&gt;selectSeverityLevel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;useWatchHands.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
-  </data>
-  <data name="&gt;&gt;small.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;labelBookletSizeNew.Name" xml:space="preserve">
-    <value>labelBookletSizeNew</value>
-  </data>
-  <data name="labelBookletSizeNew.AutoSize" type="System.Boolean, mscorlib">
+  <data name="intermediate.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="&gt;&gt;normal.Name" xml:space="preserve">
-    <value>normal</value>
-  </data>
-  <data name="solutionSmall.TabIndex" type="System.Int32, mscorlib">
-    <value>9</value>
-  </data>
-  <data name="&gt;&gt;cancel.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;xSudoku.Name" xml:space="preserve">
-    <value>xSudoku</value>
-  </data>
-  <data name="&gt;&gt;intermediate.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;groupBox1.Parent" xml:space="preserve">
-    <value>layoutPage</value>
-  </data>
-  <data name="labelBookletSizeNew.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 13</value>
-  </data>
-  <data name="&gt;&gt;selectLevelBox.Parent" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="&gt;&gt;tiny.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;generateMinimalProblems.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="easy.Text" xml:space="preserve">
-    <value>Easy</value>
-  </data>
-  <data name="labelMinValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>246, 13</value>
-  </data>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="normalSudoku.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;selectLevelBox.Name" xml:space="preserve">
-    <value>selectLevelBox</value>
-  </data>
-  <data name="&gt;&gt;bookletSizeNew.Parent" xml:space="preserve">
-    <value>bookletSize</value>
-  </data>
-  <data name="severity.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 76</value>
-  </data>
-  <data name="hideWhenMinimized.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="printSolutions.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 13</value>
-  </data>
-  <data name="precalculatedProblems.TabIndex" type="System.Int32, mscorlib">
-    <value>12</value>
-  </data>
-  <data name="&gt;&gt;labelLanguage.ZOrder" xml:space="preserve">
-    <value>6</value>
-  </data>
-  <data name="cancel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;hard.Name" xml:space="preserve">
-    <value>hard</value>
-  </data>
-  <data name="selectSeverityLevel.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="optionsTab.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 8</value>
-  </data>
-  <data name="type.Text" xml:space="preserve">
-    <value>Sudoku Types for Booklets</value>
-  </data>
-  <data name="mediumRB.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;type.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;generatePage.Name" xml:space="preserve">
-    <value>generatePage</value>
-  </data>
-  <data name="&gt;&gt;groupBox1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;solutionSmall.Name" xml:space="preserve">
-    <value>solutionSmall</value>
-  </data>
-  <data name="&gt;&gt;small.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;mediumRB.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="&gt;&gt;smallRB.Parent" xml:space="preserve">
-    <value>sizeGroupBox</value>
-  </data>
-  <data name="precalculatedProblems.Text" xml:space="preserve">
-    <value>Use Precalculated Problems</value>
-  </data>
-  <data name="printHints.Size" type="System.Drawing.Size, System.Drawing">
-    <value>124, 17</value>
-  </data>
-  <data name="&gt;&gt;intermediate.Parent" xml:space="preserve">
-    <value>severity</value>
-  </data>
-  <data name="&gt;&gt;useDigits.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="hideWhenMinimized.Text" xml:space="preserve">
-    <value>Hide when minimized</value>
-  </data>
-  <data name="directorySelect.Location" type="System.Drawing.Point, System.Drawing">
-    <value>361, 280</value>
-  </data>
-  <data name="cancel.TabIndex" type="System.Int32, mscorlib">
-    <value>999</value>
-  </data>
-  <data name="autoPause.Size" type="System.Drawing.Size, System.Drawing">
-    <value>81, 17</value>
-  </data>
-  <data name="hideWhenMinimized.Size" type="System.Drawing.Size, System.Drawing">
-    <value>125, 17</value>
-  </data>
-  <data name="&gt;&gt;autoSaveBooklet.Name" xml:space="preserve">
-    <value>autoSaveBooklet</value>
-  </data>
-  <data name="selectSeverityLevel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>85, 17</value>
-  </data>
-  <data name="&gt;&gt;bookletSizeNew.Type" xml:space="preserve">
-    <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;precalculatedProblems.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;smallRB.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="autoSaveBooklet.Text" xml:space="preserve">
-    <value>&amp;Auto Save Booklet Problems</value>
-  </data>
-  <data name="labelBookletSizeExisting.Size" type="System.Drawing.Size, System.Drawing">
-    <value>89, 13</value>
-  </data>
-  <data name="directorySelect.Text" xml:space="preserve">
-    <value>...</value>
-  </data>
-  <data name="labelLanguage.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="&gt;&gt;tiny.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;intermediate.Name" xml:space="preserve">
-    <value>intermediate</value>
-  </data>
+  <metadata name="$this.Language" type="System.Globalization.CultureInfo, System.Private.CoreLib, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
+    <value>de-DE</value>
+  </metadata>
   <metadata name="selectProblemDirectoryDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
-  </metadata>
-  <metadata name="$this.Language" type="System.Globalization.CultureInfo, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>de-DE</value>
   </metadata>
 </root>

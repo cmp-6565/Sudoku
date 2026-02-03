@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
-
-[assembly: InternalsVisibleTo("BenchmarkSuite1")]
-[assembly: InternalsVisibleTo("Sudoku.Tests")]
 
 namespace Sudoku;
 
@@ -16,12 +12,12 @@ static class AssemblyInfo
         get
         {
             // Get all Title attributes on this assembly
-            object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
             // If there is at least one Title attribute
             if(attributes.Length > 0)
             {
                 // Select the first one
-                AssemblyTitleAttribute titleAttribute=(AssemblyTitleAttribute)attributes[0];
+                AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
                 // If it is not an empty string, return it
                 if(!String.IsNullOrEmpty(titleAttribute.Title))
                     return titleAttribute.Title;
@@ -35,8 +31,8 @@ static class AssemblyInfo
     {
         get
         {
-            object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
-            AssemblyFileVersionAttribute t=(AssemblyFileVersionAttribute)attributes[0];
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
+            AssemblyFileVersionAttribute t = (AssemblyFileVersionAttribute)attributes[0];
             return t.Version;
         }
     }
@@ -80,7 +76,7 @@ static class AssemblyInfo
         get
         {
             // Get all Product attributes on this assembly
-            object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
             // If there aren't any Product attributes, return an empty string
             if(attributes.Length == 0)
                 return String.Empty;
@@ -94,7 +90,7 @@ static class AssemblyInfo
         get
         {
             // Get all Copyright attributes on this assembly
-            object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
             // If there aren't any Copyright attributes, return an empty string
             if(attributes.Length == 0)
                 return String.Empty;
@@ -108,7 +104,7 @@ static class AssemblyInfo
         get
         {
             // Get all Company attributes on this assembly
-            object[] attributes=Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+            object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
             // If there aren't any Company attributes, return an empty string
             if(attributes.Length == 0)
                 return String.Empty;
