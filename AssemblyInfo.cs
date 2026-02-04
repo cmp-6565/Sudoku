@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
+[assembly: InternalsVisibleTo("BenchmarkSuite1")]
+
 namespace Sudoku;
 
 static class AssemblyInfo

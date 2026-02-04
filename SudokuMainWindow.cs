@@ -868,6 +868,8 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         undo.Enabled = controller.CanUndo() && enable;
         resetTimer.Enabled = controller.IsTimerRunning && enable;
         clearCandidates.Enabled = controller.CurrentProblem.HasCandidates() && enable;
+        next.Enabled = (currentSolution < controller.CurrentProblem.Solutions.Count - 1) && enable;
+        prior.Enabled = (currentSolution > 0) && enable;
 
         if(SudokuGrid.Enabled = enable)
             SudokuGrid.Focus();

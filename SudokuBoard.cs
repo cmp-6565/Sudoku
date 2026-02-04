@@ -33,6 +33,8 @@ internal class SudokuBoard: DataGridView, IDisposable
     private Font normalDisplayFont;
     private Font boldDisplayFont;
     private Font strikethroughFont;
+    private Font hintFontSmall;
+    private Font hintFontNormal;
     private String[] fontSizes;
     private Boolean valuesVisible = true;
 
@@ -89,6 +91,8 @@ internal class SudokuBoard: DataGridView, IDisposable
         normalDisplayFont?.Dispose(); normalDisplayFont = null;
         boldDisplayFont?.Dispose(); boldDisplayFont = null;
         strikethroughFont?.Dispose(); strikethroughFont = null;
+        hintFontSmall?.Dispose(); hintFontSmall = null;
+        hintFontNormal?.Dispose(); hintFontNormal = null;
         cellContextMenu?.Dispose(); cellContextMenu = null;
     }
     internal SudokuController Controller
@@ -616,34 +620,37 @@ internal class SudokuBoard: DataGridView, IDisposable
 
     private void ShowCellHints(object sender, PaintEventArgs e)
     {
-        if(sender is DataGridView && Controller?.CurrentProblem != null)
+        var currentProblem = Controller?.CurrentProblem;
+        if(sender is not DataGridView || currentProblem == null) return;
+
+        bool showCandidatesMode = !settings.ShowHints;
+        if(showCandidatesMode && !currentProblem.HasCandidates()) return;
+
+        EnsureHintFonts();
+        Font hintFont = settings.Size == 1 ? hintFontSmall : hintFontNormal;
+
+        float cellSize = Columns[0].Width;
+        Rectangle clip = e.ClipRectangle;
+
+        int startRow = Math.Max(0, (int)(clip.Top / cellSize));
+        int endRow = Math.Min(WinFormsSettings.SudokuSize, (int)(clip.Bottom / cellSize) + 1);
+        int startCol = Math.Max(0, (int)(clip.Left / cellSize));
+        int endCol = Math.Min(WinFormsSettings.SudokuSize, (int)(clip.Right / cellSize) + 1);
+
+        for(int row = startRow; row < endRow; row++)
         {
-            Font printFont = (settings.Size == 1 ? new PrintParameters(settings).SmallFont : new PrintParameters(settings).NormalFont);
-            bool showCandidatesMode = !settings.ShowHints;
-
-            if(showCandidatesMode && !Controller.CurrentProblem.HasCandidates()) return;
-
-            float cellSize = Columns[0].Width;
-
-            int startRow = Math.Max(0, (int)(e.ClipRectangle.Top / cellSize));
-            int endRow = Math.Min(WinFormsSettings.SudokuSize, (int)(e.ClipRectangle.Bottom / cellSize) + 1);
-            int startCol = Math.Max(0, (int)(e.ClipRectangle.Left / cellSize));
-            int endCol = Math.Min(WinFormsSettings.SudokuSize, (int)(e.ClipRectangle.Right / cellSize) + 1);
-
-            for(int row = startRow; row < endRow; row++)
+            for(int col = startCol; col < endCol; col++)
             {
-                for(int col = startCol; col < endCol; col++)
-                {
-                    if(Controller.CurrentProblem.GetValue(row, col) == Values.Undefined && (!showCandidatesMode || Controller.CurrentProblem.HasCandidate(row, col)))
-                    {
-                        RectangleF rf = new RectangleF(col * cellSize, row * cellSize, cellSize, cellSize);
+                if(currentProblem.GetValue(row, col) != Values.Undefined) continue;
+                if(showCandidatesMode && !currentProblem.HasCandidate(row, col)) continue;
 
-                        if(settings.UseWatchHandHints)
-                            SudokuRenderer.DrawWatchHands(Controller.CurrentProblem.Cell(row, col), rf, e.Graphics, showCandidatesMode);
-                        else
-                            SudokuRenderer.DrawHints(Controller.CurrentProblem.Cell(row, col), rf, e.Graphics, printFont, this[col, row].Style.ForeColor, showCandidatesMode);
-                    }
-                }
+                RectangleF cellBounds = new RectangleF(col * cellSize, row * cellSize, cellSize, cellSize);
+                BaseCell cell = currentProblem.Cell(row, col);
+
+                if(settings.UseWatchHandHints)
+                    SudokuRenderer.DrawWatchHands(cell, cellBounds, e.Graphics, showCandidatesMode);
+                else
+                    SudokuRenderer.DrawHints(cell, cellBounds, e.Graphics, hintFont, this[col, row].Style.ForeColor, showCandidatesMode);
             }
         }
     }
@@ -676,12 +683,30 @@ internal class SudokuBoard: DataGridView, IDisposable
         colorIndex = 255 - (int)(255f * ((float)settings.Contrast / 1000f));
         lightGreen = Color.FromArgb(191, colorIndex, 191);
 
+        var printParameters = new PrintParameters(settings);
+
         fontSizes = settings.FontSizes.Split('|');
+        normalDisplayFont?.Dispose();
+        boldDisplayFont?.Dispose();
+        strikethroughFont?.Dispose();
         normalDisplayFont = new Font(settings.TableFont, Convert.ToInt32(fontSizes[settings.Size - 1]), FontStyle.Regular);
         boldDisplayFont = new Font(settings.TableFont, Convert.ToInt32(fontSizes[settings.Size - 1]), FontStyle.Bold);
         strikethroughFont = new Font(settings.TableFont, Convert.ToInt32(fontSizes[settings.Size - 1]), FontStyle.Bold | FontStyle.Strikeout);
 
+        hintFontSmall?.Dispose();
+        hintFontNormal?.Dispose();
+        hintFontSmall = (Font)printParameters.SmallFont.Clone();
+        hintFontNormal = (Font)printParameters.NormalFont.Clone();
+
         textColor = Color.FromArgb(255 - colorIndex, 255 - colorIndex, 255 - colorIndex);
+    }
+    private void EnsureHintFonts()
+    {
+        if(hintFontSmall != null && hintFontNormal != null) return;
+
+        var printParameters = new PrintParameters(settings);
+        hintFontSmall ??= (Font)printParameters.SmallFont.Clone();
+        hintFontNormal ??= (Font)printParameters.NormalFont.Clone();
     }
     public void UpdateProblemState(GenerationProgressState state)
     {

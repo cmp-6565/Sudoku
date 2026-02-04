@@ -23,6 +23,12 @@ internal abstract class BaseMatrix: Values
     private static int[] memberStamp;
     [ThreadStatic]
     private static int memberStampId;
+[ThreadStatic]
+    private static BaseCell[] isolatedBuffer;
+[ThreadStatic]
+    private static int[] isolatedEnabledCounts;
+[ThreadStatic]
+    private static int[] isolatedCandidateIndex;
 
     public event EventHandler<BaseCell> CellChanged;
     protected virtual void OnCellChanged(BaseCell v)
@@ -38,58 +44,103 @@ internal abstract class BaseMatrix: Values
 
     protected void InitializeMatrix()
     {
-        int row, col;
-        int i, j;
-        int startCol, startRow;
-
-        Matrix = new BaseCell[WinFormsSettings.SudokuSize][];
-        Cols = new BaseCell[WinFormsSettings.SudokuSize][];
-        Rectangles = new BaseCell[WinFormsSettings.SudokuSize][];
-        sortableValues = new List<BaseCell>();
-        cells = new List<BaseCell>();
+        int size = WinFormsSettings.SudokuSize;
+        int rectSize = WinFormsSettings.RectSize;
+        Matrix = new BaseCell[size][];
+        Cols = new BaseCell[size][];
+        Rectangles = new BaseCell[size][];
+        sortableValues = new List<BaseCell>(size * size);
+        cells = new List<BaseCell>(size * size);
         nVarValues = int.MinValue; // not initialized
         severityLevel = float.NaN;
 
-        for(row = 0; row < WinFormsSettings.SudokuSize; row++)
+        for(int index = 0; index < size; index++)
         {
-            Matrix[row] = new BaseCell[WinFormsSettings.SudokuSize];
-            Cols[row] = new BaseCell[WinFormsSettings.SudokuSize];
-            Rectangles[row] = new BaseCell[WinFormsSettings.SudokuSize];
-
-            for(col = 0; col < WinFormsSettings.SudokuSize; col++)
-                Matrix[row][col] = CreateValue(row, col);
+            Matrix[index] = new BaseCell[size];
+            Cols[index] = new BaseCell[size];
+            Rectangles[index] = new BaseCell[size];
         }
 
-        for(col = 0; col < WinFormsSettings.SudokuSize; col++)
-            for(row = 0; row < WinFormsSettings.SudokuSize; row++)
-                Cols[col][row] = Matrix[row][col];
-
-        for(row = 0; row < WinFormsSettings.SudokuSize; row += WinFormsSettings.RectSize)
-            for(col = 0; col < WinFormsSettings.SudokuSize; col += WinFormsSettings.RectSize)
+        for(int row = 0; row < size; row++)
+        {
+            BaseCell[] rowCells = Matrix[row];
+            for(int col = 0; col < size; col++)
             {
-                int count = 0;
-                for(i = 0; i < WinFormsSettings.RectSize; i++)
-                    for(j = 0; j < WinFormsSettings.RectSize; j++)
-                        Rectangles[row + ((col / WinFormsSettings.RectSize) % WinFormsSettings.RectSize)][count++] = Matrix[row + i][col + j];
+                BaseCell cell = CreateValue(row, col);
+                rowCells[col] = cell;
+                Cols[col][row] = cell;
+                int rectRow = row / rectSize;
+                int rectCol = col / rectSize;
+                int rectIndex = rectRow * rectSize + rectCol;
+                int rectOffset = (row % rectSize) * rectSize + (col % rectSize);
+                Rectangles[rectIndex][rectOffset] = cell;
             }
+        }
 
-        for(row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(col = 0; col < WinFormsSettings.SudokuSize; col++)
-            {
-                for(i = 0; i < WinFormsSettings.SudokuSize; i++)
-                    if(i != col) Cell(row, col).AddNeighbor(ref Matrix[row][i]);
-                for(i = 0; i < WinFormsSettings.SudokuSize; i++)
-                    if(i != row) Cell(row, col).AddNeighbor(ref Matrix[i][col]);
+		for(int row = 0; row < size; row++)
+		{
+			BaseCell[] rowCells = Matrix[row];
+			for(int col = 0; col < size; col++)
+			{
+				BaseCell cell = rowCells[col];
+				sortableValues.Add(cell);
+				cells.Add(cell);
+			}
+		}
 
-                startCol = (int)Math.Truncate((double)col / WinFormsSettings.RectSize) * WinFormsSettings.RectSize;
-                startRow = (int)Math.Truncate((double)row / WinFormsSettings.RectSize) * WinFormsSettings.RectSize;
-                for(i = startRow; i < startRow + WinFormsSettings.RectSize; i++)
-                    for(j = startCol; j < startCol + WinFormsSettings.RectSize; j++)
-                        if(i != row && j != col) Cell(row, col).AddNeighbor(ref Matrix[i][j]);
-                sortableValues.Add(Cell(row, col));
-                cells.Add(Cell(row, col));
-                Cell(row, col).Init();
-            }
+		// Verbinde Zeilen-Nachbarn einmalig paarweise
+		for(int row = 0; row < size; row++)
+		{
+			BaseCell[] rowCells = Matrix[row];
+			for(int i = 0; i < size - 1; i++)
+			{
+				for(int j = i + 1; j < size; j++)
+				{
+					rowCells[i].AddNeighbor(ref rowCells[j]);
+					rowCells[j].AddNeighbor(ref rowCells[i]);
+				}
+			}
+		}
+
+		// Verbinde Spalten-Nachbarn einmalig paarweise
+		for(int col = 0; col < size; col++)
+		{
+			BaseCell[] columnCells = Cols[col];
+			for(int i = 0; i < size - 1; i++)
+			{
+				for(int j = i + 1; j < size; j++)
+				{
+					columnCells[i].AddNeighbor(ref columnCells[j]);
+					columnCells[j].AddNeighbor(ref columnCells[i]);
+				}
+			}
+		}
+
+		// Verbinde Block-Nachbarn (ohne Zeilen/Spalten-Duplikate)
+		for(int rect = 0; rect < Rectangles.Length; rect++)
+		{
+			BaseCell[] rectCells = Rectangles[rect];
+			for(int i = 0; i < rectCells.Length - 1; i++)
+			{
+				BaseCell cellA = rectCells[i];
+				for(int j = i + 1; j < rectCells.Length; j++)
+				{
+					BaseCell cellB = rectCells[j];
+					if(cellA.Row == cellB.Row || cellA.Col == cellB.Col) continue;
+					rectCells[i].AddNeighbor(ref rectCells[j]);
+					rectCells[j].AddNeighbor(ref rectCells[i]);
+				}
+			}
+		}
+
+		for(int row = 0; row < size; row++)
+		{
+			BaseCell[] rowCells = Matrix[row];
+			for(int col = 0; col < size; col++)
+			{
+				rowCells[col].Init();
+			}
+		}
     }
     public override BaseMatrix Clone()
     {
@@ -430,14 +481,20 @@ internal abstract class BaseMatrix: Values
 
         int counterIncrease = 0;
         BaseCell.NakedScratch scratch = default;
-        try
-        {
-            for(int i = 0; i < part.Length; i++)
-            {
-                var cell = part[i];
-                counterIncrease = Math.Max(cell.FindNakedCells(part, ref scratch), counterIncrease);
-            }
-        }
+		try
+		{
+			for(int i = 0; i < part.Length; i++)
+			{
+				var cell = part[i];
+				if(cell == null) continue;
+				if(cell.CellValue != Values.Undefined) continue;
+				int possible = cell.nPossibleValues;
+				if(possible <= 1 || possible >= WinFormsSettings.SudokuSize - 1) continue;
+				int nakedScore = cell.FindNakedCells(part, ref scratch);
+				if(nakedScore > counterIncrease)
+					counterIncrease = nakedScore;
+			}
+		}
         finally
         {
             scratch.Release();
@@ -456,12 +513,27 @@ internal abstract class BaseMatrix: Values
         int size = WinFormsSettings.SudokuSize;
         int plen = part.Length;
 
-        var cellPool = ArrayPool<BaseCell>.Shared;
-        var intPool = ArrayPool<int>.Shared;
-        int bufferLength = size * plen;
-        BaseCell[] buffer = cellPool.Rent(bufferLength);
-        int[] enabledCounts = intPool.Rent(size);
-        Array.Clear(enabledCounts, 0, size);
+		int bufferLength = size * plen;
+		BaseCell[] buffer = isolatedBuffer;
+		if(buffer == null || buffer.Length < bufferLength)
+		{
+			buffer = new BaseCell[bufferLength];
+			isolatedBuffer = buffer;
+		}
+		int[] enabledCounts = isolatedEnabledCounts;
+		if(enabledCounts == null || enabledCounts.Length < size)
+		{
+			enabledCounts = new int[size];
+			isolatedEnabledCounts = enabledCounts;
+		}
+		int[] usedCandidates = isolatedCandidateIndex;
+		if(usedCandidates == null || usedCandidates.Length < size)
+		{
+			usedCandidates = new int[size];
+			isolatedCandidateIndex = usedCandidates;
+		}
+		int usedCandidateCount = 0;
+		int maxBufferIndex = 0;
 
         try
         {
@@ -476,33 +548,37 @@ internal abstract class BaseMatrix: Values
                     int lowbit = mask & -mask;
                     int cand = BaseCell.LowBitIndex(lowbit);
 
-                    if(cand >= 1 && cand <= size)
+				if(cand >= 1 && cand <= size)
                     {
                         int idx = cand - 1;
+					if(enabledCounts[idx] == 0)
+						usedCandidates[usedCandidateCount++] = idx;
                         int pos = idx * plen + enabledCounts[idx]++;
                         buffer[pos] = cell;
+                        if(pos >= maxBufferIndex) maxBufferIndex = pos + 1;
                     }
                     mask &= (mask - 1);
                 }
             }
 
-            for(int i = 0; i < size; i++)
-            {
-                int count = enabledCounts[i];
-                if(count > 0)
-                    rc |= BlockOtherCellsArray(buffer, i * plen, count, i + 1);
-            }
+			for(int i = 0; i < usedCandidateCount; i++)
+			{
+				int candidateIdx = usedCandidates[i];
+				int count = enabledCounts[candidateIdx];
+				if(count == 0 || count == plen)
+				{
+					enabledCounts[candidateIdx] = 0;
+					continue;
+				}
+				if(BlockOtherCellsArray(buffer, candidateIdx * plen, count, candidateIdx + 1))
+					rc = true;
+				enabledCounts[candidateIdx] = 0;
+			}
         }
-        finally
-        {
-            for(int i = 0; i < size; i++)
-            {
-                int count = enabledCounts[i];
-                int start = i * plen;
-                for(int j = 0; j < count; j++) buffer[start + j] = null;
-            }
-            cellPool.Return(buffer, false);
-            intPool.Return(enabledCounts, false);
+		finally
+		{
+			if(maxBufferIndex > 0) Array.Clear(buffer, 0, maxBufferIndex);
+			for(int i = 0; i < usedCandidateCount; i++) enabledCounts[usedCandidates[i]] = 0;
         }
 
         return rc;
@@ -516,79 +592,97 @@ internal abstract class BaseMatrix: Values
         BaseCell first = enabledCellsArr[offset];
         if(definitive)
         {
-            rc = first.DefinitiveValue == Values.Undefined;
+			rc = first.DefinitiveValue == Values.Undefined; 
             first.DefinitiveValue = (byte)block;
         }
 
-        int size = WinFormsSettings.SudokuSize;
+		int rectSize = WinFormsSettings.RectSize;
+		var rows = Rows;
+		var cols = Cols;
+		var rectangles = Rectangles;
 
         int baseRow = first.Row;
         int baseCol = first.Col;
         int firstRectRow = first.StartRow;
-        int firstRectCol = first.StartCol / WinFormsSettings.RectSize;
-        int baseRectIndex = firstRectRow + (firstRectCol % WinFormsSettings.RectSize);
+        int firstRectCol = first.StartCol / rectSize;
+        int baseRectIndex = firstRectRow + (firstRectCol % rectSize);
+		int baseRectStartRow = first.StartRow;
+		int baseRectStartCol = first.StartCol;
 
         bool allSameRow = true;
         bool allSameCol = true;
         bool allSameRect = true;
 
-        for(int i = 1; i < count; i++)
-        {
-            var c = enabledCellsArr[offset + i];
-            if(c.Row != baseRow) allSameRow = false;
-            if(c.Col != baseCol) allSameCol = false;
-            if(c.StartRow != firstRectRow || (c.StartCol / WinFormsSettings.RectSize) != firstRectCol) allSameRect = false;
-            if(!allSameRow && !allSameCol && !allSameRect) break;
-        }
+		for(int i = 1; i < count; i++)
+		{
+			var c = enabledCellsArr[offset + i];
+			if(c.Row != baseRow) allSameRow = false;
+			if(c.Col != baseCol) allSameCol = false;
+			if(c.StartRow != baseRectStartRow || c.StartCol != baseRectStartCol) allSameRect = false;
+			if(!allSameRow && !allSameCol && !allSameRect) break;
+		}
 
-        // membership test via thread-static stamp array (no allocations)
-        if(memberStamp == null || memberStamp.Length < WinFormsSettings.TotalCellCount)
-            memberStamp = new int[WinFormsSettings.TotalCellCount];
-        int stamp = ++memberStampId;
-        if(stamp == 0)
-        {
-            Array.Clear(memberStamp, 0, WinFormsSettings.TotalCellCount);
-            stamp = ++memberStampId;
-        }
+        bool needRow = allSameRow;
+        bool needCol = !definitive && allSameCol;
+        bool needRect = !definitive && allSameRect;
+        if(!needRow && !needCol && !needRect)
+            return rc;
 
-        for(int i = 0; i < count; i++)
-        {
-            var c = enabledCellsArr[offset + i];
-            memberStamp[c.Row * size + c.Col] = stamp;
-        }
+        ulong rowMask = 0UL;
+        ulong colMask = 0UL;
+        ulong rectMask = 0UL;
+		for(int i = 0; i < count; i++)
+		{
+			var c = enabledCellsArr[offset + i];
+			if(needRow) rowMask |= 1UL << c.Col;
+			if(needCol) colMask |= 1UL << c.Row;
+			if(needRect)
+			{
+				int localRow = c.Row - baseRectStartRow;
+				int localCol = c.Col - baseRectStartCol;
+				if((uint)localRow < (uint)rectSize && (uint)localCol < (uint)rectSize)
+				{
+					int localIndex = localRow * rectSize + localCol;
+					rectMask |= 1UL << localIndex;
+				}
+			}
+		}
 
-        bool ContainsCell(BaseCell cell)
+        if(needRow)
         {
-            return memberStamp[cell.Row * size + cell.Col] == stamp;
-        }
-
-        if(allSameRow)
-        {
-            var neighborCells = Rows[baseRow];
+            var neighborCells = rows[baseRow];
             for(int i = 0; i < neighborCells.Length; i++)
             {
                 var cell = neighborCells[i];
-                if(!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
+                if(((rowMask >> cell.Col) & 1UL) == 0)
+                    rc |= cell.TrySetBlock(block, false, false);
             }
         }
 
-        if(!definitive && allSameCol)
+        if(needCol)
         {
-            var neighborCells = Cols[baseCol];
+            var neighborCells = cols[baseCol];
             for(int i = 0; i < neighborCells.Length; i++)
             {
                 var cell = neighborCells[i];
-                if(!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
+                if(((colMask >> cell.Row) & 1UL) == 0)
+                    rc |= cell.TrySetBlock(block, false, false);
             }
         }
 
-        if(!definitive && allSameRect)
+		if(needRect)
         {
-            var neighborCells = Rectangles[baseRectIndex];
+            var neighborCells = rectangles[baseRectIndex];
             for(int i = 0; i < neighborCells.Length; i++)
             {
                 var cell = neighborCells[i];
-                if(!ContainsCell(cell)) rc |= cell.TrySetBlock(block, false, false);
+                int localRow = cell.Row - baseRectStartRow;
+                int localCol = cell.Col - baseRectStartCol;
+				if((uint)localRow >= (uint)rectSize || (uint)localCol >= (uint)rectSize)
+					continue;
+				int localIndex = localRow * rectSize + localCol;
+				if(((rectMask >> localIndex) & 1UL) == 0)
+                    rc |= cell.TrySetBlock(block, false, false);
             }
         }
 

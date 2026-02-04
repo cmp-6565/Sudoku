@@ -29,6 +29,8 @@ internal class SudokuController: IDisposable
     public Action<Object> MinimizedFailed;
 
     private Stopwatch solvingTimer = new Stopwatch();
+    private static readonly TimeSpan SolverProgressInterval = TimeSpan.FromMilliseconds(150);
+
     public SudokuController(ISudokuSettings settings, IUserInteraction ui)
     {
         undoStack = new Stack<CoreValue>();
@@ -65,26 +67,53 @@ internal class SudokuController: IDisposable
         CurrentProblem.FindSolutions(maxSolutions, token);
         if(CurrentProblem.SolverTask != null)
         {
-            while(!CurrentProblem.SolverTask.IsCompleted && CurrentProblem.NumberOfSolutions < maxSolutions)
-            {
-                token.ThrowIfCancellationRequested();
-
-                progress?.Report(new GenerationProgressState
-                {
-                    StatusText = Resources.Thinking,
-                    PassCount = CurrentProblem.TotalPassCounter,
-                    SolutionCount = CurrentProblem.NumberOfSolutions,
-                    Elapsed = stopwatch.Elapsed
-                });
-
-                await Task.Delay(50);
-            }
-
-            await CurrentProblem.SolverTask;
+            await MonitorSolverTask(Resources.Thinking, progress, stopwatch, token);
         }
+
         stopwatch.Stop();
         CurrentProblem.SolvingTime = stopwatch.Elapsed;
         NotifyMatrixChanged();
+    }
+
+    private async Task MonitorSolverTask(string statusText, IProgress<GenerationProgressState> progress, Stopwatch stopwatch, CancellationToken token)
+    {
+        Task solverTask = CurrentProblem?.SolverTask;
+        if(solverTask == null) return;
+
+        long lastPass = -1;
+        long lastSolution = -1;
+
+        while(true)
+        {
+            Task delayTask = Task.Delay(SolverProgressInterval, token);
+            Task completedTask = await Task.WhenAny(solverTask, delayTask).ConfigureAwait(false);
+
+            if(progress != null)
+            {
+                long passCount = CurrentProblem.TotalPassCounter;
+                long solutionCount = CurrentProblem.NumberOfSolutions;
+
+                if(passCount != lastPass || solutionCount != lastSolution || completedTask == solverTask)
+                {
+                    lastPass = passCount;
+                    lastSolution = solutionCount;
+
+                    progress.Report(new GenerationProgressState
+                    {
+                        StatusText = statusText,
+                        PassCount = passCount,
+                        SolutionCount = solutionCount,
+                        Elapsed = stopwatch.Elapsed
+                    });
+                }
+            }
+
+            if(completedTask == solverTask)
+            {
+                await solverTask.ConfigureAwait(false);
+                break;
+            }
+        }
     }
 
     private void NotifyMatrixChanged()
@@ -177,21 +206,7 @@ internal class SudokuController: IDisposable
 
             if(CurrentProblem.SolverTask != null)
             {
-                while(!CurrentProblem.SolverTask.IsCompleted)
-                {
-                    token.ThrowIfCancellationRequested();
-
-                    progress?.Report(new GenerationProgressState
-                    {
-                        StatusText = Resources.Checking,
-                        PassCount = CurrentProblem.TotalPassCounter,
-                        SolutionCount = CurrentProblem.NumberOfSolutions,
-                        Elapsed = stopwatch.Elapsed
-                    });
-
-                    await Task.Delay(50);
-                }
-                await CurrentProblem.SolverTask;
+                await MonitorSolverTask(Resources.Checking, progress, stopwatch, token);
             }
 
             result = CurrentProblem.ProblemSolved;
@@ -328,65 +343,85 @@ internal class SudokuController: IDisposable
         {
             TotalGenerationTime += CurrentProblem.GenerationTime;
             RestoreProblem();
+
+            TimeSpan throttlingInterval = TimeSpan.FromMilliseconds(75);
+            long minProgressTicks = Math.Max(1, (long)(Stopwatch.Frequency * throttlingInterval.TotalSeconds));
+            long nextProgressTick = 0;
+            int lastRow = -1;
+            int lastCol = -1;
+            byte lastValue = byte.MaxValue;
+            bool lastReadOnly = false;
+
+            void ReportProgressIfNeeded(int row, int col, byte value, bool readOnly, string statusText, bool force)
+            {
+                if(progress == null) return;
+
+                long now = Stopwatch.GetTimestamp();
+                bool cellChanged = row != lastRow || col != lastCol || value != lastValue || readOnly != lastReadOnly;
+
+                if(!force && !cellChanged && now < nextProgressTick)
+                    return;
+
+                nextProgressTick = now + minProgressTicks;
+                lastRow = row;
+                lastCol = col;
+                lastValue = value;
+                lastReadOnly = readOnly;
+
+                progress.Report(new GenerationProgressState
+                {
+                    Row = row,
+                    Col = col,
+                    Value = value,
+                    ReadOnly = readOnly,
+                    StatusText = statusText,
+                    Elapsed = TotalGenerationTime + stopwatch.Elapsed
+                });
+            }
+
             await Task.Run(async () =>
             {
                 do
                 {
-                token.ThrowIfCancellationRequested();
+                    token.ThrowIfCancellationRequested();
 
-                counter++;
-                if(generationParameters.Reset)
-                {
-                    CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, Values.Undefined);
-                    CurrentProblem.SetReadOnly(generationParameters.Row, generationParameters.Col, false);
-
-                    progress?.Report(new GenerationProgressState
+                    counter++;
+                    if(generationParameters.Reset)
                     {
-                        Row = generationParameters.Row,
-                        Col = generationParameters.Col,
-                        Value = Values.Undefined,
-                        StatusText = null
-                    });
-                }
+                        CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, Values.Undefined);
+                        CurrentProblem.SetReadOnly(generationParameters.Row, generationParameters.Col, false);
 
-                generationParameters.NewValue();
-                try
-                {
-                    CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue);
-                    CurrentProblem.SetReadOnly(generationParameters.Row, generationParameters.Col, true);
+                        ReportProgressIfNeeded(generationParameters.Row, generationParameters.Col, Values.Undefined, false, null, true);
+                    }
 
-                    bool updateText = (counter % 100) == 0;
-
-                    progress?.Report(new GenerationProgressState
+                    generationParameters.NewValue();
+                    try
                     {
-                        Row = generationParameters.Row,
-                        Col = generationParameters.Col,
-                        Value = generationParameters.GeneratedValue,
-                        ReadOnly = true,
-                        Elapsed = TotalGenerationTime,
-                        StatusText = updateText ? Resources.Generating : null
-                    });
+                        CurrentProblem.SetValue(generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue);
+                        CurrentProblem.SetReadOnly(generationParameters.Row, generationParameters.Col, true);
 
-                    if(generationParameters.PreAllocatedValues >= minPreAllocations)
-                        generationParameters.CheckedProblems += 1;
+                        bool updateText = (counter % 100) == 0;
+                        string statusText = updateText ? Resources.Generating : null;
 
-                    generationParameters.PreAllocatedValues = CurrentProblem.nValues - CurrentProblem.nComputedValues;
-                    generationParameters.Reset = !CurrentProblem.Resolvable();
-                }
-                catch(ArgumentException)
-                {
-                    generationParameters.Reset = true;
-                }
+                        ReportProgressIfNeeded(generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue, true, statusText, updateText);
 
-                if((counter % 100) == 0)
-                {
-                    if(stopwatch.ElapsedMilliseconds > 50)
+                        if(generationParameters.PreAllocatedValues >= minPreAllocations)
+                            generationParameters.CheckedProblems += 1;
+
+                        generationParameters.PreAllocatedValues = CurrentProblem.nValues - CurrentProblem.nComputedValues;
+                        generationParameters.Reset = !CurrentProblem.Resolvable();
+                    }
+                    catch(ArgumentException)
+                    {
+                        generationParameters.Reset = true;
+                    }
+
+                    if((counter % 100) == 0 && stopwatch.ElapsedMilliseconds > 50)
                     {
                         NotifyGeneration(stopwatch, token);
                     }
-                }
 
-            } while(!token.IsCancellationRequested && (generationParameters.Reset || CurrentProblem.NumDistinctValues() < WinFormsSettings.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
+                } while(!token.IsCancellationRequested && (generationParameters.Reset || CurrentProblem.NumDistinctValues() < WinFormsSettings.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
             }, token);
         }
 
@@ -410,11 +445,8 @@ internal class SudokuController: IDisposable
 
             if(token.IsCancellationRequested) return false;
 
-            await Task.Run(() =>
-            {
-                CurrentProblem.FindSolutions(2, token);
-                CurrentProblem.SolverTask?.Wait();
-            });
+            CurrentProblem.FindSolutions(2, token);
+            await MonitorSolverTask(Resources.Checking, progress, stopwatch, token);
 
             generationParameters.TotalPasses += CurrentProblem.TotalPassCounter;
 

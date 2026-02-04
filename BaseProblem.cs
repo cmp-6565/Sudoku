@@ -328,7 +328,6 @@ internal abstract class BaseProblem: EventArgs, IComparable
         if(NumberOfSolutions >= maxSolutions) return;
 
         solverTask = FindSolutionsAsync(maxSolutions, token);
-        solverTask.Wait(10);
     }
 
     private async Task FindSolutionsAsync(int maxSolutions, CancellationToken token)
