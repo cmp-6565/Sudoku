@@ -417,8 +417,6 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-WebClient/
 html/
 Images/
 *.aspx
-SudokuTests/

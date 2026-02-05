@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 
 [assembly: InternalsVisibleTo("BenchmarkSuite1")]
+[assembly: InternalsVisibleTo("Sudoku.Tests")]
 
 namespace Sudoku;
 

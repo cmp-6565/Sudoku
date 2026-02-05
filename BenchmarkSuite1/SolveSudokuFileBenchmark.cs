@@ -5,6 +5,7 @@ using System.Threading;
 using BenchmarkDotNet.Attributes;
 using Microsoft.VSDiagnostics;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace Sudoku.Benchmarks;
 
@@ -65,9 +66,9 @@ public class SolveSudokuFileBenchmark
             fileService.Sudoku = controller.CurrentProblem;
             fileService.InitProblem(problems[i], EmptyElapsedTime, string.Empty);
 
-            controller.Solve(findAllSolutions: false, progress: null, token).GetAwaiter().GetResult();
+            controller.Solve(findAllSolutions: true, progress: null, token).GetAwaiter().GetResult();
 
-            if(controller.CurrentProblem.NumberOfSolutions == 0)
+            if(controller.CurrentProblem.NumberOfSolutions != 1)
                 throw new InvalidOperationException($"Puzzle #{i + 1} aus {dataFilePath} konnte nicht gelöst werden.");
 
             solved++;
