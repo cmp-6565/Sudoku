@@ -327,10 +327,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         if(NumberOfSolutions >= maxSolutions) return;
 
-        solverTask = FindSolutionsAsync(maxSolutions, token);
+        solverTask = RunSolver(maxSolutions, token);
     }
 
-    private async Task FindSolutionsAsync(int maxSolutions, CancellationToken token)
+    private async Task RunSolver(int maxSolutions, CancellationToken token)
     {
         if(token.IsCancellationRequested) return;
 
@@ -467,7 +467,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
         {
             minimalProblem.severityLevel = float.NaN;
 
-            await minimalProblem.FindSolutionsAsync(2, token);
+            await minimalProblem.RunSolver(2, token);
 
             return (minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null);
         }
@@ -529,7 +529,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
                 {
                     if(token.IsCancellationRequested) return null;
 
-                    await FindSolutionsAsync(2, token);
+                    await RunSolver(2, token);
 
                     if(NumberOfSolutions == 1) candidates.Add(source[i]);
                 }

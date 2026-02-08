@@ -5,8 +5,6 @@ namespace Sudoku.Sudoku.Tests;
 [TestClass]
 public class MaskTests
 {
-    private ISudokuSettings settings=new WinFormsSettings();
-
     [TestMethod]
     public void ToggleAndGetViaCell()
     {

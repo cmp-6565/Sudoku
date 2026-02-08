@@ -345,6 +345,7 @@ internal abstract class BaseCell: EventArgs, IComparable
     public void ToggleCandidateMask(int candidate, bool exclusionCandidate)
     {
         if(candidate < 1 || candidate > WinFormsSettings.SudokuSize) throw new ArgumentOutOfRangeException(nameof(candidate));
+        if(GetCandidateMask(candidate, !exclusionCandidate)) ToggleCandidateMask(candidate, !exclusionCandidate); // prevent candidate from being in both masks
         int bit = 1 << candidate;
         if(exclusionCandidate) exclusionCandidatesMask ^= bit; else candidatesMask ^= bit;
     }

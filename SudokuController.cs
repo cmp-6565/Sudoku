@@ -432,7 +432,7 @@ internal class SudokuController: IDisposable
         return true;
     }
 
-    private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, IProgress<GenerationProgressState> progress, IProgress<MinimizationUpdate> mimimizeProgress, CancellationToken token)
+    private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, IProgress<GenerationProgressState> progress, IProgress<MinimizationUpdate> minimizeProgress, CancellationToken token)
     {
         var stopwatch = Stopwatch.StartNew();
         int counter = 0;
@@ -462,7 +462,7 @@ internal class SudokuController: IDisposable
                 {
                     if(SeverityLevelInt() <= targetSeverity)
                     {
-                        var minimized = await Minimize(targetSeverity, mimimizeProgress, token);
+                        var minimized = await Minimize(targetSeverity, minimizeProgress, token);
                         if(minimized != null)
                         {
                             CurrentProblem = minimized;
@@ -822,6 +822,10 @@ internal class SudokuController: IDisposable
             if(PrintResult != 0)
                 ui.ShowError(Resources.NotPrinted + Environment.NewLine + PrintErrorMessage);
         }
+    }
+    public void ResetSolutions()
+    {
+        CurrentProblem.ResetSolutions();
     }
     public void SaveApplicationState()
     {

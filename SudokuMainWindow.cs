@@ -549,7 +549,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     private void ResetProblem()
     {
         controller.RestoreProblem();
-        controller.CurrentProblem.ResetSolutions();
+        controller.ResetSolutions();
         ResetUndo();
         ResetTexts();
         SudokuGrid.ResetMatrix();
