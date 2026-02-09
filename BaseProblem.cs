@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -454,11 +455,45 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         if((findAll || checkWellDefined) && current == 0) problemSolved = (NumberOfSolutions > 0);
     }
+
+    private async Task GreedyReduceAsync(int maxSeverity, CancellationToken token)
+    {
+        var ordered = Matrix.Cells
+            .Where(cell => cell.CellValue != Values.Undefined)
+            .OrderByDescending(cell => cell.FilledNeighborCount)
+            .ToList();
+
+        foreach(BaseCell cell in ordered)
+        {
+            if(token.IsCancellationRequested) break;
+
+            byte original = cell.CellValue;
+            SetValue(cell, Values.Undefined);
+            ResetMatrix();
+
+            await RunSolver(2, token);
+            bool unique = NumberOfSolutions == 1 && SeverityLevelInt <= maxSeverity;
+
+            if(unique)
+            {
+                minimalProblem = Clone();
+                OnMinimizing(this, minimalProblem);
+            }
+            else
+            {
+                ResetMatrix();
+                SetValue(cell, original);
+            }
+        }
+
+        ResetMatrix();
+    }
     public async Task<BaseProblem> Minimize(int maxSeverity, CancellationToken token)
     {
         ResetMatrix();
 
         minimalProblem = Clone();
+        await GreedyReduceAsync(maxSeverity, token);
 
         List<BaseCell> candidates = await GetCandidates(Matrix.Cells, 0, CancellationToken.None);
         candidates.Sort(new NeighborCountComparer());

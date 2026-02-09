@@ -15,7 +15,7 @@ namespace Sudoku.Sudoku.Tests;
 [TestClass]
 public sealed class SudokuBatchTests
 {
-    private const int SudokuBatchSize = 20;
+    private const int SudokuBatchSize = 12;
     private const byte ReadOnlyEncodingOffset = 64;
     private static readonly string RepoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory!, "..", "..", "..", ".."));
     private static readonly string NormalSudokusFilePath = Path.Combine(RepoRoot, "WebClient", "NormalSudokus.sudoku");
@@ -91,14 +91,14 @@ public sealed class SudokuBatchTests
             var sudoku = CreateProblem(serializedPuzzle);
             serializedPuzzle = SerializeProblem(sudoku); // remove read-only encoding for display
 
+            await FindSolution(sudoku, settings.FindAllSolutions ? settings.MaxSolutions : 1);
+            string computedSolution = SerializeSolution(sudoku);
+
             var minimizedProblem = await sudoku.Minimize(settings.SeverityLevel, CancellationToken.None);
             minimizedProblem.ResetMatrix();
             Assert.IsNotNull(minimizedProblem, $"Minimalproblem für Sudoku #{index + 1} konnte nicht ermittelt werden.");
             Assert.IsTrue(minimizedProblem.nValues <= sudoku.nValues, $"Das ermittelte Minimalproblem für Sudoku #{index + 1} ist nicht minimal.");
             string minimizedSerialized = SerializeProblem(minimizedProblem);
-
-            await FindSolution(sudoku, settings.FindAllSolutions ? settings.MaxSolutions : 1);
-            string computedSolution = SerializeSolution(sudoku);
 
             await FindSolution(minimizedProblem!, settings.FindAllSolutions? settings.MaxSolutions : 1);
             string minimizedSolution = SerializeSolution(minimizedProblem!);
