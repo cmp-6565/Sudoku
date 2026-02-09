@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -191,6 +192,16 @@ internal class SudokuBoard: DataGridView, IDisposable
     {
         EditingControlShowing += CellEditingControl;
     }
+    private void InitializeEvents()
+    {
+        CellBeginEdit += new DataGridViewCellCancelEventHandler(HandleBeginEdit);
+        CellEndEdit += new DataGridViewCellEventHandler(HandleEndEdit);
+        CellEnter += new DataGridViewCellEventHandler(HandleCellEnter);
+        CellLeave += new DataGridViewCellEventHandler(HandleCellLeave);
+        Paint += new PaintEventHandler(ShowCellHints);
+        KeyDown += new KeyEventHandler(HandleSpecialChar);
+    }
+
     private void CellEditingControl(object sender, DataGridViewEditingControlShowingEventArgs e)
     {
         if(e.Control is TextBox textBox)
@@ -210,16 +221,6 @@ internal class SudokuBoard: DataGridView, IDisposable
             System.Media.SystemSounds.Beep.Play();
         }
     }
-    private void InitializeEvents()
-    {
-        CellBeginEdit += new DataGridViewCellCancelEventHandler(HandleBeginEdit);
-        CellEndEdit += new DataGridViewCellEventHandler(HandleEndEdit);
-        CellEnter += new DataGridViewCellEventHandler(HandleCellEnter);
-        CellLeave += new DataGridViewCellEventHandler(HandleCellLeave);
-        Paint += new PaintEventHandler(ShowCellHints);
-        KeyDown += new KeyEventHandler(HandleSpecialChar);
-    }
-
     private void InitializeCellContextMenu()
     {
         cellContextMenu = new ContextMenuStrip();
@@ -472,61 +473,67 @@ internal class SudokuBoard: DataGridView, IDisposable
 
     private void HandleCellEndEdit(object sender)
     {
-        if(sender is DataGridView)
-        {
-            SetValue(CurrentCell.RowIndex, CurrentCell.ColumnIndex, Values.Undefined);
-            SetCellFont(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
-        }
+        SetValue(CurrentCell.RowIndex, CurrentCell.ColumnIndex, Values.Undefined);
+        SetCellFont(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
         mouseWheelEditing = false;
 
         UpdateStatus?.Invoke(this, false);
     }
-
-    private void HandleSpecialChar(object sender, KeyEventArgs e)
+    private static readonly IReadOnlyDictionary<Keys, int> ShiftNumPadMap = new Dictionary<Keys, int>
     {
-        if(sender is DataGridView)
+        { Keys.End, -1 }, { Keys.Down, -2 }, { Keys.PageDown, -3 },
+        { Keys.Left, -4 }, { Keys.Clear, -5 }, { Keys.Right, -6 },
+        { Keys.Home, -7 }, { Keys.Up, -8 }, { Keys.PageUp, -9 }
+    };
+
+    public void HandleDeleteAndMenuKeys(object sender, KeyEventArgs e)
+    {
+        if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
         {
-            if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Apps || e.KeyCode == Keys.Back)
+            if(!this[CurrentCell.ColumnIndex, CurrentCell.RowIndex].ReadOnly)
             {
-                if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
-                {
-                    if(!this[CurrentCell.ColumnIndex, CurrentCell.RowIndex].ReadOnly)
-                    {
-                        PushOnUndoStack(this);
-                        this[CurrentCell.ColumnIndex, CurrentCell.RowIndex].Value = "";
-                        HandleCellEndEdit(sender);
-                    }
-                }
-                else
-                {
-                    HandleRightMouseButton(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
-                }
-            }
-            else
-            {
-                // if(!pencilMode.Checked || e.Control || e.Alt) return; // TODO: pencilMode prüfen
-
-                int value = -1;
-                if(e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9) value = e.KeyCode - Keys.D0;
-                else if(e.KeyCode >= Keys.NumPad1 && e.KeyCode <= Keys.NumPad9) value = e.KeyCode - Keys.NumPad0;
-
-                if(value > 0)
-                {
-                    DataGridViewCell current = CurrentCell;
-                    if(current != null && !current.ReadOnly)
-                    {
-                        Controller.CurrentProblem.SetCandidate(CurrentCell.RowIndex, CurrentCell.ColumnIndex, value, false);
-                        CandidatesAvailableChanged?.Invoke(this, Controller.CurrentProblem.HasCandidates());
-
-                        e.Handled = true;
-                        e.SuppressKeyPress = true;
-
-                        InvalidateCell(current.ColumnIndex, current.RowIndex);
-                        Refresh();
-                    }
-                }
+                PushOnUndoStack(this);
+                this[CurrentCell.ColumnIndex, CurrentCell.RowIndex].Value = "";
+                HandleCellEndEdit(sender);
             }
         }
+        else
+        {
+            HandleRightMouseButton(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
+        }
+    }
+    private void HandleSpecialChar(object sender, KeyEventArgs e)
+    {
+        if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Apps || e.KeyCode == Keys.Back)
+        {
+            HandleDeleteAndMenuKeys(sender, e);
+            e.Handled = true;
+            e.SuppressKeyPress = true;
+            return;
+        }
+
+        if(!e.Modifiers.HasFlag(Keys.Shift) && !e.Modifiers.HasFlag(Keys.Control)) return;
+
+        int value = 0;
+        if(e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9) value = e.KeyCode - Keys.D0;
+        else if(e.KeyCode >= Keys.NumPad1 && e.KeyCode <= Keys.NumPad9) value = e.KeyCode - Keys.NumPad0;
+        else if(e.Modifiers.HasFlag(Keys.Control) && !ShiftNumPadMap.TryGetValue(e.KeyCode, out value)) value=0;
+
+        if(value == 0) return;
+
+        if(CurrentCell?.ReadOnly == true) return;
+
+        ProcessCandidate(Math.Abs(value), e.Modifiers.HasFlag(Keys.Shift) || value < 0); // that means it's a shift numpad key, so we set the candidate in shift mode
+        e.Handled = true;
+        e.SuppressKeyPress = true;
+
+        Refresh();
+    }
+    private void ProcessCandidate(int value, bool shiftMode)
+    {
+        Controller.CurrentProblem.SetCandidate(CurrentCell.RowIndex, CurrentCell.ColumnIndex, (byte)value, shiftMode);
+        CandidatesAvailableChanged?.Invoke(this, Controller.CurrentProblem.HasCandidates());
+        InvalidateCell(CurrentCell.ColumnIndex, CurrentCell.RowIndex);
     }
 
     private void HandleCellLeave(object sender, DataGridViewCellEventArgs e)
