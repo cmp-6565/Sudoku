@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,6 +33,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     private TimeSpan solvingTime;
     private TimeSpan generationTime;
     private BaseProblem minimalProblem;
+    private readonly IncrementalSolver incrementalSolver;
 
     public static Char ProblemIdentifier = ' ';
     public virtual Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
@@ -68,6 +71,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
         solvingTime = TimeSpan.Zero;
         generationTime = TimeSpan.Zero;
         this.settings = settings;
+        incrementalSolver = new IncrementalSolver();
     }
 
     protected abstract void createMatrix();
@@ -136,6 +140,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
     public TimeSpan SolvingTime { get { return solvingTime; } set { solvingTime = value; } }
     public TimeSpan GenerationTime { get { return generationTime; } set { generationTime = value; } }
 
+    private Task<int> CountSolutionsIncrementalAsync(int maxSolutions, CancellationToken token)
+    {
+        return Task.Run(() => incrementalSolver.CountSolutions(this, maxSolutions, token), token);
+    }
     public int CompareTo(System.Object obj)
     {
         if(obj == null) return -1;
@@ -322,8 +330,12 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return Matrix.FixedValue(row, col);
     }
 
-    public void FindSolutions(int maxSolutions, CancellationToken token)
+    public async Task FindSolutions(int maxSolutions, CancellationToken token)
     {
+        if(solverTask != null && !solverTask.IsCompleted)
+        {
+            await solverTask; // Wait for the existing solver task to complete before starting a new one
+        }
         solverTask?.Dispose();
 
         if(NumberOfSolutions >= maxSolutions) return;
@@ -456,35 +468,54 @@ internal abstract class BaseProblem: EventArgs, IComparable
         if((findAll || checkWellDefined) && current == 0) problemSolved = (NumberOfSolutions > 0);
     }
 
-    private async Task GreedyReduceAsync(int maxSeverity, CancellationToken token)
+    private async Task GreedyReduce(int maxSeverity, CancellationToken token)
     {
-        var ordered = Matrix.Cells
-            .Where(cell => cell.CellValue != Values.Undefined)
-            .OrderByDescending(cell => cell.FilledNeighborCount)
-            .ToList();
+        int previousValueCount;
 
-        foreach(BaseCell cell in ordered)
+        do
         {
-            if(token.IsCancellationRequested) break;
+            OnMinimizing(this, minimalProblem != null ? minimalProblem : this);
+            previousValueCount = nValues;
+            bool removedInPass = false;
 
-            byte original = cell.CellValue;
-            SetValue(cell, Values.Undefined);
-            ResetMatrix();
+            var ordered = Matrix.Cells
+                .Where(cell => cell.FixedValue)
+                .OrderByDescending(cell => cell.FilledNeighborCount)
+                .ToList();
 
-            await RunSolver(2, token);
-            bool unique = NumberOfSolutions == 1 && SeverityLevelInt <= maxSeverity;
-
-            if(unique)
+            foreach(BaseCell cell in ordered)
             {
-                minimalProblem = Clone();
-                OnMinimizing(this, minimalProblem);
-            }
-            else
-            {
+                if(token.IsCancellationRequested) return;
+
+                byte original = cell.CellValue;
+                OnTestCell(this, cell);
+                SetValue(cell, Values.Undefined);
+                ResetMatrix();
+
+                bool unique = false;
+                if(SeverityLevelInt <= maxSeverity)
+                {
+                    int solutionCount = await CountSolutionsIncrementalAsync(2, token).ConfigureAwait(false);
+                    unique = solutionCount == 1;
+                }
+
+                if(unique)
+                {
+                    ResetMatrix();                          // Brett in Zustand „ohne diese Vorgabe“ zurücksetzen
+                    minimalProblem = Clone();
+                    OnMinimizing(this, minimalProblem);
+                    removedInPass = true;
+                    break;
+                }
+
                 ResetMatrix();
                 SetValue(cell, original);
+                OnResetCell(this, cell);
             }
+
+            if(!removedInPass) break;
         }
+        while(nValues < previousValueCount && !token.IsCancellationRequested);
 
         ResetMatrix();
     }
@@ -492,92 +523,112 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         ResetMatrix();
 
+        if(nValues <= Matrix.MinimumValues) return this;
+
         minimalProblem = Clone();
-        await GreedyReduceAsync(maxSeverity, token);
 
-        List<BaseCell> candidates = await GetCandidates(Matrix.Cells, 0, CancellationToken.None);
-        candidates.Sort(new NeighborCountComparer());
+        BaseProblem greedyCandidate = Clone();
+        greedyCandidate.TestCell = TestCell;
+        greedyCandidate.ResetCell = ResetCell;
+        greedyCandidate.Minimizing = Minimizing;
 
-        if(await MinimizeRecursive(candidates, maxSeverity, token))
+        await greedyCandidate.GreedyReduce(maxSeverity, token);
+
+        if(greedyCandidate.minimalProblem != null && greedyCandidate.minimalProblem.nValues < minimalProblem.nValues)
+        {
+            minimalProblem = greedyCandidate.minimalProblem.Clone();
+        }
+
+        ResetMatrix();
+
+        if(await MinimizeRecursive(maxSeverity, token))
         {
             minimalProblem.severityLevel = float.NaN;
 
             await minimalProblem.RunSolver(2, token);
 
-            return (minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null);
+            return minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null;
         }
-        else
-            return null;
+
+        return null;
     }
-
-    // Async Recursive Minimize
-    private async Task<Boolean> MinimizeRecursive(List<BaseCell> candidates, int maxSeverity, CancellationToken token)
+    private async Task<bool> MinimizeRecursive(int maxSeverity, CancellationToken token)
     {
-        if(candidates == null) return true;
+        if(nValues <= Matrix.MinimumValues)
+        {
+            if(nValues < minimalProblem.nValues)
+            {
+                minimalProblem = Clone();
+                OnMinimizing(this, minimalProblem);
+            }
+            return true;
+        }
 
-        int start = 0;
-        foreach(BaseCell cell in candidates)
+        var ordered = Matrix.Cells
+            .Where(cell => cell.FixedValue)
+            .OrderByDescending(cell => cell.FilledNeighborCount)
+            .ToList();
+
+        foreach(BaseCell cell in ordered)
         {
             if(token.IsCancellationRequested) return false;
-            if(SeverityLevelInt > maxSeverity) return false;
 
-            if(nValues - (candidates.Count - start) < minimalProblem.nValues)
+            OnTestCell(this, cell);
+            byte cellValue = cell.CellValue;
+            SetValue(cell, Values.Undefined);
+
+            bool unique = false;
+            if(SeverityLevelInt <= maxSeverity)
             {
-                OnTestCell(this, cell);
-                byte cellValue = cell.CellValue;
-                SetValue(cell, Values.Undefined);
-
-                ResetMatrix();
-                if(nValues < minimalProblem.nValues) minimalProblem = Clone();
-
-                OnMinimizing(this, minimalProblem);
-
-                var nextCandidates = await GetCandidates(candidates, ++start, token);
-
-                if(token.IsCancellationRequested) return false;
-                if(!await MinimizeRecursive(nextCandidates, maxSeverity, token)) return false;
-
-                OnResetCell(this, cell);
-                ResetMatrix();
-                SetValue(cell, cellValue);
+                int solutionCount = await CountSolutionsIncrementalAsync(2, token).ConfigureAwait(false);
+                unique = solutionCount == 1;
             }
+
+            if(unique)
+            {
+                if(nValues < minimalProblem.nValues)
+                {
+                    minimalProblem = Clone();
+                    OnMinimizing(this, minimalProblem);
+                }
+
+                if(!await MinimizeRecursive(maxSeverity, token).ConfigureAwait(false)) return false;
+            }
+
+            OnResetCell(this, cell);
+            SetValue(cell, cellValue);
         }
+
         return true;
     }
-
-    // Private helper now async
-    private async Task<List<BaseCell>> GetCandidates(List<BaseCell> source, int start, CancellationToken token)
+    private async Task<List<BaseCell>> GetCandidates(IReadOnlyList<BaseCell> source, CancellationToken token)
     {
         List<BaseCell> candidates = new List<BaseCell>();
 
-        for(int i = start; i < source.Count; i++)
+        for(int i = 0; i < source.Count; i++)
         {
-            if(nValues - candidates.Count - (source.Count - i) > minimalProblem.nValues) return null;
-
-            byte cellValue = source[i].CellValue;
-            if(cellValue != Values.Undefined)
-            {
-                SetValue(source[i], Values.Undefined);
-                if(source[i].DefinitiveValue == cellValue)
-                    candidates.Add(source[i]);
-                else
-                {
-                    if(token.IsCancellationRequested) return null;
-
-                    await RunSolver(2, token);
-
-                    if(NumberOfSolutions == 1) candidates.Add(source[i]);
-                }
-                ResetMatrix();
-                SetValue(source[i], cellValue);
-            }
-
             if(token.IsCancellationRequested) return null;
+
+            BaseCell cell = source[i];
+            byte cellValue = cell.CellValue;
+            if(cellValue == Values.Undefined)
+                continue;
+
+            SetValue(cell, Values.Undefined);
+            if(cell.DefinitiveValue == cellValue)
+            {
+                candidates.Add(cell);
+            }
+            else
+            {
+                int solutionCount = await CountSolutionsIncrementalAsync(2, token).ConfigureAwait(false);
+                if(solutionCount == 1) candidates.Add(cell);
+            }
+            SetValue(cell, cellValue);
         }
 
         return candidates;
     }
-
     public virtual Boolean Resolvable()
     {
         for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
@@ -627,5 +678,217 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         return !(Matrix.Cell(row, col).nPossibleValues == 0 && GetValue(row, col) == Values.Undefined && Matrix.Cell(row, col).DefinitiveValue == Values.Undefined);
     }
+    private sealed class IncrementalSolver
+    {
+        private readonly int size;
+        private readonly int rectSize;
+        private readonly int totalCells;
+        private readonly byte undefinedValue;
+        private readonly byte[] grid;
+        private readonly int[] cellOrder;
+        private readonly int[] rowMask;
+        private readonly int[] colMask;
+        private readonly int[] boxMask;
+        private readonly int valueMask;
 
+        private int diagMainMask;
+        private int diagAntiMask;
+        private int emptyCount;
+        private int solutionCount;
+        private int solutionLimit;
+        private bool enforceDiagonals;
+        private CancellationToken token;
+
+        public IncrementalSolver()
+        {
+            size = WinFormsSettings.SudokuSize;
+            rectSize = WinFormsSettings.RectSize;
+            totalCells = WinFormsSettings.TotalCellCount;
+            undefinedValue = Values.Undefined;
+            grid = new byte[totalCells];
+            cellOrder = new int[totalCells];
+            rowMask = new int[size];
+            colMask = new int[size];
+            boxMask = new int[size];
+            valueMask = (1 << (size + 1)) - 2;
+        }
+
+        public int CountSolutions(BaseProblem problem, int maxSolutions, CancellationToken token)
+        {
+            this.token = token;
+            solutionLimit = Math.Max(1, maxSolutions);
+            Prepare(problem);
+            if(emptyCount < 0)
+                return 0;
+
+            Search(0);
+            return solutionCount;
+        }
+
+        private void Prepare(BaseProblem problem)
+        {
+            token.ThrowIfCancellationRequested();
+            Array.Clear(rowMask, 0, size);
+            Array.Clear(colMask, 0, size);
+            Array.Clear(boxMask, 0, size);
+            diagMainMask = 0;
+            diagAntiMask = 0;
+            emptyCount = 0;
+            solutionCount = 0;
+            enforceDiagonals = problem.Matrix is XSudokuMatrix;
+
+            for(int row = 0; row < size; row++)
+            {
+                for(int col = 0; col < size; col++)
+                {
+                    byte value = problem.GetValue(row, col);
+                    int index = row * size + col;
+                    grid[index] = value;
+
+                    if(value == undefinedValue)
+                    {
+                        cellOrder[emptyCount++] = index;
+                        continue;
+                    }
+
+                    int bit = 1 << value;
+                    int box = GetBoxIndex(row, col);
+
+                    if(((rowMask[row] | colMask[col] | boxMask[box]) & bit) != 0 ||
+                       (enforceDiagonals && row == col && (diagMainMask & bit) != 0) ||
+                       (enforceDiagonals && row + col == size - 1 && (diagAntiMask & bit) != 0))
+                    {
+                        emptyCount = -1;
+                        return;
+                    }
+
+                    rowMask[row] |= bit;
+                    colMask[col] |= bit;
+                    boxMask[box] |= bit;
+
+                    if(enforceDiagonals)
+                    {
+                        if(row == col) diagMainMask |= bit;
+                        if(row + col == size - 1) diagAntiMask |= bit;
+                    }
+                }
+            }
+        }
+
+        private void Search(int depth)
+        {
+            if(solutionCount >= solutionLimit) return;
+            token.ThrowIfCancellationRequested();
+
+            if(depth == emptyCount)
+            {
+                solutionCount++;
+                return;
+            }
+
+            int candidateMask;
+            int selectedIndex = SelectCell(depth, out candidateMask);
+            if(selectedIndex < 0 || candidateMask == 0) return;
+
+            Swap(depth, selectedIndex);
+            int cellIndex = cellOrder[depth];
+            int row = cellIndex / size;
+            int col = cellIndex % size;
+            int box = GetBoxIndex(row, col);
+
+            while(candidateMask != 0 && solutionCount < solutionLimit)
+            {
+                int bit = candidateMask & -candidateMask;
+                candidateMask ^= bit;
+                byte value = (byte)BitOperations.TrailingZeroCount((uint)bit);
+
+                PlaceValue(cellIndex, row, col, box, bit);
+                Search(depth + 1);
+                RemoveValue(cellIndex, row, col, box, bit);
+            }
+        }
+
+        private int SelectCell(int start, out int candidateMask)
+        {
+            int bestIndex = -1;
+            int bestMask = 0;
+            int bestCount = int.MaxValue;
+
+            for(int i = start; i < emptyCount; i++)
+            {
+                int mask = GetCandidateMask(cellOrder[i]);
+                if(mask == 0)
+                {
+                    candidateMask = 0;
+                    return i;
+                }
+
+                int count = BitOperations.PopCount((uint)mask);
+                if(count < bestCount)
+                {
+                    bestCount = count;
+                    bestMask = mask;
+                    bestIndex = i;
+                    if(bestCount == 1) break;
+                }
+            }
+
+            candidateMask = bestMask;
+            return bestIndex;
+        }
+
+        private int GetCandidateMask(int cellIndex)
+        {
+            int row = cellIndex / size;
+            int col = cellIndex % size;
+            int box = GetBoxIndex(row, col);
+            int used = rowMask[row] | colMask[col] | boxMask[box];
+
+            if(enforceDiagonals)
+            {
+                if(row == col) used |= diagMainMask;
+                if(row + col == size - 1) used |= diagAntiMask;
+            }
+
+            return valueMask & ~used;
+        }
+
+        private void PlaceValue(int cellIndex, int row, int col, int box, int bit)
+        {
+            grid[cellIndex] = (byte)BitOperations.TrailingZeroCount((uint)bit);
+            rowMask[row] |= bit;
+            colMask[col] |= bit;
+            boxMask[box] |= bit;
+
+            if(enforceDiagonals)
+            {
+                if(row == col) diagMainMask |= bit;
+                if(row + col == size - 1) diagAntiMask |= bit;
+            }
+        }
+
+        private void RemoveValue(int cellIndex, int row, int col, int box, int bit)
+        {
+            grid[cellIndex] = undefinedValue;
+            rowMask[row] &= ~bit;
+            colMask[col] &= ~bit;
+            boxMask[box] &= ~bit;
+
+            if(enforceDiagonals)
+            {
+                if(row == col) diagMainMask &= ~bit;
+                if(row + col == size - 1) diagAntiMask &= ~bit;
+            }
+        }
+
+        private void Swap(int a, int b)
+        {
+            if(a == b) return;
+            int tmp = cellOrder[a];
+            cellOrder[a] = cellOrder[b];
+            cellOrder[b] = tmp;
+        }
+
+        private int GetBoxIndex(int row, int col) => (row / rectSize) * rectSize + (col / rectSize);
+    }
 }

@@ -23,11 +23,11 @@ internal abstract class BaseMatrix: Values
     private static int[] memberStamp;
     [ThreadStatic]
     private static int memberStampId;
-[ThreadStatic]
+    [ThreadStatic]
     private static BaseCell[] isolatedBuffer;
-[ThreadStatic]
+    [ThreadStatic]
     private static int[] isolatedEnabledCounts;
-[ThreadStatic]
+    [ThreadStatic]
     private static int[] isolatedCandidateIndex;
 
     public event EventHandler<BaseCell> CellChanged;
