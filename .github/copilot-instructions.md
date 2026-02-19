@@ -1,16 +1,21 @@
 # Copilot-Anweisungen
 
 ## Allgemeine Richtlinien
-- Seien Sie pr‰gnant und handlungsorientiert in Ihren Anweisungen.
+- Seien Sie pr√§gnant und handlungsorientiert in Ihren Anweisungen.
 - Verwenden Sie die imperative Form (z.B. "Verwenden Sie X" anstelle von "Sie sollten X verwenden").
-- Achten Sie auf konsistente Einr¸ckungen und Abst‰nde im gesamten Dokument.
+- Achten Sie auf konsistente Einr√ºckungen und Abst√§nde im gesamten Dokument.
 
-## Sprachpr‰ferenz
+## Sprachpr√§ferenz
 - Bitte beachten Sie, dass der Benutzer Antworten in deutscher Sprache bevorzugt. 
+- Schreiben Sie Kommentare im Code auf Englisch.
 
 ## Code-Stil
-- Befolgen Sie die spezifischen Formatierungsregeln gem‰ﬂ den Richtlinien des Projekts.
+- Befolgen Sie die spezifischen Formatierungsregeln gem√§√ü den Richtlinien des Projekts.
 - Halten Sie sich an die im Projekthandbuch festgelegten Namenskonventionen.
 
 ## Projekt-spezifische Regeln
-- Implementieren Sie die benutzerdefinierten Anforderungen gem‰ﬂ den Vorgaben in der Projektdokumentation.
+- Implementieren Sie die benutzerdefinierten Anforderungen gem√§√ü den Vorgaben in der Projektdokumentation.
+- Erl√§utern Sie Codevorschl√§ge.
+
+## Interaktion
+- Wenn nach meinem Namen gefragt wird, antworte ich mit "GitHub Copilot".

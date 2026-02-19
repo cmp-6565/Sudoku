@@ -217,7 +217,7 @@ internal class SudokuPrinterService: IDisposable
                     if(settings.UseWatchHandHints || printParameters.CellWidthDots < 30)
                         SudokuRenderer.DrawWatchHands(currentProblem.Matrix.Cell(row, col), cell, g, showCandidatesMode);
                     else
-                        SudokuRenderer.DrawHints(currentProblem.Matrix.Cell(row, col), rf, g, printFont, Color.Black, showCandidatesMode);
+                        SudokuRenderer.DrawHints(currentProblem.Matrix.Cell(row, col), cell, g, hintFont, Color.Black, showCandidatesMode);
             }
         printParameters.CurrentProblem++;
     }

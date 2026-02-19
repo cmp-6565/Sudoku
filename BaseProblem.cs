@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -6,6 +6,8 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO.Hashing;
+using System.Configuration;
 
 namespace Sudoku;
 
@@ -37,6 +39,8 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
     public static Char ProblemIdentifier = ' ';
     public virtual Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
+    public static int Limit = 0;
+    public virtual int MinimizeLimit{ get { return Limit; } }
 
     public Action<Object, BaseProblem> Minimizing;
     protected virtual void OnMinimizing(Object o, BaseProblem p)
@@ -134,16 +138,12 @@ internal abstract class BaseProblem: EventArgs, IComparable
     }
 
     public String Filename { get { return filename; } set { filename = value; } }
-    public String Comment { get { return comment; } set { Dirty=Dirty || comment != value; comment = value; } }
+    public String Comment { get { return comment; } set { Dirty = Dirty || comment != value; comment = value; } }
     public Boolean Dirty { get { return dirty; } set { dirty = value; } }
     public Boolean Preparing { get { return preparing; } set { preparing = value; } }
     public TimeSpan SolvingTime { get { return solvingTime; } set { solvingTime = value; } }
     public TimeSpan GenerationTime { get { return generationTime; } set { generationTime = value; } }
 
-    private Task<int> CountSolutionsIncrementalAsync(int maxSolutions, CancellationToken token)
-    {
-        return Task.Run(() => incrementalSolver.CountSolutions(this, maxSolutions, token), token);
-    }
     public int CompareTo(System.Object obj)
     {
         if(obj == null) return -1;
@@ -253,7 +253,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
     public void SetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
     {
-        Dirty = Dirty || GetCandidate(row, col, candidate, exclusionCandidate) != exclusionCandidate;   
+        Dirty = Dirty || GetCandidate(row, col, candidate, exclusionCandidate) != exclusionCandidate;
         Matrix.SetCandidate(row, col, candidate, exclusionCandidate);
     }
 
@@ -433,7 +433,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
                         TryValue(currentValue.Row, currentValue.Col, value);
                         currentValue.ComputedValue = true;
 
-                        if(current < nVarValues - 1) // Resolvable Check entfernen für Performance in tiefer Rekursion
+                        if(current < nVarValues - 1) // Resolvable Check entfernen fÃ¼r Performance in tiefer Rekursion
                         {
                             if(Resolvable()) Solve(current + 1, token);
                         }
@@ -468,167 +468,304 @@ internal abstract class BaseProblem: EventArgs, IComparable
         if((findAll || checkWellDefined) && current == 0) problemSolved = (NumberOfSolutions > 0);
     }
 
-    private async Task GreedyReduce(int maxSeverity, CancellationToken token)
+    private async Task<GivenState> GreedyReduce(GivenState state, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
     {
-        int previousValueCount;
+        var queue = new PriorityQueue<int, int>();
 
-        do
+        foreach(BaseCell cell in Matrix.Cells.Where(c => c.FixedValue))
         {
-            OnMinimizing(this, minimalProblem != null ? minimalProblem : this);
-            previousValueCount = nValues;
-            bool removedInPass = false;
-
-            var ordered = Matrix.Cells
-                .Where(cell => cell.FixedValue)
-                .OrderByDescending(cell => cell.FilledNeighborCount)
-                .ToList();
-
-            foreach(BaseCell cell in ordered)
-            {
-                if(token.IsCancellationRequested) return;
-
-                byte original = cell.CellValue;
-                OnTestCell(this, cell);
-                SetValue(cell, Values.Undefined);
-                ResetMatrix();
-
-                bool unique = false;
-                if(SeverityLevelInt <= maxSeverity)
-                {
-                    int solutionCount = await CountSolutionsIncrementalAsync(2, token).ConfigureAwait(false);
-                    unique = solutionCount == 1;
-                }
-
-                if(unique)
-                {
-                    ResetMatrix();                          // Brett in Zustand „ohne diese Vorgabe“ zurücksetzen
-                    minimalProblem = Clone();
-                    OnMinimizing(this, minimalProblem);
-                    removedInPass = true;
-                    break;
-                }
-
-                ResetMatrix();
-                SetValue(cell, original);
-                OnResetCell(this, cell);
-            }
-
-            if(!removedInPass) break;
+            int index = cell.Row * WinFormsSettings.SudokuSize + cell.Col;
+            queue.Enqueue(index, -cell.FilledNeighborCount);
         }
-        while(nValues < previousValueCount && !token.IsCancellationRequested);
 
-        ResetMatrix();
+        while(queue.TryDequeue(out int index, out _))
+        {
+            if(token.IsCancellationRequested) break;
+            if(state.values[index] == Values.Undefined) continue;
+
+            byte original = state.values[index];
+            state.values[index] = Values.Undefined;
+
+            bool unique = await IsUnique(state, maxSeverity, cache, token).ConfigureAwait(false);
+
+            if(unique)
+            {
+                state = state with { FixedCount = state.FixedCount - 1 };
+                OnMinimizing(this, minimalProblem);
+            }
+            else
+            {
+                state.values[index] = original;
+            }
+        }
+
+        return state;
+    }
+
+    private static GivenState CloneState(GivenState state)
+    {
+        return new GivenState((byte[])state.values.Clone(), state.FixedCount);
+    }
+
+    private Task<int> CountSolutionsIncremental(int maxSolutions, CancellationToken token)
+    {
+        GivenState snapshot = GivenState.FromMatrix(Matrix);
+        bool enforceDiagonals = Matrix is XSudokuMatrix;
+        return CountSolutionsIncremental(snapshot.values, enforceDiagonals, maxSolutions, token);
+    }
+    private Task<int> CountSolutionsIncremental(ReadOnlyMemory<byte> givens, bool enforceDiagonals, int maxSolutions, CancellationToken token)
+    {
+        return Task.Run(() => incrementalSolver.CountSolutions(givens.Span, enforceDiagonals, maxSolutions, token), token);
+    }
+    private async Task<bool> IsUnique(GivenState state, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
+    {
+        ulong signature = XxHash64.HashToUInt64(state.values);
+        if(cache.TryGetValue(signature, out bool unique)) return unique;
+
+        bool enforceDiagonals = Matrix is XSudokuMatrix;
+        int count = await CountSolutionsIncremental(state.values, enforceDiagonals, 2, token).ConfigureAwait(false);
+
+        unique = count == 1;
+
+        bool severityLimited = maxSeverity >= 0 && maxSeverity < int.MaxValue;
+        if(unique && severityLimited)
+        {
+            BaseProblem candidate = Materialize(state);
+            candidate.severityLevel = float.NaN;
+            unique = candidate.SeverityLevelInt <= maxSeverity;
+        }
+
+        cache[signature] = unique;
+        return unique;
+    }
+    private BaseProblem Materialize(GivenState state)
+    {
+        BaseProblem clone = CreateInstance();
+        clone.matrix = matrix.Clone();
+        clone.Matrix.SetPredefinedValues = false;
+
+        for(int r = 0; r < WinFormsSettings.SudokuSize; r++)
+        {
+            for(int c = 0; c < WinFormsSettings.SudokuSize; c++)
+            {
+                byte value = state[r, c];
+                bool fixedValue = value != Values.Undefined;
+
+                clone.SetValue(r, c, value, fixedValue);
+                clone.SetReadOnly(r, c, fixedValue);   // â† Schreibschutz an/vs. aus
+            }
+        }
+
+        clone.Matrix.SetPredefinedValues = true;
+        clone.Matrix.Prepare();
+        return clone;
+    }
+    bool ShouldUseCandidateSearch(GivenState initial, GivenState greedyResult)
+    {
+        const int GreedyOffset = 2; // If greedy is within this many clues of the minimum, skip candidate search
+
+        int totalRemovable = initial.FixedCount - Matrix.MinimumValues;
+        int removedByGreedy = initial.FixedCount - greedyResult.FixedCount;
+        int remainingMargin = greedyResult.FixedCount - Matrix.MinimumValues;
+
+        bool manyRemovalsPossible = totalRemovable >= 10;
+        bool greedyProgressLow = removedByGreedy < totalRemovable * 0.5;
+        bool stillFarFromMinimum = remainingMargin > 3;
+        bool highSeverity = SeverityLevelInt >= 4;                // Hard/XSudoku
+        bool isXSudoku = Matrix is XSudokuMatrix;
+
+        if(greedyResult.FixedCount <= Matrix.MinimumValues + GreedyOffset) return false; // Already at or below minimum, no need for candidate search
+        return (manyRemovalsPossible && greedyProgressLow && stillFarFromMinimum) || highSeverity || (isXSudoku && nValues >= MinimizeLimit);
     }
     public async Task<BaseProblem> Minimize(int maxSeverity, CancellationToken token)
     {
         ResetMatrix();
 
-        if(nValues <= Matrix.MinimumValues) return this;
+        GivenState initialState = GivenState.FromMatrix(Matrix);
+        if(initialState.FixedCount <= Matrix.MinimumValues) return this;
+
+        var cache = new Dictionary<ulong, bool>();
+        GivenState greedyState = await GreedyReduce(CloneState(initialState), maxSeverity, cache, token).ConfigureAwait(false);
+
+        if(ShouldUseCandidateSearch(initialState, greedyState))
+        {
+            return await MinimizeWithCandidates(maxSeverity, token).ConfigureAwait(false);
+        }
+
+        return await MinimizeGreedy(initialState, greedyState, maxSeverity, cache, token).ConfigureAwait(false);
+    }
+    private async Task<BaseProblem> MinimizeGreedy(GivenState initialState, GivenState greedyState, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
+    {
+        ResetMatrix();
+
+        if(initialState.FixedCount <= Matrix.MinimumValues) return this;
+
+        GivenState? bestState = UpdateBestState(null, greedyState);
+
+        BaseCell[] minimizationOrder = Matrix.Cells
+            .Where(cell => initialState[cell.Row, cell.Col] != Values.Undefined)
+            .OrderByDescending(cell => cell.FilledNeighborCount)
+            .ToArray();
+
+        GivenState? recursiveResult = await MinimizeGreedyRecursive(initialState, minimizationOrder, 0, maxSeverity, cache, token).ConfigureAwait(false);
+        if(recursiveResult.HasValue)
+        {
+            bestState = UpdateBestState(bestState, recursiveResult.Value);
+        }
+
+        GivenState finalState = bestState ?? greedyState;
+        minimalProblem = Materialize(finalState);
+        minimalProblem.severityLevel = float.NaN;
+        await minimalProblem.RunSolver(2, token).ConfigureAwait(false);
+
+        return minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null;
+    }
+
+    private async Task<GivenState?> MinimizeGreedyRecursive(GivenState state, BaseCell[] order, int startIndex, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
+    {
+        if(token.IsCancellationRequested) return null;
+
+        if(state.FixedCount <= Matrix.MinimumValues)
+            return await IsUnique(state, maxSeverity, cache, token).ConfigureAwait(false) ? state : null;
+
+        GivenState? best = null;
+
+        for(int i = startIndex; i < order.Length; i++)
+        {
+            BaseCell cell = order[i];
+            if(state[cell.Row, cell.Col] == Values.Undefined) continue;
+
+            OnTestCell(this, cell);
+
+            GivenState reducedState = state.WithRemoved(cell.Row, cell.Col);
+            if(await IsUnique(reducedState, maxSeverity, cache, token).ConfigureAwait(false))
+            {
+                best = UpdateBestState(best, reducedState);
+                if(best.HasValue && best.Value.FixedCount <= Matrix.MinimumValues)
+                {
+                    OnResetCell(this, cell);
+                    return best;
+                }
+
+                GivenState? candidate = await MinimizeGreedyRecursive(reducedState, order, i + 1, maxSeverity, cache, token).ConfigureAwait(false);
+                if(candidate.HasValue)
+                {
+                    best = UpdateBestState(best, candidate.Value);
+                    if(best.HasValue && best.Value.FixedCount <= Matrix.MinimumValues)
+                    {
+                        OnResetCell(this, cell);
+                        return best;
+                    }
+                }
+            }
+
+            OnResetCell(this, cell);
+        }
+
+        return best;
+    }
+    private GivenState? UpdateBestState(GivenState? currentBest, GivenState candidate)
+    {
+        if(!currentBest.HasValue || candidate.FixedCount < currentBest.Value.FixedCount)
+        {
+            minimalProblem = Materialize(candidate);
+            OnMinimizing(this, minimalProblem);
+            return candidate;
+        }
+
+        return currentBest;
+    }
+    protected async Task<BaseProblem> MinimizeWithCandidates(int maxSeverity, CancellationToken token)
+    {
+        ResetMatrix();
 
         minimalProblem = Clone();
 
-        BaseProblem greedyCandidate = Clone();
-        greedyCandidate.TestCell = TestCell;
-        greedyCandidate.ResetCell = ResetCell;
-        greedyCandidate.Minimizing = Minimizing;
+        List<BaseCell> candidates = await GetCandidates(Matrix.Cells, 0, CancellationToken.None);
+        candidates.Sort(new NeighborCountComparer());
 
-        await greedyCandidate.GreedyReduce(maxSeverity, token);
-
-        if(greedyCandidate.minimalProblem != null && greedyCandidate.minimalProblem.nValues < minimalProblem.nValues)
-        {
-            minimalProblem = greedyCandidate.minimalProblem.Clone();
-        }
-
-        ResetMatrix();
-
-        if(await MinimizeRecursive(maxSeverity, token))
+        if(await MinimizeWithCandidatesRecursive(candidates, maxSeverity, token))
         {
             minimalProblem.severityLevel = float.NaN;
 
             await minimalProblem.RunSolver(2, token);
 
-            return minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null;
+            return (minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null);
         }
-
-        return null;
+        else
+            return null;
     }
-    private async Task<bool> MinimizeRecursive(int maxSeverity, CancellationToken token)
+
+    // Async Recursive Minimize
+    private async Task<Boolean> MinimizeWithCandidatesRecursive(List<BaseCell> candidates, int maxSeverity, CancellationToken token)
     {
-        if(nValues <= Matrix.MinimumValues)
-        {
-            if(nValues < minimalProblem.nValues)
-            {
-                minimalProblem = Clone();
-                OnMinimizing(this, minimalProblem);
-            }
-            return true;
-        }
+        if(candidates == null) return true;
+        if(nValues <= Matrix.MinimumValues) return true;
 
-        var ordered = Matrix.Cells
-            .Where(cell => cell.FixedValue)
-            .OrderByDescending(cell => cell.FilledNeighborCount)
-            .ToList();
-
-        foreach(BaseCell cell in ordered)
+        int start = 0;
+        foreach(BaseCell cell in candidates)
         {
             if(token.IsCancellationRequested) return false;
+            if(SeverityLevelInt > maxSeverity) return false;
 
-            OnTestCell(this, cell);
-            byte cellValue = cell.CellValue;
-            SetValue(cell, Values.Undefined);
-
-            bool unique = false;
-            if(SeverityLevelInt <= maxSeverity)
+            if(nValues - (candidates.Count - start) < minimalProblem.nValues)
             {
-                int solutionCount = await CountSolutionsIncrementalAsync(2, token).ConfigureAwait(false);
-                unique = solutionCount == 1;
+                OnTestCell(this, cell);
+                byte cellValue = cell.CellValue;
+                SetValue(cell, Values.Undefined);
+
+                ResetMatrix();
+                if(nValues < minimalProblem.nValues) minimalProblem = Clone();
+
+                OnMinimizing(this, minimalProblem);
+
+                var nextCandidates = await GetCandidates(candidates, ++start, token);
+
+                if(token.IsCancellationRequested) return false;
+                if(!await MinimizeWithCandidatesRecursive(nextCandidates, maxSeverity, token)) return false;
+
+                OnResetCell(this, cell);
+                ResetMatrix();
+                SetValue(cell, cellValue);
             }
-
-            if(unique)
-            {
-                if(nValues < minimalProblem.nValues)
-                {
-                    minimalProblem = Clone();
-                    OnMinimizing(this, minimalProblem);
-                }
-
-                if(!await MinimizeRecursive(maxSeverity, token).ConfigureAwait(false)) return false;
-            }
-
-            OnResetCell(this, cell);
-            SetValue(cell, cellValue);
         }
-
         return true;
     }
-    private async Task<List<BaseCell>> GetCandidates(IReadOnlyList<BaseCell> source, CancellationToken token)
+
+    // Private helper now async
+    private async Task<List<BaseCell>> GetCandidates(List<BaseCell> source, int start, CancellationToken token)
     {
         List<BaseCell> candidates = new List<BaseCell>();
 
-        for(int i = 0; i < source.Count; i++)
+        for(int i = start; i < source.Count; i++)
         {
+            if(nValues - candidates.Count - (source.Count - i) > minimalProblem.nValues) return null;
+
+            byte cellValue = source[i].CellValue;
+            if(cellValue != Values.Undefined)
+            {
+                SetValue(source[i], Values.Undefined);
+                if(source[i].DefinitiveValue == cellValue)
+                    candidates.Add(source[i]);
+                else
+                {
+                    if(token.IsCancellationRequested) return null;
+
+                    await RunSolver(2, token);
+
+                    if(NumberOfSolutions == 1) candidates.Add(source[i]);
+                }
+                ResetMatrix();
+                SetValue(source[i], cellValue);
+            }
+
             if(token.IsCancellationRequested) return null;
-
-            BaseCell cell = source[i];
-            byte cellValue = cell.CellValue;
-            if(cellValue == Values.Undefined)
-                continue;
-
-            SetValue(cell, Values.Undefined);
-            if(cell.DefinitiveValue == cellValue)
-            {
-                candidates.Add(cell);
-            }
-            else
-            {
-                int solutionCount = await CountSolutionsIncrementalAsync(2, token).ConfigureAwait(false);
-                if(solutionCount == 1) candidates.Add(cell);
-            }
-            SetValue(cell, cellValue);
         }
 
         return candidates;
     }
+
+
     public virtual Boolean Resolvable()
     {
         for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
@@ -678,6 +815,44 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         return !(Matrix.Cell(row, col).nPossibleValues == 0 && GetValue(row, col) == Values.Undefined && Matrix.Cell(row, col).DefinitiveValue == Values.Undefined);
     }
+
+    private record struct GivenState(byte[] values, int FixedCount)
+    {
+        public static GivenState FromMatrix(BaseMatrix matrix)
+        {
+            int size = WinFormsSettings.SudokuSize;
+            byte[] values = new byte[WinFormsSettings.TotalCellCount];
+            int fixedCount = 0;
+
+            for(int r = 0; r < size; r++)
+            {
+                for(int c = 0; c < size; c++)
+                {
+                    byte cellValue = matrix.GetValue(r, c);
+                    values[r * size + c] = cellValue;
+                    if(cellValue != Values.Undefined && matrix.Cell(r, c).FixedValue) fixedCount++;
+                }
+            }
+
+            return new GivenState(values, fixedCount);
+        }
+
+        public byte this[int row, int col]
+        {
+            readonly get => values[row * WinFormsSettings.SudokuSize + col];
+            set => values[row * WinFormsSettings.SudokuSize + col] = value;
+        }
+
+        public readonly GivenState WithRemoved(int row, int col)
+        {
+            var clone = (byte[])values.Clone();
+            int index = row * WinFormsSettings.SudokuSize + col;
+            if(clone[index] == Values.Undefined) return new GivenState(clone, FixedCount);
+
+            clone[index] = Values.Undefined;
+            return new GivenState(clone, FixedCount - 1);
+        }
+    }
     private sealed class IncrementalSolver
     {
         private readonly int size;
@@ -712,20 +887,18 @@ internal abstract class BaseProblem: EventArgs, IComparable
             boxMask = new int[size];
             valueMask = (1 << (size + 1)) - 2;
         }
-
-        public int CountSolutions(BaseProblem problem, int maxSolutions, CancellationToken token)
+        public int CountSolutions(ReadOnlySpan<byte> givens, bool enforceDiagonals, int maxSolutions, CancellationToken token)
         {
             this.token = token;
+            this.enforceDiagonals = enforceDiagonals;
             solutionLimit = Math.Max(1, maxSolutions);
-            Prepare(problem);
-            if(emptyCount < 0)
-                return 0;
+            Prepare(givens);
+            if(emptyCount < 0) return 0;
 
             Search(0);
             return solutionCount;
         }
-
-        private void Prepare(BaseProblem problem)
+        private void Prepare(ReadOnlySpan<byte> givens)
         {
             token.ThrowIfCancellationRequested();
             Array.Clear(rowMask, 0, size);
@@ -735,46 +908,42 @@ internal abstract class BaseProblem: EventArgs, IComparable
             diagAntiMask = 0;
             emptyCount = 0;
             solutionCount = 0;
-            enforceDiagonals = problem.Matrix is XSudokuMatrix;
 
-            for(int row = 0; row < size; row++)
+            for(int index = 0; index < totalCells; index++)
             {
-                for(int col = 0; col < size; col++)
+                byte value = givens[index];
+                grid[index] = value;
+
+                if(value == undefinedValue)
                 {
-                    byte value = problem.GetValue(row, col);
-                    int index = row * size + col;
-                    grid[index] = value;
+                    cellOrder[emptyCount++] = index;
+                    continue;
+                }
 
-                    if(value == undefinedValue)
-                    {
-                        cellOrder[emptyCount++] = index;
-                        continue;
-                    }
+                int row = index / size;
+                int col = index % size;
+                int bit = 1 << value;
+                int box = GetBoxIndex(row, col);
 
-                    int bit = 1 << value;
-                    int box = GetBoxIndex(row, col);
+                if(((rowMask[row] | colMask[col] | boxMask[box]) & bit) != 0 ||
+                   (enforceDiagonals && row == col && (diagMainMask & bit) != 0) ||
+                   (enforceDiagonals && row + col == size - 1 && (diagAntiMask & bit) != 0))
+                {
+                    emptyCount = -1;
+                    return;
+                }
 
-                    if(((rowMask[row] | colMask[col] | boxMask[box]) & bit) != 0 ||
-                       (enforceDiagonals && row == col && (diagMainMask & bit) != 0) ||
-                       (enforceDiagonals && row + col == size - 1 && (diagAntiMask & bit) != 0))
-                    {
-                        emptyCount = -1;
-                        return;
-                    }
+                rowMask[row] |= bit;
+                colMask[col] |= bit;
+                boxMask[box] |= bit;
 
-                    rowMask[row] |= bit;
-                    colMask[col] |= bit;
-                    boxMask[box] |= bit;
-
-                    if(enforceDiagonals)
-                    {
-                        if(row == col) diagMainMask |= bit;
-                        if(row + col == size - 1) diagAntiMask |= bit;
-                    }
+                if(enforceDiagonals)
+                {
+                    if(row == col) diagMainMask |= bit;
+                    if(row + col == size - 1) diagAntiMask |= bit;
                 }
             }
         }
-
         private void Search(int depth)
         {
             if(solutionCount >= solutionLimit) return;

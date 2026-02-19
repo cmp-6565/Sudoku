@@ -118,10 +118,20 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
                 SudokuGrid.ResetCellVisuals(this, update.Cell);
                 break;
             case MinimizationUpdateType.Status:
+                BaseProblem problem = update.Problem ?? controller?.CurrentProblem;
+                if(problem == null)
+                {
+                    status.Text = Resources.Minimizing;
+                    status.Update();
+                    break;
+                }
+
+                int totalValues = controller?.CurrentProblem?.nValues ?? problem.nValues;
+
                 status.Text = String.Format(Resources.CurrentMinimalProblem,
-                    update.Problem.SeverityLevelText,
-                    update.Problem.nValues,
-                    controller.CurrentProblem.nValues).Replace("\\n", Environment.NewLine);
+                    problem.SeverityLevelText,
+                    problem.nValues,
+                    totalValues).Replace("\\n", Environment.NewLine);
                 status.Update();
                 break;
             }
