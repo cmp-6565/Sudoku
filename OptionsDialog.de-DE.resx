@@ -248,14 +248,30 @@
   <data name="printHints.Text" xml:space="preserve">
     <value>&amp;Mögliche Werte ausdrucken</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="label1.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>199, 205</value>
+  </data>
+  <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>27, 15</value>
+  </data>
+  <data name="label1.TabIndex" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
+  <data name="label1.Text" xml:space="preserve">
+    <value>sek.</value>
+  </data>
   <data name="autoPauseLag.Location" type="System.Drawing.Point, System.Drawing">
-    <value>166, 202</value>
+    <value>157, 202</value>
   </data>
   <data name="autoPauseLag.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
   <data name="autoPauseLag.Size" type="System.Drawing.Size, System.Drawing">
-    <value>54, 23</value>
+    <value>43, 23</value>
   </data>
   <data name="autoPause.Location" type="System.Drawing.Point, System.Drawing">
     <value>10, 203</value>
@@ -280,39 +296,6 @@
   </data>
   <data name="saveState.Text" xml:space="preserve">
     <value>Status sichern</value>
-  </data>
-  <data name="possibleValuesExamplePicture.Location" type="System.Drawing.Point, System.Drawing">
-    <value>145, 23</value>
-  </data>
-  <data name="possibleValuesExamplePicture.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="possibleValuesExamplePicture.Size" type="System.Drawing.Size, System.Drawing">
-    <value>55, 47</value>
-  </data>
-  <data name="useDigits.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 51</value>
-  </data>
-  <data name="useDigits.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="useDigits.Size" type="System.Drawing.Size, System.Drawing">
-    <value>60, 19</value>
-  </data>
-  <data name="useDigits.Text" xml:space="preserve">
-    <value>Ziffern</value>
-  </data>
-  <data name="useWatchHands.Location" type="System.Drawing.Point, System.Drawing">
-    <value>8, 23</value>
-  </data>
-  <data name="useWatchHands.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="useWatchHands.Size" type="System.Drawing.Size, System.Drawing">
-    <value>110, 19</value>
-  </data>
-  <data name="useWatchHands.Text" xml:space="preserve">
-    <value>Uhrzeigerstriche</value>
   </data>
   <data name="groupBox1.Location" type="System.Drawing.Point, System.Drawing">
     <value>240, 150</value>
@@ -340,42 +323,6 @@
   </data>
   <data name="hideWhenMinimized.Text" xml:space="preserve">
     <value>Ausblenden, wenn minimiert</value>
-  </data>
-  <data name="largeRB.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 78</value>
-  </data>
-  <data name="largeRB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="largeRB.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 19</value>
-  </data>
-  <data name="largeRB.Text" xml:space="preserve">
-    <value>Groß</value>
-  </data>
-  <data name="mediumRB.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 52</value>
-  </data>
-  <data name="mediumRB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="mediumRB.Size" type="System.Drawing.Size, System.Drawing">
-    <value>56, 19</value>
-  </data>
-  <data name="mediumRB.Text" xml:space="preserve">
-    <value>Mittel</value>
-  </data>
-  <data name="smallRB.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 23</value>
-  </data>
-  <data name="smallRB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="smallRB.Size" type="System.Drawing.Size, System.Drawing">
-    <value>51, 19</value>
-  </data>
-  <data name="smallRB.Text" xml:space="preserve">
-    <value>Klein</value>
   </data>
   <data name="sizeGroupBox.Location" type="System.Drawing.Point, System.Drawing">
     <value>240, 16</value>
@@ -446,6 +393,105 @@
   <data name="layoutPage.Text" xml:space="preserve">
     <value>Anzeige</value>
   </data>
+  <data name="printPage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 27</value>
+  </data>
+  <data name="printPage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="printPage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>464, 374</value>
+  </data>
+  <data name="printPage.Text" xml:space="preserve">
+    <value>Drucken</value>
+  </data>
+  <data name="generatePage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 27</value>
+  </data>
+  <data name="generatePage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="generatePage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>464, 374</value>
+  </data>
+  <data name="generatePage.Text" xml:space="preserve">
+    <value>Generieren</value>
+  </data>
+  <data name="optionsTab.Location" type="System.Drawing.Point, System.Drawing">
+    <value>14, 9</value>
+  </data>
+  <data name="optionsTab.Size" type="System.Drawing.Size, System.Drawing">
+    <value>472, 405</value>
+  </data>
+  <data name="possibleValuesExamplePicture.Location" type="System.Drawing.Point, System.Drawing">
+    <value>145, 23</value>
+  </data>
+  <data name="possibleValuesExamplePicture.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="possibleValuesExamplePicture.Size" type="System.Drawing.Size, System.Drawing">
+    <value>55, 47</value>
+  </data>
+  <data name="useDigits.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 51</value>
+  </data>
+  <data name="useDigits.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="useDigits.Size" type="System.Drawing.Size, System.Drawing">
+    <value>60, 19</value>
+  </data>
+  <data name="useDigits.Text" xml:space="preserve">
+    <value>Ziffern</value>
+  </data>
+  <data name="useWatchHands.Location" type="System.Drawing.Point, System.Drawing">
+    <value>8, 23</value>
+  </data>
+  <data name="useWatchHands.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="useWatchHands.Size" type="System.Drawing.Size, System.Drawing">
+    <value>110, 19</value>
+  </data>
+  <data name="useWatchHands.Text" xml:space="preserve">
+    <value>Uhrzeigerstriche</value>
+  </data>
+  <data name="largeRB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 78</value>
+  </data>
+  <data name="largeRB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="largeRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 19</value>
+  </data>
+  <data name="largeRB.Text" xml:space="preserve">
+    <value>Groß</value>
+  </data>
+  <data name="mediumRB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 52</value>
+  </data>
+  <data name="mediumRB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="mediumRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>56, 19</value>
+  </data>
+  <data name="mediumRB.Text" xml:space="preserve">
+    <value>Mittel</value>
+  </data>
+  <data name="smallRB.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 23</value>
+  </data>
+  <data name="smallRB.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="smallRB.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 19</value>
+  </data>
+  <data name="smallRB.Text" xml:space="preserve">
+    <value>Klein</value>
+  </data>
   <data name="printInternalSeverity.Location" type="System.Drawing.Point, System.Drawing">
     <value>7, 255</value>
   </data>
@@ -479,6 +525,21 @@
   <data name="xSudokuConstrastLabel.Text" xml:space="preserve">
     <value>&amp;Kontrast für X-Sudokus</value>
   </data>
+  <data name="solutionPrintSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>177, 72</value>
+  </data>
+  <data name="solutionPrintSize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="solutionPrintSize.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="solutionPrintSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>132, 130</value>
+  </data>
+  <data name="solutionPrintSize.Text" xml:space="preserve">
+    <value>Größe-Lösung</value>
+  </data>
   <data name="solutionSmall.Location" type="System.Drawing.Point, System.Drawing">
     <value>7, 48</value>
   </data>
@@ -500,20 +561,20 @@
   <data name="solutionNormal.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 19</value>
   </data>
-  <data name="solutionPrintSize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>177, 72</value>
+  <data name="problemPrintSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 72</value>
   </data>
-  <data name="solutionPrintSize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="problemPrintSize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="solutionPrintSize.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="problemPrintSize.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="solutionPrintSize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>132, 130</value>
+  <data name="problemPrintSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>154, 130</value>
   </data>
-  <data name="solutionPrintSize.Text" xml:space="preserve">
-    <value>Größe-Lösung</value>
+  <data name="problemPrintSize.Text" xml:space="preserve">
+    <value>Größe-Problem</value>
   </data>
   <data name="tiny.Location" type="System.Drawing.Point, System.Drawing">
     <value>7, 102</value>
@@ -560,33 +621,6 @@
   <data name="large.Text" xml:space="preserve">
     <value>Groß</value>
   </data>
-  <data name="problemPrintSize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 72</value>
-  </data>
-  <data name="problemPrintSize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="problemPrintSize.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="problemPrintSize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>154, 130</value>
-  </data>
-  <data name="problemPrintSize.Text" xml:space="preserve">
-    <value>Größe-Problem</value>
-  </data>
-  <data name="printPage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 27</value>
-  </data>
-  <data name="printPage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="printPage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>464, 374</value>
-  </data>
-  <data name="printPage.Text" xml:space="preserve">
-    <value>Drucken</value>
-  </data>
   <data name="precalculatedProblems.Location" type="System.Drawing.Point, System.Drawing">
     <value>7, 14</value>
   </data>
@@ -611,6 +645,18 @@
   <data name="generateMinimalProblems.Text" xml:space="preserve">
     <value>Minimale Probleme generieren</value>
   </data>
+  <data name="selectLevelBox.Location" type="System.Drawing.Point, System.Drawing">
+    <value>303, 88</value>
+  </data>
+  <data name="selectLevelBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="selectLevelBox.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 3, 4, 3</value>
+  </data>
+  <data name="selectLevelBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>111, 52</value>
+  </data>
   <data name="selectSeverityLevel.Location" type="System.Drawing.Point, System.Drawing">
     <value>5, 22</value>
   </data>
@@ -623,17 +669,20 @@
   <data name="selectSeverityLevel.Text" xml:space="preserve">
     <value>Auswählen</value>
   </data>
-  <data name="selectLevelBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>303, 88</value>
+  <data name="type.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 147</value>
   </data>
-  <data name="selectLevelBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="type.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="selectLevelBox.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="type.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="selectLevelBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>111, 52</value>
+  <data name="type.Size" type="System.Drawing.Size, System.Drawing">
+    <value>407, 52</value>
+  </data>
+  <data name="type.Text" xml:space="preserve">
+    <value>Sudoku Typen in Problemheften</value>
   </data>
   <data name="xSudoku.Location" type="System.Drawing.Point, System.Drawing">
     <value>97, 22</value>
@@ -656,20 +705,20 @@
   <data name="normalSudoku.Text" xml:space="preserve">
     <value>Normal </value>
   </data>
-  <data name="type.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 147</value>
+  <data name="severity.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 88</value>
   </data>
-  <data name="type.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="severity.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="type.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="severity.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="type.Size" type="System.Drawing.Size, System.Drawing">
-    <value>407, 52</value>
+  <data name="severity.Size" type="System.Drawing.Size, System.Drawing">
+    <value>292, 52</value>
   </data>
-  <data name="type.Text" xml:space="preserve">
-    <value>Sudoku Typen in Problemheften</value>
+  <data name="severity.Text" xml:space="preserve">
+    <value>Schwierigkeitsgrad</value>
   </data>
   <data name="hard.Location" type="System.Drawing.Point, System.Drawing">
     <value>217, 22</value>
@@ -707,20 +756,20 @@
   <data name="easy.Text" xml:space="preserve">
     <value>Leicht</value>
   </data>
-  <data name="severity.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 88</value>
+  <data name="bookletSize.Location" type="System.Drawing.Point, System.Drawing">
+    <value>7, 205</value>
   </data>
-  <data name="severity.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="bookletSize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="severity.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="bookletSize.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="severity.Size" type="System.Drawing.Size, System.Drawing">
-    <value>292, 52</value>
+  <data name="bookletSize.Size" type="System.Drawing.Size, System.Drawing">
+    <value>407, 76</value>
   </data>
-  <data name="severity.Text" xml:space="preserve">
-    <value>Schwierigkeitsgrad</value>
+  <data name="bookletSize.Text" xml:space="preserve">
+    <value>Problemheftumfang</value>
   </data>
   <data name="unlimited.Location" type="System.Drawing.Point, System.Drawing">
     <value>156, 40</value>
@@ -754,39 +803,6 @@
   </data>
   <data name="labelBookletSizeExisting.Text" xml:space="preserve">
     <value>Existierende Probleme</value>
-  </data>
-  <data name="bookletSize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 205</value>
-  </data>
-  <data name="bookletSize.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="bookletSize.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="bookletSize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>407, 76</value>
-  </data>
-  <data name="bookletSize.Text" xml:space="preserve">
-    <value>Problemheftumfang</value>
-  </data>
-  <data name="generatePage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 27</value>
-  </data>
-  <data name="generatePage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
-  </data>
-  <data name="generatePage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>464, 374</value>
-  </data>
-  <data name="generatePage.Text" xml:space="preserve">
-    <value>Generieren</value>
-  </data>
-  <data name="optionsTab.Location" type="System.Drawing.Point, System.Drawing">
-    <value>14, 9</value>
-  </data>
-  <data name="optionsTab.Size" type="System.Drawing.Size, System.Drawing">
-    <value>472, 405</value>
   </data>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
     <value>7, 15</value>

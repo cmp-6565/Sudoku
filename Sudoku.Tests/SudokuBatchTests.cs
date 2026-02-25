@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+
 public class LiveDebugListener: TraceListener
 {
     public override void Write(string message) { Debugger.Log(0, null, message); }
@@ -31,12 +33,11 @@ public sealed class SudokuBatchTests
     private const byte ReadOnlyEncodingOffset = 64;
     private static readonly string RepoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory!, "..", "..", "..", ".."));
     private static readonly string NormalSudokusFilePath = Path.Combine(RepoRoot, "WebClient", "NormalSudokus.sudoku");
-    private static readonly string NormalSudokusSolutionsFilePath = Path.Combine(RepoRoot, "WebClient", "NormalSudokus.solutions");
+    private static readonly string SolutionsFilePath = Path.Combine(RepoRoot, "WebClient", "AllSudokus.solutions");
     private static readonly string XSudokusFilePath = Path.Combine(RepoRoot, "WebClient", "XSudokus.sudoku");
-    private static readonly string XSudokusSolutionsFilePath = Path.Combine(RepoRoot, "WebClient", "XSudokus.solutions");
     Random rand = new Random(/* unchecked((int)DateTime.Now.Ticks)*/ 1);
 
-    private record struct TestResult(string Puzzle, string MinimalProblem, int Diff, string Solution, double Seconds);
+    private record struct TestResult(string Puzzle, string MinimalProblem, int Diff, string Solution, double TotalRuntime, double GreedyRuntime, double CandidateRuntime, Boolean XSudoku, BaseProblem.AlgorithmParameters Parameters);
 
     private WinFormsSettings settings;
     public TestContext? TestContext { get; set; }
@@ -53,8 +54,9 @@ public sealed class SudokuBatchTests
     {
         settings = CreateSettings(false);
         string[] puzzles = LoadPuzzles(NormalSudokusFilePath);
-        List<TestResult> referenceSolutions = LoadOrCreateReferenceSolutions(puzzles.Length, NormalSudokusSolutionsFilePath, out bool referenceExists);
-        await SolveAndMinimizeSudokus(puzzles, referenceSolutions, referenceExists, NormalSudokusSolutionsFilePath);
+        List<TestResult> referenceSolutions = LoadOrCreateReferenceSolutions(puzzles.Length, SolutionsFilePath);
+        Title(puzzles.Length, referenceSolutions.Count() != 0);
+        await SolveAndMinimizeSudokus(puzzles, referenceSolutions, SolutionsFilePath);
     }
 
     [TestMethod]
@@ -62,8 +64,42 @@ public sealed class SudokuBatchTests
     {
         settings = CreateSettings(true);
         string[] puzzles = LoadPuzzles(XSudokusFilePath);
-        List<TestResult> referenceSolutions = LoadOrCreateReferenceSolutions(puzzles.Length, XSudokusSolutionsFilePath, out bool referenceExists);
-        await SolveAndMinimizeSudokus(puzzles, referenceSolutions, referenceExists, XSudokusSolutionsFilePath);
+        List<TestResult> referenceSolutions = LoadOrCreateReferenceSolutions(puzzles.Length, SolutionsFilePath);
+        Title(puzzles.Length, referenceSolutions.Count() != 0);
+        await SolveAndMinimizeSudokus(puzzles, referenceSolutions, SolutionsFilePath);
+    }
+    [TestMethod]
+    public async Task SolveAndMinimizeLongRunningNormalSudokus()
+    {
+        settings = CreateSettings(false);
+        string[] puzzles = {
+            "0rtu00000000t0w0vs00000q00t000vwus0qxq0r0y0tu00uq0xwry000s0vt0xy00000q000s0yq0000",
+            "0000y00v0t0us000qx0w00vx0u000yx0s00wrq00tvxy0000w000rvs00r000w00rq0s0t0y0t0y0000u",
+            "uvr000x0t0w000qvy00t0x0r00000w0u000000t00s00xru0y0v00struv00s000000y00wq0qys00r0u"};
+        List<TestResult> referenceSolutions = LoadOrCreateReferenceSolutions(puzzles.Length, SolutionsFilePath);
+        Title(puzzles.Length, referenceSolutions[0].Puzzle != null);
+        await SolveAndMinimizeSudokus(puzzles, referenceSolutions, SolutionsFilePath);
+    }
+
+    [TestMethod]
+    public async Task SolveAndMinimizeLongRunningXSudokus()
+    {
+        settings = CreateSettings(true);
+        string[] puzzles = {
+            "wx000tv00000u0swxqy000x0u00000y00xt0s0000q0ur00r000q000s00qx0vu0000tvsq00vt00yr0x",
+/*            "yx00wr000u000t000q0000x0rw0s000000vu0w0ruv0s0vy0w0000rw00000s0000ytvw000xuqs0yvt0",
+            "tq0vw00yrxv00sy0000u00rx00000v000qx0qyt0xr0000000v0rs0y00x0s0t0s0000v0000xwr00u0s",
+            "0s000ryq000wq000r0000u0t0v000u000v00vq000wx00y000000w000000s000000r0q00y000000000",
+            "x00000v0ww0r00vq00v00qs0ux00y0000w00s0000t0uxu00vw00t00vx0ru00sqr000xy0u00w000x0v",
+            "0x00000r0s0q00000x0000tu00q000t0y000uy0000r00vt000s000000y00v00000s000xu0qv0w0000",
+            "00swr0vqu000000tys0v0ut00000qrx00u00000s00000utx0vw0s0000t0x0rq0sqywv00000t0s000v",
+            "0000000q0000w0000x000us0000xw0t0000q0qvx0s000r000w0uxs000r0000ty0000000v00000qwr0",
+            "00y0vw0000s000000yt00r000vq0000000swwqv00x000000000000s000x0y00uy00qs000000yu0000",
+            "00000000y00y0xvq000000sy00000000q0rw0q0y00000ysr0000000y00u00s0t00w000000000000qx",
+            "000t000s0q00v0000000uy00v000w00xqu00r00u00q0y000s0w00000y000000000q0y0xww0000s000" */};
+        List<TestResult> referenceSolutions = LoadOrCreateReferenceSolutions(puzzles.Length, SolutionsFilePath);
+        Title(puzzles.Length, referenceSolutions[0].Puzzle != null);
+        await SolveAndMinimizeSudokus(puzzles, referenceSolutions, SolutionsFilePath);
     }
 
     [TestMethod]
@@ -101,10 +137,10 @@ public sealed class SudokuBatchTests
         int originalCount = CountValues(minimalSudoku.ToCharArray());
 
         TestContext?.WriteLine($"Löse ein minimales Problem ({minimalSudoku}) und setze {randomCells} zufällige Werte, minimiere und vergleiche mit der Originalllösung, es werden Sudokus mit der Einstellung \"{(settings.GenerateXSudoku ? "X-Sudoku" : "Normal-Sudoku")}\" betrachtet.");
-        TestContext?.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Minimales Problem",-81} {"Diff.",-6} {"Lösung",-81} {"Total",10} {"Minimierung",10}");
+        TestContext?.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Minimales Problem",-81} {"Values",-6} {"Diff.",-6} {"Lösung",-81} {"Total",-10} {"Minimierung",-10}");
 
         Trace.WriteLine($"Löse ein minimales Problem ({minimalSudoku}) und setze {randomCells} zufällige Werte, minimiere und vergleiche mit der Originalllösung, es werden Sudokus mit der Einstellung \"{(settings.GenerateXSudoku ? "X-Sudoku" : "Normal-Sudoku")}\" betrachtet.");
-        Trace.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Minimales Problem",-81} {"Diff.",-6} {"Lösung",-81} {"Total",10} {"Minimierung",10}");
+        Trace.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Minimales Problem",-81} {"Values",-6} {"Diff.",-6} {"Lösung",-81} {"Total",-10} {"Minimierung",-10}");
 
         var sudoku = CreateProblem(minimalSudoku);
         await FindSolution(sudoku, settings.FindAllSolutions ? settings.MaxSolutions : 1);
@@ -131,7 +167,7 @@ public sealed class SudokuBatchTests
             Assert.AreEqual(computedSolution, solution, $"Lösung für Problem {problem} stimmt nicht mit Originallösung überein");
 
             Stopwatch minimize = Stopwatch.StartNew();
-            var minimizedProblem = await sudoku.Minimize(settings.SeverityLevel, CancellationToken.None);
+            var minimizedProblem = await sudoku.Minimize(settings.SeverityLevel, BaseProblem.MinimizeAlgorithm.Calculate, CancellationToken.None);
             minimize.Stop();
             minimizedProblem.ResetMatrix();
 
@@ -139,15 +175,15 @@ public sealed class SudokuBatchTests
             string minimizedSerialized = SerializeProblem(minimizedProblem);
             Assert.AreEqual(originalCount, CountValues(minimizedSerialized.ToCharArray()), $"Das ermittelte Minimalproblem für Sudoku #{i + 1} ist nicht minimal.");
 
-            Assert.AreEqual(minimalSudoku, minimizedSerialized, $"Minimiertes Problem stimmt nicht mit der Original-Problem überein.");
-
-            await FindSolution(minimizedProblem!, settings.FindAllSolutions ? settings.MaxSolutions : 1);
-            string minimizedSolution = SerializeSolution(minimizedProblem!);
-            Assert.AreEqual(computedSolution, minimizedSolution, $"Minimierte Lösung stimmt nicht mit der Original-Lösung überein.");
-
+            if(minimalSudoku != minimizedSerialized) // a minimized problem with the same number of values found which is different to the original one; thus we have check whether the solutions of both are equal
+            {
+                await FindSolution(minimizedProblem!, settings.FindAllSolutions ? settings.MaxSolutions : 1);
+                string minimizedSolution = SerializeSolution(minimizedProblem!);
+                Assert.AreEqual(computedSolution, minimizedSolution, $"Minimierte Lösung stimmt nicht mit der Original-Lösung überein.");
+            }
             stopwatch.Stop();
-            TestContext?.WriteLine($"{i + 1,4:D4} {problem,-81} {minimizedSerialized,-81} {CountValues(problem.ToCharArray())- CountValues(minimizedSerialized.ToCharArray()),6:d2} {minimizedSolution,-81} {stopwatch.Elapsed.TotalSeconds,10:F2} {minimize.Elapsed.TotalSeconds,10:F2}");
-            Trace.WriteLine($"{i + 1,4:D4} {problem,-81} {minimizedSerialized,-81} {CountValues(problem.ToCharArray()) - CountValues(minimizedSerialized.ToCharArray()),6:d2} {minimizedSolution,-81} {stopwatch.Elapsed.TotalSeconds,10:F2} {minimize.Elapsed.TotalSeconds,10:F2}");
+            TestContext?.WriteLine($"{i + 1,4:D4} {problem,-81} {minimizedSerialized,-81} {CountValues(problem.ToCharArray())} {CountValues(problem.ToCharArray())- CountValues(minimizedSerialized.ToCharArray()),6:d2} {computedSolution,-81} {stopwatch.Elapsed.TotalSeconds,-10:F2} {minimize.Elapsed.TotalSeconds,-10:F2}");
+            Trace.WriteLine($"{i + 1,4:D4} {problem,-81} {minimizedSerialized,-81} {CountValues(problem.ToCharArray())} {CountValues(problem.ToCharArray()) - CountValues(minimizedSerialized.ToCharArray()),6:d2} {computedSolution,-81} {stopwatch.Elapsed.TotalSeconds,-10:F2} {minimize.Elapsed.TotalSeconds,-10:F2}");
         }
     }
 
@@ -181,15 +217,32 @@ public sealed class SudokuBatchTests
             Trace.WriteLine($"{index + 1,4:D4} {problem,-81} {solution,-81} {stopwatch.Elapsed.TotalSeconds,10:F2}");
         }
     }
+    private async Task<BaseProblem.AlgorithmParameters[]> GetAlgorithm(string[] puzzles)
+    {
+        BaseProblem.AlgorithmParameters[] algorithmParameters=new BaseProblem.AlgorithmParameters[puzzles.Length];
+        for(int index = 0; index < puzzles.Length; index++)
+        {
+            var sudoku = CreateProblem(puzzles[index]);
+            algorithmParameters[index]=await sudoku.GetAlgorithm(int.MaxValue, CancellationToken.None);
+        }
+        return algorithmParameters;
+    }
     public void GenerationFinished(Object o, string s) {  }
 
-    private async Task SolveAndMinimizeSudokus(string[] puzzles, List<TestResult> referenceSolutions, bool referenceExists, string solutionFilename)
+    private void Title(int numberOfProblems, Boolean referenceExists)
     {
-        TestContext?.WriteLine($"Löse und minimiere {puzzles.Length} Sudokus mit der Einstellung \"{(settings.GenerateXSudoku ? "X-Sudoku" : "Normal-Sudoku")}\". Referenzlösungen {(referenceExists ? "werden verglichen" : "werden erstellt")}.");
-        TestContext?.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Minimales Problem",-81} {"Diff.",-6} {"Lösung",-81} {"Sekunden",10}");
+        TestContext?.WriteLine($"Löse und minimiere {numberOfProblems} Sudokus mit der Einstellung \"{(settings.GenerateXSudoku ? "X-Sudoku" : "Normal-Sudoku")}\". Referenzlösungen {(referenceExists ? "werden verglichen" : "werden erstellt")}.");
+        TestContext?.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Minimales Problem",-81} {"Values",6} {"Diff.",6} {"Lösung",-81} {"Sekunden",10} {"Greedy",10} {"Candidate",10} {"Fav. Algo.",-10}");
 
-        Trace.WriteLine($"Löse und minimiere {puzzles.Length} Sudokus mit der Einstellung \"{(settings.GenerateXSudoku ? "X-Sudoku" : "Normal-Sudoku")}\". Referenzlösungen {(referenceExists ? "werden verglichen" : "werden erstellt")}.");
-        Trace.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Minimales Problem",-81} {"Diff.",-6} {"Lösung",-81} {"Sekunden",10}");
+        Trace.WriteLine($"Löse und minimiere {numberOfProblems} Sudokus mit der Einstellung \"{(settings.GenerateXSudoku ? "X-Sudoku" : "Normal-Sudoku")}\". Referenzlösungen {(referenceExists ? "werden verglichen" : "werden erstellt")}.");
+        Trace.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Minimales Problem",-81} {"Values",6} {"Diff.",6} {"Lösung",-81} {"Sekunden",10} {"Greedy",10} {"Candidate",10} {"Fav. Algo.",-10}");
+    }
+
+    private async Task<int> SolveAndMinimizeSudokus(string[] puzzles, List<TestResult> referenceSolutions, string solutionFilename)
+    {
+        BaseProblem.AlgorithmParameters[] algorithmParameters = await GetAlgorithm(puzzles); 
+        int referenceIndex = -1;
+
         for(int index = 0; index < puzzles.Length; index++)
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
@@ -202,42 +255,58 @@ public sealed class SudokuBatchTests
             await FindSolution(sudoku, settings.FindAllSolutions ? settings.MaxSolutions : 1);
             string computedSolution = SerializeSolution(sudoku);
 
-            var minimizedProblem = await sudoku.Minimize(settings.SeverityLevel, CancellationToken.None);
-            minimizedProblem.ResetMatrix();
-            diff -= minimizedProblem.nValues;
+            Stopwatch greedyRuntime = Stopwatch.StartNew();
+            var greedyMinimizedProblem = await sudoku.Minimize(settings.SeverityLevel, BaseProblem.MinimizeAlgorithm.Greedy, CancellationToken.None);
+            greedyRuntime.Stop();
 
-            Assert.IsNotNull(minimizedProblem, $"Minimalproblem für Sudoku #{index + 1} konnte nicht ermittelt werden.");
-            Assert.IsTrue(diff >= 0, $"Das ermittelte Minimalproblem für Sudoku #{index + 1} ist nicht minimal.");
+            greedyMinimizedProblem.ResetMatrix();
 
-            string minimizedSerialized = SerializeProblem(minimizedProblem);
+            Stopwatch candidateRuntime = Stopwatch.StartNew();
+            var candidateMinimizedProblem = await sudoku.Minimize(settings.SeverityLevel, BaseProblem.MinimizeAlgorithm.Candidate, CancellationToken.None);
+            candidateRuntime.Stop();
 
-            await FindSolution(minimizedProblem!, settings.FindAllSolutions? settings.MaxSolutions : 1);
-            string minimizedSolution = SerializeSolution(minimizedProblem!);
+            candidateMinimizedProblem.ResetMatrix();
+            diff -= candidateMinimizedProblem.nValues;
+
+            Assert.IsNotNull(greedyMinimizedProblem, $"Minimalproblem für Sudoku #{index + 1} konnte mit dem Greedy-Algorithmus nicht ermittelt werden.");
+            Assert.IsTrue(diff >= 0, $"Das mit dem Greedy-Algorithmus ermittelte Minimalproblem für Sudoku #{index + 1} ist nicht minimal.");
+            Assert.IsNotNull(candidateMinimizedProblem, $"Minimalproblem für Sudoku #{index + 1} konnte mit dem Candidate-Algorithmus nicht ermittelt werden.");
+            Assert.IsTrue(candidateMinimizedProblem.nValues == greedyMinimizedProblem.nValues, $"Das mit dem Candidate-Algorithmus ermittelte Minimalproblem für Sudoku #{index + 1} ist nicht minimal.");
+
+            string minimizedSerialized = SerializeProblem(candidateMinimizedProblem);
+
+            await FindSolution(candidateMinimizedProblem!, settings.FindAllSolutions? settings.MaxSolutions : 1);
+            string minimizedSolution = SerializeSolution(candidateMinimizedProblem!);
 
             Assert.AreEqual(computedSolution, minimizedSolution, $"Minimierte Lösung für Sudoku #{index + 1} stimmt nicht mit der Original-Lösung überein.");
 
             stopwatch.Stop();
 
-            if(referenceExists)
+            TestResult testResult = referenceSolutions.Find(x => x.Puzzle == serializedPuzzle && x.XSudoku == settings.GenerateXSudoku);
+            if(testResult.Puzzle != null)
             {
-                Assert.AreEqual(referenceSolutions[index].Solution, computedSolution, $"Lösung #{index + 1} weicht von der Referenz in \"{solutionFilename}\" ab.");
-                Assert.AreEqual(referenceSolutions[index].MinimalProblem, minimizedSerialized, $"Minimales Problem #{index + 1} weicht von der Referenz in \"{solutionFilename}\" ab.");
-                Assert.AreEqual(referenceSolutions[index].Diff, diff, $"Diff #{index + 1} weicht von der Referenz in \"{solutionFilename}\" ab.");
+                Assert.AreEqual(testResult.Solution, computedSolution, $"Lösung #{index + 1} weicht von der Referenz ab.");
+                Assert.AreEqual(testResult.Diff, diff, $"Diff #{index + 1} weicht von der Referenz in ab.");
             }
             else
             {
-                referenceSolutions.Add(new TestResult { Puzzle = serializedPuzzle, Solution = computedSolution, MinimalProblem = minimizedSerialized, Diff = diff, Seconds = stopwatch.Elapsed.TotalSeconds });
+                testResult = new TestResult { Puzzle = serializedPuzzle, Solution = computedSolution, MinimalProblem = minimizedSerialized, Diff = diff, TotalRuntime = stopwatch.Elapsed.TotalSeconds, XSudoku=settings.GenerateXSudoku };
+                referenceSolutions.Add(testResult);
             }
 
-            TestContext?.WriteLine($"{index + 1,4:D4} {serializedPuzzle,-81} {minimizedSerialized,-81} {diff,6:d2} {minimizedSolution,-81} {stopwatch.Elapsed.TotalSeconds,10:F2}");
-            Trace.WriteLine($"{index + 1,4:D4} {serializedPuzzle,-81} {minimizedSerialized,-81} {diff,6:d2} {minimizedSolution,-81} {stopwatch.Elapsed.TotalSeconds,10:F2}");
+            referenceIndex=referenceSolutions.FindIndex(x => x.Puzzle == serializedPuzzle && x.XSudoku == settings.GenerateXSudoku);
+            referenceSolutions[referenceIndex] = referenceSolutions[referenceIndex] with { CandidateRuntime = candidateRuntime.Elapsed.TotalSeconds, GreedyRuntime = greedyRuntime.Elapsed.TotalSeconds, Parameters = algorithmParameters[index] };
+
+            TestContext?.WriteLine($"{index + 1,4:D4} {serializedPuzzle,-81} {minimizedSerialized,-81} {CountValues(serializedPuzzle.ToCharArray()),6:D2} {diff,6:d2} {minimizedSolution,-81} {stopwatch.Elapsed.TotalSeconds,10:F2} {greedyRuntime.Elapsed.TotalSeconds,10:F2} {candidateRuntime.Elapsed.TotalSeconds,10:F2} {algorithmParameters[index].FavoriteAlgorithm}");
+            Trace.WriteLine($"{index + 1,4:D4} {serializedPuzzle,-81} {minimizedSerialized,-81} {CountValues(serializedPuzzle.ToCharArray()),6:D2} {diff,6:d2} {minimizedSolution,-81} {stopwatch.Elapsed.TotalSeconds,10:F2} {greedyRuntime.Elapsed.TotalSeconds,10:F2} {candidateRuntime.Elapsed.TotalSeconds,10:F2} {algorithmParameters[index].FavoriteAlgorithm}");
         }
 
-        if(!referenceExists)
+        if(solutionFilename != null)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(solutionFilename) ?? RepoRoot);
             File.WriteAllText(solutionFilename, JsonSerializer.Serialize(referenceSolutions));
         }
+        return referenceIndex;
     }
 
     private static WinFormsSettings CreateSettings(bool xSudoku)
@@ -276,13 +345,12 @@ public sealed class SudokuBatchTests
         return puzzles;
     }
 
-    private static List<TestResult> LoadOrCreateReferenceSolutions(int expectedCount, string filename, out bool referenceExists)
+    private static List<TestResult> LoadOrCreateReferenceSolutions(int expectedCount, string filename)
     {
-        referenceExists = File.Exists(filename);
-        if(!referenceExists)
+        if(!File.Exists(filename))
             return new List<TestResult>(expectedCount);
 
-        var testResults = new List<TestResult>(expectedCount);
+        var testResults = new List<TestResult>();
         string fileContent = File.ReadAllText(filename);
         try
         {
@@ -293,7 +361,6 @@ public sealed class SudokuBatchTests
             Assert.Fail($"Fehler beim Lesen der Datei \"{filename}\": {ex.Message}");
         }
 
-        Assert.AreEqual(expectedCount, testResults.Count, $"Die Datei \"{filename}\" enthält nicht genügend Referenzlösungen.");
         return testResults;
     }
 

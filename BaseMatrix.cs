@@ -30,6 +30,8 @@ internal abstract class BaseMatrix: Values
     [ThreadStatic]
     private static int[] isolatedCandidateIndex;
 
+    public int DefinitiveCellCount {get { return definitiveCalculatorCounter; }} 
+
     public event EventHandler<BaseCell> CellChanged;
     protected virtual void OnCellChanged(BaseCell v)
     {

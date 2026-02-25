@@ -211,9 +211,4 @@ internal partial class OptionsDialog: Form
     {
         autoPauseLag.Enabled = autoPause.Checked;
     }
-
-    private void checkUI(object sender, EventArgs e)
-    {
-
-    }
 }

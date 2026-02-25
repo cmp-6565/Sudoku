@@ -88,6 +88,7 @@ namespace Sudoku
             unlimited = new System.Windows.Forms.CheckBox();
             bookletSizeExisting = new System.Windows.Forms.NumericUpDown();
             labelBookletSizeExisting = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)bookletSizeNew).BeginInit();
             ((System.ComponentModel.ISupportInitialize)minValues).BeginInit();
             optionsTab.SuspendLayout();
@@ -201,6 +202,7 @@ namespace Sudoku
             resources.ApplyResources(layoutPage, "layoutPage");
             layoutPage.BackColor = System.Drawing.SystemColors.ControlLight;
             layoutPage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            layoutPage.Controls.Add(label1);
             layoutPage.Controls.Add(autoPauseLag);
             layoutPage.Controls.Add(autoPause);
             layoutPage.Controls.Add(saveState);
@@ -555,6 +557,11 @@ namespace Sudoku
             resources.ApplyResources(labelBookletSizeExisting, "labelBookletSizeExisting");
             labelBookletSizeExisting.Name = "labelBookletSizeExisting";
             // 
+            // label1
+            // 
+            resources.ApplyResources(label1, "label1");
+            label1.Name = "label1";
+            // 
             // OptionsDialog
             // 
             AcceptButton = ok;
@@ -666,5 +673,6 @@ namespace Sudoku
         private System.Windows.Forms.CheckBox printInternalSeverity;
         private System.Windows.Forms.CheckBox autoPause;
         private System.Windows.Forms.NumericUpDown autoPauseLag;
+        private System.Windows.Forms.Label label1;
     }
 }

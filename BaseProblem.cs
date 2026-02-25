@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO.Hashing;
 using System.Configuration;
+using System.Collections.Immutable;
 
 namespace Sudoku;
 
@@ -560,24 +561,61 @@ internal abstract class BaseProblem: EventArgs, IComparable
         clone.Matrix.Prepare();
         return clone;
     }
-    bool ShouldUseCandidateSearch(GivenState initial, GivenState greedyResult)
+
+    public enum MinimizeAlgorithm { Calculate, Candidate, Greedy }
+    public record struct AlgorithmParameters(MinimizeAlgorithm FavoriteAlgorithm, int InitialFixedCount, int TotalRemovable, int RemovedByGreedy, int RemainingMargin, int GreedyStateFixedCount, int NumberOfSeldomValues, int NumberOfFrequentValues, float SeverityLevel);
+
+    private AlgorithmParameters GetAlgorithmParameters(GivenState initial, GivenState greedyState)
+    {
+        AlgorithmParameters parameters = new AlgorithmParameters();
+
+        parameters.InitialFixedCount = initial.FixedCount;
+        parameters.TotalRemovable=initial.FixedCount - Matrix.MinimumValues;
+        parameters.RemovedByGreedy=initial.FixedCount - greedyState.FixedCount;
+        parameters.RemainingMargin= greedyState.FixedCount - Matrix.MinimumValues;
+        parameters.GreedyStateFixedCount = greedyState.FixedCount;
+        parameters.NumberOfSeldomValues = greedyState.CountValues().Count(x => x < 2);
+        parameters.NumberOfFrequentValues = greedyState.CountValues().Count(y => y > 3);
+        parameters.SeverityLevel = SeverityLevel;
+
+        return parameters;
+    }
+    private bool ShouldUseCandidateSearch(GivenState initial, GivenState greedyState, out AlgorithmParameters parameters)
     {
         const int GreedyOffset = 2; // If greedy is within this many clues of the minimum, skip candidate search
+        parameters=GetAlgorithmParameters(initial, greedyState);
 
-        int totalRemovable = initial.FixedCount - Matrix.MinimumValues;
-        int removedByGreedy = initial.FixedCount - greedyResult.FixedCount;
-        int remainingMargin = greedyResult.FixedCount - Matrix.MinimumValues;
+        int count=parameters.NumberOfFrequentValues+parameters.NumberOfSeldomValues;
 
-        bool manyRemovalsPossible = totalRemovable >= 10;
-        bool greedyProgressLow = removedByGreedy < totalRemovable * 0.5;
-        bool stillFarFromMinimum = remainingMargin > 3;
-        bool highSeverity = SeverityLevelInt >= 4;                // Hard/XSudoku
+        bool manyRemovalsPossible = parameters.TotalRemovable >= 10;
+        bool greedyProgressLow = parameters.RemovedByGreedy < parameters.TotalRemovable * (Matrix is XSudokuMatrix? 0.4: 0.6);
+        bool stillFarFromMinimum = parameters.RemainingMargin > 3;
+        bool lowSeverity = SeverityLevel < 25;
+        bool lowNumberOfDefinitiveCells = Matrix.DefinitiveCellCount < parameters.TotalRemovable / 10;
         bool isXSudoku = Matrix is XSudokuMatrix;
 
-        if(greedyResult.FixedCount <= Matrix.MinimumValues + GreedyOffset) return false; // Already at or below minimum, no need for candidate search
-        return (manyRemovalsPossible && greedyProgressLow && stillFarFromMinimum) || highSeverity || (isXSudoku && nValues >= MinimizeLimit);
+        if(greedyState.FixedCount <= Matrix.MinimumValues + GreedyOffset || NumDistinctValues() < WinFormsSettings.SudokuSize) return false; // Already at or below minimum, no need for candidate search
+        return (manyRemovalsPossible && greedyProgressLow && stillFarFromMinimum) || lowNumberOfDefinitiveCells || (count > 1 && lowSeverity) || (isXSudoku && nValues > MinimizeLimit);
     }
-    public async Task<BaseProblem> Minimize(int maxSeverity, CancellationToken token)
+
+    public async Task<AlgorithmParameters> GetAlgorithm(int maxSeverity, CancellationToken token)
+    {
+        ResetMatrix();
+        AlgorithmParameters parameters;
+
+        GivenState initialState = GivenState.FromMatrix(Matrix);
+
+        var cache = new Dictionary<ulong, bool>();
+        GivenState greedyState = await GreedyReduce(CloneState(initialState), maxSeverity, cache, token).ConfigureAwait(false);
+
+        if(ShouldUseCandidateSearch(initialState, greedyState, out parameters))
+            parameters.FavoriteAlgorithm=MinimizeAlgorithm.Candidate;
+        else
+            parameters.FavoriteAlgorithm=MinimizeAlgorithm.Greedy; 
+
+        return parameters;
+    }
+    public async Task<BaseProblem> Minimize(int maxSeverity, MinimizeAlgorithm minimizeAlgorithm, CancellationToken token)
     {
         ResetMatrix();
 
@@ -587,7 +625,8 @@ internal abstract class BaseProblem: EventArgs, IComparable
         var cache = new Dictionary<ulong, bool>();
         GivenState greedyState = await GreedyReduce(CloneState(initialState), maxSeverity, cache, token).ConfigureAwait(false);
 
-        if(ShouldUseCandidateSearch(initialState, greedyState))
+        AlgorithmParameters parameters;
+        if((minimizeAlgorithm == MinimizeAlgorithm.Calculate && ShouldUseCandidateSearch(initialState, greedyState, out parameters)) || minimizeAlgorithm == MinimizeAlgorithm.Candidate)
         {
             return await MinimizeWithCandidates(maxSeverity, token).ConfigureAwait(false);
         }
@@ -780,16 +819,23 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
     public int NumDistinctValues()
     {
-        int i, j;
         int count = 0;
-        Boolean[] exists = new Boolean[WinFormsSettings.SudokuSize + 1];
+        bool[] exists = new bool[WinFormsSettings.SudokuSize + 1];
 
-        for(i = 0; i <= WinFormsSettings.SudokuSize; i++) exists[i] = false;
-        for(i = 0; i < WinFormsSettings.SudokuSize; i++)
-            for(j = 0; j < WinFormsSettings.SudokuSize; j++)
-                exists[GetValue(i, j)] = true;
-        for(i = 1; i <= WinFormsSettings.SudokuSize; i++)
-            if(exists[i]) count++;
+        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
+        {
+            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+            {
+                byte value = GetValue(row, col);
+                if(value == Values.Undefined) continue;
+
+                if(!exists[value])
+                {
+                    exists[value] = true;
+                    if(++count == WinFormsSettings.SudokuSize) return count;
+                }
+            }
+        }
 
         return count;
     }
@@ -851,6 +897,21 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
             clone[index] = Values.Undefined;
             return new GivenState(clone, FixedCount - 1);
+        }
+        public readonly int[] CountValues()
+        {
+            int size = WinFormsSettings.SudokuSize;
+            int[] counts = new int[size];
+
+            for(int index = 0; index < values.Length; index++)
+            {
+                byte value = values[index];
+                if(value == Values.Undefined) continue;
+
+                counts[value-1]++;
+            }
+
+            return counts;
         }
     }
     private sealed class IncrementalSolver

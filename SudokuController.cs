@@ -533,7 +533,7 @@ internal class SudokuController: IDisposable
 
         try
         {
-             return await CurrentProblem.Minimize(targetSeverity, token);
+             return await CurrentProblem.Minimize(targetSeverity, BaseProblem.MinimizeAlgorithm.Calculate, token);
         }
         finally
         {
