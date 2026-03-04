@@ -589,13 +589,14 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         bool manyRemovalsPossible = parameters.TotalRemovable >= 10;
         bool greedyProgressLow = parameters.RemovedByGreedy < parameters.TotalRemovable * (Matrix is XSudokuMatrix? 0.4: 0.6);
-        bool stillFarFromMinimum = parameters.RemainingMargin > 3;
+        bool notFarFromMinimum = parameters.RemainingMargin < 5;
         bool lowSeverity = SeverityLevel < 25;
         bool lowNumberOfDefinitiveCells = Matrix.DefinitiveCellCount < parameters.TotalRemovable / 10;
         bool isXSudoku = Matrix is XSudokuMatrix;
 
+        if(isXSudoku) return false; // For XSudoku, greedy reduction is often more effective and candidate search can be less beneficial due to the additional constraints
         if(greedyState.FixedCount <= Matrix.MinimumValues + GreedyOffset || NumDistinctValues() < WinFormsSettings.SudokuSize) return false; // Already at or below minimum, no need for candidate search
-        return (manyRemovalsPossible && greedyProgressLow && stillFarFromMinimum) || lowNumberOfDefinitiveCells || (count > 1 && lowSeverity) || (isXSudoku && nValues > MinimizeLimit);
+        return (parameters.RemovedByGreedy > 9 && (parameters.GreedyStateFixedCount > 22 || parameters.NumberOfSeldomValues > 0)); // Heuristic: If greedy removed a significant number of clues and left a relatively high fixed count or there is a low number of seldom values, candidate search is likely beneficial
     }
 
     public async Task<AlgorithmParameters> GetAlgorithm(int maxSeverity, CancellationToken token)

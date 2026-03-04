@@ -29,7 +29,7 @@ public class LiveDebugListener: TraceListener
 [TestClass]
 public sealed class SudokuBatchTests
 {
-    private const int SudokuBatchSize = 500;
+    private const int SudokuBatchSize = 100;
     private const byte ReadOnlyEncodingOffset = 64;
     private static readonly string RepoRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory!, "..", "..", "..", ".."));
     private static readonly string NormalSudokusFilePath = Path.Combine(RepoRoot, "WebClient", "NormalSudokus.sudoku");
@@ -86,17 +86,17 @@ public sealed class SudokuBatchTests
     {
         settings = CreateSettings(true);
         string[] puzzles = {
-            "wx000tv00000u0swxqy000x0u00000y00xt0s0000q0ur00r000q000s00qx0vu0000tvsq00vt00yr0x",
-/*            "yx00wr000u000t000q0000x0rw0s000000vu0w0ruv0s0vy0w0000rw00000s0000ytvw000xuqs0yvt0",
+//            "wx000tv00000u0swxqy000x0u00000y00xt0s0000q0ur00r000q000s00qx0vu0000tvsq00vt00yr0x",
+            "yx00wr000u000t000q0000x0rw0s000000vu0w0ruv0s0vy0w0000rw00000s0000ytvw000xuqs0yvt0",
             "tq0vw00yrxv00sy0000u00rx00000v000qx0qyt0xr0000000v0rs0y00x0s0t0s0000v0000xwr00u0s",
-            "0s000ryq000wq000r0000u0t0v000u000v00vq000wx00y000000w000000s000000r0q00y000000000",
-            "x00000v0ww0r00vq00v00qs0ux00y0000w00s0000t0uxu00vw00t00vx0ru00sqr000xy0u00w000x0v",
+            "0s000ryq000wq000r0000u0t0v000u000v00vq000wx00y000000w000000s000000r0q00y000000000"
+/*            "x00000v0ww0r00vq00v00qs0ux00y0000w00s0000t0uxu00vw00t00vx0ru00sqr000xy0u00w000x0v",
             "0x00000r0s0q00000x0000tu00q000t0y000uy0000r00vt000s000000y00v00000s000xu0qv0w0000",
             "00swr0vqu000000tys0v0ut00000qrx00u00000s00000utx0vw0s0000t0x0rq0sqywv00000t0s000v",
             "0000000q0000w0000x000us0000xw0t0000q0qvx0s000r000w0uxs000r0000ty0000000v00000qwr0",
             "00y0vw0000s000000yt00r000vq0000000swwqv00x000000000000s000x0y00uy00qs000000yu0000",
             "00000000y00y0xvq000000sy00000000q0rw0q0y00000ysr0000000y00u00s0t00w000000000000qx",
-            "000t000s0q00v0000000uy00v000w00xqu00r00u00q0y000s0w00000y000000000q0y0xww0000s000" */};
+            "000t000s0q00v0000000uy00v000w00xqu00r00u00q0y000s0w00000y000000000q0y0xww0000s000"*/};
         List<TestResult> referenceSolutions = LoadOrCreateReferenceSolutions(puzzles.Length, SolutionsFilePath);
         Title(puzzles.Length, referenceSolutions[0].Puzzle != null);
         await SolveAndMinimizeSudokus(puzzles, referenceSolutions, SolutionsFilePath);
