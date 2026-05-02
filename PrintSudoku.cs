@@ -53,7 +53,7 @@ public partial class SudokuForm: Form
         GenerateProblems(settings.BookletSizeNew, controller.NewSudokuType());
     }
 
-    private void LoadProblems4Booklet()
+    private async Task LoadProblems4Booklet()
     {
         controller.InitializePrinterService();
 
@@ -69,13 +69,12 @@ public partial class SudokuForm: Form
             controller.LoadProblemFilenames(new DirectoryInfo(selectBookletDirectory.SelectedPath), filenames, FormCTS.Token);
             if(!AbortRequested)
             {
-
                 int totalNumber = filenames.Count;
                 if(totalNumber < 1)
                     ShowInfo(Resources.NoProblems);
                 else
                 {
-                    int count = controller.LoadProblems(filenames, new Action<Object>(o =>
+                    int count = await controller.LoadProblems(filenames, new Action<Object>(o =>
                         {
                             int remainder;
                             Math.DivRem(controller.NumberOfProblems / 10, 25, out remainder);

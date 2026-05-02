@@ -174,13 +174,15 @@ internal class SudokuPrinterService: IDisposable
         if(currentProblem.NumberOfSolutions == 0)
             g.DrawString(Resources.TitleNotResolvable, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
         else
-            if(currentProblem.NumberOfSolutions == 1)
         {
-            String problemTitle = (printParameters.Problems.Count > 1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentProblem + 1) + ": " : String.Empty) + currentProblem.SeverityLevelText + (settings.PrintInternalSeverity ? " (" + currentProblem.SeverityLevel + ")" : "");
-            g.DrawString(problemTitle, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
+            if(currentProblem.NumberOfSolutions == 1)
+            {
+                String problemTitle = (printParameters.Problems.Count > 1 ? String.Format(cultureInfo, Resources.Problem, printParameters.CurrentProblem + 1) + ": " : String.Empty) + currentProblem.SeverityLevelText + (settings.PrintInternalSeverity ? " (" + currentProblem.SeverityLevel + ")" : "");
+                g.DrawString(problemTitle, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
+            }
+            else
+                g.DrawString(Resources.MoreThanOne, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
         }
-        else
-            g.DrawString(Resources.MoreThanOne, printParameters.TitleFont, PrintParameters.SolidBrush, rf, PrintParameters.Centered);
 
         String subTitle = String.Empty;
         if(String.IsNullOrEmpty(subTitle = currentProblem.Comment))

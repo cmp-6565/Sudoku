@@ -791,6 +791,7 @@ internal class SudokuController: IDisposable
         {
             try
             {
+                printerService.SortProblems();
                 printerService.Print();
             }
             catch(Win32Exception)
@@ -859,7 +860,7 @@ internal class SudokuController: IDisposable
         SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
         fileService.LoadProblemFilenames(directoryInfo, filenames, token);
     }
-    public int LoadProblems(List<String> filenames, Action<Object> progress, CancellationToken token)
+    public async Task<int> LoadProblems(List<string> filenames, Action<object> progress, CancellationToken token)
     {
         Boolean ready = false;
         Random rand = new Random();
@@ -874,10 +875,10 @@ internal class SudokuController: IDisposable
                 SudokuController bookletController = new SudokuController(filenames[problemNumber], false, settings, ui);
                 if(bookletController.CurrentProblem != null && (bookletController.CurrentProblem.SeverityLevelInt & settings.SeverityLevel) != 0)
                 {
-                    bookletController.CurrentProblem.FindSolutions(2, token);
+                    await bookletController.CurrentProblem.FindSolutions(2, token);
 
                     if(bookletController.CurrentProblem.SolverTask != null && !bookletController.CurrentProblem.SolverTask.IsCompleted)
-                        bookletController.CurrentProblem.SolverTask.Wait();
+                        await bookletController.CurrentProblem.SolverTask.WaitAsync(token);
 
                     if(bookletController.CurrentProblem.NumberOfSolutions == 1)
                     {
@@ -903,6 +904,7 @@ internal class SudokuController: IDisposable
 
         return NumberOfProblems;
     }
+
     public int NumberOfProblems => printerService.NumberOfProblems;
 }
 
