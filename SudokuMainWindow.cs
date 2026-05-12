@@ -235,7 +235,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         int height = SudokuGrid.ResizeBoard();
 
         int newClientWidth = SudokuGrid.Location.X + SudokuGrid.Width + SudokuGrid.Location.X;
-        int newClientHeight = height + 140 + (60 * settings.Size);
+        int newClientHeight = height + 140 + (int)(60 * settings.Size * (float)DeviceDpi / 96f);
 
         ClientSize = new Size(newClientWidth, newClientHeight);
 

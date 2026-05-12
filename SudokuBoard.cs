@@ -330,7 +330,7 @@ internal class SudokuBoard: DataGridView, IDisposable
     {
         int width = 0;
         int height = 0;
-        int cellSize = (int)((float)settings.Size * settings.MagnificationFactor * settings.CellWidth * .7f);
+        int cellSize = (int)((float)settings.Size * settings.MagnificationFactor * settings.CellWidth * .7f * (float)this.DeviceDpi / 96f);
 
         for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
         {
