@@ -37,9 +37,10 @@ public static class SudokuRenderer
         }
     }
 
-    internal static void DrawHints(BaseCell value, RectangleF rf, Graphics g, Font printFont, Color color, bool showCandidates)
+    internal static void DrawHints(BaseCell value, RectangleF rf, Graphics g, Font printFont, Color color, bool showCandidates, bool screen=true)
     {
         float x = 0, y = 0;
+        float screenCorrectionFactor = screen ? 0.9f : 1;
         using(SolidBrush normalBrush = new SolidBrush(color))
         using(SolidBrush candidateBrush = new SolidBrush(Color.Green))
         using(SolidBrush exclusionCandidateBrush = new SolidBrush(Color.Red))
@@ -51,16 +52,16 @@ public static class SudokuRenderer
                     // Koordinatenberechnung
                     switch(i)
                     {
-                    case 2: case 5: case 8: x = rf.X + rf.Width / 2f - (printFont.SizeInPoints * .75f); break;
-                    case 1: case 4: case 7: x = rf.X + printFont.SizeInPoints / 8f; break;
-                    case 3: case 6: case 9: x = rf.X + rf.Width - (printFont.SizeInPoints * 1.5f); break;
+                    case 2: case 5: case 8: x = rf.X + rf.Width / 2f * screenCorrectionFactor - (printFont.SizeInPoints * .75f); break;
+                    case 1: case 4: case 7: x = rf.X + printFont.SizeInPoints / 8f * screenCorrectionFactor; break;
+                    case 3: case 6: case 9: x = rf.X + rf.Width * screenCorrectionFactor - (printFont.SizeInPoints * 1.5f); break;
                     }
 
                     switch(i)
                     {
-                    case 1: case 2: case 3: y = rf.Y + printFont.SizeInPoints / 8f; break;
-                    case 4: case 5: case 6: y = rf.Y + rf.Height / 2f - (printFont.SizeInPoints * .75f); break;
-                    case 7: case 8: case 9: y = rf.Y + rf.Height - (printFont.SizeInPoints * 1.75f); break;
+                    case 1: case 2: case 3: y = rf.Y + (printFont.SizeInPoints / 8f); break;
+                    case 4: case 5: case 6: y = rf.Y + rf.Height / 2f * screenCorrectionFactor - (printFont.SizeInPoints * .75f); break;
+                    case 7: case 8: case 9: y = rf.Y + rf.Height * screenCorrectionFactor - (printFont.SizeInPoints * 1.75f); break;
                     }
 
                     var brush = showCandidates ? (value.GetCandidateMask(i, false) ? candidateBrush : exclusionCandidateBrush) : normalBrush;
