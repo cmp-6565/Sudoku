@@ -135,7 +135,7 @@ namespace Sudoku;
     /// <summary>
     /// Event invoked when a problem is read from file.
     /// </summary>
-    public Action<Boolean> ReadProblem;
+    public event Action<Boolean> ReadProblem;
 
     /// <summary>
     /// Raises the ReadProblem event with the problem type information.
@@ -268,7 +268,7 @@ namespace Sudoku;
                 GridData = SerializeMatrix(includeROFlag),
                 Time = SolvingTime,
                 Comment = Sudoku.Comment,
-                Candidates = SerializeCandiates()
+                Candidates = SerializeCandidates()
             };
 
             return System.Text.Json.JsonSerializer.Serialize(state);
@@ -315,7 +315,7 @@ namespace Sudoku;
         serializedProblem += SolvingTime.ToString().PadRight(16, '0');
         serializedProblem += Comment;
         if(Matrix.HasCandidates())
-            serializedProblem += (Environment.NewLine + SerializeCandiates());
+            serializedProblem += (Environment.NewLine + SerializeCandidates());
 
         return serializedProblem;
     }
@@ -340,9 +340,9 @@ namespace Sudoku;
     /// Serializes both regular and exclusion candidates to strings.
     /// </summary>
     /// <returns>A string containing both candidate types separated by a newline.</returns>
-    private String SerializeCandiates()
+    private String SerializeCandidates()
     {
-        return SerializeCandiates(false) + Environment.NewLine + SerializeCandiates(true);
+        return SerializeCandidates(false) + Environment.NewLine + SerializeCandidates(true);
     }
 
     /// <summary>
@@ -350,7 +350,7 @@ namespace Sudoku;
     /// </summary>
     /// <param name="exclusionCandidate">Whether to serialize exclusion candidates or regular candidates.</param>
     /// <returns>A string representing the serialized candidates.</returns>
-    private String SerializeCandiates(Boolean exclusionCandidate)
+    private String SerializeCandidates(Boolean exclusionCandidate)
     {
         Byte oneCandidate = 64;
         Byte bit = 0;
