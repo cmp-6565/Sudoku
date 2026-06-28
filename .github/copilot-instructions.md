@@ -12,6 +12,7 @@
 ## Code-Stil
 - Befolgen Sie die spezifischen Formatierungsregeln gemäß den Richtlinien des Projekts.
 - Halten Sie sich an die im Projekthandbuch festgelegten Namenskonventionen.
+- Fügen Sie englische XML-Dokumentationskommentare für alle Funktionen in allen .cs-Dateien des Hauptprojekts hinzu (außer Designer- und automatisch generierten Dateien). Priorisieren Sie die öffentliche/interne API-Oberfläche und schließen Sie asynchrone Methoden ein.
 
 ## Projekt-spezifische Regeln
 - Implementieren Sie die benutzerdefinierten Anforderungen gemäß den Vorgaben in der Projektdokumentation.
