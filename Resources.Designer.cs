@@ -890,6 +890,15 @@ namespace Sudoku {
         }
         
         /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die Remaining ähnelt.
+        /// </summary>
+        internal static string Remaining {
+            get {
+                return ResourceManager.GetString("Remaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;root&gt;
         ///  &lt;!-- 
@@ -1164,6 +1173,15 @@ namespace Sudoku {
         internal static string UnsavedChanges {
             get {
                 return ResourceManager.GetString("UnsavedChanges", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Zeichenfolge, die used ähnelt.
+        /// </summary>
+        internal static string Used {
+            get {
+                return ResourceManager.GetString("Used", resourceCulture);
             }
         }
         

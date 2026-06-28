@@ -8,6 +8,9 @@ namespace Sudoku;
 
 public partial class SudokuForm: Form
 {
+    /// <summary>
+    /// Displays the print dialog for the current Sudoku problem and initiates printing if valid.
+    /// </summary>
     private async Task PrintDialog()
     {
         if(!SudokuGrid.InSync || !SudokuGrid.SyncProblemWithGUI(true, false))
@@ -39,11 +42,18 @@ public partial class SudokuForm: Form
 
         controller.UpdateProblem(tmp);
     }
+
+    /// <summary>
+    /// Initiates the printing of a Sudoku booklet with all queued problems.
+    /// </summary>
     private void PrintBooklet()
     {
         controller.PrintBooklet();
     }
 
+    /// <summary>
+    /// Generates new Sudoku problems for a booklet and initiates the printing service.
+    /// </summary>
     private void GenerateProblems4Booklet()
     {
         if(!UnsavedChanges()) return;
@@ -53,6 +63,9 @@ public partial class SudokuForm: Form
         GenerateProblems(settings.BookletSizeNew, controller.NewSudokuType());
     }
 
+    /// <summary>
+    /// Allows user to select a directory of Sudoku problems to load for booklet printing.
+    /// </summary>
     private async Task LoadProblems4Booklet()
     {
         controller.InitializePrinterService();

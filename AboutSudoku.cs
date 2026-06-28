@@ -4,9 +4,17 @@ using System.Windows.Forms;
 
 namespace Sudoku;
 
+/// <summary>
+/// About dialog showing product information and contact links.
+/// </summary>
 partial class AboutSudoku: Form
 {
     private readonly ISudokuSettings settings;
+
+    /// <summary>
+    /// Creates a new About dialog using the provided settings to determine display language and contact info.
+    /// </summary>
+    /// <param name="settings">Application settings used for localization and contact information.</param>
     public AboutSudoku(ISudokuSettings settings)
     {
         System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(settings.DisplayLanguage);
@@ -26,11 +34,17 @@ partial class AboutSudoku: Form
         this.settings = settings;
     }
 
+    /// <summary>
+    /// Opens the user's default mail client pre-filled with the contact email from settings.
+    /// </summary>
     private void OpenContactEmail(object sender, LinkLabelLinkClickedEventArgs e)
     {
         Process.Start(new ProcessStartInfo("mailto:" + settings.MailAddress) { UseShellExecute = true });
     }
 
+    /// <summary>
+    /// Opens the project's git repository URL in the default browser.
+    /// </summary>
     private void OpenGitRepository(object sender, LinkLabelLinkClickedEventArgs e)
     {
         Process.Start(new ProcessStartInfo(AssemblyInfo.AssemblyGitRepository) { UseShellExecute = true });

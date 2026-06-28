@@ -3,30 +3,38 @@ using System.Collections.Generic;
 
 namespace Sudoku;
 
+/// <summary>
+/// Abstract base class representing a single cell in a Sudoku grid.
+/// Manages the cell value, candidates, and relationships with neighboring cells.
+/// Provides methods for constraint checking and candidate elimination.
+/// </summary>
 [Serializable]
 internal abstract class BaseCell: EventArgs, IComparable
 {
-    private CoreValue coreValue = new CoreValue();
-    private byte definitiveValue = Values.Undefined;
-    private int nNeighbors = 0;
-    private int[] directBlocks;
-    private int[] indirectBlocks;
-    private int candidatesMask = 0;
-    private int exclusionCandidatesMask = 0;
-    private int enabledMask = 0;
-    private bool enabledMaskInitialized = false;
-    private int possibleValuesCount = 0;
-    private bool fixedValue = false;
-    private bool computedValue = false;
-    private bool readOnly = false;
-    protected BaseCell[] neighbors;
-    private int startCol = 0;
-    private int startRow = 0;
+	private CoreValue coreValue = new CoreValue();
+	private byte definitiveValue = Values.Undefined;
+	private int nNeighbors = 0;
+	private int[] directBlocks;
+	private int[] indirectBlocks;
+	private int candidatesMask = 0;
+	private int exclusionCandidatesMask = 0;
+	private int enabledMask = 0;
+	private bool enabledMaskInitialized = false;
+	private int possibleValuesCount = 0;
+	private bool fixedValue = false;
+	private bool computedValue = false;
+	private bool readOnly = false;
+	protected BaseCell[] neighbors;
+	private int startCol = 0;
+	private int startRow = 0;
 
-    // cached helpers
-    private static byte[] popcountCache;
-    private static int[] lowbitIndex;
+	// cached helpers
+	private static byte[] popcountCache;
+	private static int[] lowbitIndex;
 
+	/// <summary>
+	/// Temporary scratch space for naked subset solving techniques.
+	/// </summary>
 	internal struct NakedScratch
 	{
 		public int[] NeighborMasks;
@@ -62,92 +70,188 @@ internal abstract class BaseCell: EventArgs, IComparable
 			if(CandidateArr != null) { Array.Clear(CandidateArr, 0, CandidateArr.Length); cellPool.Return(CandidateArr, true); CandidateArr = null; }
 		}
 	}
-    public abstract bool Up();
-    public abstract bool Down();
 
-    public static bool operator ==(BaseCell op1, BaseCell op2)
-    {
-        if(ReferenceEquals(op1, op2)) return true;
-        if(op1 is null || op2 is null) return false;
-        return op1.Row == op2.Row && op1.Col == op2.Col;
-    }
+	/// <summary>
+	/// Determines if this cell supports upward movement (used in X-Sudoku).
+	/// </summary>
+	/// <returns>True if this cell is on a special diagonal; false otherwise.</returns>
+	public abstract bool Up();
 
-    public static bool operator !=(BaseCell op1, BaseCell op2) => !(op1 == op2);
-    public static bool operator >(BaseCell op1, BaseCell op2) => op1.GetHashCode() > op2.GetHashCode();
-    public static bool operator <(BaseCell op1, BaseCell op2) => op1.GetHashCode() < op2.GetHashCode();
+	/// <summary>
+	/// Determines if this cell supports downward movement (used in X-Sudoku).
+	/// </summary>
+	/// <returns>True if this cell is on a special diagonal; false otherwise.</returns>
+	public abstract bool Down();
 
-    public override bool Equals(object obj) => this == (obj as BaseCell);
-    public override int GetHashCode() => Row * WinFormsSettings.SudokuSize + Col;
+	/// <summary>
+	/// Compares two cells for equality.
+	/// </summary>
+	/// <param name="op1">The first cell to compare.</param>
+	/// <param name="op2">The second cell to compare.</param>
+	/// <returns>True if the cells are at the same position; false otherwise.</returns>
+	public static bool operator ==(BaseCell op1, BaseCell op2)
+	{
+		if(ReferenceEquals(op1, op2)) return true;
+		if(op1 is null || op2 is null) return false;
+		return op1.Row == op2.Row && op1.Col == op2.Col;
+	}
 
-    public byte CellValue
-    {
-        get => coreValue.CellValue;
-        set
-        {
-            if(CellValue == value) return;
-            if(value != Values.Undefined)
-            {
-                DefinitiveValue = Values.Undefined;
-                if(!Enabled(value)) throw new ArgumentException("value not possible", "value");
-            }
-            SetBlocks(CellValue, value, true);
-            coreValue.CellValue = value;
-        }
-    }
+	/// <summary>
+	/// Compares two cells for inequality.
+	/// </summary>
+	public static bool operator !=(BaseCell op1, BaseCell op2) => !(op1 == op2);
 
-    public byte DefinitiveValue
-    {
-        get => definitiveValue;
-        set
-        {
-            if(DefinitiveValue == value) return;
-            SetBlocks(DefinitiveValue, value, false);
-            definitiveValue = value;
-        }
-    }
+	/// <summary>
+	/// Compares two cells by hash code (greater than).
+	/// </summary>
+	public static bool operator >(BaseCell op1, BaseCell op2) => op1.GetHashCode() > op2.GetHashCode();
 
-    public int Row { get => coreValue.Row; set { coreValue.Row = value; startRow = (int)Math.Truncate((double)value / WinFormsSettings.RectSize) * WinFormsSettings.RectSize; } }
-    public int Col { get => coreValue.Col; set { coreValue.Col = value; startCol = (int)Math.Truncate((double)value / WinFormsSettings.RectSize) * WinFormsSettings.RectSize; } }
-    public int StartRow => startRow;
-    public int StartCol => startCol;
-    public BaseCell[] Neighbors => neighbors;
+	/// <summary>
+	/// Compares two cells by hash code (less than).
+	/// </summary>
+	public static bool operator <(BaseCell op1, BaseCell op2) => op1.GetHashCode() < op2.GetHashCode();
 
-    public int nPossibleValues => (FixedValue || DefinitiveValue != Values.Undefined) ? 0 : possibleValuesCount - 1;
-    public bool FixedValue { get => fixedValue; set => fixedValue = value; }
-    public bool ReadOnly { get => readOnly; set => readOnly = value; }
-    public bool ComputedValue { get => computedValue; set => computedValue = value; }
+	/// <summary>
+	/// Determines whether the specified object is equal to this cell.
+	/// </summary>
+	/// <param name="obj">The object to compare.</param>
+	/// <returns>True if the object represents the same cell; false otherwise.</returns>
+	public override bool Equals(object obj) => this == (obj as BaseCell);
 
-    public BaseCell(int row, int col) { Row = row; Col = col; Init(); }
+	/// <summary>
+	/// Gets the hash code for this cell based on its position.
+	/// </summary>
+	/// <returns>The hash code combining row and column coordinates.</returns>
+	public override int GetHashCode() => Row * WinFormsSettings.SudokuSize + Col;
 
-    public int FilledNeighborCount
-    {
-        get
-        {
-            int count = 0;
-            if(neighbors != null)
-            {
-                foreach(var neighbor in neighbors)
-                {
-                    if(neighbor.CellValue != Values.Undefined)
-                    {
-                        count++;
-                    }
-                }
-            }
-            return count;
-        }
-    }
-    public void AddNeighbor(ref BaseCell neighbor) { neighbors[nNeighbors++] = neighbor; }
+	/// <summary>
+	/// Gets or sets the current cell value (1-9 or undefined).
+	/// </summary>
+	public byte CellValue
+	{
+		get => coreValue.CellValue;
+		set
+		{
+			if(CellValue == value) return;
+			if(value != Values.Undefined)
+			{
+				DefinitiveValue = Values.Undefined;
+				if(!Enabled(value)) throw new ArgumentException("value not possible", "value");
+			}
+			SetBlocks(CellValue, value, true);
+			coreValue.CellValue = value;
+		}
+	}
 
-    public int CompareTo(object obj)
-    {
-        if(obj == null) return -1;
-        BaseCell tmpObj = obj as BaseCell;
-        if(tmpObj == null) throw new ArgumentException(obj.ToString());
-        if(FixedValue) return int.MaxValue;
-        if(tmpObj.FixedValue) return int.MinValue;
-        return ((nPossibleValues * WinFormsSettings.TotalCellCount + Row * WinFormsSettings.SudokuSize + Col) - (tmpObj.nPossibleValues * WinFormsSettings.TotalCellCount + tmpObj.Row * WinFormsSettings.SudokuSize + tmpObj.Col));
-    }
+	/// <summary>
+	/// Gets or sets the definitive value that can be computed for this cell (1-9 or undefined).
+	/// </summary>
+	public byte DefinitiveValue
+	{
+		get => definitiveValue;
+		set
+		{
+			if(DefinitiveValue == value) return;
+			SetBlocks(DefinitiveValue, value, false);
+			definitiveValue = value;
+		}
+	}
+
+	/// <summary>
+	/// Gets or sets the row coordinate of this cell (0-based).
+	/// </summary>
+	public int Row { get => coreValue.Row; set { coreValue.Row = value; startRow = (int)Math.Truncate((double)value / WinFormsSettings.RectSize) * WinFormsSettings.RectSize; } }
+
+	/// <summary>
+	/// Gets or sets the column coordinate of this cell (0-based).
+	/// </summary>
+	public int Col { get => coreValue.Col; set { coreValue.Col = value; startCol = (int)Math.Truncate((double)value / WinFormsSettings.RectSize) * WinFormsSettings.RectSize; } }
+
+	/// <summary>
+	/// Gets the starting row of the rectangle (box) containing this cell.
+	/// </summary>
+	public int StartRow => startRow;
+
+	/// <summary>
+	/// Gets the starting column of the rectangle (box) containing this cell.
+	/// </summary>
+	public int StartCol => startCol;
+
+	/// <summary>
+	/// Gets the array of all neighbor cells (sharing row, column, box, or diagonal).
+	/// </summary>
+	public BaseCell[] Neighbors => neighbors;
+
+	/// <summary>
+	/// Gets the number of possible values remaining for this cell.
+	/// </summary>
+	public int nPossibleValues => (FixedValue || DefinitiveValue != Values.Undefined) ? 0 : possibleValuesCount - 1;
+
+	/// <summary>
+	/// Gets or sets a value indicating whether this cell contains a fixed (given) value.
+	/// </summary>
+	public bool FixedValue { get => fixedValue; set => fixedValue = value; }
+
+	/// <summary>
+	/// Gets or sets a value indicating whether this cell is read-only.
+	/// </summary>
+	public bool ReadOnly { get => readOnly; set => readOnly = value; }
+
+	/// <summary>
+	/// Gets or sets a value indicating whether this cell value was computed by the solver.
+	/// </summary>
+	public bool ComputedValue { get => computedValue; set => computedValue = value; }
+
+	/// <summary>
+	/// Initializes a new instance of the BaseCell class at the specified position.
+	/// </summary>
+	/// <param name="row">The row coordinate (0-based).</param>
+	/// <param name="col">The column coordinate (0-based).</param>
+	public BaseCell(int row, int col) { Row = row; Col = col; Init(); }
+
+	/// <summary>
+	/// Gets the number of neighbors that currently have a value assigned.
+	/// </summary>
+	public int FilledNeighborCount
+	{
+		get
+		{
+			int count = 0;
+			if(neighbors != null)
+			{
+				foreach(var neighbor in neighbors)
+				{
+					if(neighbor.CellValue != Values.Undefined)
+					{
+						count++;
+					}
+				}
+			}
+			return count;
+		}
+	}
+
+	/// <summary>
+	/// Adds a neighbor cell to this cell's neighbor list.
+	/// </summary>
+	/// <param name="neighbor">The neighbor cell to add.</param>
+	public void AddNeighbor(ref BaseCell neighbor) { neighbors[nNeighbors++] = neighbor; }
+
+	/// <summary>
+	/// Compares this cell with another object for ordering purposes.
+	/// Cells with fixed values are considered greater, then cells are ordered by constraint level and position.
+	/// </summary>
+	/// <param name="obj">The object to compare with.</param>
+	/// <returns>A negative number if this cell should be processed earlier; positive if later; zero if equal.</returns>
+	public int CompareTo(object obj)
+	{
+		if(obj == null) return -1;
+		BaseCell tmpObj = obj as BaseCell;
+		if(tmpObj == null) throw new ArgumentException(obj.ToString());
+		if(FixedValue) return int.MaxValue;
+		if(tmpObj.FixedValue) return int.MinValue;
+		return ((nPossibleValues * WinFormsSettings.TotalCellCount + Row * WinFormsSettings.SudokuSize + Col) - (tmpObj.nPossibleValues * WinFormsSettings.TotalCellCount + tmpObj.Row * WinFormsSettings.SudokuSize + tmpObj.Col));
+	}
 
     public bool Enabled(int value)
     {

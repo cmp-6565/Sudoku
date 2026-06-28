@@ -5,79 +5,113 @@ using System.Collections.Generic;
 
 namespace Sudoku;
 
+/// <summary>
+/// Abstract base class representing the matrix/grid structure of a Sudoku puzzle.
+/// Manages rows, columns, boxes (rectangles), and cell relationships.
+/// Provides core functionality for constraint checking and value manipulation.
+/// </summary>
 [Serializable]
 internal abstract class BaseMatrix: Values
 {
-    protected BaseCell[][] matrix;
-    protected BaseCell[][] cols;
-    protected BaseCell[][] rectangles;
-    private List<BaseCell> sortableValues;
-    private List<BaseCell> cells;
-    private Boolean sorted = false;
-    private int nVarValues = 0;
-    protected float severityLevel = float.NaN;
-    private int definitiveCalculatorCounter = 0;
-    private Boolean setPredefinedValues = true;
+	/// <summary>
+	/// The main matrix storing cells organized by rows.
+	/// </summary>
+	protected BaseCell[][] matrix;
 
-    [ThreadStatic]
-    private static int[] memberStamp;
-    [ThreadStatic]
-    private static int memberStampId;
-    [ThreadStatic]
-    private static BaseCell[] isolatedBuffer;
-    [ThreadStatic]
-    private static int[] isolatedEnabledCounts;
-    [ThreadStatic]
-    private static int[] isolatedCandidateIndex;
+	/// <summary>
+	/// Cells organized by columns for efficient column-based access.
+	/// </summary>
+	protected BaseCell[][] cols;
 
-    public int DefinitiveCellCount {get { return definitiveCalculatorCounter; }} 
+	/// <summary>
+	/// Cells organized by boxes/rectangles for 3x3 constraint checking.
+	/// </summary>
+	protected BaseCell[][] rectangles;
 
-    public event EventHandler<BaseCell> CellChanged;
-    protected virtual void OnCellChanged(BaseCell v)
-    {
-        EventHandler<BaseCell> handler = CellChanged;
-        if(handler != null) handler(this, v);
-    }
+	private List<BaseCell> sortableValues;
+	private List<BaseCell> cells;
+	private Boolean sorted = false;
+	private int nVarValues = 0;
+	protected float severityLevel = float.NaN;
+	private int definitiveCalculatorCounter = 0;
+	private Boolean setPredefinedValues = true;
 
-    public BaseMatrix()
-    {
-        InitializeMatrix();
-    }
+	[ThreadStatic]
+	private static int[] memberStamp;
+	[ThreadStatic]
+	private static int memberStampId;
+	[ThreadStatic]
+	private static BaseCell[] isolatedBuffer;
+	[ThreadStatic]
+	private static int[] isolatedEnabledCounts;
+	[ThreadStatic]
+	private static int[] isolatedCandidateIndex;
 
-    protected void InitializeMatrix()
-    {
-        int size = WinFormsSettings.SudokuSize;
-        int rectSize = WinFormsSettings.RectSize;
-        Matrix = new BaseCell[size][];
-        Cols = new BaseCell[size][];
-        Rectangles = new BaseCell[size][];
-        sortableValues = new List<BaseCell>(size * size);
-        cells = new List<BaseCell>(size * size);
-        nVarValues = int.MinValue; // not initialized
-        severityLevel = float.NaN;
+	/// <summary>
+	/// Gets the count of cells with definitive (computed) values.
+	/// </summary>
+	public int DefinitiveCellCount {get { return definitiveCalculatorCounter; }} 
 
-        for(int index = 0; index < size; index++)
-        {
-            Matrix[index] = new BaseCell[size];
-            Cols[index] = new BaseCell[size];
-            Rectangles[index] = new BaseCell[size];
-        }
+	/// <summary>
+	/// Event raised when a cell value changes in the matrix.
+	/// </summary>
+	public event EventHandler<BaseCell> CellChanged;
 
-        for(int row = 0; row < size; row++)
-        {
-            BaseCell[] rowCells = Matrix[row];
-            for(int col = 0; col < size; col++)
-            {
-                BaseCell cell = CreateValue(row, col);
-                rowCells[col] = cell;
-                Cols[col][row] = cell;
-                int rectRow = row / rectSize;
-                int rectCol = col / rectSize;
-                int rectIndex = rectRow * rectSize + rectCol;
-                int rectOffset = (row % rectSize) * rectSize + (col % rectSize);
-                Rectangles[rectIndex][rectOffset] = cell;
-            }
-        }
+	/// <summary>
+	/// Raises the CellChanged event for the specified cell.
+	/// </summary>
+	/// <param name="v">The cell that changed.</param>
+	protected virtual void OnCellChanged(BaseCell v)
+	{
+		EventHandler<BaseCell> handler = CellChanged;
+		if(handler != null) handler(this, v);
+	}
+
+	/// <summary>
+	/// Initializes a new instance of the BaseMatrix class.
+	/// </summary>
+	public BaseMatrix()
+	{
+		InitializeMatrix();
+	}
+
+	/// <summary>
+	/// Initializes the matrix grid structure with all cells and their relationships.
+	/// </summary>
+	protected void InitializeMatrix()
+	{
+		int size = WinFormsSettings.SudokuSize;
+		int rectSize = WinFormsSettings.RectSize;
+		Matrix = new BaseCell[size][];
+		Cols = new BaseCell[size][];
+		Rectangles = new BaseCell[size][];
+		sortableValues = new List<BaseCell>(size * size);
+		cells = new List<BaseCell>(size * size);
+		nVarValues = int.MinValue; // not initialized
+		severityLevel = float.NaN;
+
+		for(int index = 0; index < size; index++)
+		{
+			Matrix[index] = new BaseCell[size];
+			Cols[index] = new BaseCell[size];
+			Rectangles[index] = new BaseCell[size];
+		}
+
+		for(int row = 0; row < size; row++)
+		{
+			BaseCell[] rowCells = Matrix[row];
+			for(int col = 0; col < size; col++)
+			{
+				BaseCell cell = CreateValue(row, col);
+				rowCells[col] = cell;
+				Cols[col][row] = cell;
+				int rectRow = row / rectSize;
+				int rectCol = col / rectSize;
+				int rectIndex = rectRow * rectSize + rectCol;
+				int rectOffset = (row % rectSize) * rectSize + (col % rectSize);
+				Rectangles[rectIndex][rectOffset] = cell;
+			}
+		}
 
 		for(int row = 0; row < size; row++)
 		{
@@ -211,6 +245,14 @@ internal abstract class BaseMatrix: Values
                 if(cell.FixedValue) nVal++;
             return nVal;
         }
+    }
+
+    public int nCells(int value)
+    {
+        int nVal = 0;
+        foreach(BaseCell cell in this)
+            if(cell.CellValue == value) nVal++;
+        return nVal;
     }
 
     public int nComputedValues

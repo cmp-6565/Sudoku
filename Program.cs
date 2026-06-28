@@ -4,10 +4,14 @@ using System.Windows.Forms;
 [assembly: CLSCompliant(true)]
 namespace Sudoku;
 
+/// <summary>
+/// Main application entry point and startup class for the Sudoku application.
+/// </summary>
 static class Program
 {
     /// <summary>
     /// The main entry point for the application.
+    /// Initializes the application, configures error handling, and starts the main form.
     /// </summary>
     [STAThread]
     static void Main(string[] args)

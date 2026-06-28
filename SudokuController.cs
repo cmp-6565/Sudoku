@@ -11,6 +11,10 @@ using static System.Windows.Forms.DataFormats;
 
 namespace Sudoku;
 
+/// <summary>
+/// Controls creation, generation, solving and persistence of Sudoku problems.
+/// Provides operations for generation, validation, printing, undo management and state serialization.
+/// </summary>
 internal class SudokuController: IDisposable
 {
     private readonly ISudokuSettings settings;
@@ -31,6 +35,11 @@ internal class SudokuController: IDisposable
     private Stopwatch solvingTimer = new Stopwatch();
     private static readonly TimeSpan SolverProgressInterval = TimeSpan.FromMilliseconds(150);
 
+    /// <summary>
+    /// Initializes a new controller instance with the provided settings and user interaction helper.
+    /// </summary>
+    /// <param name="settings">Application settings used for generation and behavior.</param>
+    /// <param name="ui">UI callback interface used for user interaction and prompts.</param>
     public SudokuController(ISudokuSettings settings, IUserInteraction ui)
     {
         undoStack = new Stack<CoreValue>();
@@ -57,6 +66,13 @@ internal class SudokuController: IDisposable
         if(notify) NotifyMatrixChanged();
     }
 
+    /// <summary>
+    /// Solves the current Sudoku problem. If <paramref name="findAllSolutions"/> is true, searches for all solutions; otherwise stops after the first solution.
+    /// Progress updates are reported via the provided <paramref name="progress"/> reporter. The operation can be cancelled via <paramref name="token"/>.
+    /// </summary>
+    /// <param name="findAllSolutions">When true, find all solutions instead of stopping at the first.</param>
+    /// <param name="progress">Optional progress reporter for generation/solver updates.</param>
+    /// <param name="token">Cancellation token to cancel solving.</param>
     public async Task Solve(bool findAllSolutions, IProgress<GenerationProgressState> progress, CancellationToken token)
     {
         if(CurrentProblem == null) return;
@@ -128,26 +144,55 @@ internal class SudokuController: IDisposable
         stopwatch.Restart();
         Generating?.Invoke(this, EventArgs.Empty);
     }
+    /// <summary>
+    /// Starts or restarts the internal solving timer.
+    /// </summary>
     public void StartTimer()
     {
         solvingTimer.Restart();
     }
+
+    /// <summary>
+    /// Stops the solving timer and accumulates elapsed time into the current problem's SolvingTime.
+    /// </summary>
     public void StopTimer()
     {
         solvingTimer.Stop();
         CurrentProblem.SolvingTime += solvingTimer.Elapsed;
         solvingTimer.Reset();
     }
+
+    /// <summary>
+    /// Pauses the solving timer without resetting elapsed time.
+    /// </summary>
     public void PauseTimer()
     {
         solvingTimer.Stop();
     }
+
+    /// <summary>
+    /// Resumes the solving timer.
+    /// </summary>
     public void ResumeTimer()
     {
         solvingTimer.Start();
     }
+
+    /// <summary>
+    /// Gets the elapsed time of the internal solving timer.
+    /// </summary>
     public TimeSpan ElapsedTime { get { return solvingTimer.Elapsed; } }
+
+    /// <summary>
+    /// Indicates whether the internal solving timer is currently running.
+    /// </summary>
     public Boolean IsTimerRunning { get { return solvingTimer.IsRunning; } }
+
+    /// <summary>
+    /// Restores the application state from the settings.State string and rebuilds the current problem.
+    /// Throws InvalidDataException when the stored state is not recognized.
+    /// </summary>
+    /// <param name="notify">When true, notifies listeners after the state is restored.</param>
     public void RestoreProblemState(bool notify = true)
     {
         Char sudokuType = (Char)settings.State[0];
@@ -169,11 +214,23 @@ internal class SudokuController: IDisposable
             ;
         }
     }
+    /// <summary>
+    /// Returns true when there are collected tricky problems to publish.
+    /// </summary>
     public Boolean HasTrickyProblems()
     {
         return trickyProblems.Count > 0;
     }
+
+    /// <summary>
+    /// Gets the count of tricky problems currently collected.
+    /// </summary>
     public int NumberOfTrickyProblems { get { return trickyProblems.Count; } }
+
+    /// <summary>
+    /// Publishes collected tricky problems asynchronously and clears the collection when successful.
+    /// </summary>
+    /// <returns>True when publishing succeeded and problems were cleared; otherwise false.</returns>
     public async Task<Boolean> PublishTrickyProblems()
     {
         if(trickyProblems.Count > 0)
@@ -184,6 +241,10 @@ internal class SudokuController: IDisposable
         }
         return false;
     }
+
+    /// <summary>
+    /// Gets a URL string suitable for posting the current puzzle to Twitter including a serialized puzzle representation.
+    /// </summary>
     public string TwitterURL
     {
         get
@@ -192,6 +253,13 @@ internal class SudokuController: IDisposable
         }
     }
 
+    /// <summary>
+    /// Validates the current problem by attempting to find a solution. Returns true when the problem is solvable.
+    /// Progress updates are reported to <paramref name="progress"/> and the operation can be cancelled with <paramref name="token"/>.
+    /// </summary>
+    /// <param name="progress">Optional progress reporter for validation steps.</param>
+    /// <param name="token">Cancellation token to cancel validation.</param>
+    /// <returns>True if the current problem is solvable; otherwise false.</returns>
     public async Task<bool> Validate(IProgress<GenerationProgressState> progress, CancellationToken token)
     {
         if(CurrentProblem == null) return false;
@@ -220,6 +288,10 @@ internal class SudokuController: IDisposable
 
         return result;
     }
+    /// <summary>
+    /// Adds a problem to the internal printer service for later printing.
+    /// </summary>
+    /// <param name="problem">Problem to add to the print queue.</param>
     public void AddProblem(BaseProblem problem)
     {
         printerService.AddProblem(problem);
@@ -236,6 +308,10 @@ internal class SudokuController: IDisposable
             }
         }
     }
+    /// <summary>
+    /// Randomly chooses whether to create an X-Sudoku when both normal and X-Sudoku generation are enabled.
+    /// </summary>
+    /// <returns>True to create an X-Sudoku; otherwise false.</returns>
     public Boolean NewSudokuType()
     {
         Random rand = new Random(unchecked((int)DateTime.Now.Ticks));
@@ -246,10 +322,16 @@ internal class SudokuController: IDisposable
             return settings.GenerateXSudoku;
     }
 
+    /// <summary>
+    /// Gets a value indicating whether generation is currently producing a booklet of problems.
+    /// </summary>
     public Boolean GenerateBooklet
     {
         get { return generationParameters.GenerateBooklet; }
     }
+    /// <summary>
+    /// Gets the index of the current problem within the booklet generation sequence.
+    /// </summary>
     public int CurrentBookletProblem
     {
         get { return generationParameters.CurrentProblem; }
@@ -303,6 +385,12 @@ internal class SudokuController: IDisposable
         }
     }
 
+    /// <summary>
+    /// Returns a list of hint cells for the current problem. The method prefers "obvious" cells and limits the number of hints to the configured maximum.
+    /// </summary>
+    /// <summary>
+    /// Returns a list of hint cells for the current problem. The method prefers "obvious" cells and limits the number of hints to the configured maximum.
+    /// </summary>
     public List<BaseCell> GetHints()
     {
         List<BaseCell> values = CurrentProblem.GetObviousCells();
@@ -321,6 +409,11 @@ internal class SudokuController: IDisposable
         }
         return values;
     }
+
+    /// <summary>
+    /// Generates a base problem (partial puzzle) either by using precomputed problems or by constructing one from scratch.
+    /// Reports progress through the provided reporter and supports cancellation.
+    /// </summary>
     public async Task<bool> GenerateBaseProblem(GenerationParameters generationParameters, bool usePrecalculated, IProgress<GenerationProgressState> progress, CancellationToken token)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -646,17 +739,40 @@ internal class SudokuController: IDisposable
 
         NotifyMatrixChanged();
     }
+    /// <summary>
+    /// Returns whether a specific cell is read-only.
+    /// </summary>
     public bool IsCellReadOnly(int row, int col)
     {
         return CurrentProblem.IsCellReadOnly(row, col);
     }
+
+    /// <summary>
+    /// Sets the read-only flag for a specific cell.
+    /// </summary>
     public void SetCellReadOnly(int row, int col, bool readOnly)
     {
         CurrentProblem.SetReadOnly(row, col, readOnly);
     }
+
+    /// <summary>
+    /// Gets the number of filled cells in the current problem.
+    /// </summary>
     public int GetFilledCellCount { get { return CurrentProblem.nValues; } }
+
+    /// <summary>
+    /// Gets the number of computed (solver-derived) cells in the current problem.
+    /// </summary>
     public int GetComputedCellCount { get { return CurrentProblem.nComputedValues; } }
+
+    /// <summary>
+    /// Gets the number of variable (non-fixed) cells in the current problem.
+    /// </summary>
     public int GetVariableCellCount { get { return CurrentProblem.nVariableValues; } }
+
+    /// <summary>
+    /// Returns the neighboring cells for a given cell coordinate.
+    /// </summary>
     public BaseCell[] GetNeighbors(int row, int col)
     {
         return CurrentProblem.GetNeighbors(row, col);
@@ -667,53 +783,96 @@ internal class SudokuController: IDisposable
         SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
         return await fileService.Load();
     }
+    /// <summary>
+    /// Replaces the current problem with a cloned instance of the provided problem.
+    /// </summary>
     public void UpdateProblem(BaseProblem problem)
     {
         CurrentProblem = problem.Clone();
     }
+
+    /// <summary>
+    /// Restores the current problem from the backup if it differs or has unsaved changes.
+    /// </summary>
     public void RestoreProblem()
     {
         if(CurrentProblem.Id != Backup.Id || CurrentProblem.Dirty)
             CurrentProblem = Backup.Clone();
     }
+
+    /// <summary>
+    /// Creates a backup clone of the current problem.
+    /// </summary>
     public void BackupProblem()
     {
         Backup = CurrentProblem.Clone();
     }
+
+    /// <summary>
+    /// Returns true when the current problem is resolvable by the solver logic.
+    /// </summary>
     public Boolean IsProblemResolvable()
     {
         return CurrentProblem.Resolvable();
     }
+    /// <summary>
+    /// Pushes an undo entry representing a change to the problem.
+    /// </summary>
     public void PushUndo(CoreValue value)
     {
         undoStack.Push(value);
     }
+
+    /// <summary>
+    /// Pops the most recent undo entry, or returns null when no undo entries are available.
+    /// </summary>
     public CoreValue PopUndo()
     {
         if(undoStack.Count > 0)
             return undoStack.Pop();
         return null;
     }
+
+    /// <summary>
+    /// Clears the undo stack and marks the current problem as not dirty.
+    /// </summary>
     public void ClearUndo()
     {
         undoStack.Clear();
         CurrentProblem.Dirty = false;
     }
+
+    /// <summary>
+    /// Indicates whether an undo operation is available.
+    /// </summary>
     public Boolean CanUndo()
     {
         return undoStack.Count > 0;
     }
+    /// <summary>
+    /// Saves the current problem to the specified filename. Stops the solving timer before saving.
+    /// </summary>
+    /// <param name="filename">Path to the file to save.</param>
+    /// <returns>True when the file was saved successfully.</returns>
     public Boolean SaveProblem(String filename)
     {
         StopTimer();
         SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
         return fileService.SaveToFile(filename);
     }
+
+    /// <summary>
+    /// Exports the current problem as an HTML file.
+    /// </summary>
     public void ExportHTML(String filename)
     {
         SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
         fileService.SaveToHTMLFile(filename);
     }
+
+    /// <summary>
+    /// Builds a human-readable information string for a cell, including definite, fixed values and blocked candidates.
+    /// </summary>
     public string GetCellInfoText(int row, int col)
     {
         CultureInfo cultureInfo = Thread.CurrentThread.CurrentUICulture;
@@ -724,7 +883,7 @@ internal class SudokuController: IDisposable
             cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.DefiniteValue) + cell.DefinitiveValue.ToString();
         else
             if(cell.FixedValue)
-            cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.CellValue) + cell.CellValue.ToString();
+                cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.CellValue) + cell.CellValue.ToString() + " (" + Resources.Remaining + ": " + (WinFormsSettings.SudokuSize - CurrentProblem.Matrix.nCells(cell.CellValue)).ToString() + ", " + Resources.Used + ": " + CurrentProblem.Matrix.nCells(cell.CellValue).ToString() + ")";
 
         String directBlockedCells = "";
         String indirectBlockedCells = "";
@@ -908,33 +1067,62 @@ internal class SudokuController: IDisposable
     public int NumberOfProblems => printerService.NumberOfProblems;
 }
 
+/// <summary>
+/// Represents progress information emitted during generation or solving.
+/// </summary>
 public class GenerationProgressState
 {
+    /// <summary>Number of solver/generation passes performed so far.</summary>
     public long PassCount { get; set; }
+    /// <summary>Number of solutions found so far.</summary>
     public long SolutionCount { get; set; }
+    /// <summary>Elapsed time since the operation started.</summary>
     public TimeSpan Elapsed { get; set; }
+    /// <summary>Row index of the current cell related to the progress update.</summary>
     public int Row { get; set; }
+    /// <summary>Column index of the current cell related to the progress update.</summary>
     public int Col { get; set; }
+    /// <summary>Value of the cell related to the progress update.</summary>
     public byte Value { get; set; }
+    /// <summary>Indicates whether the reported cell is read-only.</summary>
     public bool ReadOnly { get; set; }
+    /// <summary>Optional status text describing the current operation.</summary>
     public string StatusText { get; set; }
 }
 
+/// <summary>
+/// Result object returned after parsing and validating an externally provided puzzle grid.
+/// Contains a validity flag, an optional message and a list of specific cell errors.
+/// </summary>
 public class ValidationResult
 {
+    /// <summary>Represents a validation error for a specific cell.</summary>
     public struct Error
     {
         public int Row { get; set; }
         public int Col { get; set; }
         public string Message { get; set; }
     }
+
+    /// <summary>True when no validation errors were found.</summary>
     public bool IsValid { get; set; }
+    /// <summary>Optional human-readable message about the validation result.</summary>
     public string Message { get; set; }
+    /// <summary>List of cell-level validation errors.</summary>
     public List<Error> Errors { get; set; }
+
+    /// <summary>
+    /// Adds an error entry to the validation result.
+    /// </summary>
+    /// <param name="error">The error to add.</param>
     public void addError(Error error)
     {
         Errors.Add(error);
     }
+
+    /// <summary>
+    /// Creates a new empty ValidationResult that is considered valid by default.
+    /// </summary>
     public ValidationResult()
     {
         IsValid = true;

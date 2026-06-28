@@ -493,4 +493,10 @@
   <data name="Crash" xml:space="preserve">
     <value>Crash</value>
   </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="Used" xml:space="preserve">
+    <value>used</value>
+  </data>
 </root>

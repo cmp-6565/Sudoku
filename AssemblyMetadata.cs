@@ -6,7 +6,8 @@ using System.Reflection;
 namespace Sudoku;
 
 /// <summary>
-/// Liest alle AssemblyMetadataAttribute-Werte der aktuellen Assembly aus.
+/// Provides access to assembly metadata attributes for the current assembly.
+/// Reads and caches AssemblyMetadataAttribute values.
 /// </summary>
 public static class AssemblyMetadata
 {
@@ -14,19 +15,25 @@ public static class AssemblyMetadata
         new Lazy<Dictionary<string, string>>(LoadMetadata);
 
     /// <summary>
-    /// Liefert alle Metadaten als Dictionary.
+    /// Gets all assembly metadata as a read-only dictionary.
     /// </summary>
     public static IReadOnlyDictionary<string, string> All => metadata.Value;
 
     /// <summary>
-    /// Liefert einen einzelnen Wert oder null, wenn der Schlüssel nicht existiert.
+    /// Retrieves a single metadata value by key.
     /// </summary>
+    /// <param name="key">The metadata key to look up.</param>
+    /// <returns>The metadata value, or null if the key does not exist.</returns>
     public static string Get(string key)
     {
         metadata.Value.TryGetValue(key, out var value);
         return value;
     }
 
+    /// <summary>
+    /// Loads all AssemblyMetadataAttribute values from the current assembly.
+    /// </summary>
+    /// <returns>A dictionary of metadata key-value pairs.</returns>
     private static Dictionary<string, string> LoadMetadata()
     {
         return Assembly.GetExecutingAssembly()

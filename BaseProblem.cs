@@ -12,6 +12,9 @@ using System.Collections.Immutable;
 
 namespace Sudoku;
 
+/// <summary>
+/// Base class representing a Sudoku problem instance. Provides matrix management, solver orchestration and basic metadata.
+/// </summary>
 internal abstract class BaseProblem: EventArgs, IComparable
 {
     protected ISudokuSettings settings;
@@ -68,6 +71,11 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         SolutionFound?.Invoke(this, EventArgs.Empty);
     }
+
+    /// <summary>
+    /// Initializes a new BaseProblem instance using the provided settings.
+    /// </summary>
+    /// <param name="settings">Application settings controlling generation and solver behavior.</param>
     public BaseProblem(ISudokuSettings settings)
     {
         createMatrix();

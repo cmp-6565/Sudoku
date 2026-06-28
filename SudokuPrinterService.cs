@@ -6,6 +6,10 @@ using System.Windows.Forms;
 
 namespace Sudoku;
 
+/// <summary>
+/// Manages Sudoku puzzle printing functionality including problems and solutions.
+/// Handles print dialog, page layout, and rendering of puzzles to printer.
+/// </summary>
 internal class SudokuPrinterService: IDisposable
 {
     private readonly ISudokuSettings settings;
@@ -14,11 +18,27 @@ internal class SudokuPrinterService: IDisposable
     internal PrintParameters printParameters;
     private CultureInfo cultureInfo;
     private PrintDialog printDialog = new PrintDialog();
+
+    /// <summary>
+    /// Gets or sets the size of the Sudoku grid to print.
+    /// </summary>
     public int SudokuSize { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether to show candidates when printing.
+    /// </summary>
     public Boolean ShowCandidates { get; set; }
 
+    /// <summary>
+    /// Gets the total number of problems queued for printing.
+    /// </summary>
     public int NumberOfProblems => printParameters.Problems.Count;
 
+    /// <summary>
+    /// Initializes a new instance of the SudokuPrinterService class.
+    /// </summary>
+    /// <param name="sudokuSize">The size of the Sudoku grid (typically 9).</param>
+    /// <param name="settings">The application settings for print configuration.</param>
     public SudokuPrinterService(int sudokuSize, ISudokuSettings settings)
     {
         this.settings = settings;
@@ -32,6 +52,10 @@ internal class SudokuPrinterService: IDisposable
         printParameters = new PrintParameters(settings);
         SudokuSize = sudokuSize;
     }
+
+    /// <summary>
+    /// Releases all resources used by the SudokuPrinterService.
+    /// </summary>
     public void Dispose()
     {
         printSudoku.PrintPage -= PrintSudokuEvent;
@@ -39,8 +63,15 @@ internal class SudokuPrinterService: IDisposable
         printParameters.Dispose();
         printDialog.Dispose();
     }
+
+    /// <summary>
+    /// Gets the underlying print document used for printing.
+    /// </summary>
     public System.Drawing.Printing.PrintDocument Document => printSudoku;
 
+    /// <summary>
+    /// Shows the print dialog and initiates the print operation if confirmed by user.
+    /// </summary>
     public void Print()
     {
         printDialog.UseEXDialog = true;
@@ -50,22 +81,47 @@ internal class SudokuPrinterService: IDisposable
             PrintDocument();
         }
     }
+
+    /// <summary>
+    /// Adds a Sudoku problem to the print queue.
+    /// </summary>
+    /// <param name="problem">The Sudoku problem to add.</param>
     public void AddProblem(BaseProblem problem)
     {
         printParameters.Problems.Add(problem);
     }
+
+    /// <summary>
+    /// Clears all problems from the print queue.
+    /// </summary>
     public void ClearProblems()
     {
         printParameters.Problems.Clear();
     }
+
+    /// <summary>
+    /// Sorts all queued problems by severity level.
+    /// </summary>
     public void SortProblems()
     {
         printParameters.Problems.Sort();
     }
+
+    /// <summary>
+    /// Gets a descriptive error message for the last print operation.
+    /// </summary>
     public String PrintErrorMessage { get { return PrintParameters.PrintError(PrintResult); } }
 
+    /// <summary>
+    /// Gets the result code from the last print operation.
+    /// </summary>
     public int PrintResult { get { return printParameters.PrintResult; } }
 
+    /// <summary>
+    /// Handles the PrintPage event for rendering puzzles on each page.
+    /// </summary>
+    /// <param name="sender">The PrintDocument that triggered the event.</param>
+    /// <param name="e">The print page event arguments containing graphics and page settings.</param>
     private void PrintSudokuEvent(object sender, System.Drawing.Printing.PrintPageEventArgs e)
     {
         Graphics g = e.Graphics;
@@ -160,6 +216,12 @@ internal class SudokuPrinterService: IDisposable
         }
     }
 
+    /// <summary>
+    /// Prints a single Sudoku problem on the specified graphics context.
+    /// </summary>
+    /// <param name="x">The X coordinate for drawing.</param>
+    /// <param name="y">The Y coordinate for drawing.</param>
+    /// <param name="g">The graphics context to draw on.</param>
     private void PrintProblem(float x, float y, Graphics g)
     {
         bool showCandidatesMode = !settings.ShowHints;
@@ -223,6 +285,13 @@ internal class SudokuPrinterService: IDisposable
             }
         printParameters.CurrentProblem++;
     }
+
+    /// <summary>
+    /// Prints a single Sudoku solution on the specified graphics context.
+    /// </summary>
+    /// <param name="x">The X coordinate for drawing.</param>
+    /// <param name="y">The Y coordinate for drawing.</param>
+    /// <param name="g">The graphics context to draw on.</param>
     private void PrintSolution(float x, float y, Graphics g)
     {
         int row = 0;
@@ -275,6 +344,10 @@ internal class SudokuPrinterService: IDisposable
         }
         printParameters.CurrentSolution++;
     }
+
+    /// <summary>
+    /// Executes the print operation using the configured print document and dialog settings.
+    /// </summary>
     public void PrintDocument()
     {
         try

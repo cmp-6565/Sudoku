@@ -9,42 +9,111 @@ using System.Threading.Tasks;
 
 namespace Sudoku;
 
-internal class SudokuFileService
-{
-    private readonly ISudokuSettings settings;
-    private IUserInteraction ui;
-    private static readonly HttpClient httpClient = new HttpClient();
+/// <summary>
+    /// Provides file I/O and serialization operations for Sudoku problems.
+    /// </summary>
+    internal class SudokuFileService
+    {
+        private readonly ISudokuSettings settings;
+        private IUserInteraction ui;
+        private static readonly HttpClient httpClient = new HttpClient();
 
-    private static byte ReadOnlyOffset = 64;
-    public Char SudokuTypeIdentifier { get { return Sudoku.SudokuTypeIdentifier; } }
+        private static byte ReadOnlyOffset = 64;
 
-    public BaseProblem Sudoku { get; set; }
-    public BaseMatrix Matrix { get { return Sudoku.Matrix; } }
-    public TimeSpan SolvingTime { get { return Sudoku.SolvingTime; } set { Sudoku.SolvingTime = value; } }
-    public String Comment { get { return Sudoku.Comment; } set { Sudoku.Comment = value; } }
-    public String SeverityLevelText { get { return Sudoku.SeverityLevelText; } }
-    public int GetValue(int row, int col)
-    {
-        return Sudoku.GetValue(row, col);
-    }
-    public void SetValue(int row, int col, byte value)
-    {
-        Sudoku.SetValue(row, col, value);
-    }
-    public Boolean GetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
-    {
-        return Sudoku.GetCandidate(row, col, candidate, exclusionCandidate);
-    }
-    public void SetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
-    {
-        Sudoku.SetCandidate(row, col, candidate, exclusionCandidate);
-    }
-    public SudokuFileService(BaseProblem SudokuProblem, ISudokuSettings settings, IUserInteraction ui)
+        /// <summary>
+        /// Gets the Sudoku type identifier from the current problem.
+        /// </summary>
+        public Char SudokuTypeIdentifier { get { return Sudoku.SudokuTypeIdentifier; } }
+
+        /// <summary>
+        /// Gets or sets the current Sudoku problem.
+        /// </summary>
+        public BaseProblem Sudoku { get; set; }
+
+        /// <summary>
+        /// Gets the matrix of the current Sudoku problem.
+        /// </summary>
+        public BaseMatrix Matrix { get { return Sudoku.Matrix; } }
+
+        /// <summary>
+        /// Gets or sets the solving time for the current Sudoku problem.
+        /// </summary>
+        public TimeSpan SolvingTime { get { return Sudoku.SolvingTime; } set { Sudoku.SolvingTime = value; } }
+
+        /// <summary>
+        /// Gets or sets the comment associated with the Sudoku problem.
+        /// </summary>
+        public String Comment { get { return Sudoku.Comment; } set { Sudoku.Comment = value; } }
+
+        /// <summary>
+        /// Gets the severity level text description of the current Sudoku problem.
+        /// </summary>
+        public String SeverityLevelText { get { return Sudoku.SeverityLevelText; } }
+
+        /// <summary>
+        /// Gets the value at the specified cell position.
+        /// </summary>
+        /// <param name="row">The row index.</param>
+        /// <param name="col">The column index.</param>
+        /// <returns>The value at the specified position.</returns>
+        public int GetValue(int row, int col)
+        {
+            return Sudoku.GetValue(row, col);
+        }
+
+        /// <summary>
+        /// Sets the value at the specified cell position.
+        /// </summary>
+        /// <param name="row">The row index.</param>
+        /// <param name="col">The column index.</param>
+        /// <param name="value">The value to set.</param>
+        public void SetValue(int row, int col, byte value)
+        {
+            Sudoku.SetValue(row, col, value);
+        }
+
+        /// <summary>
+        /// Gets whether a candidate is marked for a cell.
+        /// </summary>
+        /// <param name="row">The row index.</param>
+        /// <param name="col">The column index.</param>
+        /// <param name="candidate">The candidate value to check.</param>
+        /// <param name="exclusionCandidate">Whether to check exclusion candidates.</param>
+        /// <returns>True if the candidate is marked; otherwise, false.</returns>
+        public Boolean GetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
+        {
+            return Sudoku.GetCandidate(row, col, candidate, exclusionCandidate);
+        }
+
+        /// <summary>
+        /// Sets a candidate marker for a cell.
+        /// </summary>
+        /// <param name="row">The row index.</param>
+        /// <param name="col">The column index.</param>
+        /// <param name="candidate">The candidate value to toggle.</param>
+        /// <param name="exclusionCandidate">Whether to set an exclusion candidate.</param>
+        public void SetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
+        {
+            Sudoku.SetCandidate(row, col, candidate, exclusionCandidate);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SudokuFileService class.
+        /// </summary>
+        /// <param name="SudokuProblem">The Sudoku problem to manage.</param>
+        /// <param name="settings">The application settings.</param>
+        /// <param name="ui">The user interaction interface for displaying messages.</param>
+        public SudokuFileService(BaseProblem SudokuProblem, ISudokuSettings settings, IUserInteraction ui)
     {
         Sudoku = SudokuProblem;
         this.settings = settings;
         this.ui = ui;
     }
+    /// <summary>
+    /// Saves the current Sudoku problem to a JSON file.
+    /// </summary>
+    /// <param name="file">The file path where the problem will be saved.</param>
+    /// <returns>True if the save was successful; otherwise, false.</returns>
     public Boolean SaveToFile(String file)
     {
         Boolean rc = false;
@@ -62,11 +131,25 @@ internal class SudokuFileService
         catch(Exception) { throw; }
         return rc;
     }
+
+    /// <summary>
+    /// Event invoked when a problem is read from file.
+    /// </summary>
     public Action<Boolean> ReadProblem;
+
+    /// <summary>
+    /// Raises the ReadProblem event with the problem type information.
+    /// </summary>
+    /// <param name="xSudoku">Whether the problem is an X-Sudoku variant.</param>
     private void NotifyReadProblem(Boolean xSudoku)
     {
         ReadProblem?.Invoke(xSudoku);
     }
+
+    /// <summary>
+    /// Saves the current Sudoku problem to an HTML file.
+    /// </summary>
+    /// <param name="file">The file path where the HTML file will be saved.</param>
     public void SaveToHTMLFile(String file)
     {
         StreamWriter sw;
@@ -171,43 +254,59 @@ internal class SudokuFileService
         catch(Exception) { throw; }
         return;
     }
-    public string Serialize(Boolean includeROFlag)
-    {
-        var state = new SudokuSaveState
+    /// <summary>
+        /// Serializes the Sudoku problem to a JSON string.
+        /// </summary>
+        /// <param name="includeROFlag">Whether to include read-only flags for cells.</param>
+        /// <returns>A JSON string representing the Sudoku problem.</returns>
+        public string Serialize(Boolean includeROFlag)
         {
-            Id = Sudoku.Id,
-            Type = SudokuTypeIdentifier.ToString(),
-            GridData = SerializeMatrix(includeROFlag),
-            Time = SolvingTime,
-            Comment = Sudoku.Comment,
-            Candidates = SerializeCandiates()
-        };
+            var state = new SudokuSaveState
+            {
+                Id = Sudoku.Id,
+                Type = SudokuTypeIdentifier.ToString(),
+                GridData = SerializeMatrix(includeROFlag),
+                Time = SolvingTime,
+                Comment = Sudoku.Comment,
+                Candidates = SerializeCandiates()
+            };
 
-        return System.Text.Json.JsonSerializer.Serialize(state);
-    }
-    public void Deserialize(string jsonState)
-    {
-        if(string.IsNullOrEmpty(jsonState)) return;
-
-        try
-        {
-            var state = System.Text.Json.JsonSerializer.Deserialize<SudokuSaveState>(jsonState);
-            NotifyReadProblem(state.Type[0] == XSudokuProblem.ProblemIdentifier);
-
-            Sudoku.Id = state.Id;
-            InitMatrix(state.GridData.ToCharArray());
-            Sudoku.SolvingTime = state.Time;
-            Sudoku.Comment = state.Comment;
-            LoadCandidates(state.Candidates.Substring(state.Candidates.IndexOf('\n') + 1), false);
-            LoadCandidates(state.Candidates.Substring(state.Candidates.LastIndexOf('\n') + 1), true);
+            return System.Text.Json.JsonSerializer.Serialize(state);
         }
-        catch
+
+        /// <summary>
+        /// Deserializes a Sudoku problem from a JSON string.
+        /// </summary>
+        /// <param name="jsonState">The JSON string representing the Sudoku problem.</param>
+        public void Deserialize(string jsonState)
         {
-            throw;
+            if(string.IsNullOrEmpty(jsonState)) return;
+
+            try
+            {
+                var state = System.Text.Json.JsonSerializer.Deserialize<SudokuSaveState>(jsonState);
+                NotifyReadProblem(state.Type[0] == XSudokuProblem.ProblemIdentifier);
+
+                Sudoku.Id = state.Id;
+                InitMatrix(state.GridData.ToCharArray());
+                Sudoku.SolvingTime = state.Time;
+                Sudoku.Comment = state.Comment;
+                LoadCandidates(state.Candidates.Substring(state.Candidates.IndexOf('\n') + 1), false);
+                LoadCandidates(state.Candidates.Substring(state.Candidates.LastIndexOf('\n') + 1), true);
+            }
+            catch
+            {
+                throw;
+            }
+            return;
         }
-        return;
-    }
-    public String SerializeLegacy(Boolean includeROFlag = true)
+
+        /// <summary>
+        /// Serializes the Sudoku problem to a legacy text format string.
+        /// </summary>
+        /// <param name="includeROFlag">Whether to include read-only flags for cells.</param>
+        /// <returns>A legacy format string representing the Sudoku problem.</returns>
+        public String SerializeLegacy(Boolean includeROFlag = true)
     {
         String serializedProblem;
 
@@ -220,6 +319,11 @@ internal class SudokuFileService
 
         return serializedProblem;
     }
+    /// <summary>
+    /// Serializes the Sudoku matrix grid to a string.
+    /// </summary>
+    /// <param name="includeROFlag">Whether to include read-only flags for cells.</param>
+    /// <returns>A string representing the Sudoku grid.</returns>
     public String SerializeMatrix(Boolean includeROFlag = true)
     {
         String serializedProblem = String.Empty;
@@ -232,10 +336,20 @@ internal class SudokuFileService
         return serializedProblem;
     }
 
+    /// <summary>
+    /// Serializes both regular and exclusion candidates to strings.
+    /// </summary>
+    /// <returns>A string containing both candidate types separated by a newline.</returns>
     private String SerializeCandiates()
     {
         return SerializeCandiates(false) + Environment.NewLine + SerializeCandiates(true);
     }
+
+    /// <summary>
+    /// Serializes candidates for the specified type.
+    /// </summary>
+    /// <param name="exclusionCandidate">Whether to serialize exclusion candidates or regular candidates.</param>
+    /// <returns>A string representing the serialized candidates.</returns>
     private String SerializeCandiates(Boolean exclusionCandidate)
     {
         Byte oneCandidate = 64;
@@ -261,6 +375,11 @@ internal class SudokuFileService
         return serializedCandidates;
     }
 
+    /// <summary>
+    /// Deserializes candidates from a string for a specified type.
+    /// </summary>
+    /// <param name="candidates">The serialized candidate string.</param>
+    /// <param name="exclusionCandidates">Whether to deserialize exclusion candidates or regular candidates.</param>
     private void DeserializeCandidates(String candidates, Boolean exclusionCandidates)
     {
         Char oneCandidate;
@@ -292,15 +411,28 @@ internal class SudokuFileService
         return;
     }
 
+    /// <summary>
+    /// Loads the Sudoku of the day from the online server.
+    /// </summary>
+    /// <returns>True if the problem was loaded successfully; otherwise, false.</returns>
     public async Task<Boolean> SudokuOfTheDay()
     {
         return await Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/SudokuOfTheDay.php");
     }
 
+    /// <summary>
+    /// Loads a Sudoku problem from the online server.
+    /// </summary>
+    /// <returns>True if the problem was loaded successfully; otherwise, false.</returns>
     public async Task<Boolean> Load()
     {
         return await Load("https://sudoku.pi-c-it.de/misc/PrecalculatedProblems/Load.php");
     }
+
+    /// <summary>
+    /// Uploads the current Sudoku problem to the online server.
+    /// </summary>
+    /// <returns>True if the upload was successful; otherwise, false.</returns>
     public async Task<Boolean> Upload()
     {
         try
@@ -317,6 +449,12 @@ internal class SudokuFileService
         }
         catch(Exception) { return false; }
     }
+
+    /// <summary>
+    /// Loads a Sudoku problem from the specified URL.
+    /// </summary>
+    /// <param name="URL">The URL to load the problem from.</param>
+    /// <returns>True if the problem was loaded successfully; otherwise, false.</returns>
     public async Task<Boolean> Load(String URL)
     {
         Sudoku.Matrix.Init();
@@ -339,16 +477,30 @@ internal class SudokuFileService
         catch(Exception) { return false; }
     }
 
+    /// <summary>
+    /// Loads candidates from a stream reader for the specified type.
+    /// </summary>
+    /// <param name="sr">The stream reader to read candidates from.</param>
+    /// <param name="exclusionCandidates">Whether to load exclusion candidates or regular candidates.</param>
     public void LoadCandidates(StreamReader sr, Boolean exclusionCandidates)
     {
         DeserializeCandidates(sr.ReadLine(), exclusionCandidates);
     }
 
+    /// <summary>
+    /// Loads candidates from a string for the specified type.
+    /// </summary>
+    /// <param name="candidates">The serialized candidate string.</param>
+    /// <param name="exclusionCandidates">Whether to load exclusion candidates or regular candidates.</param>
     public void LoadCandidates(String candidates, Boolean exclusionCandidates)
     {
         DeserializeCandidates(candidates, exclusionCandidates);
     }
 
+    /// <summary>
+    /// Reads a Sudoku problem from a stream reader.
+    /// </summary>
+    /// <param name="sr">The stream reader to read the problem from.</param>
     public void ReadFromFile(StreamReader sr)
     {
         Sudoku.Matrix.Init();
@@ -365,6 +517,13 @@ internal class SudokuFileService
         }
         catch(Exception) { throw; }
     }
+
+    /// <summary>
+    /// Initializes the Sudoku problem with values and metadata.
+    /// </summary>
+    /// <param name="values">The cell values as a character array.</param>
+    /// <param name="elapsedTime">The solving time as a character array.</param>
+    /// <param name="initialComment">The initial comment for the problem.</param>
     public void InitProblem(char[] values, char[] elapsedTime, String initialComment)
     {
         try
@@ -380,6 +539,11 @@ internal class SudokuFileService
         }
         catch(Exception) { throw; }
     }
+
+    /// <summary>
+    /// Initializes the Sudoku matrix with values from a character array.
+    /// </summary>
+    /// <param name="values">The cell values as a character array.</param>
     private void InitMatrix(char[] values)
     {
         try
@@ -404,6 +568,13 @@ internal class SudokuFileService
         catch(Exception) { throw; }
     }
 
+    /// <summary>
+    /// Loads a Sudoku problem from a file with automatic format detection.
+    /// </summary>
+    /// <param name="filename">The file path to load the problem from.</param>
+    /// <param name="normalSudoku">Whether to accept standard Sudoku problems.</param>
+    /// <param name="xSudoku">Whether to accept X-Sudoku problems.</param>
+    /// <param name="loadCandidates">Whether to load candidates if present in the file.</param>
     public void LoadProblem(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
     {
         try
@@ -417,6 +588,13 @@ internal class SudokuFileService
         finally { Sudoku.Filename = filename; }
     }
 
+    /// <summary>
+    /// Creates a Sudoku problem from a JSON file.
+    /// </summary>
+    /// <param name="filename">The file path to load from.</param>
+    /// <param name="normalSudoku">Whether to accept standard Sudoku problems.</param>
+    /// <param name="xSudoku">Whether to accept X-Sudoku problems.</param>
+    /// <param name="loadCandidates">Whether to load candidates if present.</param>
     public void CreateProblemFromJsonFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
     {
         StreamReader sr = null;
@@ -432,6 +610,14 @@ internal class SudokuFileService
         finally { sr.Close(); }
         Sudoku.Filename = filename;
     }
+
+    /// <summary>
+    /// Creates a Sudoku problem from a legacy format file.
+    /// </summary>
+    /// <param name="filename">The file path to load from.</param>
+    /// <param name="normalSudoku">Whether to accept standard Sudoku problems.</param>
+    /// <param name="xSudoku">Whether to accept X-Sudoku problems.</param>
+    /// <param name="loadCandidates">Whether to load candidates if present.</param>
     public void CreateProblemFromLegacyFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
     {
         StreamReader sr = null;
@@ -455,6 +641,10 @@ internal class SudokuFileService
         catch(Exception) { throw; }
         finally { sr.Close(); }
     }
+    /// <summary>
+    /// Creates a booklet directory with auto-save functionality based on settings.
+    /// </summary>
+    /// <param name="generationParameters">The generation parameters that will be updated with the directory path.</param>
     public void CreateBookletDirectory(GenerationParameters generationParameters)
     {
         if(settings.AutoSaveBooklet)
@@ -486,6 +676,12 @@ internal class SudokuFileService
             }
         }
     }
+    /// <summary>
+    /// Recursively loads all Sudoku problem filenames from a directory and its subdirectories.
+    /// </summary>
+    /// <param name="directoryInfo">The directory to search in.</param>
+    /// <param name="filenames">The list to accumulate filenames into.</param>
+    /// <param name="token">Cancellation token to allow operation cancellation.</param>
     public void LoadProblemFilenames(DirectoryInfo directoryInfo, List<String> filenames, CancellationToken token)
     {
         if(token.IsCancellationRequested) return;
