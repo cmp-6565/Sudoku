@@ -253,6 +253,19 @@ internal abstract class BaseCell: EventArgs, IComparable
 		return ((nPossibleValues * WinFormsSettings.TotalCellCount + Row * WinFormsSettings.SudokuSize + Col) - (tmpObj.nPossibleValues * WinFormsSettings.TotalCellCount + tmpObj.Row * WinFormsSettings.SudokuSize + tmpObj.Col));
 	}
 
+    /// <summary>
+    /// Determines whether the specified candidate value is currently enabled for this cell.
+    /// Ensures the internal enabled mask is initialized before testing the bit corresponding to the value.
+    /// </summary>
+    /// <param name="value">The candidate value to check. Valid range is 1..WinFormsSettings.SudokuSize.</param>
+    /// <returns>
+    /// <c>true</c> if the candidate is allowed for this cell; otherwise, <c>false</c>.
+    /// Returns <c>false</c> for values outside the valid range.
+    /// </returns>
+    /// <remarks>
+    /// Calling this method may lazily initialize the cell's enabled mask via <see cref="EnsureEnabledMaskInitialized"/>.
+    /// The enabled mask stores possible values as bit flags where bit (1 &lt;&lt; value) indicates availability.
+    /// </remarks>
     public bool Enabled(int value)
     {
         if(value < 1 || value > WinFormsSettings.SudokuSize) return false;
@@ -260,9 +273,24 @@ internal abstract class BaseCell: EventArgs, IComparable
         return (enabledMask & (1 << value)) != 0;
     }
 
+    /// <summary>
+    /// Returns whether the specified value is blocked by a direct neighbor (i.e. same row/col/box/diagonal).
+    /// </summary>
+    /// <param name="value">Candidate value to check.</param>
+    /// <returns>True if at least one direct neighbor currently blocks the value; otherwise false.</returns>
     public bool Blocked(int value) => directBlocks[value] != 0;
+
+    /// <summary>
+    /// Returns whether the specified value is blocked indirectly (e.g. by other derived constraints).
+    /// </summary>
+    /// <param name="value">Candidate value to check.</param>
+    /// <returns>True if the value is indirectly blocked; otherwise false.</returns>
     public bool IndirectlyBlocked(int value) => indirectBlocks[value] != 0;
 
+    /// <summary>
+    /// Initializes internal block arrays, candidate masks and flags for this cell.
+    /// This prepares the cell to be used in a fresh puzzle or after resetting state.
+    /// </summary>
     public void Init()
     {
         InitDirectBlocks();
@@ -276,6 +304,11 @@ internal abstract class BaseCell: EventArgs, IComparable
         ReadOnly = false;
     }
 
+    /// <summary>
+    /// Resets the candidate bitmasks for this cell.
+    /// Candidates and exclusion candidates are cleared; enabled mask is not forcibly reinitialized
+    /// because it is derived from block arrays.
+    /// </summary>
     public void InitCandidates()
     {
         candidatesMask = 0;
@@ -284,6 +317,11 @@ internal abstract class BaseCell: EventArgs, IComparable
         // so keep enabledMaskInitialized as-is to avoid unnecessary re-initialization.
     }
 
+    /// <summary>
+    /// Ensure the internal enabled-mask is initialized.
+    /// The enabled mask contains one bit per candidate value that is currently allowed,
+    /// computed from direct and indirect block counters.
+    /// </summary>
     private void EnsureEnabledMaskInitialized()
     {
         if(enabledMaskInitialized) return;
@@ -292,6 +330,10 @@ internal abstract class BaseCell: EventArgs, IComparable
         enabledMaskInitialized = true;
     }
 
+    /// <summary>
+    /// Initialize indirect block counters and compute an initial enabled mask.
+    /// This method also sets the definitive value to undefined.
+    /// </summary>
     public void InitIndirectBlocks()
     {
         indirectBlocks = new int[WinFormsSettings.SudokuSize + 1];
@@ -305,8 +347,16 @@ internal abstract class BaseCell: EventArgs, IComparable
         definitiveValue = Values.Undefined;
     }
 
+    /// <summary>
+    /// Initializes direct block counters for each candidate value.
+    /// A direct block count is incremented when a direct neighbor holds the value.
+    /// </summary>
     private void InitDirectBlocks() { directBlocks = new int[WinFormsSettings.SudokuSize + 1]; }
 
+    /// <summary>
+    /// Ensure the static low-bit index lookup table is initialized.
+    /// This table speeds up computing the index/position of a single set bit.
+    /// </summary>
     private static void EnsureLowbitIndex()
     {
         if(lowbitIndex != null) return;
@@ -316,6 +366,13 @@ internal abstract class BaseCell: EventArgs, IComparable
         for(int b = 0; b < 10; b++) lowbitIndex[1 << b] = b;
     }
 
+    /// <summary>
+    /// Returns the zero-based index of the provided low-bit integer (e.g. 1<<n => n).
+    /// If the value is small and within the lookup table, the cached index is returned;
+    /// otherwise the index is computed by bit-shifting.
+    /// </summary>
+    /// <param name="lowbit">An integer containing exactly one set bit.</param>
+    /// <returns>The index (0-based) of the set bit.</returns>
     internal static int LowBitIndex(int lowbit)
     {
         EnsureLowbitIndex();
@@ -324,6 +381,12 @@ internal abstract class BaseCell: EventArgs, IComparable
         return idx;
     }
 
+    /// <summary>
+    /// Returns the population count (number of set bits) of the given integer.
+    /// Uses a lazily-initialized 16-bit lookup table for performance on wide integers.
+    /// </summary>
+    /// <param name="v">The integer whose bits should be counted.</param>
+    /// <returns>The number of one-bits in the integer.</returns>
     private static int PopCount(int v)
     {
         // 16-bit lookup table population count (lazy initialized)
@@ -344,6 +407,11 @@ internal abstract class BaseCell: EventArgs, IComparable
         return popcountCache[ux & 0xFFFF] + popcountCache[(ux >> 16) & 0xFFFF];
     }
 
+    /// <summary>
+    /// Computes a definitive value for this cell if one exists, otherwise returns undefined.
+    /// The method inspects enabled candidates and uses the current nPossibleValues to decide.
+    /// </summary>
+    /// <returns>The single definite candidate value or <see cref="Values.Undefined"/> if none or ambiguous.</returns>
     private byte GetDefiniteValue()
     {
         if(DefinitiveValue != Values.Undefined) return DefinitiveValue;
@@ -356,8 +424,20 @@ internal abstract class BaseCell: EventArgs, IComparable
         return dv;
     }
 
+    /// <summary>
+    /// Attempts to fill the DefinitiveValue property from computed state.
+    /// Throws <see cref="InvalidSudokuValueException"/> if no definite value can be determined.
+    /// </summary>
     public void FillDefiniteValue() { if((DefinitiveValue = GetDefiniteValue()) == Values.Undefined) throw new InvalidSudokuValueException(); }
 
+    /// <summary>
+    /// Update block counters and neighbor masks when a cell's value changes.
+    /// This method adjusts either direct or indirect block counters for the old and new values
+    /// and enables/disables neighbor candidates accordingly.
+    /// </summary>
+    /// <param name="oldValue">Previous value (may be <see cref="Values.Undefined"/>).</param>
+    /// <param name="newValue">New value to apply (may be <see cref="Values.Undefined"/>).</param>
+    /// <param name="direct">If true, update direct block counters; otherwise update indirect counters.</param>
     private void SetBlocks(byte oldValue, byte newValue, bool direct)
     {
         if(oldValue != Values.Undefined)
@@ -380,12 +460,44 @@ internal abstract class BaseCell: EventArgs, IComparable
         }
     }
 
+    /// <summary>
+    /// Enable a previously blocked candidate on all neighbor cells.
+    /// </summary>
+    /// <param name="value">The candidate value to enable.</param>
+    /// <param name="direct">Whether to update direct or indirect block counters on neighbors.</param>
     private void EnableNeighbors(byte value, bool direct) { SetNeighborBlocks(value, true, direct); }
+
+    /// <summary>
+    /// Disable a candidate on all neighbor cells.
+    /// </summary>
+    /// <param name="value">The candidate value to disable.</param>
+    /// <param name="direct">Whether to update direct or indirect block counters on neighbors.</param>
     private void DisableNeighbors(byte value, bool direct) { SetNeighborBlocks(value, false, direct); }
+
+    /// <summary>
+    /// Set or clear block counters for the specified candidate on every neighbor.
+    /// </summary>
+    /// <param name="newValue">Candidate value to change.</param>
+    /// <param name="enable">True to decrement (enable) the block counter; false to increment (disable) it.</param>
+    /// <param name="direct">True to modify directBlocks; false to modify indirectBlocks.</param>
     private void SetNeighborBlocks(byte newValue, bool enable, bool direct) { foreach(BaseCell neighbor in neighbors) neighbor.SetBlock(newValue, enable, direct); }
 
+    /// <summary>
+    /// Public entry to set or clear a block for a specific candidate on this cell.
+    /// Ensures the enabled mask has been initialized before updating internal counters.
+    /// </summary>
+    /// <param name="value">Candidate value (1..SudokuSize).</param>
+    /// <param name="enable">True to enable the value (decrement counters), false to disable (increment).</param>
+    /// <param name="direct">Whether this is a direct or indirect block update.</param>
     public void SetBlock(int value, bool enable, bool direct) { EnsureEnabledMaskInitialized(); SetBlockInternal(value, enable, direct); }
 
+    /// <summary>
+    /// Internal implementation that manipulates block counters and updates the enabled mask.
+    /// It increments/decrements the appropriate block array and adjusts the cached possible count.
+    /// </summary>
+    /// <param name="value">Candidate value index to change.</param>
+    /// <param name="enable">If true, decrement the block count (making the value available when counters reach zero).</param>
+    /// <param name="direct">If true operate on directBlocks, otherwise on indirectBlocks.</param>
     private void SetBlockInternal(int value, bool enable, bool direct)
     {
         int bit = 1 << value;
@@ -405,6 +517,14 @@ internal abstract class BaseCell: EventArgs, IComparable
         if(beforeEnabled != afterEnabled) { if(afterEnabled) enabledMask |= bit; else enabledMask &= ~bit; }
     }
 
+    /// <summary>
+    /// Attempt to set or clear a block and return whether the enabled state actually changed.
+    /// The enabled mask is ensured to be initialized before the operation.
+    /// </summary>
+    /// <param name="value">Candidate value to modify.</param>
+    /// <param name="enable">True to enable, false to disable.</param>
+    /// <param name="direct">Whether to update direct or indirect counters.</param>
+    /// <returns>True if the effective enabled/disabled state of the value changed; otherwise false.</returns>
     public bool TrySetBlock(int value, bool enable, bool direct)
     {
         EnsureEnabledMaskInitialized();
@@ -415,6 +535,13 @@ internal abstract class BaseCell: EventArgs, IComparable
         return before != after;
     }
 
+    /// <summary>
+    /// Disable all candidate bits present in the mask for this cell (as direct or indirect blocks).
+    /// Returns true if any of the specified bits changed their enabled state.
+    /// </summary>
+    /// <param name="mask">Bitmask of candidate values to disable.</param>
+    /// <param name="direct">Whether to apply the change as direct or indirect blocks.</param>
+    /// <returns>True if at least one candidate in the mask had its enabled state changed.</returns>
     public bool TryDisableMask(int mask, bool direct)
     {
         EnsureEnabledMaskInitialized();
@@ -431,13 +558,27 @@ internal abstract class BaseCell: EventArgs, IComparable
         return before != after;
     }
 
+    /// <summary>
+    /// Returns the internal enabled mask for this cell (bit per candidate).
+    /// Ensures lazy initialization before returning.
+    /// </summary>
     public int GetEnabledMask() { EnsureEnabledMaskInitialized(); return enabledMask; }
 
+    /// <summary>
+    /// Indicates whether this cell currently has any candidate or exclusion-candidate marks set.
+    /// </summary>
+    /// <returns>True when either candidate or exclusion-candidate masks are non-zero.</returns>
     public bool HasCandidate()
     {
         return candidatesMask != 0 || exclusionCandidatesMask != 0;
     }
 
+    /// <summary>
+    /// Tests whether a particular candidate is set either as a normal or an exclusion candidate.
+    /// </summary>
+    /// <param name="candidate">Candidate value to check.</param>
+    /// <param name="exclusionCandidate">Set true to test the exclusion mask; false to test the normal candidate mask.</param>
+    /// <returns>True if the requested mask contains the candidate; otherwise false.</returns>
     public bool GetCandidateMask(int candidate, bool exclusionCandidate)
     {
         if(candidate < 1 || candidate > WinFormsSettings.SudokuSize) return false;
@@ -446,6 +587,12 @@ internal abstract class BaseCell: EventArgs, IComparable
         return (candidatesMask & bit) != 0;
     }
 
+    /// <summary>
+    /// Toggle a candidate bit in either the normal or exclusion candidate mask.
+    /// Ensures a candidate is not present in both masks simultaneously.
+    /// </summary>
+    /// <param name="candidate">The candidate value to toggle.</param>
+    /// <param name="exclusionCandidate">If true toggle the exclusion mask, otherwise the normal candidate mask.</param>
     public void ToggleCandidateMask(int candidate, bool exclusionCandidate)
     {
         if(candidate < 1 || candidate > WinFormsSettings.SudokuSize) throw new ArgumentOutOfRangeException(nameof(candidate));
@@ -454,8 +601,19 @@ internal abstract class BaseCell: EventArgs, IComparable
         if(exclusionCandidate) exclusionCandidatesMask ^= bit; else candidatesMask ^= bit;
     }
 
+    /// <summary>
+    /// Helper to check if any of the allowedMask bits overlap with the enabled mask.
+    /// </summary>
+    /// <param name="allowedMask">Bitmask representing candidate values to test.</param>
+    /// <returns>True if at least one allowed candidate is currently enabled.</returns>
     private bool Change(int allowedMask) { return (GetEnabledMask() & allowedMask) != 0; }
 
+    /// <summary>
+    /// Public entry that performs a naked-cell detection using neighbor cells and returns a metric value.
+    /// Allocates scratch arrays temporarily and ensures they are released.
+    /// </summary>
+    /// <param name="neighborCells">Array of neighbor cells to analyze.</param>
+    /// <returns>Positive encoded metric when a naked set is found; otherwise -1.</returns>
     public int FindNakedCells(BaseCell[] neighborCells)
     {
         NakedScratch scratch = default;
@@ -463,12 +621,25 @@ internal abstract class BaseCell: EventArgs, IComparable
         finally { scratch.Release(); }
     }
 
+    /// <summary>
+    /// Naked-cell detection entry that accepts an externally provided scratch buffer to avoid allocations.
+    /// </summary>
+    /// <param name="neighborCells">Array of neighbor cells to analyze.</param>
+    /// <param name="scratch">Scratch storage reused during the computation.</param>
+    /// <returns>Positive encoded metric when a naked set is found; otherwise -1.</returns>
     public int FindNakedCells(BaseCell[] neighborCells, ref NakedScratch scratch)
     {
         if(FindNakedCombination(neighborCells, ref scratch)) return nPossibleValues * 2;
         return -1;
     }
 
+    /// <summary>
+    /// Core algorithm to find a naked combination among neighbor cells.
+    /// When found, disables candidate bits in non-involved neighbors.
+    /// </summary>
+    /// <param name="neighborCells">Array of neighbor cells to inspect.</param>
+    /// <param name="scratch">Temporary storage used to avoid per-call allocations.</param>
+    /// <returns>True if any candidates were removed from other neighbor cells as a result.</returns>
     private bool FindNakedCombination(BaseCell[] neighborCells, ref NakedScratch scratch)
     {
         bool rc = false;
@@ -558,6 +729,13 @@ internal abstract class BaseCell: EventArgs, IComparable
         return rc;
     }
 
+    /// <summary>
+    /// Build a list of neighbor cells that are common to a set of candidate neighbors.
+    /// The returned list contains neighbors that are not part of the candidateNeighbors set and are currently unset.
+    /// </summary>
+    /// <param name="candidateNeighbors">List of neighbor cells that form the candidate set.</param>
+    /// <param name="neighborCells">All neighbor cells to consider.</param>
+    /// <returns>A list of common neighbor cells that can be affected by the candidate set.</returns>
     protected virtual List<BaseCell> GetCommonNeighbors(List<BaseCell> candidateNeighbors, BaseCell[] neighborCells)
     {
         int total = WinFormsSettings.TotalCellCount;
@@ -589,9 +767,26 @@ internal abstract class BaseCell: EventArgs, IComparable
         }
     }
 
+    /// <summary>
+    /// Determines whether the provided cell is one of this cell's neighbors.
+    /// </summary>
+    /// <param name="neighbor">Cell to test.</param>
+    /// <returns>True if the provided cell is contained in the neighbors array; otherwise false.</returns>
     public bool CommonNeighbor(BaseCell neighbor) { bool common = false; foreach(BaseCell cell in Neighbors) common = (cell == neighbor || common); return common; }
+
+    /// <summary>
+    /// Tests whether this cell and the supplied cell are inside the same box/rectangle.
+    /// </summary>
+    /// <param name="value">Cell to compare with.</param>
+    /// <returns>True if both cells share the same Sudoku rectangle (box); otherwise false.</returns>
     public bool SameRectangle(BaseCell value) { return (Col >= value.StartCol && Col < value.StartCol + WinFormsSettings.RectSize && Row >= value.StartRow && Row < value.StartRow + WinFormsSettings.RectSize); }
 
+    /// <summary>
+    /// Copies the internal state of this cell to the provided target cell instance.
+    /// Only internal arrays are cloned to avoid sharing mutable state between cells.
+    /// </summary>
+    /// <param name="target">Target cell to receive a copy of the state.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="target"/> is null.</exception>
     public void CopyTo(BaseCell target)
     {
         if(target == null) throw new ArgumentNullException(nameof(target));

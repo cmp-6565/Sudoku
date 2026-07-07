@@ -4,6 +4,20 @@ namespace Sudoku;
 
 public static class SudokuRenderer
 {
+    /// <summary>
+    /// Render a "watch-hands" style visualization for a single cell.
+    /// </summary>
+    /// <param name="value">The <see cref="BaseCell"/> whose enabled/candidate values should be visualized.</param>
+    /// <param name="rf">The bounding <see cref="RectangleF"/> in which to draw the visualization.</param>
+    /// <param name="g">The <see cref="Graphics"/> surface to draw on.</param>
+    /// <param name="showCandidates">
+    /// When true, render explicit candidate/exclusion indicators (uses candidate and exclusion candidate masks).
+    /// When false, render enabled/definitive hints derived from the cell's enabled mask and definitive value.
+    /// </param>
+    /// <remarks>
+    /// The method currently assumes a Sudoku size of 9 for the "watch-hands" layout.
+    /// Uses brushes and pens from <c>PrintParameters</c> for coloring. This method does not modify cell state.
+    /// </remarks>
     internal static void DrawWatchHands(BaseCell value, RectangleF rf, Graphics g, bool showCandidates)
     {
         float diameter = rf.Width / 10;
@@ -37,6 +51,26 @@ public static class SudokuRenderer
         }
     }
 
+    /// <summary>
+    /// Draw small hint digits inside a cell's rectangle to indicate enabled candidates or explicit candidate marks.
+    /// </summary>
+    /// <param name="value">The <see cref="BaseCell"/> providing candidate/definitive information.</param>
+    /// <param name="rf">The bounding <see cref="RectangleF"/> for the cell.</param>
+    /// <param name="g">The <see cref="Graphics"/> instance to draw on.</param>
+    /// <param name="printFont">Font used for rendering the small hint digits.</param>
+    /// <param name="color">Color used to draw normal enabled hints when <paramref name="showCandidates"/> is false.</param>
+    /// <param name="showCandidates">
+    /// When true, the method draws explicit candidate marks (green for normal candidates, red for exclusion candidates).
+    /// When false, it draws enabled/definitive hints using the supplied <paramref name="color"/>.
+    /// </param>
+    /// <param name="screen">
+    /// If true, apply a screen correction factor to the calculated positions (useful for on-screen rendering).
+    /// If false, use full-size layout (useful for printing).
+    /// </param>
+    /// <remarks>
+    /// Positions digits in a 3x3 layout within the rectangle and disposes locally created brushes.
+    /// The method does not mutate the provided <see cref="BaseCell"/>; it only reads candidate/enable state.
+    /// </remarks>
     internal static void DrawHints(BaseCell value, RectangleF rf, Graphics g, Font printFont, Color color, bool showCandidates, bool screen=true)
     {
         float x = 0, y = 0;

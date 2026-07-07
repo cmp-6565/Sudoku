@@ -87,45 +87,117 @@ internal abstract class BaseProblem: EventArgs, IComparable
         incrementalSolver = new IncrementalSolver();
     }
 
+    /// <summary>
+    /// Create and initialize the concrete matrix instance for this problem type.
+    /// Concrete subclasses must implement this to construct their specific matrix.
+    /// </summary>
     protected abstract void createMatrix();
+
+    /// <summary>
+    /// Create an empty instance of the concrete problem type.
+    /// Used for materialization and cloning operations.
+    /// </summary>
+    /// <returns>A new instance of the concrete BaseProblem subclass.</returns>
     protected abstract BaseProblem CreateInstance();
+
+    /// <summary>
+    /// Indicates whether this problem is considered tricky according to problem-specific heuristics.
+    /// Subclasses may override to provide a different classification.
+    /// </summary>
     public virtual Boolean IsTricky { get { return false; } }
 
+    /// <summary>
+    /// Gets the associated matrix instance.
+    /// </summary>
     public BaseMatrix Matrix { get { return matrix; } }
+
+    /// <summary>
+    /// Gets the currently stored list of found solutions.
+    /// </summary>
     public List<Solution> Solutions { get { return solutions; } }
 
+    /// <summary>
+    /// Number of fixed (given) values in the matrix.
+    /// Delegates to the matrix implementation.
+    /// </summary>
     public int nValues { get { return Matrix.nValues; } }
+
+    /// <summary>
+    /// Number of variable (non-fixed) values in the matrix.
+    /// Delegates to the matrix implementation.
+    /// </summary>
     public int nVariableValues { get { return Matrix.nVariableValues; } }
+
+    /// <summary>
+    /// Number of values computed by the solver (not original givens).
+    /// Delegates to the matrix implementation.
+    /// </summary>
     public int nComputedValues { get { return Matrix.nComputedValues; } }
 
+    /// <summary>
+    /// Minimum allowed number of clues for a valid puzzle instance for this matrix type.
+    /// Delegates to the matrix implementation (can be overridden by matrix).
+    /// </summary>
     public int MinimumValues { get { return Matrix.MinimumValues; } }
 
+    /// <summary>
+    /// Unique identifier for this problem instance.
+    /// </summary>
     public Guid Id { get { return id; } set { id = value; } }
+
+    /// <summary>
+    /// Returns whether the specified cell is marked as read-only.
+    /// </summary>
+    /// <param name="row">Row index (0-based).</param>
+    /// <param name="col">Column index (0-based).</param>
+    /// <returns>True if the cell is read-only; otherwise false.</returns>
     public bool IsCellReadOnly(int row, int col)
     {
         return Cell(row, col).ReadOnly;
     }
 
+    /// <summary>
+    /// Mark or unmark a cell as read-only.
+    /// </summary>
+    /// <param name="row">Row index (0-based).</param>
+    /// <param name="col">Column index (0-based).</param>
+    /// <param name="readOnly">Desired read-only state.</param>
     public void SetReadOnly(int row, int col, Boolean readOnly)
     {
         Cell(row, col).ReadOnly = readOnly;
     }
+    /// <summary>
+    /// Total number of recursive/backtracking passes executed across solver runs.
+    /// </summary>
     public Int64 TotalPassCounter
     {
         get { return totalPassCount; }
         set { totalPassCount = value; }
     }
+    /// <summary>
+    /// Number of solutions currently stored for this problem.
+    /// </summary>
     public int NumberOfSolutions { get { return Solutions.Count; } }
+    /// <summary>
+    /// The asynchronous task running the solver, if any.
+    /// </summary>
     public Task SolverTask
     {
         get { return solverTask; }
     }
 
+    /// <summary>
+    /// Indicates whether the problem solving process has finished with at least one solution.
+    /// </summary>
     public Boolean ProblemSolved
     {
         get { return problemSolved; }
     }
 
+    /// <summary>
+    /// Heuristic severity level cached for the problem.
+    /// Getting retrieves a computed value from the matrix, setting overrides the cached value.
+    /// </summary>
     public float SeverityLevel
     {
         get
@@ -136,23 +208,56 @@ internal abstract class BaseProblem: EventArgs, IComparable
         set { severityLevel = value; }
     }
 
+    /// <summary>
+    /// Human-readable severity classification string derived from the numeric severity and settings thresholds.
+    /// </summary>
     public String SeverityLevelText
     {
         get { return float.IsNaN(SeverityLevel) ? "-" : (SeverityLevel > settings.Hard ? Resources.Hard : (SeverityLevel > settings.Intermediate ? Resources.Intermediate : (SeverityLevel > settings.Trivial ? Resources.Easy : Resources.Trivial))); }
     }
 
+    /// <summary>
+    /// Numeric severity classification used by algorithms that need integer thresholds.
+    /// </summary>
     public int SeverityLevelInt
     {
         get { return float.IsNaN(SeverityLevel) ? 0 : (SeverityLevel > settings.Hard ? 8 : (SeverityLevel > settings.Intermediate ? 4 : (SeverityLevel > settings.Trivial ? 2 : 1))); }
     }
 
+    /// <summary>
+    /// Associated filename for the problem (if loaded/saved from disk).
+    /// </summary>
     public String Filename { get { return filename; } set { filename = value; } }
+
+    /// <summary>
+    /// User-provided textual comment for the problem instance.
+    /// Setting updates the Dirty flag if the comment changed.
+    /// </summary>
     public String Comment { get { return comment; } set { Dirty = Dirty || comment != value; comment = value; } }
+
+    /// <summary>
+    /// Gets or sets a value indicating if the problem has unsaved changes.
+    /// </summary>
     public Boolean Dirty { get { return dirty; } set { dirty = value; } }
+
+    /// <summary>
+    /// Indicates whether the problem is currently in its preparation phase (matrix preparation / heuristic passes).
+    /// </summary>
     public Boolean Preparing { get { return preparing; } set { preparing = value; } }
+
+    /// <summary>
+    /// Time spent solving this problem (accumulated).
+    /// </summary>
     public TimeSpan SolvingTime { get { return solvingTime; } set { solvingTime = value; } }
+
+    /// <summary>
+    /// Time spent generating this problem (accumulated).
+    /// </summary>
     public TimeSpan GenerationTime { get { return generationTime; } set { generationTime = value; } }
 
+    /// <summary>
+    /// Compare problems by severity level to provide ordering for lists and collections.
+    /// </summary>
     public int CompareTo(System.Object obj)
     {
         if(obj == null) return -1;
@@ -161,11 +266,19 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return SeverityLevel.CompareTo(tmpProblem.SeverityLevel);
     }
 
+    /// <summary>
+    /// Clear the stored solution list.
+    /// </summary>
     public void ResetSolutions()
     {
         solutions = new List<Solution>();
     }
 
+    /// <summary>
+    /// Create a shallow clone of the problem including a cloned matrix and selected metadata.
+    /// The returned instance contains copies of stored solutions up to the configured max.
+    /// </summary>
+    /// <returns>A cloned BaseProblem instance.</returns>
     public BaseProblem Clone()
     {
         BaseProblem dest = CreateInstance();
@@ -186,11 +299,20 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return dest;
     }
 
+    /// <summary>
+    /// Clone the internal matrix by delegating to the matrix implementation.
+    /// </summary>
+    /// <returns>A cloned BaseMatrix instance.</returns>
     public BaseMatrix CloneMatrix()
     {
         return (BaseMatrix)Matrix.Clone();
     }
 
+    /// <summary>
+    /// Copy the current problem grid into a new Solution object.
+    /// </summary>
+    /// <param name="dest">Reference to the destination Solution instance which will be created and returned.</param>
+    /// <returns>The created Solution instance containing the problem's current grid.</returns>
     public Solution CopyTo(ref Solution dest)
     {
         dest = new Solution(settings);
@@ -204,21 +326,37 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return dest;
     }
 
+    /// <summary>
+    /// Return a list of obvious cells (cells with exactly one possible candidate).
+    /// Delegates to the matrix implementation.
+    /// </summary>
     public List<BaseCell> GetObviousCells()
     {
         return Matrix.GetObviousCells(true);
     }
 
+    /// <summary>
+    /// Return a list of hint cells discovered by light heuristics.
+    /// Delegates to the matrix implementation.
+    /// </summary>
     public List<BaseCell> GetHints()
     {
         return Matrix.GetHints(false);
     }
 
+    /// <summary>
+    /// Return a list of hint cells discovered by deeper heuristics (naked/isolated, diagonals if applicable).
+    /// Delegates to the matrix implementation.
+    /// </summary>
     public List<BaseCell> GetDeepHints()
     {
         return Matrix.GetHints(true);
     }
 
+    /// <summary>
+    /// Save the current filled grid as a solution if the solution list has room.
+    /// Notifies listeners when a solution is added.
+    /// </summary>
     private void SaveResult()
     {
         if(NumberOfSolutions < settings.MaxSolutions)
@@ -234,53 +372,101 @@ internal abstract class BaseProblem: EventArgs, IComparable
         passCount = 0;
     }
 
+    /// <summary>
+    /// Prepare the matrix for solving by invoking matrix preparation logic.
+    /// </summary>
     public void PrepareMatrix()
     {
         Matrix.Prepare();
     }
 
+    /// <summary>
+    /// Reset the matrix to an initial state (clear non-fixed cells and reset block information).
+    /// </summary>
     public void ResetMatrix()
     {
         Matrix.Reset();
     }
 
+    /// <summary>
+    /// Reset all candidate markings in the matrix and mark the problem Dirty if any candidates were present.
+    /// </summary>
     public void ResetCandidates()
     {
         Dirty = Dirty || HasCandidates();
         Matrix.ResetCandidates();
     }
 
+    /// <summary>
+    /// Reset candidate markings for a single cell.
+    /// </summary>
+    /// <param name="row">Row index (0-based).</param>
+    /// <param name="col">Column index (0-based).</param>
     public void ResetCandidates(int row, int col)
     {
         Matrix.ResetCandidates(row, col);
     }
 
+    /// <summary>
+    /// Query whether a candidate or exclusion candidate is set for a given cell.
+    /// </summary>
+    /// <param name="row">Row index (0-based).</param>
+    /// <param name="col">Column index (0-based).</param>
+    /// <param name="candidate">Candidate value to test.</param>
+    /// <param name="exclusionCandidate">If true test exclusion mask, otherwise the normal candidate mask.</param>
     public Boolean GetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
     {
         return Matrix.GetCandidate(row, col, candidate, exclusionCandidate);
     }
 
+    /// <summary>
+    /// Toggle a candidate or exclusion-candidate for the specified cell and update Dirty state.
+    /// </summary>
+    /// <param name="row">Row index (0-based).</param>
+    /// <param name="col">Column index (0-based).</param>
+    /// <param name="candidate">Candidate value to toggle.</param>
+    /// <param name="exclusionCandidate">If true toggle the exclusion mask, otherwise the normal candidate mask.</param>
     public void SetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
     {
         Dirty = Dirty || GetCandidate(row, col, candidate, exclusionCandidate) != exclusionCandidate;
         Matrix.SetCandidate(row, col, candidate, exclusionCandidate);
     }
 
+    /// <summary>
+    /// Returns whether any candidate markings are present in the matrix.
+    /// </summary>
     public Boolean HasCandidates()
     {
         return Matrix.HasCandidates();
     }
 
+    /// <summary>
+    /// Returns whether a specific cell currently has any candidate marks.
+    /// </summary>
     public Boolean HasCandidate(int row, int col)
     {
         return Matrix.HasCandidate(row, col);
     }
 
+    /// <summary>
+    /// Get all neighbor cells for the specified cell coordinates.
+    /// </summary>
+    /// <param name="row">Row index (0-based).</param>
+    /// <param name="col">Column index (0-based).</param>
+    /// <returns>Array of neighboring BaseCell instances.</returns>
     public BaseCell[] GetNeighbors(int row, int col)
     {
         return Matrix.Cell(row, col).Neighbors;
     }
 
+    /// <summary>
+    /// Public wrapper to set a cell value and optionally mark it as fixed.
+    /// Updates problem metadata and invalidates cached severity.
+    /// </summary>
+    /// <param name="row">Row index (0-based).</param>
+    /// <param name="col">Column index (0-based).</param>
+    /// <param name="value">Value to set or <see cref="Values.Undefined"/> to clear.</param>
+    /// <param name="fix">If true mark as a fixed given.</param>
     public void SetValue(int row, int col, byte value, Boolean fix)
     {
         if(GetValue(row, col) != value || FixedValue(row, col) != fix)
@@ -292,17 +478,30 @@ internal abstract class BaseProblem: EventArgs, IComparable
         }
     }
 
+    /// <summary>
+    /// Convenience overload for setting a value and deriving the fixed flag from the value.
+    /// </summary>
+    /// <param name="row">Row index (0-based).</param>
+    /// <param name="col">Column index (0-based).</param>
+    /// <param name="value">Value to set.</param>
     public void SetValue(int row, int col, byte value)
     {
         dirty = dirty || (value != GetValue(row, col));
         SetValue(row, col, value, value != Values.Undefined);
     }
 
+    /// <summary>
+    /// Convenience overload to set a value using a BaseCell reference.
+    /// </summary>
     public void SetValue(BaseCell cell, byte value)
     {
         SetValue(cell.Row, cell.Col, value);
     }
 
+    /// <summary>
+    /// Reset a single cell to undefined while preserving current severity cache.
+    /// Marks dirty if the cell held a value.
+    /// </summary>
     private void ResetValue(int row, int col)
     {
         float sv = severityLevel;
@@ -311,6 +510,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
         severityLevel = sv;
     }
 
+    /// <summary>
+    /// Try a candidate value on a cell and mark it as fixed for the trial; preserves the severity cache.
+    /// </summary>
     private void TryValue(int row, int col, byte value)
     {
         float sv = severityLevel;
@@ -319,26 +521,45 @@ internal abstract class BaseProblem: EventArgs, IComparable
         severityLevel = sv;
     }
 
+    /// <summary>
+    /// Returns the BaseCell instance at the specified coordinates.
+    /// </summary>
     public BaseCell Cell(int row, int col)
     {
         return Matrix.Cell(row, col);
     }
 
+    /// <summary>
+    /// Returns the current stored value for the specified cell.
+    /// </summary>
     public byte GetValue(int row, int col)
     {
         return Matrix.GetValue(row, col);
     }
 
+    /// <summary>
+    /// Indicates whether the value at the specified cell was computed by the solver.
+    /// </summary>
     public Boolean ComputedValue(int row, int col)
     {
         return Matrix.ComputedValue(row, col);
     }
 
+    /// <summary>
+    /// Indicates whether the value at the specified cell is a fixed given.
+    /// </summary>
     public Boolean FixedValue(int row, int col)
     {
         return Matrix.FixedValue(row, col);
     }
 
+    /// <summary>
+    /// Asynchronously begin searching for solutions up to maxSolutions.
+    /// If an existing solver task is running, await its completion first.
+    /// The actual search is executed in the background and results are stored in <see cref="Solutions"/>
+    /// </summary>
+    /// <param name="maxSolutions">Maximum number of solutions to find (use int.MaxValue to find all).</param>
+    /// <param name="token">Cancellation token to cancel the search.</param>
     public async Task FindSolutions(int maxSolutions, CancellationToken token)
     {
         if(solverTask != null && !solverTask.IsCompleted)
@@ -352,6 +573,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
         solverTask = RunSolver(maxSolutions, token);
     }
 
+    /// <summary>
+    /// Prepare and run the solver asynchronously. Sets up internal flags and invokes the synchronous Solve entry point.
+    /// </summary>
     private async Task RunSolver(int maxSolutions, CancellationToken token)
     {
         if(token.IsCancellationRequested) return;
@@ -393,6 +617,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
         await Task.Run(() => Solve(token), token);
     }
 
+    /// <summary>
+    /// Run the solver on the current thread. Sets culture according to settings and invokes recursive solver.
+    /// </summary>
     private void Solve(CancellationToken token)
     {
         Thread.CurrentThread.CurrentUICulture = new CultureInfo(settings.DisplayLanguage);
@@ -410,6 +637,12 @@ internal abstract class BaseProblem: EventArgs, IComparable
         }
     }
 
+    /// <summary>
+    /// Core recursive/backtracking solver. Selects next cell by matrix heuristics and tries candidate values.
+    /// Manages progress notifications and solution collection according to flags like findAll and checkWellDefined.
+    /// </summary>
+    /// <param name="current">Index in the sorted list of variable cells.</param>
+    /// <param name="token">Cancellation token.</param>
     private void Solve(int current, CancellationToken token)
     {
         if(token.IsCancellationRequested) return;
@@ -477,6 +710,15 @@ internal abstract class BaseProblem: EventArgs, IComparable
         if((findAll || checkWellDefined) && current == 0) problemSolved = (NumberOfSolutions > 0);
     }
 
+    /// <summary>
+    /// Greedy reduction phase used by the minimizer to remove givens while preserving uniqueness up to severity constraints.
+    /// Processes givens by priority and tests uniqueness incrementally using cached checks.
+    /// </summary>
+    /// <param name="state">Current given state.</param>
+    /// <param name="maxSeverity">Maximum allowed severity for candidate uniqueness.</param>
+    /// <param name="cache">Cache mapping state signatures to uniqueness boolean.</param>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>The reduced GivenState after greedy removals.</returns>
     private async Task<GivenState> GreedyReduce(GivenState state, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
     {
         var queue = new PriorityQueue<int, int>();
@@ -511,11 +753,17 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return state;
     }
 
+    /// <summary>
+    /// Create a defensive clone of a GivenState.
+    /// </summary>
     private static GivenState CloneState(GivenState state)
     {
         return new GivenState((byte[])state.values.Clone(), state.FixedCount);
     }
 
+    /// <summary>
+    /// Use the incremental solver to count the number of solutions for the current matrix up to maxSolutions.
+    /// </summary>
     private Task<int> CountSolutionsIncremental(int maxSolutions, CancellationToken token)
     {
         GivenState snapshot = GivenState.FromMatrix(Matrix);
@@ -526,6 +774,16 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         return Task.Run(() => incrementalSolver.CountSolutions(givens.Span, enforceDiagonals, maxSolutions, token), token);
     }
+
+    /// <summary>
+    /// Test whether the state encodes a uniquely solvable puzzle (optionally constrained by severity).
+    /// Uses an incremental solver and caches results by state signature.
+    /// </summary>
+    /// <param name="state">Current GivenState to test.</param>
+    /// <param name="maxSeverity">Maximum allowed severity for a unique candidate to be accepted (-1 for unlimited).</param>
+    /// <param name="cache">Cache for seen state signatures.</param>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>True when the supplied state has a unique solution respecting severity constraints.</returns>
     private async Task<bool> IsUnique(GivenState state, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
     {
         ulong signature = XxHash64.HashToUInt64(state.values);
@@ -547,6 +805,11 @@ internal abstract class BaseProblem: EventArgs, IComparable
         cache[signature] = unique;
         return unique;
     }
+    /// <summary>
+    /// Materialize a BaseProblem instance from a GivenState by applying givens to a fresh clone.
+    /// </summary>
+    /// <param name="state">Source GivenState describing fixed cells.</param>
+    /// <returns>A BaseProblem instance representing the provided givens.</returns>
     private BaseProblem Materialize(GivenState state)
     {
         BaseProblem clone = CreateInstance();
@@ -573,6 +836,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
     public enum MinimizeAlgorithm { Calculate, Candidate, Greedy }
     public record struct AlgorithmParameters(MinimizeAlgorithm FavoriteAlgorithm, int InitialFixedCount, int TotalRemovable, int RemovedByGreedy, int RemainingMargin, int GreedyStateFixedCount, int NumberOfSeldomValues, int NumberOfFrequentValues, float SeverityLevel);
 
+    /// <summary>
+    /// Compute metadata used to pick a minimization strategy: counts of removables, frequency distribution and severity.
+    /// </summary>
     private AlgorithmParameters GetAlgorithmParameters(GivenState initial, GivenState greedyState)
     {
         AlgorithmParameters parameters = new AlgorithmParameters();
@@ -588,6 +854,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         return parameters;
     }
+    /// <summary>
+    /// Heuristic decision whether a candidate-based minimization search is likely beneficial.
+    /// Returns parameters used for diagnostics and tuning.
+    /// </summary>
     private bool ShouldUseCandidateSearch(GivenState initial, GivenState greedyState, out AlgorithmParameters parameters)
     {
         const int GreedyOffset = 2; // If greedy is within this many clues of the minimum, skip candidate search
@@ -607,6 +877,12 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return (parameters.RemovedByGreedy > 9 && (parameters.GreedyStateFixedCount > 22 || parameters.NumberOfSeldomValues > 0)); // Heuristic: If greedy removed a significant number of clues and left a relatively high fixed count or there is a low number of seldom values, candidate search is likely beneficial
     }
 
+    /// <summary>
+    /// Decide on an algorithmic strategy for minimization by running a cheap greedy pass and analyzing results.
+    /// </summary>
+    /// <param name="maxSeverity">Maximum allowed severity for candidates.</param>
+    /// <param name="token">Cancellation token.</param>
+    /// <returns>Parameters describing the recommended algorithm.</returns>
     public async Task<AlgorithmParameters> GetAlgorithm(int maxSeverity, CancellationToken token)
     {
         ResetMatrix();
@@ -624,6 +900,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         return parameters;
     }
+    /// <summary>
+    /// Entry point to minimize the problem's givens using the chosen minimization algorithm.
+    /// Returns a minimized BaseProblem (or null if no unique minimal variant found).
+    /// </summary>
     public async Task<BaseProblem> Minimize(int maxSeverity, MinimizeAlgorithm minimizeAlgorithm, CancellationToken token)
     {
         ResetMatrix();
@@ -642,6 +922,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         return await MinimizeGreedy(initialState, greedyState, maxSeverity, cache, token).ConfigureAwait(false);
     }
+    /// <summary>
+    /// Greedy minimization implementation that attempts recursive removals guided by neighbor counts.
+    /// </summary>
     private async Task<BaseProblem> MinimizeGreedy(GivenState initialState, GivenState greedyState, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
     {
         ResetMatrix();
@@ -669,6 +952,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null;
     }
 
+    /// <summary>
+    /// Recursive helper for greedy minimization exploring removing givens in order.
+    /// Returns best found GivenState or null if none found.
+    /// </summary>
     private async Task<GivenState?> MinimizeGreedyRecursive(GivenState state, BaseCell[] order, int startIndex, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
     {
         if(token.IsCancellationRequested) return null;
@@ -712,6 +999,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         return best;
     }
+    /// <summary>
+    /// Update the currently best found state; materialize and notify when a new best is found.
+    /// </summary>
     private GivenState? UpdateBestState(GivenState? currentBest, GivenState candidate)
     {
         if(!currentBest.HasValue || candidate.FixedCount < currentBest.Value.FixedCount)
@@ -723,6 +1013,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         return currentBest;
     }
+    /// <summary>
+    /// Minimize using candidate-guided search. This implementation explores candidates recursively and returns a minimized problem.
+    /// </summary>
     protected async Task<BaseProblem> MinimizeWithCandidates(int maxSeverity, CancellationToken token)
     {
         ResetMatrix();
@@ -745,6 +1038,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
     }
 
     // Async Recursive Minimize
+    /// <summary>
+    /// Recursive loop for candidate-based minimization. Tries to remove candidate cells and recursively refines.
+    /// </summary>
     private async Task<Boolean> MinimizeWithCandidatesRecursive(List<BaseCell> candidates, int maxSeverity, CancellationToken token)
     {
         if(candidates == null) return true;
@@ -781,6 +1077,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
     }
 
     // Private helper now async
+    /// <summary>
+    /// Build a set of candidate cells from the provided source starting at index 'start'.
+    /// A candidate is a cell that can be removed while leaving a uniquely solvable puzzle.
+    /// </summary>
     private async Task<List<BaseCell>> GetCandidates(List<BaseCell> source, int start, CancellationToken token)
     {
         List<BaseCell> candidates = new List<BaseCell>();
@@ -814,6 +1114,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
     }
 
 
+    /// <summary>
+    /// Check whether the current problem is potentially solvable by ensuring each unit and each cell has at least one possible placement for every value.
+    /// </summary>
     public virtual Boolean Resolvable()
     {
         for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
@@ -826,6 +1129,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return true;
     }
 
+    /// <summary>
+    /// Count of distinct values present on the grid (ignores undefined).
+    /// </summary>
     public int NumDistinctValues()
     {
         int count = 0;
@@ -856,6 +1162,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
         if(handler != null) handler(this, EventArgs.Empty);
     }
 
+    /// <summary>
+    /// Validate whether the entire puzzle is solved: no undefined cells and all unit checks pass.
+    /// </summary>
     private Boolean IsSolved()
     {
         int i, j;
@@ -866,11 +1175,18 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return true;
     }
 
+    /// <summary>
+    /// Internal per-cell consistency check used by Resolvable: ensures at least one candidate or definitive value exists.
+    /// </summary>
     private Boolean Check(int row, int col)
     {
         return !(Matrix.Cell(row, col).nPossibleValues == 0 && GetValue(row, col) == Values.Undefined && Matrix.Cell(row, col).DefinitiveValue == Values.Undefined);
     }
 
+    /// <summary>
+    /// Immutable struct representing a snapshot of given values and the count of fixed givens.
+    /// Provides helpers to create from a matrix and to remove a given.
+    /// </summary>
     private record struct GivenState(byte[] values, int FixedCount)
     {
         public static GivenState FromMatrix(BaseMatrix matrix)
@@ -898,6 +1214,12 @@ internal abstract class BaseProblem: EventArgs, IComparable
             set => values[row * WinFormsSettings.SudokuSize + col] = value;
         }
 
+        /// <summary>
+        /// Create a new GivenState with the specified cell removed (set to undefined).
+        /// </summary>
+        /// <param name="row">Row index of the removed cell.</param>
+        /// <param name="col">Column index of the removed cell.</param>
+        /// <returns>A new GivenState with the cell removed and FixedCount adjusted.</returns>
         public readonly GivenState WithRemoved(int row, int col)
         {
             var clone = (byte[])values.Clone();
@@ -907,6 +1229,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
             clone[index] = Values.Undefined;
             return new GivenState(clone, FixedCount - 1);
         }
+        /// <summary>
+        /// Count occurrences of each digit in the given state.
+        /// </summary>
         public readonly int[] CountValues()
         {
             int size = WinFormsSettings.SudokuSize;
@@ -923,6 +1248,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
             return counts;
         }
     }
+    /// <summary>
+    /// Lightweight incremental solver optimized for quick uniqueness checks.
+    /// It operates on a compact grid representation and uses masks for fast candidate operations.
+    /// </summary>
     private sealed class IncrementalSolver
     {
         private readonly int size;
@@ -957,6 +1286,14 @@ internal abstract class BaseProblem: EventArgs, IComparable
             boxMask = new int[size];
             valueMask = (1 << (size + 1)) - 2;
         }
+        /// <summary>
+        /// Count solutions for the provided givens using a depth-first masked search up to maxSolutions.
+        /// </summary>
+        /// <param name="givens">Span of given values in row-major order.</param>
+        /// <param name="enforceDiagonals">Whether to treat diagonals as additional constraints (X-Sudoku).</param>
+        /// <param name="maxSolutions">Maximum number of solutions to search for.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Number of solutions found up to the specified limit.</returns>
         public int CountSolutions(ReadOnlySpan<byte> givens, bool enforceDiagonals, int maxSolutions, CancellationToken token)
         {
             this.token = token;
@@ -968,6 +1305,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
             Search(0);
             return solutionCount;
         }
+        /// <summary>
+        /// Prepare internal masks and ordering based on the givens; detect immediate contradictions.
+        /// </summary>
         private void Prepare(ReadOnlySpan<byte> givens)
         {
             token.ThrowIfCancellationRequested();
@@ -1014,6 +1354,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
                 }
             }
         }
+        /// <summary>
+        /// Depth-first masked search for filling empty cells using minimum-candidate heuristics.
+        /// Stops once solutionLimit is reached.
+        /// </summary>
         private void Search(int depth)
         {
             if(solutionCount >= solutionLimit) return;
@@ -1047,6 +1391,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
             }
         }
 
+        /// <summary>
+        /// Choose the next empty cell using a minimum-candidates heuristic; returns mask of candidates.
+        /// </summary>
         private int SelectCell(int start, out int candidateMask)
         {
             int bestIndex = -1;
@@ -1076,6 +1423,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
             return bestIndex;
         }
 
+        /// <summary>
+        /// Compute a candidate bitmask for the specified cell index by combining row/col/box (and diagonal) masks.
+        /// </summary>
         private int GetCandidateMask(int cellIndex)
         {
             int row = cellIndex / size;
@@ -1092,6 +1442,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
             return valueMask & ~used;
         }
 
+        /// <summary>
+        /// Place a value into the internal grid and update masks.
+        /// </summary>
         private void PlaceValue(int cellIndex, int row, int col, int box, int bit)
         {
             grid[cellIndex] = (byte)BitOperations.TrailingZeroCount((uint)bit);
@@ -1106,6 +1459,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
             }
         }
 
+        /// <summary>
+        /// Remove a previously placed value and restore masks.
+        /// </summary>
         private void RemoveValue(int cellIndex, int row, int col, int box, int bit)
         {
             grid[cellIndex] = undefinedValue;
@@ -1120,6 +1476,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
             }
         }
 
+        /// <summary>
+        /// Swap two entries in the cellOrder used by the search.
+        /// </summary>
         private void Swap(int a, int b)
         {
             if(a == b) return;
@@ -1128,6 +1487,9 @@ internal abstract class BaseProblem: EventArgs, IComparable
             cellOrder[b] = tmp;
         }
 
+        /// <summary>
+        /// Get the box index for a given row and column.
+        /// </summary>
         private int GetBoxIndex(int row, int col) => (row / rectSize) * rectSize + (col / rectSize);
     }
 }
