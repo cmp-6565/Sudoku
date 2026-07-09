@@ -62,8 +62,8 @@ namespace Sudoku
             language = new System.Windows.Forms.ComboBox();
             printPage = new System.Windows.Forms.TabPage();
             printInternalSeverity = new System.Windows.Forms.CheckBox();
-            xSudokuConstrast = new System.Windows.Forms.NumericUpDown();
-            xSudokuConstrastLabel = new System.Windows.Forms.Label();
+            xSudokuContrast = new System.Windows.Forms.NumericUpDown();
+            xSudokuContrastLabel = new System.Windows.Forms.Label();
             solutionPrintSize = new System.Windows.Forms.GroupBox();
             solutionSmall = new System.Windows.Forms.RadioButton();
             solutionNormal = new System.Windows.Forms.RadioButton();
@@ -99,7 +99,7 @@ namespace Sudoku
             sizeGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)constrast).BeginInit();
             printPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)xSudokuConstrast).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)xSudokuContrast).BeginInit();
             solutionPrintSize.SuspendLayout();
             problemPrintSize.SuspendLayout();
             generatePage.SuspendLayout();
@@ -330,8 +330,8 @@ namespace Sudoku
             printPage.BackColor = System.Drawing.SystemColors.ControlLight;
             printPage.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             printPage.Controls.Add(printInternalSeverity);
-            printPage.Controls.Add(xSudokuConstrast);
-            printPage.Controls.Add(xSudokuConstrastLabel);
+            printPage.Controls.Add(xSudokuContrast);
+            printPage.Controls.Add(xSudokuContrastLabel);
             printPage.Controls.Add(solutionPrintSize);
             printPage.Controls.Add(printSolutions);
             printPage.Controls.Add(printHints);
@@ -344,16 +344,16 @@ namespace Sudoku
             printInternalSeverity.Name = "printInternalSeverity";
             printInternalSeverity.UseVisualStyleBackColor = true;
             // 
-            // xSudokuConstrast
+            // xSudokuContrast
             // 
-            resources.ApplyResources(xSudokuConstrast, "xSudokuConstrast");
-            xSudokuConstrast.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
-            xSudokuConstrast.Name = "xSudokuConstrast";
+            resources.ApplyResources(xSudokuContrast, "xSudokuContrast");
+            xSudokuContrast.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
+            xSudokuContrast.Name = "xSudokuContrast";
             // 
-            // xSudokuConstrastLabel
+            // xSudokuContrastLabel
             // 
-            resources.ApplyResources(xSudokuConstrastLabel, "xSudokuConstrastLabel");
-            xSudokuConstrastLabel.Name = "xSudokuConstrastLabel";
+            resources.ApplyResources(xSudokuContrastLabel, "xSudokuContrastLabel");
+            xSudokuContrastLabel.Name = "xSudokuContrastLabel";
             // 
             // solutionPrintSize
             // 
@@ -592,7 +592,7 @@ namespace Sudoku
             ((System.ComponentModel.ISupportInitialize)constrast).EndInit();
             printPage.ResumeLayout(false);
             printPage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)xSudokuConstrast).EndInit();
+            ((System.ComponentModel.ISupportInitialize)xSudokuContrast).EndInit();
             solutionPrintSize.ResumeLayout(false);
             solutionPrintSize.PerformLayout();
             problemPrintSize.ResumeLayout(false);
@@ -665,8 +665,8 @@ namespace Sudoku
         private System.Windows.Forms.CheckBox normalSudoku;
         private System.Windows.Forms.GroupBox selectLevelBox;
         private System.Windows.Forms.CheckBox selectSeverityLevel;
-        private System.Windows.Forms.NumericUpDown xSudokuConstrast;
-        private System.Windows.Forms.Label xSudokuConstrastLabel;
+        private System.Windows.Forms.NumericUpDown xSudokuContrast;
+        private System.Windows.Forms.Label xSudokuContrastLabel;
         private System.Windows.Forms.CheckBox saveState;
         private System.Windows.Forms.CheckBox generateMinimalProblems;
         private System.Windows.Forms.CheckBox precalculatedProblems;

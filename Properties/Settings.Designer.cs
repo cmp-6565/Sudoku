@@ -12,7 +12,7 @@ namespace Sudoku.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.7.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -380,12 +380,12 @@ namespace Sudoku.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int TraceFrequence {
+        public int TraceFrequency {
             get {
-                return ((int)(this["TraceFrequence"]));
+                return ((int)(this["TraceFrequency"]));
             }
             set {
-                this["TraceFrequence"] = value;
+                this["TraceFrequency"] = value;
             }
         }
         
@@ -440,12 +440,12 @@ namespace Sudoku.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("20")]
-        public int XSudokuConstrast {
+        public int XSudokuContrast {
             get {
-                return ((int)(this["XSudokuConstrast"]));
+                return ((int)(this["XSudokuContrast"]));
             }
             set {
-                this["XSudokuConstrast"] = value;
+                this["XSudokuContrast"] = value;
             }
         }
         

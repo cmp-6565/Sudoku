@@ -504,25 +504,25 @@
   <data name="printInternalSeverity.Text" xml:space="preserve">
     <value>&amp;Internen Schwierigkeitsgrad ausdrucken</value>
   </data>
-  <data name="xSudokuConstrast.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="xSudokuContrast.Location" type="System.Drawing.Point, System.Drawing">
     <value>5, 224</value>
   </data>
-  <data name="xSudokuConstrast.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="xSudokuContrast.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 3, 4, 3</value>
   </data>
-  <data name="xSudokuConstrast.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="xSudokuContrast.Size" type="System.Drawing.Size, System.Drawing">
     <value>76, 23</value>
   </data>
-  <data name="xSudokuConstrastLabel.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="xSudokuContrastLabel.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 205</value>
   </data>
-  <data name="xSudokuConstrastLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+  <data name="xSudokuContrastLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>4, 0, 4, 0</value>
   </data>
-  <data name="xSudokuConstrastLabel.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="xSudokuContrastLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>129, 15</value>
   </data>
-  <data name="xSudokuConstrastLabel.Text" xml:space="preserve">
+  <data name="xSudokuContrastLabel.Text" xml:space="preserve">
     <value>&amp;Kontrast für X-Sudokus</value>
   </data>
   <data name="solutionPrintSize.Location" type="System.Drawing.Point, System.Drawing">

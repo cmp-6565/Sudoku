@@ -166,9 +166,9 @@ internal class SudokuBoard: DataGridView, IDisposable
                 Update();
             }));
 
-            if(settings.TraceFrequence > 0)
+            if(settings.TraceFrequency > 0)
             {
-                try { Thread.Sleep(settings.TraceFrequence); } catch { }
+                try { Thread.Sleep(settings.TraceFrequency); } catch { }
             }
             return;
         }

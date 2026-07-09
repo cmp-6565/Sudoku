@@ -174,7 +174,7 @@
   <data name="minValues.Size" type="System.Drawing.Size, System.Drawing">
     <value>45, 20</value>
   </data>
-  <data name="xSudokuConstrast.TabIndex" type="System.Int32, mscorlib">
+  <data name="xSudokuContrast.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
   </data>
   <data name="&gt;&gt;labelBookletSizeExisting.ZOrder" xml:space="preserve">
@@ -211,8 +211,8 @@
   <data name="solutionSmall.Size" type="System.Drawing.Size, System.Drawing">
     <value>50, 17</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrast.Name" xml:space="preserve">
-    <value>xSudokuConstrast</value>
+  <data name="&gt;&gt;xSudokuContrast.Name" xml:space="preserve">
+    <value>xSudokuContrast</value>
   </data>
   <data name="solutionNormal.Size" type="System.Drawing.Size, System.Drawing">
     <value>58, 17</value>
@@ -334,7 +334,7 @@
   <data name="&gt;&gt;largeRB.Parent" xml:space="preserve">
     <value>sizeGroupBox</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrastLabel.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;xSudokuContrastLabel.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
   <data name="&gt;&gt;autoPause.Parent" xml:space="preserve">
@@ -418,7 +418,7 @@
   <data name="&gt;&gt;layoutPage.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabPage, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="xSudokuConstrastLabel.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="xSudokuContrastLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>116, 13</value>
   </data>
   <data name="normalSudoku.AutoSize" type="System.Boolean, mscorlib">
@@ -592,7 +592,7 @@
   <data name="&gt;&gt;autoPauseLag.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrast.Type" xml:space="preserve">
+  <data name="&gt;&gt;xSudokuContrast.Type" xml:space="preserve">
     <value>System.Windows.Forms.NumericUpDown, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="mediumRB.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
@@ -649,7 +649,7 @@
   <data name="hideWhenMinimized.Location" type="System.Drawing.Point, System.Drawing">
     <value>9, 130</value>
   </data>
-  <data name="xSudokuConstrastLabel.Text" xml:space="preserve">
+  <data name="xSudokuContrastLabel.Text" xml:space="preserve">
     <value>&amp;Contrast for X-Sudokus</value>
   </data>
   <data name="&gt;&gt;solutionPrintSize.Parent" xml:space="preserve">
@@ -895,7 +895,7 @@
   <data name="labelConstrast.TabIndex" type="System.Int32, mscorlib">
     <value>6</value>
   </data>
-  <data name="xSudokuConstrastLabel.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="xSudokuContrastLabel.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 178</value>
   </data>
   <data name="&gt;&gt;bookletSize.ZOrder" xml:space="preserve">
@@ -931,7 +931,7 @@
   <data name="hard.Location" type="System.Drawing.Point, System.Drawing">
     <value>191, 19</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrastLabel.Type" xml:space="preserve">
+  <data name="&gt;&gt;xSudokuContrastLabel.Type" xml:space="preserve">
     <value>System.Windows.Forms.Label, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="possibleValuesExamplePicture.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
@@ -1165,7 +1165,7 @@
   <data name="layoutPage.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 3, 3, 3</value>
   </data>
-  <data name="xSudokuConstrast.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="xSudokuContrast.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 20</value>
   </data>
   <data name="severity.Text" xml:space="preserve">
@@ -1195,7 +1195,7 @@
   <data name="&gt;&gt;hard.Type" xml:space="preserve">
     <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrast.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;xSudokuContrast.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
   <data name="&gt;&gt;printSolutions.Name" xml:space="preserve">
@@ -1273,7 +1273,7 @@
   <data name="printSolutions.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="xSudokuConstrastLabel.AutoSize" type="System.Boolean, mscorlib">
+  <data name="xSudokuContrastLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="directorySelect.Text" xml:space="preserve">
@@ -1300,7 +1300,7 @@
   <data name="largeRB.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <data name="xSudokuConstrast.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="xSudokuContrast.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 194</value>
   </data>
   <data name="selectSeverityLevel.Size" type="System.Drawing.Size, System.Drawing">
@@ -1336,7 +1336,7 @@
   <data name="&gt;&gt;solutionSmall.Type" xml:space="preserve">
     <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrastLabel.Parent" xml:space="preserve">
+  <data name="&gt;&gt;xSudokuContrastLabel.Parent" xml:space="preserve">
     <value>printPage</value>
   </data>
   <data name="selectSeverityLevel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
@@ -1432,7 +1432,7 @@
   <data name="&gt;&gt;problemDirectory.Parent" xml:space="preserve">
     <value>generatePage</value>
   </data>
-  <data name="xSudokuConstrastLabel.TabIndex" type="System.Int32, mscorlib">
+  <data name="xSudokuContrastLabel.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
   </data>
   <data name="printSolutions.AutoSize" type="System.Boolean, mscorlib">
@@ -1651,7 +1651,7 @@
   <data name="&gt;&gt;problemDirectory.Name" xml:space="preserve">
     <value>problemDirectory</value>
   </data>
-  <data name="xSudokuConstrastLabel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+  <data name="xSudokuContrastLabel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="sizeGroupBox.Location" type="System.Drawing.Point, System.Drawing">
@@ -1660,8 +1660,8 @@
   <data name="&gt;&gt;selectSeverityLevel.Type" xml:space="preserve">
     <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrastLabel.Name" xml:space="preserve">
-    <value>xSudokuConstrastLabel</value>
+  <data name="&gt;&gt;xSudokuContrastLabel.Name" xml:space="preserve">
+    <value>xSudokuContrastLabel</value>
   </data>
   <data name="severity.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -1732,7 +1732,7 @@
   <data name="autoPauseLag.Location" type="System.Drawing.Point, System.Drawing">
     <value>96, 175</value>
   </data>
-  <data name="&gt;&gt;xSudokuConstrast.Parent" xml:space="preserve">
+  <data name="&gt;&gt;xSudokuContrast.Parent" xml:space="preserve">
     <value>printPage</value>
   </data>
   <data name="&gt;&gt;possibleValuesExamplePicture.Type" xml:space="preserve">

@@ -101,7 +101,7 @@
     <Setting Name="HideWhenMinimized" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="TraceFrequence" Type="System.Int32" Scope="User">
+    <Setting Name="TraceFrequency" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
     <Setting Name="UseWatchHandHints" Type="System.Boolean" Scope="User">
@@ -116,7 +116,7 @@
     <Setting Name="SelectSeverity" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="XSudokuConstrast" Type="System.Int32" Scope="User">
+    <Setting Name="XSudokuContrast" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">20</Value>
     </Setting>
     <Setting Name="State" Type="System.String" Scope="User">

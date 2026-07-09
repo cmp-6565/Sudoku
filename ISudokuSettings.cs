@@ -65,7 +65,7 @@ public interface ISudokuSettings
     bool HideWhenMinimized { get; set; }
 
     /// <summary>Gets or sets the trace frequency for solver operations.</summary>
-    int TraceFrequence { get; set; }
+    int TraceFrequency { get; set; }
 
     /// <summary>Gets or sets a value indicating whether to use watch hand hints.</summary>
     bool UseWatchHandHints { get; set; }
@@ -80,7 +80,7 @@ public interface ISudokuSettings
     bool SelectSeverity { get; set; }
 
     /// <summary>Gets or sets the contrast level for X-Sudoku display.</summary>
-    int XSudokuConstrast { get; set; }
+    int XSudokuContrast { get; set; }
 
     /// <summary>Gets or sets the application state string.</summary>
     string State { get; set; }

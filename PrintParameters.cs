@@ -56,7 +56,7 @@ internal class PrintParameters: IDisposable
     {
         problems = new List<BaseProblem>();
 
-        int colorIndex = 255 - (int)(255f * ((float)settings.XSudokuConstrast / 100f));
+        int colorIndex = 255 - (int)(255f * ((float)settings.XSudokuContrast / 100f));
         lightGraySolidBrush = new SolidBrush(Color.FromArgb(colorIndex, colorIndex, colorIndex));
 
         centered.FormatFlags = StringFormatFlags.NoWrap;

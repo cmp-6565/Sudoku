@@ -1,18 +1,161 @@
-﻿using Sudoku.Properties;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
+
+using Sudoku.Properties;
 
 namespace Sudoku;
 
-public class WinFormsSettings: ISudokuSettings
+/// <summary>
+/// Implements IObservableSudokuSettings with automatic delegation to Settings.Default.
+/// Provides validation, error handling, logging, and event notifications for all settings operations.
+/// Reduces code duplication through reflection-based property proxying.
+/// </summary>
+public class WinFormsSettings: IObservableSudokuSettings
 {
-    // --- Benutzer-Einstellungen ---
+    private readonly Dictionary<string, object?> _cache = new();
+    private static readonly string SettingsSource = typeof(Settings).FullName ?? "Settings.Default";
+
+    /// <summary>
+    /// Occurs when any setting value changes.
+    /// </summary>
+    public event EventHandler<SettingChangedEventArgs>? SettingChanged;
+
+    /// <summary>
+    /// Gets a setting value from the backing store (Settings.Default) with caching and error handling.
+    /// </summary>
+    private T GetSetting<T>(string settingKey)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(settingKey, nameof(settingKey));
+
+        try
+        {
+            // Try to return cached value
+            if(_cache.TryGetValue(settingKey, out var cachedValue))
+            {
+                return (T)cachedValue!;
+            }
+
+            // Use reflection to get property from Settings.Default
+            var property = typeof(Settings).GetProperty(settingKey,
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Static);
+
+            if(property == null)
+            {
+                var errorMsg = $"Setting '{settingKey}' not found in {SettingsSource}. " +
+                              $"Ensure the property exists in application settings.";
+                Debug.WriteLine($"[ERROR] {errorMsg}");
+                throw new InvalidOperationException(errorMsg);
+            }
+
+            // Get value from backing store
+            var value = property.GetValue(null);
+
+            // Check for null values on non-nullable value types
+            if(value == null && typeof(T).IsValueType && Nullable.GetUnderlyingType(typeof(T)) == null)
+            {
+                var errorMsg = $"Setting '{settingKey}' returned null but type '{typeof(T).Name}' is not nullable.";
+                Debug.WriteLine($"[ERROR] {errorMsg}");
+                throw new InvalidOperationException(errorMsg);
+            }
+
+            // Safe cast: if value is null, use default, otherwise cast to T
+            var result = value == null ? default(T)! : (T)value;
+
+            // Cache the value for subsequent reads
+            _cache[settingKey] = result;
+
+            return result;
+        }
+        catch(Exception ex) when(!(ex is InvalidOperationException || ex is ArgumentException))
+        {
+            var errorMsg = $"Failed to retrieve setting '{settingKey}' from {SettingsSource}.";
+            Debug.WriteLine($"[ERROR] {errorMsg} Exception: {ex.Message}");
+            throw new InvalidOperationException(errorMsg, ex);
+        }
+    }
+
+    /// <summary>
+    /// Sets a setting value in the backing store (Settings.Default) with validation and error handling.
+    /// Raises SettingChanged event if value actually changed.
+    /// </summary>
+    private void SetSetting<T>(string settingKey, T value, Func<T, T>? validator = null)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(settingKey, nameof(settingKey));
+
+        try
+        {
+            // Get current value for comparison
+            var currentValue = GetSetting<T>(settingKey);
+
+            // Apply validation if provided
+            var validatedValue = validator != null ? validator(value) : value;
+
+            // Skip if value hasn't changed
+            if(Equals(currentValue, validatedValue))
+            {
+                Debug.WriteLine($"[TRACE] Setting '{settingKey}' value unchanged (still '{validatedValue}')");
+                return;
+            }
+
+            // Use reflection to set property in Settings.Default
+            var property = typeof(Settings).GetProperty(settingKey,
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Static);
+
+            if(property == null)
+            {
+                var errorMsg = $"Setting '{settingKey}' not found in {SettingsSource}. " +
+                              $"Ensure the property exists in application settings.";
+                Debug.WriteLine($"[ERROR] {errorMsg}");
+                throw new InvalidOperationException(errorMsg);
+            }
+
+            if(!property.CanWrite)
+            {
+                var errorMsg = $"Setting '{settingKey}' is read-only and cannot be modified.";
+                Debug.WriteLine($"[WARNING] {errorMsg}");
+                throw new InvalidOperationException(errorMsg);
+            }
+
+            // Set value in backing store
+            property.SetValue(null, validatedValue);
+
+            // Invalidate cache for this key
+            _cache.Remove(settingKey);
+
+            Debug.WriteLine($"[TRACE] Setting '{settingKey}' updated from '{currentValue}' to '{validatedValue}'");
+
+            // Raise SettingChanged event
+            OnSettingChanged(new SettingChangedEventArgs(settingKey, currentValue, validatedValue));
+        }
+        catch(Exception ex) when(!(ex is InvalidOperationException || ex is ArgumentException))
+        {
+            var errorMsg = $"Failed to set setting '{settingKey}' in {SettingsSource}.";
+            Debug.WriteLine($"[ERROR] {errorMsg} Exception: {ex.Message}");
+            throw new InvalidOperationException(errorMsg, ex);
+        }
+    }
+
+    /// <summary>
+    /// Raises the SettingChanged event with the provided event arguments.
+    /// </summary>
+    protected virtual void OnSettingChanged(SettingChangedEventArgs e)
+    {
+        ArgumentNullException.ThrowIfNull(e, nameof(e));
+        SettingChanged?.Invoke(this, e);
+    }
+
+    // --- User Settings (Read/Write) ---
 
     /// <summary>
     /// Gets or sets the UI display language identifier used by the application.
     /// </summary>
     public string DisplayLanguage
     {
-        get => Settings.Default.DisplayLanguage;
-        set => Settings.Default.DisplayLanguage = value;
+        get => GetSetting<string>(SettingKeys.DisplayLanguage);
+        set => SetSetting(SettingKeys.DisplayLanguage, value,
+            v => SettingsValidator.ValidateString(v, "en-US"));
     }
 
     /// <summary>
@@ -20,8 +163,9 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public int BookletSizeNew
     {
-        get => Settings.Default.BookletSizeNew;
-        set => Settings.Default.BookletSizeNew = value;
+        get => GetSetting<int>(SettingKeys.BookletSizeNew);
+        set => SetSetting(SettingKeys.BookletSizeNew, value,
+            SettingsValidator.ValidateBookletSize);
     }
 
     /// <summary>
@@ -29,26 +173,30 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool PrintSolution
     {
-        get => Settings.Default.PrintSolution;
-        set => Settings.Default.PrintSolution = value;
+        get => GetSetting<bool>(SettingKeys.PrintSolution);
+        set => SetSetting(SettingKeys.PrintSolution, value);
     }
 
     /// <summary>
     /// Gets or sets the maximum number of solutions that the solver should collect/store.
+    /// Must be at least 1.
     /// </summary>
     public int MaxSolutions
     {
-        get => Settings.Default.MaxSolutions;
-        set => Settings.Default.MaxSolutions = value;
+        get => GetSetting<int>(SettingKeys.MaxSolutions);
+        set => SetSetting(SettingKeys.MaxSolutions, value,
+            SettingsValidator.ValidateMaxSolutions);
     }
 
     /// <summary>
     /// Gets or sets the preferred minimal number of givens for generated puzzles.
+    /// Must be at least 1.
     /// </summary>
     public int MinValues
     {
-        get => Settings.Default.MinValues;
-        set => Settings.Default.MinValues = value;
+        get => GetSetting<int>(SettingKeys.MinValues);
+        set => SetSetting(SettingKeys.MinValues, value,
+            SettingsValidator.ValidateMinValues);
     }
 
     /// <summary>
@@ -56,8 +204,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool AutoSaveBooklet
     {
-        get => Settings.Default.AutoSaveBooklet;
-        set => Settings.Default.AutoSaveBooklet = value;
+        get => GetSetting<bool>(SettingKeys.AutoSaveBooklet);
+        set => SetSetting(SettingKeys.AutoSaveBooklet, value);
     }
 
     /// <summary>
@@ -65,17 +213,20 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public string ProblemDirectory
     {
-        get => Settings.Default.ProblemDirectory;
-        set => Settings.Default.ProblemDirectory = value;
+        get => GetSetting<string>(SettingKeys.ProblemDirectory);
+        set => SetSetting(SettingKeys.ProblemDirectory, value,
+            v => SettingsValidator.ValidateDirectoryPath(v, AppContext.BaseDirectory));
     }
 
     /// <summary>
     /// Gets or sets the configured puzzle grid size (total cells per side).
+    /// Must be at least 1 and at most 16.
     /// </summary>
     public int Size
     {
-        get => Settings.Default.Size;
-        set => Settings.Default.Size = value;
+        get => GetSetting<int>(SettingKeys.Size);
+        set => SetSetting(SettingKeys.Size, value,
+            SettingsValidator.ValidateGridSize);
     }
 
     /// <summary>
@@ -83,8 +234,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool PrintHints
     {
-        get => Settings.Default.PrintHints;
-        set => Settings.Default.PrintHints = value;
+        get => GetSetting<bool>(SettingKeys.PrintHints);
+        set => SetSetting(SettingKeys.PrintHints, value);
     }
 
     /// <summary>
@@ -92,26 +243,30 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool ShowHints
     {
-        get => Settings.Default.ShowHints;
-        set => Settings.Default.ShowHints = value;
+        get => GetSetting<bool>(SettingKeys.ShowHints);
+        set => SetSetting(SettingKeys.ShowHints, value);
     }
 
     /// <summary>
     /// Gets or sets the number of problems shown horizontally in the UI layout.
+    /// Must be at least 1 and at most 20.
     /// </summary>
     public int HorizontalProblems
     {
-        get => Settings.Default.HorizontalProblems;
-        set => Settings.Default.HorizontalProblems = value;
+        get => GetSetting<int>(SettingKeys.HorizontalProblems);
+        set => SetSetting(SettingKeys.HorizontalProblems, value,
+            SettingsValidator.ValidateHorizontalCellCount);
     }
 
     /// <summary>
     /// Gets or sets the number of solutions shown horizontally in the UI layout.
+    /// Must be at least 1 and at most 20.
     /// </summary>
     public int HorizontalSolutions
     {
-        get => Settings.Default.HorizontalSolutions;
-        set => Settings.Default.HorizontalSolutions = value;
+        get => GetSetting<int>(SettingKeys.HorizontalSolutions);
+        set => SetSetting(SettingKeys.HorizontalSolutions, value,
+            SettingsValidator.ValidateHorizontalCellCount);
     }
 
     /// <summary>
@@ -119,8 +274,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool AutoCheck
     {
-        get => Settings.Default.AutoCheck;
-        set => Settings.Default.AutoCheck = value;
+        get => GetSetting<bool>(SettingKeys.AutoCheck);
+        set => SetSetting(SettingKeys.AutoCheck, value);
     }
 
     /// <summary>
@@ -128,8 +283,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool TraceMode
     {
-        get => Settings.Default.Debug;
-        set => Settings.Default.Debug = value;
+        get => GetSetting<bool>(SettingKeys.TraceMode);
+        set => SetSetting(SettingKeys.TraceMode, value);
     }
 
     /// <summary>
@@ -137,8 +292,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool FindAllSolutions
     {
-        get => Settings.Default.FindAllSolutions;
-        set => Settings.Default.FindAllSolutions = value;
+        get => GetSetting<bool>(SettingKeys.FindAllSolutions);
+        set => SetSetting(SettingKeys.FindAllSolutions, value);
     }
 
     /// <summary>
@@ -146,8 +301,9 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public int BookletSizeExisting
     {
-        get => Settings.Default.BookletSizeExisting;
-        set => Settings.Default.BookletSizeExisting = value;
+        get => GetSetting<int>(SettingKeys.BookletSizeExisting);
+        set => SetSetting(SettingKeys.BookletSizeExisting, value,
+            SettingsValidator.ValidateBookletSize);
     }
 
     /// <summary>
@@ -155,8 +311,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool BookletSizeUnlimited
     {
-        get => Settings.Default.BookletSizeUnlimited;
-        set => Settings.Default.BookletSizeUnlimited = value;
+        get => GetSetting<bool>(SettingKeys.BookletSizeUnlimited);
+        set => SetSetting(SettingKeys.BookletSizeUnlimited, value);
     }
 
     /// <summary>
@@ -164,8 +320,9 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public int SeverityLevel
     {
-        get => Settings.Default.SeverityLevel;
-        set => Settings.Default.SeverityLevel = value;
+        get => GetSetting<int>(SettingKeys.SeverityLevel);
+        set => SetSetting(SettingKeys.SeverityLevel, value,
+            SettingsValidator.ValidateSeverityLevel);
     }
 
     /// <summary>
@@ -173,17 +330,18 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool HideWhenMinimized
     {
-        get => Settings.Default.HideWhenMinimized;
-        set => Settings.Default.HideWhenMinimized = value;
+        get => GetSetting<bool>(SettingKeys.HideWhenMinimized);
+        set => SetSetting(SettingKeys.HideWhenMinimized, value);
     }
 
     /// <summary>
     /// Gets or sets the frequency used for diagnostic tracing operations.
     /// </summary>
-    public int TraceFrequence
+    public int TraceFrequency
     {
-        get => Settings.Default.TraceFrequence;
-        set => Settings.Default.TraceFrequence = value;
+        get => GetSetting<int>(SettingKeys.TraceFrequency);
+        set => SetSetting(SettingKeys.TraceFrequency, value,
+            SettingsValidator.ValidateTraceFrequency);
     }
 
     /// <summary>
@@ -191,8 +349,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool UseWatchHandHints
     {
-        get => Settings.Default.UseWatchHandHints;
-        set => Settings.Default.UseWatchHandHints = value;
+        get => GetSetting<bool>(SettingKeys.UseWatchHandHints);
+        set => SetSetting(SettingKeys.UseWatchHandHints, value);
     }
 
     /// <summary>
@@ -200,8 +358,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool GenerateXSudoku
     {
-        get => Settings.Default.GenerateXSudoku;
-        set => Settings.Default.GenerateXSudoku = value;
+        get => GetSetting<bool>(SettingKeys.GenerateXSudoku);
+        set => SetSetting(SettingKeys.GenerateXSudoku, value);
     }
 
     /// <summary>
@@ -209,8 +367,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool GenerateNormalSudoku
     {
-        get => Settings.Default.GenerateNormalSudoku;
-        set => Settings.Default.GenerateNormalSudoku = value;
+        get => GetSetting<bool>(SettingKeys.GenerateNormalSudoku);
+        set => SetSetting(SettingKeys.GenerateNormalSudoku, value);
     }
 
     /// <summary>
@@ -218,17 +376,18 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool SelectSeverity
     {
-        get => Settings.Default.SelectSeverity;
-        set => Settings.Default.SelectSeverity = value;
+        get => GetSetting<bool>(SettingKeys.SelectSeverity);
+        set => SetSetting(SettingKeys.SelectSeverity, value);
     }
 
     /// <summary>
     /// Gets or sets the contrast level used for X-Sudoku visual presentation.
     /// </summary>
-    public int XSudokuConstrast
+    public int XSudokuContrast
     {
-        get => Settings.Default.XSudokuConstrast;
-        set => Settings.Default.XSudokuConstrast = value;
+        get => GetSetting<int>(SettingKeys.XSudokuContrast);
+        set => SetSetting(SettingKeys.XSudokuContrast, value,
+            SettingsValidator.ValidateContrast);
     }
 
     /// <summary>
@@ -236,8 +395,9 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public string State
     {
-        get => Settings.Default.State;
-        set => Settings.Default.State = value;
+        get => GetSetting<string>(SettingKeys.State);
+        set => SetSetting(SettingKeys.State, value,
+            v => SettingsValidator.ValidateString(v, string.Empty));
     }
 
     /// <summary>
@@ -245,8 +405,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool AutoSaveState
     {
-        get => Settings.Default.AutoSaveState;
-        set => Settings.Default.AutoSaveState = value;
+        get => GetSetting<bool>(SettingKeys.AutoSaveState);
+        set => SetSetting(SettingKeys.AutoSaveState, value);
     }
 
     /// <summary>
@@ -254,8 +414,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool GenerateMinimalProblems
     {
-        get => Settings.Default.GenerateMinimalProblems;
-        set => Settings.Default.GenerateMinimalProblems = value;
+        get => GetSetting<bool>(SettingKeys.GenerateMinimalProblems);
+        set => SetSetting(SettingKeys.GenerateMinimalProblems, value);
     }
 
     /// <summary>
@@ -263,8 +423,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool MarkNeighbors
     {
-        get => Settings.Default.MarkNeighbors;
-        set => Settings.Default.MarkNeighbors = value;
+        get => GetSetting<bool>(SettingKeys.MarkNeighbors);
+        set => SetSetting(SettingKeys.MarkNeighbors, value);
     }
 
     /// <summary>
@@ -272,8 +432,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool UsePrecalculatedProblems
     {
-        get => Settings.Default.UsePrecalculatedProblems;
-        set => Settings.Default.UsePrecalculatedProblems = value;
+        get => GetSetting<bool>(SettingKeys.UsePrecalculatedProblems);
+        set => SetSetting(SettingKeys.UsePrecalculatedProblems, value);
     }
 
     /// <summary>
@@ -281,8 +441,9 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public string LastVersion
     {
-        get => Settings.Default.LastVersion;
-        set => Settings.Default.LastVersion = value;
+        get => GetSetting<string>(SettingKeys.LastVersion);
+        set => SetSetting(SettingKeys.LastVersion, value,
+            v => SettingsValidator.ValidateString(v, "0.0.0.0"));
     }
 
     /// <summary>
@@ -290,8 +451,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool SudokuOfTheDay
     {
-        get => Settings.Default.SudokuOfTheDay;
-        set => Settings.Default.SudokuOfTheDay = value;
+        get => GetSetting<bool>(SettingKeys.SudokuOfTheDay);
+        set => SetSetting(SettingKeys.SudokuOfTheDay, value);
     }
 
     /// <summary>
@@ -299,8 +460,8 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool PrintInternalSeverity
     {
-        get => Settings.Default.PrintInternalSeverity;
-        set => Settings.Default.PrintInternalSeverity = value;
+        get => GetSetting<bool>(SettingKeys.PrintInternalSeverity);
+        set => SetSetting(SettingKeys.PrintInternalSeverity, value);
     }
 
     /// <summary>
@@ -308,26 +469,30 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool AutoPause
     {
-        get => Settings.Default.AutoPause;
-        set => Settings.Default.AutoPause = value;
+        get => GetSetting<bool>(SettingKeys.AutoPause);
+        set => SetSetting(SettingKeys.AutoPause, value);
     }
 
     /// <summary>
-    /// Gets or sets the lag time used by the auto-pause feature (in seconds or configured unit).
+    /// Gets or sets the lag time used by the auto-pause feature (in milliseconds).
+    /// Valid range: 0 to 60000 (60 seconds).
     /// </summary>
     public decimal AutoPauseLag
     {
-        get => Settings.Default.AutoPauseLag;
-        set => Settings.Default.AutoPauseLag = value;
+        get => GetSetting<decimal>(SettingKeys.AutoPauseLag);
+        set => SetSetting(SettingKeys.AutoPauseLag, value,
+            SettingsValidator.ValidateAutoPauseLag);
     }
 
     /// <summary>
     /// Gets or sets the UI contrast level used throughout the application.
+    /// Valid range: 0 to 100 (percent).
     /// </summary>
     public int Contrast
     {
-        get => Settings.Default.Contrast;
-        set => Settings.Default.Contrast = value;
+        get => GetSetting<int>(SettingKeys.Contrast);
+        set => SetSetting(SettingKeys.Contrast, value,
+            SettingsValidator.ValidateContrast);
     }
 
     /// <summary>
@@ -335,148 +500,126 @@ public class WinFormsSettings: ISudokuSettings
     /// </summary>
     public bool HighlightSameValues
     {
-        get => Settings.Default.HighlightSameValues;
-        set => Settings.Default.HighlightSameValues = value;
+        get => GetSetting<bool>(SettingKeys.HighlightSameValues);
+        set => SetSetting(SettingKeys.HighlightSameValues, value);
     }
 
-    // --- Anwendungs-Einstellungen (Read-Only) ---
+    // --- Application Settings (Read-Only) ---
 
-    /// <summary>
-    /// Returns the configured cell width used for rendering puzzles.
-    /// </summary>
-    public float CellWidth => Settings.Default.CellWidth;
+    /// <summary>Returns the configured cell width used for rendering puzzles.</summary>
+    public float CellWidth => GetSetting<float>(SettingKeys.CellWidth);
 
-    /// <summary>
-    /// Returns the configured small-cell width used for compact rendering.
-    /// </summary>
-    public float SmallCellWidth => Settings.Default.SmallCellWidth;
+    /// <summary>Returns the configured small-cell width used for compact rendering.</summary>
+    public float SmallCellWidth => GetSetting<float>(SettingKeys.SmallCellWidth);
 
-    /// <summary>
-    /// Returns the configured intermediate severity threshold.
-    /// </summary>
-    public float Intermediate => Settings.Default.Intermediate;
+    /// <summary>Returns the configured intermediate severity threshold.</summary>
+    public float Intermediate => GetSetting<float>(SettingKeys.Intermediate);
 
-    /// <summary>
-    /// Returns the default file extension used when saving puzzle files.
-    /// </summary>
-    public string DefaultFileExtension => Settings.Default.DefaultFileExtension;
+    /// <summary>Returns the default file extension used when saving puzzle files.</summary>
+    public string DefaultFileExtension => GetSetting<string>(SettingKeys.DefaultFileExtension);
 
-    /// <summary>
-    /// Returns the comma-separated list of supported cultures/locales for display language selection.
-    /// </summary>
-    public string SupportedCultures => Settings.Default.SupportedCultures;
+    /// <summary>Returns the comma-separated list of supported cultures/locales for display language selection.</summary>
+    public string SupportedCultures => GetSetting<string>(SettingKeys.SupportedCultures);
 
-    /// <summary>
-    /// Returns the severity threshold considered trivial.
-    /// </summary>
-    public int Trivial => Settings.Default.Trivial;
+    /// <summary>Returns the severity threshold considered trivial.</summary>
+    public int Trivial => GetSetting<int>(SettingKeys.Trivial);
 
-    /// <summary>
-    /// Returns the magnification factor applied when rendering for print or zoom.
-    /// </summary>
-    public float MagnificationFactor => Settings.Default.MagnificationFactor;
+    /// <summary>Returns the magnification factor applied when rendering for print or zoom.</summary>
+    public float MagnificationFactor => GetSetting<float>(SettingKeys.MagnificationFactor);
 
-    /// <summary>
-    /// Returns a configuration string listing supported font sizes.
-    /// </summary>
-    public string FontSizes => Settings.Default.FontSizes;
+    /// <summary>Returns a configuration string listing supported font sizes.</summary>
+    public string FontSizes => GetSetting<string>(SettingKeys.FontSizes);
 
-    /// <summary>
-    /// Returns the default table font configuration string.
-    /// </summary>
-    public string TableFont => Settings.Default.TableFont;
+    /// <summary>Returns the default table font configuration string.</summary>
+    public string TableFont => GetSetting<string>(SettingKeys.TableFont);
 
-    /// <summary>
-    /// Returns the configured print font name.
-    /// </summary>
-    public string PrintFont => Settings.Default.PrintFont;
+    /// <summary>Returns the configured print font name.</summary>
+    public string PrintFont => GetSetting<string>(SettingKeys.PrintFont);
 
-    /// <summary>
-    /// Returns the configured font name for fixed (given) values.
-    /// </summary>
-    public string FixedFont => Settings.Default.FixedFont;
+    /// <summary>Returns the configured font name for fixed (given) values.</summary>
+    public string FixedFont => GetSetting<string>(SettingKeys.FixedFont);
 
-    /// <summary>
-    /// Returns a configuration string listing allowed horizontal problems alternatives.
-    /// </summary>
-    public string HorizontalProblemsAlternatives => Settings.Default.HorizontalProblemsAlternatives;
+    /// <summary>Returns a configuration string listing allowed horizontal problems alternatives.</summary>
+    public string HorizontalProblemsAlternatives => GetSetting<string>(SettingKeys.HorizontalProblemsAlternatives);
 
-    /// <summary>
-    /// Returns a configuration string listing allowed horizontal solutions alternatives.
-    /// </summary>
-    public string HorizontalSolutionsAlternatives => Settings.Default.HorizontalSolutionsAlternatives;
+    /// <summary>Returns a configuration string listing allowed horizontal solutions alternatives.</summary>
+    public string HorizontalSolutionsAlternatives => GetSetting<string>(SettingKeys.HorizontalSolutionsAlternatives);
 
-    /// <summary>
-    /// Returns the configured contact email address used in the application.
-    /// </summary>
-    public string MailAddress => Settings.Default.MailAddress;
+    /// <summary>Returns the configured contact email address used in the application.</summary>
+    public string MailAddress => GetSetting<string>(SettingKeys.MailAddress);
 
-    /// <summary>
-    /// Returns the configured HTML file extension used for exporting puzzles.
-    /// </summary>
-    public string HTMLFileExtension => Settings.Default.HTMLFileExtension;
+    /// <summary>Returns the configured HTML file extension used for exporting puzzles.</summary>
+    public string HTMLFileExtension => GetSetting<string>(SettingKeys.HTMLFileExtension);
 
-    /// <summary>
-    /// Returns the publication limit used for normal Sudoku sharing/uploading.
-    /// </summary>
-    public int NormalSudokuPublicationLimit => Settings.Default.NormalSudokuPublicationLimit;
+    /// <summary>Returns the publication limit used for normal Sudoku sharing/uploading.</summary>
+    public int NormalSudokuPublicationLimit => GetSetting<int>(SettingKeys.NormalSudokuPublicationLimit);
 
-    /// <summary>
-    /// Returns the publication limit used for X-Sudoku sharing/uploading.
-    /// </summary>
-    public int XSudokuPublicationLimit => Settings.Default.XSudokuPublicationLimit;
+    /// <summary>Returns the publication limit used for X-Sudoku sharing/uploading.</summary>
+    public int XSudokuPublicationLimit => GetSetting<int>(SettingKeys.XSudokuPublicationLimit);
 
-    /// <summary>
-    /// Returns the configured numeric threshold considered hard difficulty.
-    /// </summary>
-    public float Hard => Settings.Default.Hard;
+    /// <summary>Returns the configured numeric threshold considered hard difficulty.</summary>
+    public float Hard => GetSetting<float>(SettingKeys.Hard);
 
-    /// <summary>
-    /// Returns the upload level threshold for normal Sudoku puzzles.
-    /// </summary>
-    public int UploadLevelNormalSudoku => Settings.Default.UploadLevelNormalSudoku;
+    /// <summary>Returns the upload level threshold for normal Sudoku puzzles.</summary>
+    public int UploadLevelNormalSudoku => GetSetting<int>(SettingKeys.UploadLevelNormalSudoku);
 
-    /// <summary>
-    /// Returns the upload level threshold for X-Sudoku puzzles.
-    /// </summary>
-    public int UploadLevelXSudoku => Settings.Default.UploadLevelXSudoku;
+    /// <summary>Returns the upload level threshold for X-Sudoku puzzles.</summary>
+    public int UploadLevelXSudoku => GetSetting<int>(SettingKeys.UploadLevelXSudoku);
 
-    /// <summary>
-    /// Returns the maximum allowed number of givens.
-    /// </summary>
-    public int MaxValues => Settings.Default.MaxValues;
+    /// <summary>Returns the maximum allowed number of givens.</summary>
+    public int MaxValues => GetSetting<int>(SettingKeys.MaxValues);
 
-    /// <summary>
-    /// Returns the maximum number of hints that can be requested.
-    /// </summary>
-    public int MaxHints => Settings.Default.MaxHints;
+    /// <summary>Returns the maximum number of hints that can be requested.</summary>
+    public int MaxHints => GetSetting<int>(SettingKeys.MaxHints);
 
-    /// <summary>
-    /// Returns the maximum number of problems that can be held in memory or a booklet.
-    /// </summary>
-    public int MaxProblems => Settings.Default.MaxProblems;
+    /// <summary>Returns the maximum number of problems that can be held in memory or a booklet.</summary>
+    public int MaxProblems => GetSetting<int>(SettingKeys.MaxProblems);
 
-    /// <summary>
-    /// Returns the size (in cells) of the inner rectangle/box (commonly 3 for standard 9x9 Sudoku).
-    /// </summary>
+    /// <summary>Returns the size (in cells) of the inner rectangle/box (commonly 3 for standard 9x9 Sudoku).</summary>
     public static int RectSize => 3;
 
-    /// <summary>
-    /// Returns the full Sudoku size (RectSize * RectSize), e.g. 9 for classic Sudoku.
-    /// </summary>
+    /// <summary>Returns the full Sudoku size (RectSize × RectSize), e.g. 9 for classic Sudoku.</summary>
     public static int SudokuSize => RectSize * RectSize;
 
-    /// <summary>
-    /// Returns the total number of cells in a puzzle (SudokuSize * SudokuSize).
-    /// </summary>
+    /// <summary>Returns the total number of cells in a puzzle (SudokuSize × SudokuSize).</summary>
     public static int TotalCellCount => SudokuSize * SudokuSize;
 
-
     /// <summary>
-    /// Persist the current user settings to the backing store.
+    /// Persists the current user settings to the backing store.
     /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when settings cannot be persisted.</exception>
     public void Save()
     {
-        Settings.Default.Save();
+        try
+        {
+            Debug.WriteLine("[INFO] Persisting settings to backing store...");
+            Settings.Default.Save();
+            _cache.Clear();
+            Debug.WriteLine("[INFO] Settings persisted successfully.");
+        }
+        catch(System.Configuration.ConfigurationErrorsException ex)
+        {
+            var errorMsg = "Failed to persist settings: Configuration error in settings file.";
+            Debug.WriteLine($"[ERROR] {errorMsg} Exception: {ex.Message}");
+            throw new InvalidOperationException(errorMsg, ex);
+        }
+        catch(UnauthorizedAccessException ex)
+        {
+            var errorMsg = "Failed to persist settings: Access denied to settings storage location.";
+            Debug.WriteLine($"[ERROR] {errorMsg} Exception: {ex.Message}");
+            throw new InvalidOperationException(errorMsg, ex);
+        }
+        catch(System.IO.IOException ex)
+        {
+            var errorMsg = "Failed to persist settings: I/O error accessing settings storage.";
+            Debug.WriteLine($"[ERROR] {errorMsg} Exception: {ex.Message}");
+            throw new InvalidOperationException(errorMsg, ex);
+        }
+        catch(Exception ex)
+        {
+            var errorMsg = $"Failed to persist settings to the backing store. Reason: {ex.GetType().Name}";
+            Debug.WriteLine($"[ERROR] {errorMsg} Exception: {ex.Message}");
+            throw new InvalidOperationException(errorMsg, ex);
+        }
     }
 }

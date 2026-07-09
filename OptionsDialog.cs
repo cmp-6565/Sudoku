@@ -39,7 +39,7 @@ internal partial class OptionsDialog: Form
         unlimited.Checked = settings.BookletSizeUnlimited;
         minValues.Value = settings.MinValues;
         constrast.Value = settings.Contrast;
-        xSudokuConstrast.Value = settings.XSudokuConstrast;
+        xSudokuContrast.Value = settings.XSudokuContrast;
         problemDirectory.Text = settings.ProblemDirectory;
         printSolutions.Checked = settings.PrintSolution;
         printInternalSeverity.Checked = settings.PrintInternalSeverity;
@@ -104,7 +104,7 @@ internal partial class OptionsDialog: Form
         settings.BookletSizeNew = (int)bookletSizeNew.Value;
         settings.MinValues = (int)minValues.Value;
         settings.Contrast = (int)constrast.Value;
-        settings.XSudokuConstrast = (int)xSudokuConstrast.Value;
+        settings.XSudokuContrast = (int)xSudokuContrast.Value;
         settings.ProblemDirectory = problemDirectory.Text;
         settings.PrintSolution = printSolutions.Checked;
         settings.AutoSaveBooklet = autoSaveBooklet.Checked;
