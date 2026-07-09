@@ -15,7 +15,9 @@ public enum SudokuPart { Row, Column, Block, UpDiagonal, DownDiagonal };
 
 public partial class SudokuForm: Form, IUserInteraction, IDisposable
 {
-    ISudokuSettings settings = new WinFormsSettings();
+    // Settings is now provided by DI when available
+    private ISudokuSettings settings;
+    private readonly SudokuControllerFactory controllerFactory;
 
     private System.Windows.Forms.Timer autoPauseTimer;
     private System.Windows.Forms.Timer statusUpdateTimer;
@@ -38,33 +40,44 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     private Progress<MinimizationUpdate> minimizationProgress;
 
     /// <summary>
-    /// Constructor for the form, mainly used for defaulting some variables and initializing of the gui.
+    /// Parameterless constructor kept for Windows Forms designer compatibility.
     /// </summary>
-    public SudokuForm()
+    public SudokuForm() : this(new WinFormsSettings(), null) { }
+
+    /// <summary>
+    /// Constructor used by DI. Accepts settings and the service provider.
+    /// </summary>
+    /// <param name="settings">Injected application settings.</param>
+    /// <param name="serviceProvider">Service provider (optional)</param>
+    internal SudokuForm(ISudokuSettings settings, SudokuControllerFactory controllerFactory)
     {
-        Thread.CurrentThread.CurrentUICulture = (cultureInfo = new CultureInfo(settings.DisplayLanguage));
+        this.settings = settings ?? new WinFormsSettings();
+        // wenn DI null (Designer-Fall) lokale Factory erstellen
+        this.controllerFactory = controllerFactory ?? new SudokuControllerFactory(this.settings);
+
+        Thread.CurrentThread.CurrentUICulture = (cultureInfo = new System.Globalization.CultureInfo(this.settings.DisplayLanguage));
 
         InitializeComponent();
         InitializeFormCTS();
-        SudokuGrid.Initialize(settings, this);
+        SudokuGrid.Initialize(this.settings, this);
         InitializeController();
         InitializeMinimizationProgress();
 
         sudokuMenu.Renderer = new FlatRenderer();
 
-        traceMode.Checked = settings.TraceMode;
-        autoCheck.Checked = settings.AutoCheck;
-        showPossibleValues.Checked = settings.ShowHints;
-        findallSolutions.Checked = settings.FindAllSolutions;
-        ShowInTaskbar = !settings.HideWhenMinimized;
-        markNeighbors.Checked = settings.MarkNeighbors;
-        highlightSameValues.Checked = settings.HighlightSameValues;
+        traceMode.Checked = this.settings.TraceMode;
+        autoCheck.Checked = this.settings.AutoCheck;
+        showPossibleValues.Checked = this.settings.ShowHints;
+        findallSolutions.Checked = this.settings.FindAllSolutions;
+        ShowInTaskbar = !this.settings.HideWhenMinimized;
+        markNeighbors.Checked = this.settings.MarkNeighbors;
+        highlightSameValues.Checked = this.settings.HighlightSameValues;
 
         Deactivate += new EventHandler(FocusLost);
         Activated += new EventHandler(FocusGotten);
 
         autoPauseTimer = new System.Windows.Forms.Timer();
-        autoPauseTimer.Interval = Convert.ToInt32(settings.AutoPauseLag) * 1000;
+        autoPauseTimer.Interval = Convert.ToInt32(this.settings.AutoPauseLag) * 1000;
         autoPauseTimer.Tick += new EventHandler(AutoPauseTick);
 
         statusUpdateTimer = new System.Windows.Forms.Timer();
@@ -88,6 +101,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             LoadProblem(fn);
         }
     }
+
     public new void Dispose()
     {
         base.Dispose();
@@ -1350,7 +1364,11 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
 
     private void InitializeController()
     {
-        controller = new SudokuController(settings, this);
+        if(controllerFactory != null)
+            controller = controllerFactory.Create(this);
+        else
+            controller = new SudokuController(settings, this);
+
         controller.Generating += (s, e) => OnGenerating(s, e);
         if(settings.State.Length > 0)
             controller.Deserialize();

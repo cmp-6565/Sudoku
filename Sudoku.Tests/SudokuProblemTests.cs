@@ -426,12 +426,12 @@ internal sealed class TestSudokuSettings: ISudokuSettings
     public bool BookletSizeUnlimited { get; set; }
     public int SeverityLevel { get; set; }
     public bool HideWhenMinimized { get; set; }
-    public int TraceFrequence { get; set; }
+    public int TraceFrequency { get; set; }
     public bool UseWatchHandHints { get; set; }
     public bool GenerateXSudoku { get; set; }
     public bool GenerateNormalSudoku { get; set; } = true;
     public bool SelectSeverity { get; set; }
-    public int XSudokuConstrast { get; set; }
+    public int XSudokuContrast { get; set; }
     public string State { get; set; } = string.Empty;
     public bool AutoSaveState { get; set; }
     public bool GenerateMinimalProblems { get; set; }
