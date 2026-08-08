@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -31,7 +32,7 @@ internal class PrintParameters: IDisposable
     static private Pen redTinySolidLine = new Pen(Color.Red, 0.5f);
     static private Pen greenTinySolidLine = new Pen(Color.Green, 0.5f);
     static private Brush solidBrush = new SolidBrush(Color.Black);
-    static private Brush lightGraySolidBrush;
+    static private Brush lightGraySolidBrush = new SolidBrush(Color.LightGray);
     static private Brush greenSolidBrush = new SolidBrush(Color.Green);
     static private Brush redSolidBrush = new SolidBrush(Color.Red);
     private Font titleFont;
@@ -54,6 +55,7 @@ internal class PrintParameters: IDisposable
     /// <param name="settings">The application settings containing font and constraint preferences.</param>
     public PrintParameters(ISudokuSettings settings)
     {
+        ArgumentNullException.ThrowIfNull(settings);
         problems = new List<BaseProblem>();
 
         int colorIndex = 255 - (int)(255f * ((float)settings.XSudokuContrast / 100f));

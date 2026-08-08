@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 
 namespace Sudoku;
@@ -65,6 +66,7 @@ public static class SettingsValidator
     /// <exception cref="ArgumentException">Thrown when minimum > maximum.</exception>
     public static int ValidateRange(int value, int minimum, int maximum, string paramName)
     {
+        ArgumentNullException.ThrowIfNull(paramName);
         if (minimum > maximum)
         {
             throw new ArgumentException($"Minimum ({minimum}) cannot be greater than maximum ({maximum}).", paramName);
@@ -83,6 +85,7 @@ public static class SettingsValidator
     /// </summary>
     public static decimal ValidateRange(decimal value, decimal minimum, decimal maximum, string paramName)
     {
+        ArgumentNullException.ThrowIfNull(paramName);
         if (minimum > maximum)
         {
             throw new ArgumentException($"Minimum ({minimum}) cannot be greater than maximum ({maximum}).", paramName);
@@ -222,9 +225,19 @@ public static class SettingsValidator
 
             return dirInfo.FullName;
         }
+        catch (System.IO.IOException)
+        {
+            // If I/O operations fail, return default path
+            return defaultPath;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // If access is denied, return default path
+            return defaultPath;
+        }
         catch (Exception)
         {
-            // If validation fails, return default path
+            // Unexpected error: return default path
             return defaultPath;
         }
     }

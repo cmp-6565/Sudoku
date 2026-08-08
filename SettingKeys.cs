@@ -1,5 +1,6 @@
 namespace Sudoku;
 
+#nullable enable
 /// <summary>
 /// Defines constant keys for accessing application settings through Settings.Default.
 /// Provides type-safe access to setting names, eliminating magic strings and reducing refactoring risks.

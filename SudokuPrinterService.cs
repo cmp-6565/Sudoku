@@ -41,6 +41,7 @@ internal class SudokuPrinterService: IDisposable
     /// <param name="settings">The application settings for print configuration.</param>
     public SudokuPrinterService(int sudokuSize, ISudokuSettings settings)
     {
+        ArgumentNullException.ThrowIfNull(settings);
         this.settings = settings;
 
         printDialog.AllowSelection = true;
@@ -75,7 +76,8 @@ internal class SudokuPrinterService: IDisposable
     public void Print()
     {
         printDialog.UseEXDialog = true;
-        printDialog.Document = Document;
+        if(printDialog.Document == null)
+            printDialog.Document = Document;
         if(printDialog.ShowDialog() == DialogResult.OK)
         {
             PrintDocument();
@@ -88,6 +90,7 @@ internal class SudokuPrinterService: IDisposable
     /// <param name="problem">The Sudoku problem to add.</param>
     public void AddProblem(BaseProblem problem)
     {
+        ArgumentNullException.ThrowIfNull(problem);
         printParameters.Problems.Add(problem);
     }
 
@@ -124,12 +127,12 @@ internal class SudokuPrinterService: IDisposable
     /// <param name="e">The print page event arguments containing graphics and page settings.</param>
     private void PrintSudokuEvent(object sender, System.Drawing.Printing.PrintPageEventArgs e)
     {
-        Graphics g = e.Graphics;
+        Graphics? g = e.Graphics;
         RectangleF rf;
         float currentX = e.PageSettings.PrintableArea.Left + printSudoku.DefaultPageSettings.Margins.Left;
         float currentY = e.PageSettings.PrintableArea.Top + printSudoku.DefaultPageSettings.Margins.Top;
-        float horizontalOffset = SudokuSize + 1;
-        float verticalOffset = SudokuSize + 3;
+        float horizontalOffset = SudokuSize + .15f;
+        float verticalOffset = SudokuSize + 3f;
 
         printParameters.PrintResult = 0;
 
@@ -137,11 +140,12 @@ internal class SudokuPrinterService: IDisposable
         printParameters.PageHeightDots = e.PageSettings.PrintableArea.Height - printSudoku.DefaultPageSettings.Margins.Top - printSudoku.DefaultPageSettings.Margins.Bottom;
 
         printParameters.CellWidthDots = (printParameters.CellHeightDots = printParameters.PageWidthDots / (settings.HorizontalProblems * horizontalOffset));
-        printParameters.SmallCellWidthDots = (printParameters.SmallCellHeightDots = printParameters.PageWidthDots / (settings.HorizontalSolutions * verticalOffset));
+        printParameters.SmallCellWidthDots = (printParameters.SmallCellHeightDots = printParameters.PageWidthDots / (settings.HorizontalSolutions * (verticalOffset-1)));
 
         Boolean printSolutions = true;
 
         // Draw Title and copyright information on every page
+        if(g == null) return; // nothing to draw
         g.DrawString(AssemblyInfo.AssemblyCompany + " " + AssemblyInfo.AssemblyProduct, printParameters.HeaderFont, PrintParameters.SolidBrush, new RectangleF(currentX, currentY, printParameters.PageWidthDots, printParameters.HeaderFont.GetHeight(g)), PrintParameters.Centered);
         g.DrawString(AssemblyInfo.AssemblyCopyright, printParameters.SmallFont, PrintParameters.SolidBrush, new RectangleF(currentX + printParameters.PageWidthDots, 0, printParameters.CellWidthDots, printSudoku.DefaultPageSettings.PaperSize.Height), PrintParameters.Vertical);
         g.DrawString(AssemblyInfo.AssemblyProduct + " " + Resources.Version + AssemblyInfo.AssemblyVersion, printParameters.SmallFont, PrintParameters.SolidBrush, (rf = new RectangleF(currentX, printSudoku.DefaultPageSettings.PaperSize.Height - printSudoku.DefaultPageSettings.Margins.Bottom, printParameters.PageWidthDots, printParameters.CellHeightDots)), PrintParameters.LeftBounded);
@@ -352,20 +356,18 @@ internal class SudokuPrinterService: IDisposable
     {
         try
         {
-            printDialog.Document.Print();
+            if(printDialog.Document != null)
+                printDialog.Document.Print();
         }
         catch(System.Runtime.InteropServices.ExternalException)
         {
             // This happens in the case the user presses "Cancel" while printing
         }
-        catch(Exception)
-        {
-            throw;
-        }
         finally
         {
             // Known problem: The FinePrint-Dialog is not deleted from the screen:-(
-            printDialog.Document.Dispose();
+            if(printDialog.Document != null)
+                printDialog.Document.Dispose();
             printDialog.Dispose();
         }
     }

@@ -10,103 +10,106 @@ using System.Threading.Tasks;
 namespace Sudoku;
 
 /// <summary>
-    /// Provides file I/O and serialization operations for Sudoku problems.
+/// Provides file I/O and serialization operations for Sudoku problems.
+/// </summary>
+internal class SudokuFileService
+{
+    private readonly ISudokuSettings settings;
+    private IUserInteraction? ui;
+    private static readonly HttpClient httpClient = new HttpClient();
+
+    private static byte ReadOnlyOffset = 64;
+
+    /// <summary>
+    /// Gets the Sudoku type identifier from the current problem.
     /// </summary>
-    internal class SudokuFileService
+    public Char SudokuTypeIdentifier { get { return Sudoku.SudokuTypeIdentifier; } }
+
+    /// <summary>
+    /// Gets or sets the current Sudoku problem.
+    /// </summary>
+    public BaseProblem Sudoku { get; set; }
+
+    /// <summary>
+    /// Gets the matrix of the current Sudoku problem.
+    /// </summary>
+    public BaseMatrix Matrix { get { return Sudoku.Matrix; } }
+
+    /// <summary>
+    /// Gets or sets the solving time for the current Sudoku problem.
+    /// </summary>
+    public TimeSpan SolvingTime { get { return Sudoku.SolvingTime; } set { Sudoku.SolvingTime = value; } }
+
+    /// <summary>
+    /// Gets or sets the comment associated with the Sudoku problem.
+    /// </summary>
+    public String Comment { get { return Sudoku.Comment; } set { Sudoku.Comment = value; } }
+
+    /// <summary>
+    /// Gets the severity level text description of the current Sudoku problem.
+    /// </summary>
+    public String SeverityLevelText { get { return Sudoku.SeverityLevelText; } }
+
+    /// <summary>
+    /// Gets the value at the specified cell position.
+    /// </summary>
+    /// <param name="row">The row index.</param>
+    /// <param name="col">The column index.</param>
+    /// <returns>The value at the specified position.</returns>
+    public int GetValue(int row, int col)
     {
-        private readonly ISudokuSettings settings;
-        private IUserInteraction ui;
-        private static readonly HttpClient httpClient = new HttpClient();
+        return Sudoku.GetValue(row, col);
+    }
 
-        private static byte ReadOnlyOffset = 64;
-
-        /// <summary>
-        /// Gets the Sudoku type identifier from the current problem.
-        /// </summary>
-        public Char SudokuTypeIdentifier { get { return Sudoku.SudokuTypeIdentifier; } }
-
-        /// <summary>
-        /// Gets or sets the current Sudoku problem.
-        /// </summary>
-        public BaseProblem Sudoku { get; set; }
-
-        /// <summary>
-        /// Gets the matrix of the current Sudoku problem.
-        /// </summary>
-        public BaseMatrix Matrix { get { return Sudoku.Matrix; } }
-
-        /// <summary>
-        /// Gets or sets the solving time for the current Sudoku problem.
-        /// </summary>
-        public TimeSpan SolvingTime { get { return Sudoku.SolvingTime; } set { Sudoku.SolvingTime = value; } }
-
-        /// <summary>
-        /// Gets or sets the comment associated with the Sudoku problem.
-        /// </summary>
-        public String Comment { get { return Sudoku.Comment; } set { Sudoku.Comment = value; } }
-
-        /// <summary>
-        /// Gets the severity level text description of the current Sudoku problem.
-        /// </summary>
-        public String SeverityLevelText { get { return Sudoku.SeverityLevelText; } }
-
-        /// <summary>
-        /// Gets the value at the specified cell position.
-        /// </summary>
-        /// <param name="row">The row index.</param>
-        /// <param name="col">The column index.</param>
-        /// <returns>The value at the specified position.</returns>
-        public int GetValue(int row, int col)
-        {
-            return Sudoku.GetValue(row, col);
-        }
-
-        /// <summary>
-        /// Sets the value at the specified cell position.
-        /// </summary>
-        /// <param name="row">The row index.</param>
-        /// <param name="col">The column index.</param>
-        /// <param name="value">The value to set.</param>
-        public void SetValue(int row, int col, byte value)
-        {
-            Sudoku.SetValue(row, col, value);
-        }
-
-        /// <summary>
-        /// Gets whether a candidate is marked for a cell.
-        /// </summary>
-        /// <param name="row">The row index.</param>
-        /// <param name="col">The column index.</param>
-        /// <param name="candidate">The candidate value to check.</param>
-        /// <param name="exclusionCandidate">Whether to check exclusion candidates.</param>
-        /// <returns>True if the candidate is marked; otherwise, false.</returns>
-        public Boolean GetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
-        {
-            return Sudoku.GetCandidate(row, col, candidate, exclusionCandidate);
-        }
-
-        /// <summary>
-        /// Sets a candidate marker for a cell.
-        /// </summary>
-        /// <param name="row">The row index.</param>
-        /// <param name="col">The column index.</param>
-        /// <param name="candidate">The candidate value to toggle.</param>
-        /// <param name="exclusionCandidate">Whether to set an exclusion candidate.</param>
-        public void SetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
-        {
-            Sudoku.SetCandidate(row, col, candidate, exclusionCandidate);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the SudokuFileService class.
-        /// </summary>
-        /// <param name="SudokuProblem">The Sudoku problem to manage.</param>
-        /// <param name="settings">The application settings.</param>
-        /// <param name="ui">The user interaction interface for displaying messages.</param>
-        public SudokuFileService(BaseProblem SudokuProblem, ISudokuSettings settings, IUserInteraction ui)
+    /// <summary>
+    /// Sets the value at the specified cell position.
+    /// </summary>
+    /// <param name="row">The row index.</param>
+    /// <param name="col">The column index.</param>
+    /// <param name="value">The value to set.</param>
+    public void SetValue(int row, int col, byte value)
     {
-        Sudoku = SudokuProblem;
-        this.settings = settings;
+        Sudoku.SetValue(row, col, value);
+    }
+
+    /// <summary>
+    /// Gets whether a candidate is marked for a cell.
+    /// </summary>
+    /// <param name="row">The row index.</param>
+    /// <param name="col">The column index.</param>
+    /// <param name="candidate">The candidate value to check.</param>
+    /// <param name="exclusionCandidate">Whether to check exclusion candidates.</param>
+    /// <returns>True if the candidate is marked; otherwise, false.</returns>
+    public Boolean GetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
+    {
+        return Sudoku.GetCandidate(row, col, candidate, exclusionCandidate);
+    }
+
+    /// <summary>
+    /// Sets a candidate marker for a cell.
+    /// </summary>
+    /// <param name="row">The row index.</param>
+    /// <param name="col">The column index.</param>
+    /// <param name="candidate">The candidate value to toggle.</param>
+    /// <param name="exclusionCandidate">Whether to set an exclusion candidate.</param>
+    public void SetCandidate(int row, int col, int candidate, Boolean exclusionCandidate)
+    {
+        Sudoku.SetCandidate(row, col, candidate, exclusionCandidate);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the SudokuFileService class.
+    /// </summary>
+    /// <param name="SudokuProblem">The Sudoku problem to manage.</param>
+    /// <param name="settings">The application settings.</param>
+    /// <param name="ui">The user interaction interface for displaying messages.</param>
+    public SudokuFileService(BaseProblem? SudokuProblem, ISudokuSettings? settings, IUserInteraction? ui)
+    {
+        ArgumentNullException.ThrowIfNull(SudokuProblem);
+        ArgumentNullException.ThrowIfNull(settings);
+        // ui is optional; callers may pass null
+        Sudoku = SudokuProblem!;
+        this.settings = settings!;
         this.ui = ui;
     }
     /// <summary>
@@ -116,26 +119,31 @@ namespace Sudoku;
     /// <returns>True if the save was successful; otherwise, false.</returns>
     public Boolean SaveToFile(String file)
     {
-        Boolean rc = false;
-        StreamWriter sw;
+        ArgumentNullException.ThrowIfNull(file);
         try
         {
-            sw = new StreamWriter(file);
+            using var sw = new StreamWriter(file);
             sw.Write(Serialize(true));
-            sw.Close();
             Sudoku.Filename = file;
             Sudoku.Dirty = false;
-
-            rc = true;
+            return true;
         }
-        catch(Exception) { throw; }
-        return rc;
+        catch (System.IO.IOException ex)
+        {
+            ui?.ShowError(String.Format(Thread.CurrentThread.CurrentCulture, Resources.SaveFailed + " {0}", ex.Message));
+            return false;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            ui?.ShowError(String.Format(Thread.CurrentThread.CurrentCulture, Resources.SaveFailed + " {0}", ex.Message));
+            return false;
+        }
     }
 
     /// <summary>
     /// Event invoked when a problem is read from file.
     /// </summary>
-    public event Action<Boolean> ReadProblem;
+    public event Action<Boolean>? ReadProblem;
 
     /// <summary>
     /// Raises the ReadProblem event with the problem type information.
@@ -152,13 +160,13 @@ namespace Sudoku;
     /// <param name="file">The file path where the HTML file will be saved.</param>
     public void SaveToHTMLFile(String file)
     {
-        StreamWriter sw;
+        ArgumentNullException.ThrowIfNull(file);
         Char[] problem = SerializeLegacy(false).ToCharArray();
         int offset = (int)'0' + ReadOnlyOffset;
 
         try
         {
-            sw = new StreamWriter(file);
+            using var sw = new StreamWriter(file);
             sw.Write(
                 String.Format(Resources.HTMLFrame,
                     String.Format(
@@ -249,9 +257,11 @@ namespace Sudoku;
                     DateTime.Now.ToString("yyyy.MM.dd", new CultureInfo(settings.DisplayLanguage)),
                     AssemblyInfo.AssemblyCopyright
                 ));
-            sw.Close();
         }
-        catch(Exception) { throw; }
+        finally
+        {
+            // keep propagation to caller for unexpected errors, but ensure proper cleanup elsewhere
+        }
         return;
     }
     /// <summary>
@@ -285,6 +295,7 @@ namespace Sudoku;
             try
             {
                 var state = System.Text.Json.JsonSerializer.Deserialize<SudokuSaveState>(jsonState);
+                if(state == null) throw new ArgumentException("Invalid sudoku state", nameof(jsonState));
                 NotifyReadProblem(state.Type[0] == XSudokuProblem.ProblemIdentifier);
 
                 Sudoku.Id = state.Id;
@@ -447,7 +458,14 @@ namespace Sudoku;
             else
                 return false;
         }
-        catch(Exception) { return false; }
+        catch(HttpRequestException)
+        {
+            return false;
+        }
+        catch(Exception)
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -474,7 +492,14 @@ namespace Sudoku;
             else
                 return false;
         }
-        catch(Exception) { return false; }
+        catch(HttpRequestException)
+        {
+            return false;
+        }
+        catch(Exception)
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -484,7 +509,7 @@ namespace Sudoku;
     /// <param name="exclusionCandidates">Whether to load exclusion candidates or regular candidates.</param>
     public void LoadCandidates(StreamReader sr, Boolean exclusionCandidates)
     {
-        DeserializeCandidates(sr.ReadLine(), exclusionCandidates);
+        DeserializeCandidates(sr.ReadLine() ?? String.Empty, exclusionCandidates);
     }
 
     /// <summary>
@@ -505,17 +530,13 @@ namespace Sudoku;
     {
         Sudoku.Matrix.Init();
 
-        try
-        {
-            char[] values = new char[WinFormsSettings.TotalCellCount];
-            char[] elapsedTime = new char[16];
+        char[] values = new char[WinFormsSettings.TotalCellCount];
+        char[] elapsedTime = new char[16];
 
-            sr.Read(values, 0, values.Length);
-            sr.Read(elapsedTime, 0, elapsedTime.Length);
+        sr.Read(values, 0, values.Length);
+        sr.Read(elapsedTime, 0, elapsedTime.Length);
 
-            InitProblem(values, elapsedTime, sr.ReadLine());
-        }
-        catch(Exception) { throw; }
+        InitProblem(values, elapsedTime, sr.ReadLine() ?? String.Empty);
     }
 
     /// <summary>
@@ -524,20 +545,15 @@ namespace Sudoku;
     /// <param name="values">The cell values as a character array.</param>
     /// <param name="elapsedTime">The solving time as a character array.</param>
     /// <param name="initialComment">The initial comment for the problem.</param>
-    public void InitProblem(char[] values, char[] elapsedTime, String initialComment)
+    public void InitProblem(char[] values, char[] elapsedTime, String? initialComment)
     {
-        try
-        {
-            TimeSpan ts = TimeSpan.Zero;
+        TimeSpan ts = TimeSpan.Zero;
 
-            if(TimeSpan.TryParse(new String(elapsedTime), out ts))
-                SolvingTime = ts;
-            if((Sudoku.Comment = initialComment) == null) // for compability reasons
-                Sudoku.Comment = String.Empty;
+        if(TimeSpan.TryParse(new String(elapsedTime), out ts))
+            SolvingTime = ts;
+        Sudoku.Comment = initialComment ?? String.Empty; // for compatibility reasons
 
-            InitMatrix(values);
-        }
-        catch(Exception) { throw; }
+        InitMatrix(values);
     }
 
     /// <summary>
@@ -546,26 +562,22 @@ namespace Sudoku;
     /// <param name="values">The cell values as a character array.</param>
     private void InitMatrix(char[] values)
     {
-        try
-        {
-            byte offset = (byte)'0';
-            byte v = 0;
+        byte offset = (byte)'0';
+        byte v = 0;
 
-            Sudoku.Matrix.SetPredefinedValues = false;
-            for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
-                for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
+        Sudoku.Matrix.SetPredefinedValues = false;
+        for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
+            for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
+            {
+                v = Convert.ToByte(values[i * WinFormsSettings.SudokuSize + j] - offset);
+                if(v >= ReadOnlyOffset)
                 {
-                    v = Convert.ToByte(values[i * WinFormsSettings.SudokuSize + j] - offset);
-                    if(v >= ReadOnlyOffset)
-                    {
-                        Sudoku.Matrix.Cell(i, j).ReadOnly = (v > ReadOnlyOffset);
-                        v -= ReadOnlyOffset;
-                    }
-                    Sudoku.SetValue(i, j, v);
+                    Sudoku.Matrix.Cell(i, j).ReadOnly = (v > ReadOnlyOffset);
+                    v -= ReadOnlyOffset;
                 }
-            Sudoku.Matrix.SetPredefinedValues = true;
-        }
-        catch(Exception) { throw; }
+                Sudoku.SetValue(i, j, v);
+            }
+        Sudoku.Matrix.SetPredefinedValues = true;
     }
 
     /// <summary>
@@ -597,17 +609,10 @@ namespace Sudoku;
     /// <param name="loadCandidates">Whether to load candidates if present.</param>
     public void CreateProblemFromJsonFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
     {
-        StreamReader sr = null;
-        try
-        {
-            sr = new StreamReader(filename.Replace("%20", " "), System.Text.Encoding.Default);
-            String jsonState = sr.ReadToEnd();
-            sr.Close();
+        using var sr = new StreamReader(filename.Replace("%20", " "), System.Text.Encoding.Default);
+        String jsonState = sr.ReadToEnd();
 
-            Deserialize(jsonState);
-        }
-        catch(Exception) { throw; }
-        finally { sr.Close(); }
+        Deserialize(jsonState);
         Sudoku.Filename = filename;
     }
 
@@ -620,26 +625,19 @@ namespace Sudoku;
     /// <param name="loadCandidates">Whether to load candidates if present.</param>
     public void CreateProblemFromLegacyFile(String filename, Boolean normalSudoku, Boolean xSudoku, Boolean loadCandidates)
     {
-        StreamReader sr = null;
-        try
+        using var sr = new StreamReader(filename.Replace("%20", " "), System.Text.Encoding.Default);
+        Char sudokuType = (Char)sr.Read();
+        if(sudokuType != SudokuProblem.ProblemIdentifier && sudokuType != XSudokuProblem.ProblemIdentifier) throw new InvalidDataException();
+        if(sudokuType == SudokuProblem.ProblemIdentifier && normalSudoku || sudokuType == XSudokuProblem.ProblemIdentifier && xSudoku)
         {
-            Char sudokuType;
-            sr = new StreamReader(filename.Replace("%20", " "), System.Text.Encoding.Default);
-            sudokuType = (Char)sr.Read();
-            if(sudokuType != SudokuProblem.ProblemIdentifier && sudokuType != XSudokuProblem.ProblemIdentifier) throw new InvalidDataException();
-            if(sudokuType == SudokuProblem.ProblemIdentifier && normalSudoku || sudokuType == XSudokuProblem.ProblemIdentifier && xSudoku)
+            NotifyReadProblem(sudokuType == XSudokuProblem.ProblemIdentifier);
+            ReadFromFile(sr);
+            if(loadCandidates)
             {
-                NotifyReadProblem(sudokuType == XSudokuProblem.ProblemIdentifier);
-                ReadFromFile(sr);
-                if(loadCandidates)
-                {
-                    LoadCandidates(sr, false);
-                    LoadCandidates(sr, true);
-                }
+                LoadCandidates(sr, false);
+                LoadCandidates(sr, true);
             }
         }
-        catch(Exception) { throw; }
-        finally { sr.Close(); }
     }
     /// <summary>
     /// Creates a booklet directory with auto-save functionality based on settings.
@@ -657,7 +655,7 @@ namespace Sudoku;
                 }
                 catch
                 {
-                    ui.ShowError(String.Format(Thread.CurrentThread.CurrentCulture, Resources.CreateDirectoryFailed, settings.ProblemDirectory));
+                    ui?.ShowError(String.Format(Thread.CurrentThread.CurrentCulture, Resources.CreateDirectoryFailed, settings.ProblemDirectory));
                     settings.AutoSaveBooklet = false;
                 }
             }
@@ -671,7 +669,7 @@ namespace Sudoku;
             }
             catch
             {
-                ui.ShowError(String.Format(Thread.CurrentThread.CurrentCulture, Resources.CreateDirectoryFailed, generationParameters.BaseDirectory));
+                ui?.ShowError(String.Format(Thread.CurrentThread.CurrentCulture, Resources.CreateDirectoryFailed, generationParameters.BaseDirectory));
                 settings.AutoSaveBooklet = false;
             }
         }

@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace Sudoku
 {
     partial class SeverityLevelDialog

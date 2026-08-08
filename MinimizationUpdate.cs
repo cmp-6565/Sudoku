@@ -1,4 +1,7 @@
-﻿namespace Sudoku;
+﻿#nullable enable
+using System;
+
+namespace Sudoku;
 
 /// <summary>
 /// Specifies the type of minimization update that occurred.
@@ -27,10 +30,10 @@ internal class MinimizationUpdate
     /// <summary>
     /// Gets or sets the cell that was tested or reset (for TestCell and ResetCell updates).
     /// </summary>
-    public BaseCell Cell { get; set; }
+    public BaseCell? Cell { get; set; }
 
     /// <summary>
     /// Gets or sets the problem state (used for Status updates).
     /// </summary>
-    public BaseProblem Problem { get; set; }
+    public BaseProblem? Problem { get; set; }
 }

@@ -17,6 +17,7 @@ partial class AboutSudoku: Form
     /// <param name="settings">Application settings used for localization and contact information.</param>
     public AboutSudoku(ISudokuSettings settings)
     {
+        ArgumentNullException.ThrowIfNull(settings);
         System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(settings.DisplayLanguage);
         InitializeComponent();
 

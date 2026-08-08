@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Diagnostics;
 
@@ -53,6 +54,7 @@ public class SettingsChangeListener
         string settingName, 
         Action<object?> onChanged)
     {
+        ArgumentNullException.ThrowIfNull(settings);
         ArgumentException.ThrowIfNullOrEmpty(settingName, nameof(settingName));
         ArgumentNullException.ThrowIfNull(onChanged, nameof(onChanged));
 

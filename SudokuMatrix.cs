@@ -34,6 +34,8 @@ internal class SudokuMatrix: BaseMatrix
     /// <returns>Always returns null as standard Sudoku does not have diagonal constraints.</returns>
     protected override BaseCell[] GetDiagonal(SudokuPart direction)
     {
-        return null;
+        // Standard Sudoku does not use diagonals. Return an empty array to satisfy the
+        // non-nullable contract of the base class and avoid null-reference checks.
+        return Array.Empty<BaseCell>();
     }
 }

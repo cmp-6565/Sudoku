@@ -23,12 +23,12 @@ internal class SudokuController: IDisposable
     /// <summary>
     /// The currently active sudoku problem instance managed by this controller.
     /// </summary>
-    public BaseProblem CurrentProblem { get; private set; }
+    public BaseProblem CurrentProblem { get; private set; } = default!;
 
     /// <summary>
     /// A backup clone of the last saved or restored problem used for undo/restore operations.
     /// </summary>
-    public BaseProblem Backup { get; private set; }
+    public BaseProblem Backup { get; private set; } = default!;
     private Stack<CoreValue> undoStack;
     public TimeSpan TotalGenerationTime { get; private set; }
     private TrickyProblems trickyProblems;
@@ -39,17 +39,17 @@ internal class SudokuController: IDisposable
     /// <summary>
     /// Raised when the sudoku matrix has changed and consumers should refresh their view.
     /// </summary>
-    public event EventHandler MatrixChanged;
+    public event EventHandler? MatrixChanged;
 
     /// <summary>
     /// Raised periodically while problems are being generated to indicate generation progress.
     /// </summary>
-    public event EventHandler Generating;
+    public event EventHandler? Generating;
 
     /// <summary>
     /// Callback invoked when a minimization attempt fails. The parameter may carry context information.
     /// </summary>
-    public Action<Object> MinimizedFailed;
+    public Action<Object>? MinimizedFailed;
 
     private Stopwatch solvingTimer = new Stopwatch();
     private static readonly TimeSpan SolverProgressInterval = TimeSpan.FromMilliseconds(150);
@@ -61,12 +61,17 @@ internal class SudokuController: IDisposable
     /// <param name="ui">UI callback interface used for user interaction and prompts.</param>
     public SudokuController(ISudokuSettings settings, IUserInteraction ui)
     {
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(ui);
         undoStack = new Stack<CoreValue>();
         trickyProblems = new TrickyProblems(settings, ui);
         generationParameters = new GenerationParameters(settings);
         printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
         this.settings = settings;
         this.ui = ui;
+        // Initialize default problem placeholders so other members can assume non-null
+        CreateNewProblem(false, false);
+        BackupProblem();
     }
 
     /// <summary>
@@ -78,8 +83,48 @@ internal class SudokuController: IDisposable
     /// <param name="ui">UI interaction helper used for prompts and messages.</param>
     public SudokuController(String filenname, Boolean loadCandidates, ISudokuSettings settings, IUserInteraction ui) : this(settings, ui)
     {
-        CreateProblemFromFile(filenname, settings.GenerateNormalSudoku, settings.GenerateXSudoku, loadCandidates);
-        BackupProblem();
+        ArgumentNullException.ThrowIfNull(filenname);
+        try
+        {
+            CreateProblemFromFile(filenname, settings.GenerateNormalSudoku, settings.GenerateXSudoku, loadCandidates);
+            BackupProblem();
+        }
+        catch (ArgumentException)
+        {
+            ui?.ShowError(String.Format(Thread.CurrentThread.CurrentUICulture, Resources.InvalidSudokuFile, filenname));
+            CreateNewProblem(false);
+            BackupProblem();
+        }
+        catch (InvalidDataException)
+        {
+            ui?.ShowError(Resources.InvalidSudokuIdentifier);
+            CreateNewProblem(false);
+            BackupProblem();
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            ui?.ShowError(Resources.OpenFailed + Environment.NewLine + ex.Message);
+            CreateNewProblem(false);
+            BackupProblem();
+        }
+        catch (IOException ex)
+        {
+            ui?.ShowError(Resources.OpenFailed + Environment.NewLine + ex.Message);
+            CreateNewProblem(false);
+            BackupProblem();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            ui?.ShowError(Resources.OpenFailed + Environment.NewLine + ex.Message);
+            CreateNewProblem(false);
+            BackupProblem();
+        }
+        catch (Exception ex)
+        {
+            ui?.ShowError(Resources.OpenFailed + Environment.NewLine + ex.Message);
+            CreateNewProblem(false);
+            BackupProblem();
+        }
     }
 
     /// <summary>
@@ -100,7 +145,7 @@ internal class SudokuController: IDisposable
     {
         CurrentProblem = xSudoku ? (BaseProblem)new XSudokuProblem(settings) : new SudokuProblem(settings);
         BackupProblem();
-        if(notify) NotifyMatrixChanged();
+        if (notify) NotifyMatrixChanged();
     }
 
     /// <summary>
@@ -110,14 +155,14 @@ internal class SudokuController: IDisposable
     /// <param name="findAllSolutions">When true, find all solutions instead of stopping at the first.</param>
     /// <param name="progress">Optional progress reporter for generation/solver updates.</param>
     /// <param name="token">Cancellation token to cancel solving.</param>
-    public async Task Solve(bool findAllSolutions, IProgress<GenerationProgressState> progress, CancellationToken token)
+    public async Task Solve(bool findAllSolutions, IProgress<GenerationProgressState>? progress, CancellationToken token)
     {
         if(CurrentProblem == null) return;
+        // no-op formatting adjustment
 
         int maxSolutions = findAllSolutions ? int.MaxValue : 1;
         var stopwatch = Stopwatch.StartNew();
-
-        CurrentProblem.FindSolutions(maxSolutions, token);
+        await CurrentProblem.FindSolutions(maxSolutions, token);
         if(CurrentProblem.SolverTask != null)
         {
             await MonitorSolverTask(Resources.Thinking, progress, stopwatch, token);
@@ -140,9 +185,9 @@ internal class SudokuController: IDisposable
     /// <param name="stopwatch">The stopwatch tracking elapsed time since solving started.</param>
     /// <param name="token">The cancellation token to stop monitoring if requested.</param>
     /// <returns>A task that completes when the solver task finishes or monitoring is cancelled.</returns>
-    private async Task MonitorSolverTask(string statusText, IProgress<GenerationProgressState> progress, Stopwatch stopwatch, CancellationToken token)
+    private async Task MonitorSolverTask(string statusText, IProgress<GenerationProgressState>? progress, Stopwatch stopwatch, CancellationToken token)
     {
-        Task solverTask = CurrentProblem?.SolverTask;
+        Task? solverTask = CurrentProblem.SolverTask;
         if(solverTask == null) return;
 
         long lastPass = -1;
@@ -208,7 +253,7 @@ internal class SudokuController: IDisposable
     {
         if(token.IsCancellationRequested) return;
 
-        CurrentProblem.GenerationTime += stopwatch.Elapsed;
+                if (CurrentProblem != null) CurrentProblem.GenerationTime += stopwatch.Elapsed;
         stopwatch.Restart();
         Generating?.Invoke(this, EventArgs.Empty);
     }
@@ -226,7 +271,7 @@ internal class SudokuController: IDisposable
     public void StopTimer()
     {
         solvingTimer.Stop();
-        CurrentProblem.SolvingTime += solvingTimer.Elapsed;
+                if (CurrentProblem != null) CurrentProblem.SolvingTime += solvingTimer.Elapsed;
         solvingTimer.Reset();
     }
 
@@ -269,8 +314,10 @@ internal class SudokuController: IDisposable
         CreateNewProblem(sudokuType == XSudokuProblem.ProblemIdentifier, notify);
         try
         {
-            SudokuFileService fileService = new SudokuFileService(CurrentProblem, settings, ui);
+            // CurrentProblem is non-nullable and initialized by CreateNewProblem
+            var fileService = new SudokuFileService(CurrentProblem, settings, ui);
             fileService.InitProblem(settings.State.Substring(1, WinFormsSettings.TotalCellCount).ToCharArray(), settings.State.Substring(WinFormsSettings.TotalCellCount + 1, 16).ToCharArray(), null);
+
             if(settings.State.IndexOf('\n') > 0)
             {
                 fileService.LoadCandidates(settings.State.Substring(settings.State.IndexOf('\n') + 1), false);
@@ -279,7 +326,7 @@ internal class SudokuController: IDisposable
         }
         catch(Exception)
         {
-            ;
+            // ignore restore errors
         }
     }
     /// <summary>
@@ -328,17 +375,15 @@ internal class SudokuController: IDisposable
     /// <param name="progress">Optional progress reporter for validation steps.</param>
     /// <param name="token">Cancellation token to cancel validation.</param>
     /// <returns>True if the current problem is solvable; otherwise false.</returns>
-    public async Task<bool> Validate(IProgress<GenerationProgressState> progress, CancellationToken token)
+    public async Task<bool> Validate(IProgress<GenerationProgressState>? progress, CancellationToken token)
     {
-        if(CurrentProblem == null) return false;
-
         BackupProblem();
         var stopwatch = Stopwatch.StartNew();
         bool result = false;
 
         try
         {
-            CurrentProblem.FindSolutions(1, token);
+            await CurrentProblem.FindSolutions(1, token);
 
             if(CurrentProblem.SolverTask != null)
             {
@@ -415,7 +460,7 @@ internal class SudokuController: IDisposable
     /// <param name="minimizeProgress">Progress reporter for minimization steps.</param>
     /// <param name="token">Cancellation token to cancel the operation.</param>
     /// <returns>A task that completes when batch generation finishes.</returns>
-    public async Task GenerateBatch(int severityLevel, bool usePrecalculated, Action<object, String> finalize, IProgress<GenerationProgressState> progress, IProgress<MinimizationUpdate> minimizeProgress, CancellationToken token)
+    public async Task GenerateBatch(int severityLevel, bool usePrecalculated, Action<object, String> finalize, IProgress<GenerationProgressState>? progress, IProgress<MinimizationUpdate>? minimizeProgress, CancellationToken token)
     {
         int count = generationParameters.GenerateBooklet ? settings.BookletSizeNew : 1;
         trickyProblems.Clear();
@@ -523,7 +568,7 @@ internal class SudokuController: IDisposable
     ///   notifications via <see cref="NotifyGeneration(Stopwatch, CancellationToken)"/>.
     /// - The method updates <paramref name="generationParameters"/> (pre-allocated count, reset flag, checked problems, etc.) while constructing the base grid.
     /// </remarks>
-    public async Task<bool> GenerateBaseProblem(GenerationParameters generationParameters, bool usePrecalculated, IProgress<GenerationProgressState> progress, CancellationToken token)
+    public async Task<bool> GenerateBaseProblem(GenerationParameters generationParameters, bool usePrecalculated, IProgress<GenerationProgressState>? progress, CancellationToken token)
     {
         var stopwatch = Stopwatch.StartNew();
         int counter = 0;
@@ -554,7 +599,7 @@ internal class SudokuController: IDisposable
             byte lastValue = byte.MaxValue;
             bool lastReadOnly = false;
 
-            void ReportProgressIfNeeded(int row, int col, byte value, bool readOnly, string statusText, bool force)
+            void ReportProgressIfNeeded(int row, int col, byte value, bool readOnly, string? statusText, bool force)
             {
                 if(progress == null) return;
 
@@ -603,7 +648,7 @@ internal class SudokuController: IDisposable
                         CurrentProblem.SetReadOnly(generationParameters.Row, generationParameters.Col, true);
 
                         bool updateText = (counter % 100) == 0;
-                        string statusText = updateText ? Resources.Generating : null;
+                        string? statusText = updateText ? Resources.Generating : null;
 
                         ReportProgressIfNeeded(generationParameters.Row, generationParameters.Col, generationParameters.GeneratedValue, true, statusText, updateText);
 
@@ -670,7 +715,7 @@ internal class SudokuController: IDisposable
     /// <see cref="MinimizedFailed"/> when minimization fails. Progress is reported through the provided reporters.
     /// The operation is cooperative with <paramref name="token"/> and will return <c>false</c> if cancellation is requested.
     /// </remarks>
-    private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, IProgress<GenerationProgressState> progress, IProgress<MinimizationUpdate> minimizeProgress, CancellationToken token)
+    private async Task<bool> GenerateCompleteProblem(GenerationParameters generationParameters, int targetSeverity, IProgress<GenerationProgressState>? progress, IProgress<MinimizationUpdate>? minimizeProgress, CancellationToken token)
     {
         var stopwatch = Stopwatch.StartNew();
         int counter = 0;
@@ -683,7 +728,7 @@ internal class SudokuController: IDisposable
 
             if(token.IsCancellationRequested) return false;
 
-            CurrentProblem.FindSolutions(2, token);
+            await CurrentProblem.FindSolutions(2, token);
             await MonitorSolverTask(Resources.Checking, progress, stopwatch, token);
 
             generationParameters.TotalPasses += CurrentProblem.TotalPassCounter;
@@ -708,7 +753,7 @@ internal class SudokuController: IDisposable
                         }
                         else
                         {
-                            MinimizedFailed(this);
+                            MinimizedFailed?.Invoke(this);
                             processProblem = false; // Minimierung fehlgeschlagen
                         }
                     }
@@ -766,10 +811,9 @@ internal class SudokuController: IDisposable
     /// <see cref="BaseProblem.Minimize(int, BaseProblem.MinimizeAlgorithm, CancellationToken)"/> using
     /// <see cref="BaseProblem.MinimizeAlgorithm.Calculate"/>.
     /// </remarks>
-    public async Task<BaseProblem> Minimize(int targetSeverity, IProgress<MinimizationUpdate> progress, CancellationToken token)
+    public async Task<BaseProblem?> Minimize(int targetSeverity, IProgress<MinimizationUpdate>? progress, CancellationToken token)
     {
-        if(CurrentProblem == null) return null;
-
+        // CurrentProblem is initialized in the controller construction.
         BackupProblem();
 
         // Lokale Event-Handler, die an IProgress weiterleiten
@@ -779,7 +823,7 @@ internal class SudokuController: IDisposable
         Action<object, BaseCell> onResetCell = (s, cell) =>
             progress?.Report(new MinimizationUpdate { Type = MinimizationUpdateType.ResetCell, Cell = cell });
 
-        Action<object, BaseProblem> onMinimizing = (s, problem) =>
+        Action<object, BaseProblem?> onMinimizing = (s, problem) =>
             progress?.Report(new MinimizationUpdate { Type = MinimizationUpdateType.Status, Problem = problem });
 
         // Events abonnieren
@@ -956,9 +1000,35 @@ internal class SudokuController: IDisposable
             CreateNewProblem(b);
             fileService.Sudoku = CurrentProblem;
         };
-        fileService.LoadProblem(filename, normalSudoku, xSudoku, loadCandidates);
-
-        NotifyMatrixChanged();
+        try
+        {
+            fileService.LoadProblem(filename, normalSudoku, xSudoku, loadCandidates);
+            NotifyMatrixChanged();
+        }
+        catch (ArgumentException)
+        {
+            ui?.ShowError(String.Format(Thread.CurrentThread.CurrentUICulture, Resources.InvalidSudokuFile, filename));
+        }
+        catch (InvalidDataException)
+        {
+            ui?.ShowError(Resources.InvalidSudokuIdentifier);
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            ui?.ShowError(Resources.OpenFailed + Environment.NewLine + ex.Message);
+        }
+        catch (IOException ex)
+        {
+            ui?.ShowError(Resources.OpenFailed + Environment.NewLine + ex.Message);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            ui?.ShowError(Resources.OpenFailed + Environment.NewLine + ex.Message);
+        }
+        catch (Exception ex)
+        {
+            ui?.ShowError(Resources.OpenFailed + Environment.NewLine + ex.Message);
+        }
     }
     /// <summary>
     /// Returns whether a specific cell is read-only.
@@ -1047,7 +1117,7 @@ internal class SudokuController: IDisposable
     /// <summary>
     /// Pops the most recent undo entry, or returns null when no undo entries are available.
     /// </summary>
-    public CoreValue PopUndo()
+    public CoreValue? PopUndo()
     {
         if(undoStack.Count > 0)
             return undoStack.Pop();
@@ -1388,7 +1458,7 @@ public class GenerationProgressState
     /// <summary>Indicates whether the reported cell is read-only.</summary>
     public bool ReadOnly { get; set; }
     /// <summary>Optional status text describing the current operation.</summary>
-    public string StatusText { get; set; }
+    public string? StatusText { get; set; }
 }
 
 /// <summary>

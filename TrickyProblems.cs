@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace Sudoku;
 
@@ -22,6 +23,8 @@ internal class TrickyProblems
     /// <param name="ui">The user interaction interface for messaging.</param>
     public TrickyProblems(ISudokuSettings settings, IUserInteraction ui)
     {
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(ui);
         problems = new List<BaseProblem>();
         this.settings = settings;
         this.ui = ui;
@@ -33,6 +36,7 @@ internal class TrickyProblems
     /// <param name="problem">The Sudoku problem to add.</param>
     public void Add(BaseProblem problem)
     {
+        ArgumentNullException.ThrowIfNull(problem);
         problems.Add(problem);
     }
 
@@ -60,7 +64,15 @@ internal class TrickyProblems
                 return await fileService.Upload();
             }
         }
-        catch(Exception) { return false; }
+        catch(HttpRequestException)
+        {
+            return false;
+        }
+        catch(Exception)
+        {
+            // Unknown exception: propagate to caller or return false conservatively
+            return false;
+        }
 
         return true;
     }

@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -18,6 +19,8 @@ internal partial class OptionsDialog: Form
 
     public OptionsDialog(ISudokuSettings settings, IUserInteraction ui)
     {
+        ArgumentNullException.ThrowIfNull(settings);
+        ArgumentNullException.ThrowIfNull(ui);
         supportedCultures = settings.SupportedCultures.Split('|');
         supportedGridSizes = settings.HorizontalProblemsAlternatives.Split('|');
         supportedSolutionGridSizes = settings.HorizontalSolutionsAlternatives.Split('|');
@@ -65,7 +68,7 @@ internal partial class OptionsDialog: Form
         xSudoku.Checked = settings.GenerateXSudoku;
 
         foreach(RadioButton rb in sizeGroupBox.Controls)
-            rb.Checked = (rb.Tag.ToString() == settings.Size.ToString());
+            rb.Checked = (rb.Tag?.ToString() == settings.Size.ToString());
 
         useWatchHands.Checked = settings.UseWatchHandHints;
         useDigits.Checked = !useWatchHands.Checked;
@@ -125,7 +128,7 @@ internal partial class OptionsDialog: Form
         settings.AutoPauseLag = autoPauseLag.Value;
 
         foreach(RadioButton rb in sizeGroupBox.Controls)
-            if(rb.Checked)
+            if(rb.Checked && rb.Tag != null)
                 settings.Size = Convert.ToInt32(rb.Tag.ToString());
 
         int i = supportedGridSizes.Length - 1;

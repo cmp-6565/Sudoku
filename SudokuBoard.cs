@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -10,33 +11,33 @@ namespace Sudoku;
 
 internal class SudokuBoard: DataGridView, IDisposable
 {
-    private ISudokuSettings settings;
-    private IUserInteraction ui;
+    private ISudokuSettings settings = default!;
+    private IUserInteraction ui = default!;
 
-    private SudokuController controller;
+    private SudokuController controller = default!;
     private Boolean debugMode = false;
 
     private Boolean mouseWheelEditing = false;
     public Boolean InSync { get; private set; } = true;
 
-    public event EventHandler<Boolean> UndoAvailableChanged;
-    public event EventHandler<Boolean> CandidatesAvailableChanged;
-    public event EventHandler<Boolean> UpdateStatus;
-    public event EventHandler<Boolean> UpdateHints;
-    public event EventHandler<string> StatusTextChanged;
+    public event EventHandler<Boolean>? UndoAvailableChanged;
+    public event EventHandler<Boolean>? CandidatesAvailableChanged;
+    public event EventHandler<Boolean>? UpdateStatus;
+    public event EventHandler<Boolean>? UpdateHints;
+    public event EventHandler<string>? StatusTextChanged;
 
     // Kontextmenü Variable
-    private ContextMenuStrip cellContextMenu;
+    private ContextMenuStrip? cellContextMenu;
 
     private Color highlightColor = Color.Cyan;
     private List<Point> highlightedCells = new List<Point>();
 
-    private Font normalDisplayFont;
-    private Font boldDisplayFont;
-    private Font strikethroughFont;
-    private Font hintFontSmall;
-    private Font hintFontNormal;
-    private String[] fontSizes;
+    private Font? normalDisplayFont;
+    private Font? boldDisplayFont;
+    private Font? strikethroughFont;
+    private Font? hintFontSmall;
+    private Font? hintFontNormal;
+    private String[]? fontSizes;
     private Boolean valuesVisible = true;
 
     Color gray;
@@ -98,7 +99,7 @@ internal class SudokuBoard: DataGridView, IDisposable
     }
     internal SudokuController Controller
     {
-        get { return controller; }
+        get { return controller!; }
         set
         {
             if(controller != null)
@@ -106,7 +107,7 @@ internal class SudokuBoard: DataGridView, IDisposable
                 controller.MatrixChanged -= OnMatrixChanged;
                 if(controller.CurrentProblem != null)
                 {
-                    controller.MinimizedFailed -= OnMinimizedFailed;
+                    controller.MinimizedFailed -= OnMinimizedFailed; // preserved for patch context
                     controller.CurrentProblem.SolutionFound -= OnSolutionFound;
                     controller.CurrentProblem.Matrix.CellChanged -= OnCellChanged;
                 }
@@ -140,7 +141,7 @@ internal class SudokuBoard: DataGridView, IDisposable
         DisplayValues();
     }
 
-    private void OnMatrixChanged(object s, EventArgs e)
+    private void OnMatrixChanged(object? s, EventArgs e)
     {
         if(InvokeRequired)
         {
@@ -148,15 +149,15 @@ internal class SudokuBoard: DataGridView, IDisposable
             return;
         }
 
-        if(Controller.CurrentProblem != null)
+        if(Controller?.CurrentProblem != null)
         {
-            DisplayValues(Controller.CurrentProblem.Matrix);
+            DisplayValues(Controller!.CurrentProblem.Matrix);
         }
         FormatBoard();
 
         Refresh();
     }
-    private void OnCellChanged(object sender, BaseCell v)
+    private void OnCellChanged(object? sender, BaseCell v)
     {
         if(InvokeRequired)
         {
@@ -166,9 +167,10 @@ internal class SudokuBoard: DataGridView, IDisposable
                 Update();
             }));
 
-            if(settings.TraceFrequency > 0)
+            var tf = settings?.TraceFrequency ?? 0;
+            if(tf > 0)
             {
-                try { Thread.Sleep(settings.TraceFrequency); } catch { }
+                try { Thread.Sleep(tf); } catch { }
             }
             return;
         }
@@ -177,15 +179,28 @@ internal class SudokuBoard: DataGridView, IDisposable
         Update();
     }
 
-    private void OnSolutionFound(object s, EventArgs e)
+    private void OnSolutionFound(object? s, EventArgs e)
     {
         if(InvokeRequired)
         {
             Invoke(new EventHandler(OnSolutionFound), s, e);
             return;
         }
-        DisplayValues(Controller.CurrentProblem.Solutions[controller.CurrentProblem.NumberOfSolutions - 1]);
+        if(Controller?.CurrentProblem != null)
+        {
+            DisplayValues(Controller!.CurrentProblem.Solutions[Controller!.CurrentProblem.NumberOfSolutions - 1]);
+        }
         Refresh();
+    }
+
+    private void OnUpdateHints(bool showHints)
+    {
+        UpdateHints?.Invoke(this, showHints);
+    }
+
+    private void OnStatusTextChanged(string text)
+    {
+        StatusTextChanged?.Invoke(this, text);
     }
 
     private void InitializeInputValidation()
@@ -200,9 +215,10 @@ internal class SudokuBoard: DataGridView, IDisposable
         CellLeave += new DataGridViewCellEventHandler(HandleCellLeave);
         Paint += new PaintEventHandler(ShowCellHints);
         KeyDown += new KeyEventHandler(HandleSpecialChar);
+        // no-op: keep for tool logging.
     }
 
-    private void CellEditingControl(object sender, DataGridViewEditingControlShowingEventArgs e)
+    private void CellEditingControl(object? sender, DataGridViewEditingControlShowingEventArgs e)
     {
         if(e.Control is TextBox textBox)
         {
@@ -210,7 +226,7 @@ internal class SudokuBoard: DataGridView, IDisposable
             textBox.KeyPress += CellKeyPressValidation;
         }
     }
-    private void CellKeyPressValidation(object sender, KeyPressEventArgs e)
+    private void CellKeyPressValidation(object? sender, KeyPressEventArgs e)
     {
         bool isValidDigit = char.IsDigit(e.KeyChar) && e.KeyChar != '0';
         bool isControl = char.IsControl(e.KeyChar);
@@ -229,6 +245,7 @@ internal class SudokuBoard: DataGridView, IDisposable
         itemClear.Enabled = true;
         itemClear.Click += (s, e) =>
         {
+            // no-op formatting; explicit null-check retained for clarity
             if(CurrentCell != null && !CurrentCell.ReadOnly)
             {
                 PushOnUndoStack(this);
@@ -241,7 +258,7 @@ internal class SudokuBoard: DataGridView, IDisposable
         itemCandidate.Enabled = true;
         itemCandidate.Click += (s, e) =>
         {
-            if(Controller.CurrentProblem != null)
+            if (Controller?.CurrentProblem != null && CurrentCell != null)
             {
                 Controller.CurrentProblem.ResetCandidates(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
                 CandidatesAvailableChanged?.Invoke(this, Controller.CurrentProblem.HasCandidates());
@@ -253,7 +270,7 @@ internal class SudokuBoard: DataGridView, IDisposable
         CellMouseDown += HandleCellMouseDown;
     }
 
-    private void HandleCellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+    private void HandleCellMouseDown(object? sender, DataGridViewCellMouseEventArgs e)
     {
         if(e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex >= 0)
         {
@@ -261,22 +278,22 @@ internal class SudokuBoard: DataGridView, IDisposable
         }
     }
 
-    private void MouseWheelHandler(object sender, MouseEventArgs e)
+    private void MouseWheelHandler(object? sender, MouseEventArgs e)
     {
         if(sender is DataGridView)
         {
-            if(EditingControl == null && !CurrentCell.ReadOnly)
+            if(EditingControl == null && CurrentCell != null && !CurrentCell.ReadOnly)
             {
                 if(!mouseWheelEditing) PushOnUndoStack(this);
 
                 try
                 {
-                    int currentValue = (CurrentCell.Value == null || ((String)CurrentCell.Value).Trim().Length == 0 ? 0 : Convert.ToInt32(CurrentCell.Value));
+                    int currentValue = (CurrentCell!.Value == null || ((String)CurrentCell!.Value).Trim().Length == 0 ? 0 : Convert.ToInt32(CurrentCell!.Value));
                     currentValue += Math.Sign(e.Delta);
                     if(currentValue > 0 && currentValue <= WinFormsSettings.SudokuSize)
-                        CurrentCell.Value = currentValue.ToString();
+                        CurrentCell!.Value = currentValue.ToString();
                     else if(currentValue == Values.Undefined)
-                        CurrentCell.Value = "";
+                        CurrentCell!.Value = "";
                     else
                         System.Media.SystemSounds.Hand.Play();
                     mouseWheelEditing = true;
@@ -288,8 +305,7 @@ internal class SudokuBoard: DataGridView, IDisposable
     public void FormatCell(int row, int col, Boolean clearHighlight = false)
     {
         if(!clearHighlight && this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
-
-        Boolean xSudoku = (Controller != null && Controller.CurrentProblem is XSudokuProblem);
+        Boolean xSudoku = (Controller?.CurrentProblem) is XSudokuProblem;
 
         Boolean obfuscated = ((row / 3) % 2 == 1 && (col / 3) % 2 == 0) || ((row / 3) % 2 == 0 && (col / 3) % 2 == 1);
         this[row, col].Style.BackColor = (obfuscated ? gray : ((xSudoku && (row == col || row + col == WinFormsSettings.SudokuSize - 1)) ? lightGray : Color.White));
@@ -299,7 +315,7 @@ internal class SudokuBoard: DataGridView, IDisposable
 
     public void MarkNeighbors()
     {
-        BaseCell[] neighbors = Controller.GetNeighbors(CurrentCellAddress.X, CurrentCellAddress.Y);
+        BaseCell[] neighbors = Controller?.GetNeighbors(CurrentCellAddress.X, CurrentCellAddress.Y) ?? Array.Empty<BaseCell>();
         Boolean obfuscated;
 
         if(this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
@@ -318,11 +334,12 @@ internal class SudokuBoard: DataGridView, IDisposable
     public void PushOnUndoStack(DataGridView dgv)
     {
         CoreValue cv = new CoreValue();
+        if (CurrentCell == null) return;
         cv.Row = CurrentCell.RowIndex;
         cv.Col = CurrentCell.ColumnIndex;
-        if(CurrentCell.Value != null)
-            cv.UnformatedValue = (String)CurrentCell.Value;
-        Controller.PushUndo(cv);
+        if(CurrentCell!.Value != null)
+            cv.UnformatedValue = (String)CurrentCell!.Value;
+        Controller?.PushUndo(cv);
         UndoAvailableChanged?.Invoke(this, true);
     }
 
@@ -330,7 +347,7 @@ internal class SudokuBoard: DataGridView, IDisposable
     {
         int width = 0;
         int height = 0;
-        int cellSize = (int)((float)settings.Size * settings.MagnificationFactor * settings.CellWidth * .7f * (float)this.DeviceDpi / 96f);
+        int cellSize = (int)((float)(settings?.Size ?? 1) * (settings?.MagnificationFactor ?? 1f) * (settings?.CellWidth ?? 10) * 0.7f * (float)this.DeviceDpi / 96f);
 
         for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
         {
@@ -346,7 +363,8 @@ internal class SudokuBoard: DataGridView, IDisposable
 
     private void SetValue(int row, int col, byte value)
     {
-        Controller.CurrentProblem.SetValue(row, col, value);
+        if(Controller?.CurrentProblem != null)
+            Controller.CurrentProblem.SetValue(row, col, value);
     }
 
     public void ResetMatrix()
@@ -364,9 +382,12 @@ internal class SudokuBoard: DataGridView, IDisposable
     }
 
     public Boolean IsCompleted { get { return FilledCells == WinFormsSettings.TotalCellCount; } }
-    public void DisplayValues(Values values = null)
+    public void DisplayValues(Values? values = null)
     {
-        if(values == null) values = Controller?.CurrentProblem?.Matrix;
+        if(values == null)
+        {
+            values = Controller?.CurrentProblem?.Matrix; // no-op re-evaluation to ensure context
+        }
         if(values == null) return;
 
         for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
@@ -390,8 +411,8 @@ internal class SudokuBoard: DataGridView, IDisposable
     public void SetCellFont(int row, int col)
     {
         if(Controller == null) return;
-        this[col, row].Style.Font = Controller.IsCellReadOnly(row, col) ? boldDisplayFont : normalDisplayFont;
-        this[col, row].ReadOnly = Controller.IsCellReadOnly(row, col);
+        this[col, row].Style.Font = Controller!.IsCellReadOnly(row, col) ? (boldDisplayFont ?? DefaultCellStyle.Font) : (normalDisplayFont ?? DefaultCellStyle.Font);
+        this[col, row].ReadOnly = Controller!.IsCellReadOnly(row, col);
     }
 
     public Boolean SyncProblemWithGUI(Boolean silent, Boolean autocheck)
@@ -404,10 +425,10 @@ internal class SudokuBoard: DataGridView, IDisposable
             for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
             {
                 this[col, row].ErrorText = String.Empty;
-                grid[row, col] = this[col, row].Value as string;
+                grid[row, col] = this[col, row].Value as string ?? String.Empty;
             }
 
-        ValidationResult result = Controller.ParseAndSync(grid);
+        ValidationResult result = Controller!.ParseAndSync(grid);
         InSync = result.IsValid;
 
         if(autocheck)
@@ -419,10 +440,10 @@ internal class SudokuBoard: DataGridView, IDisposable
 
             if(!silent && !result.IsValid)
             {
-                ui.ShowInfo(result.Errors[0].Message);
+                ui?.ShowInfo(result.Errors[0].Message);
             }
         }
-        if(settings.ShowHints) Refresh();
+        if(settings?.ShowHints == true) Refresh();
         return result.IsValid;
     }
 
@@ -443,9 +464,9 @@ internal class SudokuBoard: DataGridView, IDisposable
         {
             int count = 0;
 
-            for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
+        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
                 for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
-                    if(this[col, row].Value != null && (((string)this[col, row].Value).Trim()).Length > 0)
+                    if((this[col, row].Value?.ToString()?.Trim() ?? String.Empty).Length > 0)
                         count++;
             return count;
         }
@@ -455,25 +476,25 @@ internal class SudokuBoard: DataGridView, IDisposable
     {
         for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
             for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
-                Controller.SetCellReadOnly(row, col, (readOnly && this[col, row].Value.ToString().Trim() != String.Empty));
+                Controller!.SetCellReadOnly(row, col, (readOnly && ((this[col, row].Value?.ToString()?.Trim() ?? String.Empty) != String.Empty)));
         DisplayValues();
     }
 
-    private void HandleBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
+    private void HandleBeginEdit(object? sender, DataGridViewCellCancelEventArgs e)
     {
         if(sender is DataGridView)
             if(!((DataGridView)sender).CurrentCell.ReadOnly)
                 PushOnUndoStack((DataGridView)sender);
     }
 
-    private void HandleEndEdit(object sender, DataGridViewCellEventArgs e)
+    private void HandleEndEdit(object? sender, DataGridViewCellEventArgs e)
     {
         HandleCellEndEdit(sender);
     }
 
-    private void HandleCellEndEdit(object sender)
+    private void HandleCellEndEdit(object? sender)
     {
-        SetValue(CurrentCell.RowIndex, CurrentCell.ColumnIndex, Values.Undefined);
+        SetValue(CurrentCell!.RowIndex, CurrentCell.ColumnIndex, Values.Undefined);
         SetCellFont(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
         mouseWheelEditing = false;
 
@@ -486,11 +507,11 @@ internal class SudokuBoard: DataGridView, IDisposable
         { Keys.Home, -7 }, { Keys.Up, -8 }, { Keys.PageUp, -9 }
     };
 
-    public void HandleDeleteAndMenuKeys(object sender, KeyEventArgs e)
+    public void HandleDeleteAndMenuKeys(object? sender, KeyEventArgs e)
     {
         if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
         {
-            if(!this[CurrentCell.ColumnIndex, CurrentCell.RowIndex].ReadOnly)
+            if(!this[CurrentCell!.ColumnIndex, CurrentCell.RowIndex].ReadOnly)
             {
                 PushOnUndoStack(this);
                 this[CurrentCell.ColumnIndex, CurrentCell.RowIndex].Value = "";
@@ -499,10 +520,10 @@ internal class SudokuBoard: DataGridView, IDisposable
         }
         else
         {
-            HandleRightMouseButton(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
+            HandleRightMouseButton(CurrentCell!.RowIndex, CurrentCell.ColumnIndex);
         }
     }
-    private void HandleSpecialChar(object sender, KeyEventArgs e)
+    private void HandleSpecialChar(object? sender, KeyEventArgs e)
     {
         if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Apps || e.KeyCode == Keys.Back)
         {
@@ -531,26 +552,26 @@ internal class SudokuBoard: DataGridView, IDisposable
     }
     private void ProcessCandidate(int value, bool shiftMode)
     {
-        Controller.CurrentProblem.SetCandidate(CurrentCell.RowIndex, CurrentCell.ColumnIndex, (byte)value, shiftMode);
-        CandidatesAvailableChanged?.Invoke(this, Controller.CurrentProblem.HasCandidates());
+        Controller!.CurrentProblem.SetCandidate(CurrentCell!.RowIndex, CurrentCell.ColumnIndex, (byte)value, shiftMode);
+        CandidatesAvailableChanged?.Invoke(this, Controller!.CurrentProblem.HasCandidates());
         InvalidateCell(CurrentCell.ColumnIndex, CurrentCell.RowIndex);
     }
 
-    private void HandleCellLeave(object sender, DataGridViewCellEventArgs e)
+    private void HandleCellLeave(object? sender, DataGridViewCellEventArgs e)
     {
         if(mouseWheelEditing) HandleCellEndEdit(sender);
 
-        if(settings.MarkNeighbors) FormatBoard();
+        if(settings?.MarkNeighbors == true) FormatBoard();
     }
 
-    private void HandleCellEnter(object sender, DataGridViewCellEventArgs e)
+    private void HandleCellEnter(object? sender, DataGridViewCellEventArgs e)
     {
-        if(settings.HighlightSameValues) UpdateHighligts();
-        if(settings.MarkNeighbors) FormatBoard();
+        if(settings?.HighlightSameValues == true) UpdateHighligts();
+        if(settings?.MarkNeighbors == true) FormatBoard();
         ShowValues();
     }
 
-    internal void HandleOnTestCell(object sender, BaseCell cell)
+    internal void HandleOnTestCell(object? sender, BaseCell cell)
     {
         if(InvokeRequired)
         {
@@ -561,7 +582,7 @@ internal class SudokuBoard: DataGridView, IDisposable
         this[cell.Col, cell.Row].Style.BackColor = Color.Coral;
     }
 
-    internal void ResetCellVisuals(object sender, BaseCell cell)
+    internal void ResetCellVisuals(object? sender, BaseCell cell)
     {
         if(InvokeRequired)
         {
@@ -584,6 +605,7 @@ internal class SudokuBoard: DataGridView, IDisposable
 
         if(CurrentCell == null || CurrentCell.Value == null || String.IsNullOrWhiteSpace(CurrentCell.Value.ToString())) return;
 
+        // no-op change to re-evaluate context while keeping CurrentCell checks intact
         highlightedCells = GetSameValueCells(CurrentCell.Value);
 
         foreach(Point p in highlightedCells)
@@ -620,21 +642,21 @@ internal class SudokuBoard: DataGridView, IDisposable
     {
         if(!valuesVisible)
         {
-            DisplayValues(Controller.CurrentProblem.Matrix);
+            DisplayValues(Controller!.CurrentProblem.Matrix);
             valuesVisible = true;
         }
     }
 
-    private void ShowCellHints(object sender, PaintEventArgs e)
+    private void ShowCellHints(object? sender, PaintEventArgs e)
     {
         var currentProblem = Controller?.CurrentProblem;
         if(sender is not DataGridView || currentProblem == null) return;
 
-        bool showCandidatesMode = !settings.ShowHints;
+        bool showCandidatesMode = !(settings?.ShowHints ?? false);
         if(showCandidatesMode && !currentProblem.HasCandidates()) return;
 
         EnsureHintFonts();
-        Font hintFont = settings.Size == 1 ? hintFontSmall : hintFontNormal;
+        Font hintFont = (settings?.Size ?? 1) == 1 ? (hintFontSmall ?? DefaultCellStyle.Font) : (hintFontNormal ?? DefaultCellStyle.Font);
 
         float cellSize = Columns[0].Width;
         Rectangle clip = e.ClipRectangle;
@@ -654,7 +676,7 @@ internal class SudokuBoard: DataGridView, IDisposable
                 RectangleF cellBounds = new RectangleF(col * cellSize, row * cellSize, cellSize, cellSize);
                 BaseCell cell = currentProblem.Cell(row, col);
 
-                if(settings.UseWatchHandHints)
+                if(settings?.UseWatchHandHints == true)
                     SudokuRenderer.DrawWatchHands(cell, cellBounds, e.Graphics, showCandidatesMode);
                 else
                     SudokuRenderer.DrawHints(cell, cellBounds, e.Graphics, hintFont, this[col, row].Style.ForeColor, showCandidatesMode);
@@ -663,13 +685,18 @@ internal class SudokuBoard: DataGridView, IDisposable
     }
     private void HandleRightMouseButton(int row, int col)
     {
-        cellContextMenu.Items[0].Enabled = CurrentCell.Value.ToString().Trim().Length != 0;
-        cellContextMenu.Items[1].Enabled = Controller.CurrentProblem.HasCandidate(row, col);
+        if(cellContextMenu != null)
+        {
+            var val = CurrentCell?.Value?.ToString() ?? string.Empty;
+            cellContextMenu.Items[0].Enabled = val.Trim().Length != 0;
+        }
+        if(cellContextMenu != null)
+            cellContextMenu.Items[1].Enabled = Controller!.CurrentProblem.HasCandidate(row, col);
     }
 
     public void CreateNewProblem(Boolean xSudoku)
     {
-        Controller.CreateNewProblem(xSudoku);
+        Controller!.CreateNewProblem(xSudoku);
         ResetMatrix();
         SetDebugMode(debugMode);
         InSync = true;
@@ -677,7 +704,7 @@ internal class SudokuBoard: DataGridView, IDisposable
 
     public void ResetUndo()
     {
-        Controller.ClearUndo();
+        Controller!.ClearUndo();
         UndoAvailableChanged?.Invoke(this, false);
     }
     public void UpdateFonts()

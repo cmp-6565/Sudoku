@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 
@@ -14,8 +15,8 @@ internal abstract class BaseCell: EventArgs, IComparable
 	private CoreValue coreValue = new CoreValue();
 	private byte definitiveValue = Values.Undefined;
 	private int nNeighbors = 0;
-	private int[] directBlocks;
-	private int[] indirectBlocks;
+    private int[]? directBlocks;
+    private int[]? indirectBlocks;
 	private int candidatesMask = 0;
 	private int exclusionCandidatesMask = 0;
 	private int enabledMask = 0;
@@ -24,23 +25,23 @@ internal abstract class BaseCell: EventArgs, IComparable
 	private bool fixedValue = false;
 	private bool computedValue = false;
 	private bool readOnly = false;
-	protected BaseCell[] neighbors;
+    protected BaseCell[]? neighbors;
 	private int startCol = 0;
 	private int startRow = 0;
 
 	// cached helpers
-	private static byte[] popcountCache;
-	private static int[] lowbitIndex;
+    private static byte[]? popcountCache;
+    private static int[]? lowbitIndex;
 
 	/// <summary>
 	/// Temporary scratch space for naked subset solving techniques.
 	/// </summary>
 	internal struct NakedScratch
 	{
-		public int[] NeighborMasks;
-		public byte[] NeighborCounts;
-		public BaseCell[] CandidateArr;
-		public int[] CommonStamp;
+		public int[]? NeighborMasks;
+		public byte[]? NeighborCounts;
+		public BaseCell[]? CandidateArr;
+		public int[]? CommonStamp;
 
 		public void Ensure(int neighborLen)
 		{
@@ -89,34 +90,34 @@ internal abstract class BaseCell: EventArgs, IComparable
 	/// <param name="op1">The first cell to compare.</param>
 	/// <param name="op2">The second cell to compare.</param>
 	/// <returns>True if the cells are at the same position; false otherwise.</returns>
-	public static bool operator ==(BaseCell op1, BaseCell op2)
+    public static bool operator ==(BaseCell? op1, BaseCell? op2)
 	{
-		if(ReferenceEquals(op1, op2)) return true;
-		if(op1 is null || op2 is null) return false;
-		return op1.Row == op2.Row && op1.Col == op2.Col;
+        if(ReferenceEquals(op1, op2)) return true;
+        if(op1 is null || op2 is null) return false;
+        return op1.Row == op2.Row && op1.Col == op2.Col;
 	}
 
 	/// <summary>
 	/// Compares two cells for inequality.
 	/// </summary>
-	public static bool operator !=(BaseCell op1, BaseCell op2) => !(op1 == op2);
+    public static bool operator !=(BaseCell? op1, BaseCell? op2) => !(op1 == op2);
 
 	/// <summary>
 	/// Compares two cells by hash code (greater than).
 	/// </summary>
-	public static bool operator >(BaseCell op1, BaseCell op2) => op1.GetHashCode() > op2.GetHashCode();
+    public static bool operator >(BaseCell? op1, BaseCell? op2) => (op1?.GetHashCode() ?? 0) > (op2?.GetHashCode() ?? 0);
 
 	/// <summary>
 	/// Compares two cells by hash code (less than).
 	/// </summary>
-	public static bool operator <(BaseCell op1, BaseCell op2) => op1.GetHashCode() < op2.GetHashCode();
+    public static bool operator <(BaseCell? op1, BaseCell? op2) => (op1?.GetHashCode() ?? 0) < (op2?.GetHashCode() ?? 0);
 
 	/// <summary>
 	/// Determines whether the specified object is equal to this cell.
 	/// </summary>
 	/// <param name="obj">The object to compare.</param>
 	/// <returns>True if the object represents the same cell; false otherwise.</returns>
-	public override bool Equals(object obj) => this == (obj as BaseCell);
+	public override bool Equals(object? obj) => this == (obj as BaseCell);
 
 	/// <summary>
 	/// Gets the hash code for this cell based on its position.
@@ -180,7 +181,7 @@ internal abstract class BaseCell: EventArgs, IComparable
 	/// <summary>
 	/// Gets the array of all neighbor cells (sharing row, column, box, or diagonal).
 	/// </summary>
-	public BaseCell[] Neighbors => neighbors;
+    public BaseCell[] Neighbors => neighbors ?? Array.Empty<BaseCell>();
 
 	/// <summary>
 	/// Gets the number of possible values remaining for this cell.
@@ -235,7 +236,12 @@ internal abstract class BaseCell: EventArgs, IComparable
 	/// Adds a neighbor cell to this cell's neighbor list.
 	/// </summary>
 	/// <param name="neighbor">The neighbor cell to add.</param>
-	public void AddNeighbor(ref BaseCell neighbor) { neighbors[nNeighbors++] = neighbor; }
+    public void AddNeighbor(ref BaseCell neighbor)
+    {
+        if(neighbors == null)
+            neighbors = new BaseCell[WinFormsSettings.TotalCellCount];
+        neighbors[nNeighbors++] = neighbor;
+    }
 
 	/// <summary>
 	/// Compares this cell with another object for ordering purposes.
@@ -243,11 +249,11 @@ internal abstract class BaseCell: EventArgs, IComparable
 	/// </summary>
 	/// <param name="obj">The object to compare with.</param>
 	/// <returns>A negative number if this cell should be processed earlier; positive if later; zero if equal.</returns>
-	public int CompareTo(object obj)
+    public int CompareTo(object? obj)
 	{
 		if(obj == null) return -1;
-		BaseCell tmpObj = obj as BaseCell;
-		if(tmpObj == null) throw new ArgumentException(obj.ToString());
+        BaseCell? tmpObj = obj as BaseCell;
+        if(tmpObj == null) throw new ArgumentException(obj.ToString());
 		if(FixedValue) return int.MaxValue;
 		if(tmpObj.FixedValue) return int.MinValue;
 		return ((nPossibleValues * WinFormsSettings.TotalCellCount + Row * WinFormsSettings.SudokuSize + Col) - (tmpObj.nPossibleValues * WinFormsSettings.TotalCellCount + tmpObj.Row * WinFormsSettings.SudokuSize + tmpObj.Col));
@@ -278,14 +284,14 @@ internal abstract class BaseCell: EventArgs, IComparable
     /// </summary>
     /// <param name="value">Candidate value to check.</param>
     /// <returns>True if at least one direct neighbor currently blocks the value; otherwise false.</returns>
-    public bool Blocked(int value) => directBlocks[value] != 0;
+    public bool Blocked(int value) => directBlocks![value] != 0;
 
     /// <summary>
     /// Returns whether the specified value is blocked indirectly (e.g. by other derived constraints).
     /// </summary>
     /// <param name="value">Candidate value to check.</param>
     /// <returns>True if the value is indirectly blocked; otherwise false.</returns>
-    public bool IndirectlyBlocked(int value) => indirectBlocks[value] != 0;
+    public bool IndirectlyBlocked(int value) => indirectBlocks![value] != 0;
 
     /// <summary>
     /// Initializes internal block arrays, candidate masks and flags for this cell.
@@ -296,7 +302,7 @@ internal abstract class BaseCell: EventArgs, IComparable
         InitDirectBlocks();
         InitIndirectBlocks();
         InitCandidates();
-        possibleValuesCount = directBlocks.Length;
+        possibleValuesCount = directBlocks!.Length;
         coreValue.CellValue = Values.Undefined;
         DefinitiveValue = Values.Undefined;
         FixedValue = false;
@@ -326,7 +332,7 @@ internal abstract class BaseCell: EventArgs, IComparable
     {
         if(enabledMaskInitialized) return;
         enabledMask = 0;
-        for(int i = 1; i <= WinFormsSettings.SudokuSize; i++) if(directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i);
+        for(int i = 1; i <= WinFormsSettings.SudokuSize; i++) if(directBlocks![i] == 0 && indirectBlocks![i] == 0) enabledMask |= (1 << i);
         enabledMaskInitialized = true;
     }
 
@@ -337,11 +343,11 @@ internal abstract class BaseCell: EventArgs, IComparable
     public void InitIndirectBlocks()
     {
         indirectBlocks = new int[WinFormsSettings.SudokuSize + 1];
-        possibleValuesCount = directBlocks.Length;
+        possibleValuesCount = directBlocks!.Length;
         enabledMask = 0;
         for(int i = 1; i <= WinFormsSettings.SudokuSize; i++)
         {
-            if(directBlocks[i] == 0 && indirectBlocks[i] == 0) enabledMask |= (1 << i); else possibleValuesCount--;
+            if(directBlocks![i] == 0 && indirectBlocks![i] == 0) enabledMask |= (1 << i); else possibleValuesCount--;
         }
         enabledMaskInitialized = true;
         definitiveValue = Values.Undefined;
@@ -376,7 +382,7 @@ internal abstract class BaseCell: EventArgs, IComparable
     internal static int LowBitIndex(int lowbit)
     {
         EnsureLowbitIndex();
-        if(lowbit > 0 && lowbit < lowbitIndex.Length) return lowbitIndex[lowbit];
+        if(lowbit > 0 && lowbit < lowbitIndex!.Length) return lowbitIndex![lowbit];
         int idx = 0; while(lowbit > 1) { lowbit >>= 1; idx++; }
         return idx;
     }
@@ -404,7 +410,7 @@ internal abstract class BaseCell: EventArgs, IComparable
             }
         }
         uint ux = (uint)v;
-        return popcountCache[ux & 0xFFFF] + popcountCache[(ux >> 16) & 0xFFFF];
+        return popcountCache![ux & 0xFFFF] + popcountCache![(ux >> 16) & 0xFFFF];
     }
 
     /// <summary>
@@ -480,7 +486,7 @@ internal abstract class BaseCell: EventArgs, IComparable
     /// <param name="newValue">Candidate value to change.</param>
     /// <param name="enable">True to decrement (enable) the block counter; false to increment (disable) it.</param>
     /// <param name="direct">True to modify directBlocks; false to modify indirectBlocks.</param>
-    private void SetNeighborBlocks(byte newValue, bool enable, bool direct) { foreach(BaseCell neighbor in neighbors) neighbor.SetBlock(newValue, enable, direct); }
+    private void SetNeighborBlocks(byte newValue, bool enable, bool direct) { foreach(BaseCell neighbor in (neighbors ?? Array.Empty<BaseCell>())) neighbor.SetBlock(newValue, enable, direct); }
 
     /// <summary>
     /// Public entry to set or clear a block for a specific candidate on this cell.
@@ -504,16 +510,16 @@ internal abstract class BaseCell: EventArgs, IComparable
         bool beforeEnabled = (enabledMask & bit) != 0;
         if(enable)
         {
-            if(direct) { if(--directBlocks[value] < 0) throw new ArgumentException("enable not possible", "enable"); }
-            else { if(--indirectBlocks[value] < 0) throw new ArgumentException("enable not possible", "enable"); }
-            if((directBlocks[value] == 0 && indirectBlocks[value] == 0)) possibleValuesCount++;
+            if(direct) { if(--directBlocks![value] < 0) throw new ArgumentException("enable not possible", "enable"); }
+            else { if(--indirectBlocks![value] < 0) throw new ArgumentException("enable not possible", "enable"); }
+            if((directBlocks![value] == 0 && indirectBlocks![value] == 0)) possibleValuesCount++;
         }
         else
         {
-            if((directBlocks[value] == 0 && indirectBlocks[value] == 0)) possibleValuesCount--;
-            if(direct) directBlocks[value]++; else indirectBlocks[value]++;
+            if((directBlocks![value] == 0 && indirectBlocks![value] == 0)) possibleValuesCount--;
+            if(direct) directBlocks![value]++; else indirectBlocks![value]++;
         }
-        bool afterEnabled = (directBlocks[value] == 0 && indirectBlocks[value] == 0);
+        bool afterEnabled = (directBlocks![value] == 0 && indirectBlocks![value] == 0);
         if(beforeEnabled != afterEnabled) { if(afterEnabled) enabledMask |= bit; else enabledMask &= ~bit; }
     }
 
@@ -656,10 +662,10 @@ internal abstract class BaseCell: EventArgs, IComparable
 
         scratch.Ensure(nlen);
 
-        int[] threadNeighborMasks = scratch.NeighborMasks;
-        byte[] threadNeighborCounts = scratch.NeighborCounts;
-		BaseCell[] threadCandidateArr = scratch.CandidateArr;
-		int[] threadCommonStamp = scratch.CommonStamp;
+        int[] threadNeighborMasks = scratch.NeighborMasks!;
+        byte[] threadNeighborCounts = scratch.NeighborCounts!;
+        BaseCell[] threadCandidateArr = scratch.CandidateArr!;
+        int[] threadCommonStamp = scratch.CommonStamp!;
 
         // collect neighbor masks and popcounts into reused arrays
         for(int ni = 0; ni < nlen; ni++)
@@ -823,7 +829,7 @@ internal abstract class BaseCell: EventArgs, IComparable
 }
 internal class NeighborCountComparer: IComparer<BaseCell>
 {
-    public int Compare(BaseCell x, BaseCell y)
+    public int Compare(BaseCell? x, BaseCell? y)
     {
         if(x == null || y == null) return 0;
 

@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Buffers;
 using System.Collections;
@@ -16,36 +17,36 @@ internal abstract class BaseMatrix: Values
 	/// <summary>
 	/// The main matrix storing cells organized by rows.
 	/// </summary>
-	protected BaseCell[][] matrix;
+	protected BaseCell[][]? matrix;
 
 	/// <summary>
 	/// Cells organized by columns for efficient column-based access.
 	/// </summary>
-	protected BaseCell[][] cols;
+	protected BaseCell[][]? cols;
 
 	/// <summary>
 	/// Cells organized by boxes/rectangles for 3x3 constraint checking.
 	/// </summary>
-	protected BaseCell[][] rectangles;
+	protected BaseCell[][]? rectangles;
 
-	private List<BaseCell> sortableValues;
-	private List<BaseCell> cells;
+	private List<BaseCell> sortableValues = new List<BaseCell>();
+	private List<BaseCell> cells = new List<BaseCell>();
 	private Boolean sorted = false;
 	private int nVarValues = 0;
 	protected float severityLevel = float.NaN;
 	private int definitiveCalculatorCounter = 0;
 	private Boolean setPredefinedValues = true;
 
+	// [ThreadStatic]
+	// private static int[]? memberStamp;
+	// [ThreadStatic]
+	// private static int memberStampId;
 	[ThreadStatic]
-	private static int[] memberStamp;
+	private static BaseCell[]? isolatedBuffer;
 	[ThreadStatic]
-	private static int memberStampId;
+	private static int[]? isolatedEnabledCounts;
 	[ThreadStatic]
-	private static BaseCell[] isolatedBuffer;
-	[ThreadStatic]
-	private static int[] isolatedEnabledCounts;
-	[ThreadStatic]
-	private static int[] isolatedCandidateIndex;
+	private static int[]? isolatedCandidateIndex;
 
 	/// <summary>
 	/// Gets the count of cells with definitive (computed) values.
@@ -55,7 +56,7 @@ internal abstract class BaseMatrix: Values
 	/// <summary>
 	/// Event raised when a cell value changes in the matrix.
 	/// </summary>
-	public event EventHandler<BaseCell> CellChanged;
+	public event EventHandler<BaseCell>? CellChanged;
 
 	/// <summary>
 	/// Raises the CellChanged event for the specified cell.
@@ -63,7 +64,7 @@ internal abstract class BaseMatrix: Values
 	/// <param name="v">The cell that changed.</param>
 	protected virtual void OnCellChanged(BaseCell v)
 	{
-		EventHandler<BaseCell> handler = CellChanged;
+		EventHandler<BaseCell>? handler = CellChanged;
 		if(handler != null) handler(this, v);
 	}
 
@@ -99,17 +100,17 @@ internal abstract class BaseMatrix: Values
 
 		for(int row = 0; row < size; row++)
 		{
-			BaseCell[] rowCells = Matrix[row];
+			BaseCell[] rowCells = Matrix[row]!;
 			for(int col = 0; col < size; col++)
 			{
 				BaseCell cell = CreateValue(row, col);
 				rowCells[col] = cell;
-				Cols[col][row] = cell;
+				Cols[col]![row] = cell;
 				int rectRow = row / rectSize;
 				int rectCol = col / rectSize;
 				int rectIndex = rectRow * rectSize + rectCol;
 				int rectOffset = (row % rectSize) * rectSize + (col % rectSize);
-				Rectangles[rectIndex][rectOffset] = cell;
+				Rectangles[rectIndex]![rectOffset] = cell;
 			}
 		}
 
@@ -119,8 +120,8 @@ internal abstract class BaseMatrix: Values
 			for(int col = 0; col < size; col++)
 			{
 				BaseCell cell = rowCells[col];
-				sortableValues.Add(cell);
-				cells.Add(cell);
+				sortableValues!.Add(cell);
+				cells!.Add(cell);
 			}
 		}
 
@@ -185,7 +186,7 @@ internal abstract class BaseMatrix: Values
 	/// <returns>A new <see cref="BaseMatrix"/> instance with copied state.</returns>
 	public override BaseMatrix Clone()
 	{
-		BaseMatrix clonedMatrix = (BaseMatrix)Activator.CreateInstance(this.GetType());
+		BaseMatrix clonedMatrix = (BaseMatrix)Activator.CreateInstance(this.GetType())!;
 
 		clonedMatrix.sorted = this.sorted;
 		clonedMatrix.nVarValues = this.nVarValues;
@@ -229,8 +230,8 @@ internal abstract class BaseMatrix: Values
 	/// </summary>
 	public BaseCell[][] Matrix
 	{
-		set { matrix = value; }
-		get { return matrix; }
+		set => matrix = value;
+		get => matrix!;
 	}
 
 	/// <summary>
@@ -238,8 +239,8 @@ internal abstract class BaseMatrix: Values
 	/// </summary>
 	public BaseCell[][] Rows
 	{
-		set { matrix = value; }
-		get { return matrix; }
+		set => matrix = value;
+		get => matrix!;
 	}
 
 	/// <summary>
@@ -248,7 +249,7 @@ internal abstract class BaseMatrix: Values
 	public BaseCell[][] Cols
 	{
 		set { cols = value; }
-		get { return cols; }
+		get { return cols!; }
 	}
 
 	/// <summary>
@@ -257,7 +258,7 @@ internal abstract class BaseMatrix: Values
 	public BaseCell[][] Rectangles
 	{
 		set { rectangles = value; }
-		get { return rectangles; }
+		get { return rectangles!; }
 	}
 
 	/// <summary>
@@ -265,7 +266,7 @@ internal abstract class BaseMatrix: Values
 	/// </summary>
 	public List<BaseCell> Cells
 	{
-		get { return cells; }
+		get { return cells ??= new List<BaseCell>(); }
 	}
 
 	/// <summary>
@@ -532,6 +533,7 @@ internal abstract class BaseMatrix: Values
 	public void Prepare()
 	{
 		SetDefiniteValues();
+		if(sortableValues == null) sortableValues = new List<BaseCell>(WinFormsSettings.TotalCellCount);
 		sortableValues.Sort();
 		sorted = true;
 		nVarValues = (WinFormsSettings.TotalCellCount) - nValues;
@@ -577,7 +579,7 @@ internal abstract class BaseMatrix: Values
 	}
 
 	[ThreadStatic]
-	private static List<BaseCell> obviousBuffer;
+	private static List<BaseCell>? obviousBuffer;
 
 	/// <summary>
 	/// Returns a copy of the currently obvious cells (cells with exactly one possible value).
@@ -731,20 +733,20 @@ internal abstract class BaseMatrix: Values
 		int plen = part.Length;
 
 		int bufferLength = size * plen;
-		BaseCell[] buffer = isolatedBuffer;
-		if(buffer == null || buffer.Length < bufferLength)
+		BaseCell[] buffer = isolatedBuffer ?? (isolatedBuffer = new BaseCell[bufferLength] );
+		if(buffer.Length < bufferLength)
 		{
 			buffer = new BaseCell[bufferLength];
 			isolatedBuffer = buffer;
 		}
-		int[] enabledCounts = isolatedEnabledCounts;
-		if(enabledCounts == null || enabledCounts.Length < size)
+		int[] enabledCounts = isolatedEnabledCounts ?? (isolatedEnabledCounts = new int[size]);
+		if(enabledCounts.Length < size)
 		{
 			enabledCounts = new int[size];
 			isolatedEnabledCounts = enabledCounts;
 		}
-		int[] usedCandidates = isolatedCandidateIndex;
-		if(usedCandidates == null || usedCandidates.Length < size)
+		int[] usedCandidates = isolatedCandidateIndex ?? (isolatedCandidateIndex = new int[size]);
+		if(usedCandidates.Length < size)
 		{
 			usedCandidates = new int[size];
 			isolatedCandidateIndex = usedCandidates;
@@ -795,6 +797,8 @@ internal abstract class BaseMatrix: Values
 		finally
 		{
 			if(maxBufferIndex > 0) Array.Clear(buffer, 0, maxBufferIndex);
+			// clear only the used prefix of the buffer array to avoid assigning null into pooled array beyond its rented length
+			for(int i = 0; i < usedCandidateCount * plen && i < buffer.Length; i++) buffer[i] = default!;
 			for(int i = 0; i < usedCandidateCount; i++) enabledCounts[usedCandidates[i]] = 0;
 		}
 
@@ -948,7 +952,8 @@ internal abstract class BaseMatrix: Values
 		}
 		finally
 		{
-			for(int i = 0; i < count; i++) arr[i] = null;
+			// clear only the used portion before returning to the pool to avoid leaving references
+			Array.Clear(arr, 0, count);
 			pool.Return(arr, false);
 		}
 	}
@@ -984,10 +989,11 @@ internal abstract class BaseMatrix: Values
 	{
 		if(!sorted)
 		{
+			if(sortableValues == null) sortableValues = new List<BaseCell>();
 			sortableValues.Sort();
 			sorted = true;
 		}
-		return (BaseCell)sortableValues[current];
+		return sortableValues![current];
 	}
 
 	/// <summary>

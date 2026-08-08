@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 
 namespace Sudoku;
@@ -27,6 +28,7 @@ internal class GenerationParameters
     /// <param name="settings">The application settings to use for generation.</param>
     public GenerationParameters(ISudokuSettings settings)
     {
+        ArgumentNullException.ThrowIfNull(settings);
         this.settings = settings;
     }
 

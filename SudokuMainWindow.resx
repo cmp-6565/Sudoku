@@ -124,11 +124,17 @@
   <data name="Column1.HeaderText" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="Column1.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
   <data name="Column1.Width" type="System.Int32, mscorlib">
     <value>30</value>
   </data>
   <data name="Column2.HeaderText" xml:space="preserve">
     <value>2</value>
+  </data>
+  <data name="Column2.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
   </data>
   <data name="Column2.Width" type="System.Int32, mscorlib">
     <value>30</value>
@@ -136,11 +142,17 @@
   <data name="Column3.HeaderText" xml:space="preserve">
     <value>3</value>
   </data>
+  <data name="Column3.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
   <data name="Column3.Width" type="System.Int32, mscorlib">
     <value>30</value>
   </data>
   <data name="Column4.HeaderText" xml:space="preserve">
     <value>4</value>
+  </data>
+  <data name="Column4.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
   </data>
   <data name="Column4.Width" type="System.Int32, mscorlib">
     <value>30</value>
@@ -148,11 +160,17 @@
   <data name="Column5.HeaderText" xml:space="preserve">
     <value>5</value>
   </data>
+  <data name="Column5.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
   <data name="Column5.Width" type="System.Int32, mscorlib">
     <value>30</value>
   </data>
   <data name="Column6.HeaderText" xml:space="preserve">
     <value>6</value>
+  </data>
+  <data name="Column6.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
   </data>
   <data name="Column6.Width" type="System.Int32, mscorlib">
     <value>30</value>
@@ -160,10 +178,16 @@
   <data name="Column7.HeaderText" xml:space="preserve">
     <value>7</value>
   </data>
+  <data name="Column7.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
   <data name="Column7.Width" type="System.Int32, mscorlib">
     <value>30</value>
   </data>
   <data name="Column8.HeaderText" xml:space="preserve">
+    <value>8</value>
+  </data>
+  <data name="Column8.MinimumWidth" type="System.Int32, mscorlib">
     <value>8</value>
   </data>
   <data name="Column8.Width" type="System.Int32, mscorlib">
@@ -172,23 +196,26 @@
   <data name="Column9.HeaderText" xml:space="preserve">
     <value>9</value>
   </data>
+  <data name="Column9.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
   <data name="Column9.Width" type="System.Int32, mscorlib">
     <value>30</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="SudokuGrid.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 47</value>
+    <value>14, 78</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="SudokuGrid.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 6, 6, 6</value>
+    <value>9, 10, 9, 10</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="SudokuGrid.ScrollBars" type="System.Windows.Forms.ScrollBars, System.Windows.Forms">
     <value>None</value>
   </data>
   <data name="SudokuGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>283, 313</value>
+    <value>404, 522</value>
   </data>
   <data name="SudokuGrid.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -218,13 +245,13 @@
     <value>NoControl</value>
   </data>
   <data name="status.Location" type="System.Drawing.Point, System.Drawing">
-    <value>13, 373</value>
+    <value>19, 651</value>
   </data>
   <data name="status.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 4, 0</value>
+    <value>6, 0, 6, 0</value>
   </data>
   <data name="status.Size" type="System.Drawing.Size, System.Drawing">
-    <value>0, 15</value>
+    <value>0, 25</value>
   </data>
   <data name="status.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -251,13 +278,13 @@
     <value>NoControl</value>
   </data>
   <data name="next.Location" type="System.Drawing.Point, System.Drawing">
-    <value>264, 373</value>
+    <value>377, 626</value>
   </data>
   <data name="next.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
+    <value>6, 5, 6, 5</value>
   </data>
   <data name="next.Size" type="System.Drawing.Size, System.Drawing">
-    <value>28, 27</value>
+    <value>40, 45</value>
   </data>
   <data name="next.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -287,13 +314,13 @@
     <value>NoControl</value>
   </data>
   <data name="prior.Location" type="System.Drawing.Point, System.Drawing">
-    <value>237, 373</value>
+    <value>339, 626</value>
   </data>
   <data name="prior.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
+    <value>6, 5, 6, 5</value>
   </data>
   <data name="prior.Size" type="System.Drawing.Size, System.Drawing">
-    <value>28, 27</value>
+    <value>40, 45</value>
   </data>
   <data name="prior.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -320,7 +347,7 @@
     <value>Ctrl+N</value>
   </data>
   <data name="newNormalSudoku.Size" type="System.Drawing.Size, System.Drawing">
-    <value>254, 22</value>
+    <value>385, 34</value>
   </data>
   <data name="newNormalSudoku.Text" xml:space="preserve">
     <value>&amp;Classic Sudoku</value>
@@ -329,22 +356,22 @@
     <value>Ctrl+Shift+N</value>
   </data>
   <data name="newXSudoku.Size" type="System.Drawing.Size, System.Drawing">
-    <value>254, 22</value>
+    <value>385, 34</value>
   </data>
   <data name="newXSudoku.Text" xml:space="preserve">
     <value>&amp;X-Sudoku</value>
   </data>
   <data name="toolStripSeparator13.Size" type="System.Drawing.Size, System.Drawing">
-    <value>251, 6</value>
+    <value>382, 6</value>
   </data>
   <data name="sudokuOfTheDayToolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>254, 22</value>
+    <value>385, 34</value>
   </data>
   <data name="sudokuOfTheDayToolStripMenuItem1.Text" xml:space="preserve">
     <value>&amp;Sudoku of the Day</value>
   </data>
   <data name="newItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
+    <value>250, 34</value>
   </data>
   <data name="newItem.Text" xml:space="preserve">
     <value>&amp;New</value>
@@ -356,7 +383,7 @@
     <value>Ctrl+O</value>
   </data>
   <data name="open.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
+    <value>250, 34</value>
   </data>
   <data name="open.Text" xml:space="preserve">
     <value>&amp;Open...</value>
@@ -368,28 +395,28 @@
     <value>Ctrl+S</value>
   </data>
   <data name="save.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
+    <value>250, 34</value>
   </data>
   <data name="save.Text" xml:space="preserve">
     <value>&amp;Save...</value>
   </data>
   <data name="toolStripSeparator2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>164, 6</value>
+    <value>247, 6</value>
   </data>
   <data name="twitter.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
+    <value>250, 34</value>
   </data>
   <data name="twitter.Text" xml:space="preserve">
     <value>&amp;Twitter Problem...</value>
   </data>
   <data name="export.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
+    <value>250, 34</value>
   </data>
   <data name="export.Text" xml:space="preserve">
     <value>E&amp;xport as HTML...</value>
   </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>164, 6</value>
+    <value>247, 6</value>
   </data>
   <data name="print.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
@@ -398,31 +425,31 @@
     <value>Ctrl+P</value>
   </data>
   <data name="print.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
+    <value>250, 34</value>
   </data>
   <data name="print.Text" xml:space="preserve">
     <value>&amp;Print...</value>
   </data>
   <data name="newBooklet.Size" type="System.Drawing.Size, System.Drawing">
-    <value>162, 22</value>
+    <value>245, 34</value>
   </data>
   <data name="newBooklet.Text" xml:space="preserve">
     <value>&amp;New...</value>
   </data>
   <data name="existingBooklet.Size" type="System.Drawing.Size, System.Drawing">
-    <value>162, 22</value>
+    <value>245, 34</value>
   </data>
   <data name="existingBooklet.Text" xml:space="preserve">
     <value>&amp;Load Problems...</value>
   </data>
   <data name="generateBooklet.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
+    <value>250, 34</value>
   </data>
   <data name="generateBooklet.Text" xml:space="preserve">
     <value>&amp;Generate Booklet</value>
   </data>
   <data name="toolStripSeparator5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>164, 6</value>
+    <value>247, 6</value>
   </data>
   <data name="exit.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
@@ -431,13 +458,13 @@
     <value>Alt+F4</value>
   </data>
   <data name="exit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>167, 22</value>
+    <value>250, 34</value>
   </data>
   <data name="exit.Text" xml:space="preserve">
     <value>&amp;Exit</value>
   </data>
   <data name="file.Size" type="System.Drawing.Size, System.Drawing">
-    <value>37, 20</value>
+    <value>54, 29</value>
   </data>
   <data name="file.Text" xml:space="preserve">
     <value>&amp;File</value>
@@ -446,7 +473,7 @@
     <value>F3</value>
   </data>
   <data name="generateNormalSudoku.Size" type="System.Drawing.Size, System.Drawing">
-    <value>228, 22</value>
+    <value>347, 34</value>
   </data>
   <data name="generateNormalSudoku.Text" xml:space="preserve">
     <value>&amp;Classic Sudoku</value>
@@ -455,13 +482,13 @@
     <value>Shift+F3</value>
   </data>
   <data name="generateXSudoku.Size" type="System.Drawing.Size, System.Drawing">
-    <value>228, 22</value>
+    <value>347, 34</value>
   </data>
   <data name="generateXSudoku.Text" xml:space="preserve">
     <value>&amp;X-Sudoku</value>
   </data>
   <data name="generate.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="generate.Text" xml:space="preserve">
     <value>&amp;Generate</value>
@@ -470,7 +497,7 @@
     <value>F4</value>
   </data>
   <data name="solve.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="solve.Text" xml:space="preserve">
     <value>&amp;Solve</value>
@@ -479,7 +506,7 @@
     <value>F9</value>
   </data>
   <data name="mimimalAllocation.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="mimimalAllocation.Text" xml:space="preserve">
     <value>&amp;Find Minimal Allocation</value>
@@ -488,19 +515,19 @@
     <value>F5</value>
   </data>
   <data name="definiteValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="definiteValues.Text" xml:space="preserve">
     <value>Show &amp;Definite Values</value>
   </data>
   <data name="toolStripSeparator3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>268, 6</value>
+    <value>407, 6</value>
   </data>
   <data name="validate.ShortcutKeys" type="System.Windows.Forms.Keys, System.Windows.Forms">
     <value>F6</value>
   </data>
   <data name="validate.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="validate.Text" xml:space="preserve">
     <value>&amp;Validate</value>
@@ -509,7 +536,7 @@
     <value>F7</value>
   </data>
   <data name="check.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="check.Text" xml:space="preserve">
     <value>&amp;Check</value>
@@ -518,40 +545,40 @@
     <value>F8</value>
   </data>
   <data name="info.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="info.Text" xml:space="preserve">
     <value>&amp;Info</value>
   </data>
   <data name="EditComment.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="EditComment.Text" xml:space="preserve">
     <value>&amp;Edit Comment</value>
   </data>
   <data name="toolStripSeparator11.Size" type="System.Drawing.Size, System.Drawing">
-    <value>268, 6</value>
+    <value>407, 6</value>
   </data>
   <data name="startSolveProblem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="startSolveProblem.Text" xml:space="preserve">
     <value>Start Game</value>
   </data>
   <data name="fixCurrentValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="fixCurrentValues.Text" xml:space="preserve">
     <value>Fi&amp;x Current Values</value>
   </data>
   <data name="releaseCurrentValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="releaseCurrentValues.Text" xml:space="preserve">
     <value>Release Current Values</value>
   </data>
   <data name="toolStripSeparator9.Size" type="System.Drawing.Size, System.Drawing">
-    <value>268, 6</value>
+    <value>407, 6</value>
   </data>
   <data name="reset.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
@@ -560,7 +587,7 @@
     <value>Ctrl+F10</value>
   </data>
   <data name="reset.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="reset.Text" xml:space="preserve">
     <value>&amp;Reset</value>
@@ -569,13 +596,13 @@
     <value>Shift+F10</value>
   </data>
   <data name="clearCandidates.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="clearCandidates.Text" xml:space="preserve">
     <value>C&amp;lear Candidates</value>
   </data>
   <data name="toolStripSeparator4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>268, 6</value>
+    <value>407, 6</value>
   </data>
   <data name="abort.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
@@ -584,13 +611,13 @@
     <value>Ctrl+F4</value>
   </data>
   <data name="abort.Size" type="System.Drawing.Size, System.Drawing">
-    <value>271, 22</value>
+    <value>410, 34</value>
   </data>
   <data name="abort.Text" xml:space="preserve">
     <value>&amp;Abort</value>
   </data>
   <data name="SudokuProblem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>64, 20</value>
+    <value>95, 29</value>
   </data>
   <data name="SudokuProblem.Text" xml:space="preserve">
     <value>&amp;Problem</value>
@@ -599,40 +626,40 @@
     <value>Ctrl+Z</value>
   </data>
   <data name="undo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="undo.Text" xml:space="preserve">
     <value>&amp;Undo</value>
   </data>
   <data name="toolStripSeparator8.Size" type="System.Drawing.Size, System.Drawing">
-    <value>218, 6</value>
+    <value>333, 6</value>
   </data>
-  <data name="debug.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+  <data name="traceMode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>336, 34</value>
   </data>
-  <data name="debug.Text" xml:space="preserve">
+  <data name="traceMode.Text" xml:space="preserve">
     <value>&amp;Track</value>
   </data>
   <data name="findallSolutions.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="findallSolutions.Text" xml:space="preserve">
     <value>&amp;Find all Solutions (max. 100)</value>
   </data>
   <data name="showPossibleValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="showPossibleValues.Text" xml:space="preserve">
     <value>&amp;Show Possible Values</value>
   </data>
   <data name="autoCheck.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="autoCheck.Text" xml:space="preserve">
     <value>&amp;Auto Check</value>
   </data>
   <data name="pencilMode.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="pencilMode.Text" xml:space="preserve">
     <value>Pencil &amp;Mode</value>
@@ -641,46 +668,46 @@
     <value>False</value>
   </data>
   <data name="highlightSameValues.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="highlightSameValues.Text" xml:space="preserve">
     <value>&amp;Highlight Same Values</value>
   </data>
   <data name="markNeighbors.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="markNeighbors.Text" xml:space="preserve">
     <value>&amp;Mark Neighbors</value>
   </data>
   <data name="toolStripSeparator10.Size" type="System.Drawing.Size, System.Drawing">
-    <value>218, 6</value>
+    <value>333, 6</value>
   </data>
   <data name="pause.ShortcutKeyDisplayString" xml:space="preserve">
     <value />
   </data>
   <data name="pause.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="pause.Text" xml:space="preserve">
     <value>&amp;Pause</value>
   </data>
   <data name="resetTimer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="resetTimer.Text" xml:space="preserve">
     <value>&amp;Reset Timer</value>
   </data>
   <data name="toolStripSeparator6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>218, 6</value>
+    <value>333, 6</value>
   </data>
   <data name="sudokuOptionsToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>221, 22</value>
+    <value>336, 34</value>
   </data>
   <data name="sudokuOptionsToolStripMenuItem.Text" xml:space="preserve">
     <value>Sudoku &amp;Options...</value>
   </data>
   <data name="options.Size" type="System.Drawing.Size, System.Drawing">
-    <value>61, 20</value>
+    <value>92, 29</value>
   </data>
   <data name="options.Text" xml:space="preserve">
     <value>&amp;Options</value>
@@ -689,7 +716,7 @@
     <value>F1</value>
   </data>
   <data name="showCellInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 22</value>
+    <value>279, 34</value>
   </data>
   <data name="showCellInfo.Text" xml:space="preserve">
     <value>Show Cell Info</value>
@@ -698,46 +725,46 @@
     <value>Ctrl+F1</value>
   </data>
   <data name="showHints.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 22</value>
+    <value>279, 34</value>
   </data>
   <data name="showHints.Text" xml:space="preserve">
     <value>Show &amp;Hints</value>
   </data>
   <data name="toolStripSeparator7.Size" type="System.Drawing.Size, System.Drawing">
-    <value>179, 6</value>
+    <value>276, 6</value>
   </data>
   <data name="visitHomepage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 22</value>
+    <value>279, 34</value>
   </data>
   <data name="visitHomepage.Text" xml:space="preserve">
     <value>&amp;Sudoku Homepage</value>
   </data>
   <data name="versionHistory.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 22</value>
+    <value>279, 34</value>
   </data>
   <data name="versionHistory.Text" xml:space="preserve">
     <value>&amp;Version History</value>
   </data>
   <data name="aboutSudoku.Size" type="System.Drawing.Size, System.Drawing">
-    <value>182, 22</value>
+    <value>279, 34</value>
   </data>
   <data name="aboutSudoku.Text" xml:space="preserve">
     <value>&amp;About Sudoku...</value>
   </data>
   <data name="help.Size" type="System.Drawing.Size, System.Drawing">
-    <value>44, 20</value>
+    <value>65, 29</value>
   </data>
   <data name="help.Text" xml:space="preserve">
     <value>&amp;Help</value>
   </data>
   <data name="sudokuMenu.Location" type="System.Drawing.Point, System.Drawing">
-    <value>2, 2</value>
+    <value>3, 3</value>
   </data>
   <data name="sudokuMenu.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>7, 2, 0, 2</value>
+    <value>10, 3, 0, 3</value>
   </data>
   <data name="sudokuMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>298, 24</value>
+    <value>425, 35</value>
   </data>
   <data name="sudokuMenu.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -779,19 +806,19 @@
     <value>2, 409</value>
   </metadata>
   <data name="sudokuStatusBarText.Size" type="System.Drawing.Size, System.Drawing">
-    <value>39, 17</value>
+    <value>60, 25</value>
   </data>
   <data name="sudokuStatusBarText.Text" xml:space="preserve">
     <value>Ready</value>
   </data>
   <data name="sudokuStatusBar.Location" type="System.Drawing.Point, System.Drawing">
-    <value>2, 476</value>
+    <value>3, 827</value>
   </data>
   <data name="sudokuStatusBar.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>1, 0, 16, 0</value>
+    <value>1, 0, 23, 0</value>
   </data>
   <data name="sudokuStatusBar.Size" type="System.Drawing.Size, System.Drawing">
-    <value>298, 22</value>
+    <value>425, 32</value>
   </data>
   <data name="sudokuStatusBar.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
@@ -824,10 +851,10 @@
     <value>98</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>7, 15</value>
+    <value>10, 25</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>302, 500</value>
+    <value>431, 862</value>
   </data>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1255,10 +1282,10 @@
 </value>
   </data>
   <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
+    <value>6, 5, 6, 5</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>2, 2, 2, 2</value>
+    <value>3, 3, 3, 3</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>
@@ -1572,10 +1599,10 @@
   <data name="&gt;&gt;toolStripSeparator8.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripSeparator, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;debug.Name" xml:space="preserve">
-    <value>debug</value>
+  <data name="&gt;&gt;traceMode.Name" xml:space="preserve">
+    <value>traceMode</value>
   </data>
-  <data name="&gt;&gt;debug.Type" xml:space="preserve">
+  <data name="&gt;&gt;traceMode.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;findallSolutions.Name" xml:space="preserve">

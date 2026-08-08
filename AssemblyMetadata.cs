@@ -27,7 +27,7 @@ public static class AssemblyMetadata
     public static string Get(string key)
     {
         metadata.Value.TryGetValue(key, out var value);
-        return value;
+        return value ?? String.Empty;
     }
 
     /// <summary>

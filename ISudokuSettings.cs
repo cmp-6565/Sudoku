@@ -1,4 +1,7 @@
-﻿namespace Sudoku;
+﻿#nullable enable
+using System;
+
+namespace Sudoku;
 
 /// <summary>
 /// Defines the interface for managing Sudoku application settings and configuration.

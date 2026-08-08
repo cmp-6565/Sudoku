@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -116,7 +117,7 @@ static class AssemblyInfo
     {
         get
         {
-            return AssemblyMetadata.Get("RepositoryUrl");
+            return AssemblyMetadata.Get("RepositoryUrl") ?? String.Empty;
         }
     }
 

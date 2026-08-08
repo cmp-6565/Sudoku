@@ -37,20 +37,20 @@ public class WinFormsSettings: IObservableSudokuSettings
                 return (T)cachedValue!;
             }
 
-            // Use reflection to get property from Settings.Default
-            var property = typeof(Settings).GetProperty(settingKey,
-                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Static);
+            // Use reflection to get property from Settings.Default (instance properties)
+            var property = typeof(Settings).GetProperty(
+                settingKey,
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 
             if(property == null)
             {
-                var errorMsg = $"Setting '{settingKey}' not found in {SettingsSource}. " +
-                              $"Ensure the property exists in application settings.";
+                var errorMsg = $"Setting '{settingKey}' not found in {SettingsSource}. Ensure the property exists in application settings.";
                 Debug.WriteLine($"[ERROR] {errorMsg}");
                 throw new InvalidOperationException(errorMsg);
             }
 
-            // Get value from backing store
-            var value = property.GetValue(null);
+            // Get value from the Settings.Default instance (backing store)
+            var value = property.GetValue(Settings.Default);
 
             // Check for null values on non-nullable value types
             if(value == null && typeof(T).IsValueType && Nullable.GetUnderlyingType(typeof(T)) == null)
@@ -99,9 +99,9 @@ public class WinFormsSettings: IObservableSudokuSettings
                 return;
             }
 
-            // Use reflection to set property in Settings.Default
+            // Use reflection to set property in Settings.Default (instance properties)
             var property = typeof(Settings).GetProperty(settingKey,
-                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Static);
+                BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
 
             if(property == null)
             {
@@ -118,8 +118,8 @@ public class WinFormsSettings: IObservableSudokuSettings
                 throw new InvalidOperationException(errorMsg);
             }
 
-            // Set value in backing store
-            property.SetValue(null, validatedValue);
+            // Set value on the Settings.Default instance (backing store)
+            property.SetValue(Settings.Default, validatedValue);
 
             // Invalidate cache for this key
             _cache.Remove(settingKey);

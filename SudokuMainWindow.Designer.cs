@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace Sudoku
 {
     partial class SudokuForm
@@ -262,6 +264,7 @@ namespace Sudoku
             // sudokuMenu
             // 
             sudokuMenu.BackColor = System.Drawing.SystemColors.MenuBar;
+            sudokuMenu.ImageScalingSize = new System.Drawing.Size(24, 24);
             sudokuMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { file, SudokuProblem, options, help });
             resources.ApplyResources(sudokuMenu, "sudokuMenu");
             sudokuMenu.Name = "sudokuMenu";
@@ -424,7 +427,7 @@ namespace Sudoku
             definiteValues.Name = "definiteValues";
             resources.ApplyResources(definiteValues, "definiteValues");
             definiteValues.Tag = "disable=1";
-            definiteValues.Click += DefiniteClick;
+            definiteValues.Click += ShowDefiniteValuesClick;
             // 
             // toolStripSeparator3
             // 
@@ -450,7 +453,7 @@ namespace Sudoku
             info.Name = "info";
             resources.ApplyResources(info, "info");
             info.Tag = "disable=1";
-            info.Click += InfoClick;
+            info.Click += DisplayProblemInfoClicked;
             // 
             // EditComment
             // 
@@ -536,11 +539,11 @@ namespace Sudoku
             toolStripSeparator8.Name = "toolStripSeparator8";
             resources.ApplyResources(toolStripSeparator8, "toolStripSeparator8");
             // 
-            // debug
+            // traceMode
             // 
             traceMode.CheckOnClick = true;
-            traceMode.Name = "debug";
-            resources.ApplyResources(traceMode, "debug");
+            traceMode.Name = "traceMode";
+            resources.ApplyResources(traceMode, "traceMode");
             traceMode.Tag = "disable=1";
             traceMode.Click += DebugClick;
             // 
@@ -681,6 +684,7 @@ namespace Sudoku
             // 
             // sudokuStatusBar
             // 
+            sudokuStatusBar.ImageScalingSize = new System.Drawing.Size(24, 24);
             sudokuStatusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { sudokuStatusBarText });
             resources.ApplyResources(sudokuStatusBar, "sudokuStatusBar");
             sudokuStatusBar.Name = "sudokuStatusBar";

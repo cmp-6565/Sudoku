@@ -10,74 +10,142 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Sudoku;
+#nullable enable
 
+/// <summary>
+/// Enumeration defining different parts of a Sudoku puzzle that can be analyzed.
+/// </summary>
 public enum SudokuPart { Row, Column, Block, UpDiagonal, DownDiagonal };
 
+/// <summary>
+/// Main form for the Sudoku application. Implements the user interface for creating, solving, and managing Sudoku puzzles.
+/// Inherits from Form and implements IUserInteraction and IDisposable interfaces for resource management and user feedback.
+/// This is a partial class that contains the core logic for the Sudoku form, with additional designer-generated components
+/// in the corresponding designer file.
+/// </summary>
 public partial class SudokuForm: Form, IUserInteraction, IDisposable
 {
-    // Settings is now provided by DI when available
+    /// <summary>
+    /// Application settings instance injected via dependency injection. Provides configuration for the application behavior.
+    /// </summary>
     private ISudokuSettings settings;
+
+    /// <summary>
+    /// Factory for creating instances of SudokuController with appropriate configuration.
+    /// </summary>
     private readonly SudokuControllerFactory controllerFactory;
 
+    /// <summary>
+    /// Timer for handling automatic pause functionality when the form loses focus.
+    /// </summary>
     private System.Windows.Forms.Timer autoPauseTimer;
+
+    /// <summary>
+    /// Timer for periodic status updates, typically updated every second.
+    /// </summary>
     private System.Windows.Forms.Timer statusUpdateTimer;
 
+    /// <summary>
+    /// Stopwatch for measuring puzzle generation time.
+    /// </summary>
     private Stopwatch generationTimer = new Stopwatch();
 
+    /// <summary>
+    /// Tracks the current solution index when multiple solutions are being explored.
+    /// </summary>
     private int currentSolution = 0;
+
+    /// <summary>
+    /// Property that indicates whether an abort has been requested via the cancellation token.
+    /// </summary>
     private Boolean AbortRequested { get { if(FormCTS != null) return FormCTS.Token.IsCancellationRequested; return false; } }
+
+    /// <summary>
+    /// Flag indicating whether the application is currently exiting.
+    /// </summary>
     private Boolean applicationExiting = false;
+
+    /// <summary>
+    /// Current culture information for localization and formatting.
+    /// </summary>
     private CultureInfo cultureInfo;
-    private OptionsDialog optionsDialog = null;
+
+    /// <summary>
+    /// Reference to the options dialog, if currently open.
+    /// </summary>
+    private OptionsDialog? optionsDialog;
+
+    /// <summary>
+    /// Flag indicating whether to use a pre-calculated problem instead of generating a new one.
+    /// </summary>
     private Boolean usePrecalculatedProblem = false;
+
+    /// <summary>
+    /// The current severity level for puzzle generation (difficulty).
+    /// </summary>
     private int severityLevel = 0;
 
-    private SudokuController controller;
-    public CancellationTokenSource FormCTS { get; set; }
+    /// <summary>
+    /// The main controller handling puzzle logic and operations.
+    /// </summary>
+    private SudokuController controller = default!;
 
-    // Für das Pause-Overlay
-    private Label pauseOverlay;
-    private Progress<MinimizationUpdate> minimizationProgress;
+    /// <summary>
+    /// Gets or sets the cancellation token source for coordinating async operations and form lifecycle.
+    /// </summary>
+    public CancellationTokenSource FormCTS { get; set; } = default!;
+
+    /// <summary>
+    /// Label control that displays a pause overlay on the form.
+    /// </summary>
+    private Label? pauseOverlay;
+
+    /// <summary>
+    /// Progress reporter for handling updates during puzzle minimization operations.
+    /// </summary>
+    private Progress<MinimizationUpdate>? minimizationProgress;
 
     /// <summary>
     /// Parameterless constructor kept for Windows Forms designer compatibility.
+    /// Creates a SudokuForm with default settings and no controller factory specified.
     /// </summary>
     public SudokuForm() : this(new WinFormsSettings(), null) { }
 
     /// <summary>
-    /// Constructor used by DI. Accepts settings and the service provider.
+    /// Constructor used by dependency injection. Initializes the form with injected application settings and controller factory.
+    /// Sets up the UI, timers, controllers, and loads any puzzle file specified via command line arguments.
     /// </summary>
-    /// <param name="settings">Injected application settings.</param>
-    /// <param name="serviceProvider">Service provider (optional)</param>
-    internal SudokuForm(ISudokuSettings settings, SudokuControllerFactory controllerFactory)
+    /// <param name="applicationSettings">The injected application settings instance for configuration.</param>
+    /// <param name="applicationControllerFactory">The injected controller factory; if null, a local factory is created.</param>
+    internal SudokuForm(ISudokuSettings applicationSettings, SudokuControllerFactory? applicationControllerFactory)
     {
-        this.settings = settings ?? new WinFormsSettings();
+        settings = applicationSettings ?? new WinFormsSettings();
         // wenn DI null (Designer-Fall) lokale Factory erstellen
-        this.controllerFactory = controllerFactory ?? new SudokuControllerFactory(this.settings);
+        controllerFactory = applicationControllerFactory ?? new SudokuControllerFactory(settings);
 
-        Thread.CurrentThread.CurrentUICulture = (cultureInfo = new System.Globalization.CultureInfo(this.settings.DisplayLanguage));
+        Thread.CurrentThread.CurrentUICulture = (cultureInfo = new System.Globalization.CultureInfo(settings.DisplayLanguage));
 
         InitializeComponent();
         InitializeFormCTS();
-        SudokuGrid.Initialize(this.settings, this);
+        SudokuGrid.Initialize(settings, this);
         InitializeController();
         InitializeMinimizationProgress();
 
         sudokuMenu.Renderer = new FlatRenderer();
 
-        traceMode.Checked = this.settings.TraceMode;
-        autoCheck.Checked = this.settings.AutoCheck;
-        showPossibleValues.Checked = this.settings.ShowHints;
-        findallSolutions.Checked = this.settings.FindAllSolutions;
-        ShowInTaskbar = !this.settings.HideWhenMinimized;
-        markNeighbors.Checked = this.settings.MarkNeighbors;
-        highlightSameValues.Checked = this.settings.HighlightSameValues;
+        traceMode.Checked = settings.TraceMode;
+        autoCheck.Checked = settings.AutoCheck;
+        showPossibleValues.Checked = settings.ShowHints;
+        findallSolutions.Checked = settings.FindAllSolutions;
+        ShowInTaskbar = !settings.HideWhenMinimized;
+        markNeighbors.Checked = settings.MarkNeighbors;
+        highlightSameValues.Checked = settings.HighlightSameValues;
 
         Deactivate += new EventHandler(FocusLost);
         Activated += new EventHandler(FocusGotten);
 
         autoPauseTimer = new System.Windows.Forms.Timer();
-        autoPauseTimer.Interval = Convert.ToInt32(this.settings.AutoPauseLag) * 1000;
+        autoPauseTimer.Interval = Convert.ToInt32(settings.AutoPauseLag) * 1000;
         autoPauseTimer.Tick += new EventHandler(AutoPauseTick);
 
         statusUpdateTimer = new System.Windows.Forms.Timer();
@@ -102,6 +170,9 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         }
     }
 
+    /// <summary>
+    /// Disposes of managed resources including timers, dialogs, UI elements, and the controller.
+    /// </summary>
     public new void Dispose()
     {
         base.Dispose();
@@ -112,6 +183,10 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         controller?.Dispose();
     }
 
+    /// <summary>
+    /// Initializes or reinitializes the cancellation token source for managing async operations.
+    /// Cancels and disposes the existing token source before creating a new one.
+    /// </summary>
     private void InitializeFormCTS()
     {
         try { FormCTS?.Cancel(); } catch { }
@@ -119,6 +194,10 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         FormCTS = new CancellationTokenSource();
     }
 
+    /// <summary>
+    /// Initializes the progress reporter for minimization operations.
+    /// Handles updates for cell visualization and status text during puzzle minimization.
+    /// </summary>
     private void InitializeMinimizationProgress()
     {
         minimizationProgress = new Progress<MinimizationUpdate>(update =>
@@ -126,13 +205,13 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             switch(update.Type)
             {
             case MinimizationUpdateType.TestCell:
-                SudokuGrid.HandleOnTestCell(this, update.Cell);
+                if(update.Cell != null) SudokuGrid.HandleOnTestCell(this, update.Cell);
                 break;
             case MinimizationUpdateType.ResetCell:
-                SudokuGrid.ResetCellVisuals(this, update.Cell);
+                if(update.Cell != null) SudokuGrid.ResetCellVisuals(this, update.Cell);
                 break;
             case MinimizationUpdateType.Status:
-                BaseProblem problem = update.Problem ?? controller?.CurrentProblem;
+                BaseProblem? problem = update.Problem ?? controller?.CurrentProblem;
                 if(problem == null)
                 {
                     status.Text = Resources.Minimizing;
@@ -151,10 +230,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             }
         });
     }
+
     /// <summary>
-    /// Helper method to safely open URLs in .NET Core/.NET 8+
+    /// Helper method to safely open URLs in .NET Core/.NET 8+.
     /// In .NET 8 UseShellExecute defaults to false, which prevents URLs from opening without this flag.
     /// </summary>
+    /// <param name="url">The URL to open in the default browser.</param>
     private void OpenUrl(string url)
     {
         try
@@ -167,44 +248,62 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         }
     }
 
+    /// <summary>
+    /// Displays an error message to the user in a message box with an error icon.
+    /// </summary>
+    /// <param name="message">The error message to display.</param>
     public void ShowError(string message)
     {
+        ArgumentNullException.ThrowIfNull(message);
         MessageBox.Show(this, message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
     }
+
+    /// <summary>
+    /// Displays an informational message to the user in a message box with an information icon.
+    /// </summary>
+    /// <param name="message">The information message to display.</param>
     public void ShowInfo(string message)
     {
+        ArgumentNullException.ThrowIfNull(message);
         MessageBox.Show(this, message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
+
+    /// <summary>
+    /// Displays a confirmation dialog to the user with customizable buttons.
+    /// </summary>
+    /// <param name="message">The question or confirmation message to display.</param>
+    /// <param name="buttons">The button configuration for the dialog; defaults to YesNo.</param>
+    /// <returns>The dialog result indicating which button the user clicked.</returns>
     public DialogResult Confirm(string message, MessageBoxButtons buttons = MessageBoxButtons.YesNo)
     {
+        ArgumentNullException.ThrowIfNull(message);
         return MessageBox.Show(this, message, ProductName, buttons, MessageBoxIcon.Question);
     }
+
+    /// <summary>
+    /// Prompts the user to specify a filename for saving a Sudoku puzzle.
+    /// Returns the selected filename or an empty string if cancelled.
+    /// </summary>
+    /// <param name="defaultExt">The default file extension to use (e.g., ".sdk").</param>
+    /// <returns>The selected filename, or empty string if the user cancels the dialog.</returns>
     public string AskForFilename(string defaultExt)
     {
+        ArgumentNullException.ThrowIfNull(defaultExt);
         String filename = String.Empty;
-        saveSudokuDialog.InitialDirectory = settings.ProblemDirectory;
+        saveSudokuDialog.InitialDirectory = settings?.ProblemDirectory ?? string.Empty;
         saveSudokuDialog.RestoreDirectory = true;
         saveSudokuDialog.DefaultExt = "*" + defaultExt;
-        saveSudokuDialog.Filter = String.Format(cultureInfo, Resources.FilterString, defaultExt);
-        saveSudokuDialog.FileName = "Problem-" + DateTime.Now.ToString("yyyy.MM.dd-hh-mm", cultureInfo);
+        saveSudokuDialog.Filter = String.Format(cultureInfo ?? CultureInfo.InvariantCulture, Resources.FilterString, defaultExt);
+        saveSudokuDialog.FileName = "Problem-" + DateTime.Now.ToString("yyyy.MM.dd-hh-mm", cultureInfo ?? CultureInfo.InvariantCulture);
         if(saveSudokuDialog.ShowDialog() == DialogResult.OK)
             filename = saveSudokuDialog.FileName;
         return filename;
     }
 
-    private void FocusLost(object sender, EventArgs e)
-    {
-        if(SudokuGrid.Enabled && settings.AutoPause)
-            autoPauseTimer.Start();
-    }
-
-    private void FocusGotten(object sender, EventArgs e)
-    {
-        autoPauseTimer.Stop();
-    }
-
     /// <summary>
-    /// Updates the GUI, i.e. displays the texts in the correct language and reformats the table by calling <code>FormatTable()</code>
+    /// Updates the GUI display by refreshing menu items, buttons, and text in the correct language.
+    /// Applies localized resources to all menu items at multiple hierarchy levels and status bar elements.
+    /// Clears any existing status text and calls FormatTable to recalculate grid layout.
     /// </summary>
     private void UpdateGUI()
     {
@@ -213,28 +312,30 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         ComponentResourceManager resources = new ComponentResourceManager(typeof(SudokuForm));
         for(int i = 0; i < sudokuMenu.Items.Count; i++)
         {
-            ToolStripMenuItem mi = (ToolStripMenuItem)sudokuMenu.Items[i];
-            resources.ApplyResources(sudokuMenu.Items[i], sudokuMenu.Items[i].Name);
-            if(mi.HasDropDownItems)
+            var item = sudokuMenu.Items[i];
+            ToolStripMenuItem? mi = item as ToolStripMenuItem;
+            resources.ApplyResources(item, item?.Name ?? string.Empty);
+            if(mi?.HasDropDownItems == true)
                 for(int j = 0; j < mi.DropDownItems.Count; j++)
                 {
                     if(mi.DropDownItems[j] is ToolStripMenuItem)
                     {
                         ToolStripMenuItem ddm = (ToolStripMenuItem)mi.DropDownItems[j];
-                        resources.ApplyResources(mi.DropDownItems[j], mi.DropDownItems[j].Name);
+                        resources.ApplyResources(mi.DropDownItems[j], mi.DropDownItems[j].Name ?? string.Empty);
                         if(ddm.HasDropDownItems)
                             for(int k = 0; k < ddm.DropDownItems.Count; k++)
-                                resources.ApplyResources(ddm.DropDownItems[k], ddm.DropDownItems[k].Name);
+                                resources.ApplyResources(ddm.DropDownItems[k], ddm.DropDownItems[k].Name ?? string.Empty);
                     }
                 }
         }
-        resources.ApplyResources(sudokuStatusBarText, sudokuStatusBarText.Name);
+        resources.ApplyResources(sudokuStatusBarText, sudokuStatusBarText.Name ?? string.Empty);
         status.Text = String.Empty;
     }
 
-    // GUI Handling
     /// <summary>
-    /// Sets the layout of the table, mainly the Contrast set in the application's options
+    /// Sets the layout and visual appearance of the Sudoku grid based on settings (contrast, colors, etc.).
+    /// Calls FormatBoard on the SudokuGrid, resizes the form to accommodate grid dimensions,
+    /// and refreshes the grid display to redraw all cell hints and visual elements.
     /// </summary>
     private void FormatTable()
     {
@@ -244,6 +345,11 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         SudokuGrid.Refresh();
     }
 
+    /// <summary>
+    /// Resizes the form window to fit all Sudoku grid and UI elements appropriately.
+    /// Calculates required dimensions based on grid size, DPI scaling, and layout margins.
+    /// Repositions status bar elements and navigation buttons to align with the grid dimensions.
+    /// </summary>
     private void ResizeForm()
     {
         int height = SudokuGrid.ResizeBoard();
@@ -257,6 +363,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         next.Location = new Point(SudokuGrid.Location.X + SudokuGrid.Width - next.Width, status.Location.Y);
         prior.Location = new Point(SudokuGrid.Location.X + SudokuGrid.Width - next.Width - prior.Width - 5, status.Location.Y);
     }
+    /// <summary>
+    /// Updates and displays the current game status including filled cells count, puzzle validity, and completion status.
+    /// Starts the game timer on first call, validates puzzle state if auto-check is enabled, and plays appropriate sounds.
+    /// Displays a congratulations message if the puzzle is solved and updates status text accordingly.
+    /// </summary>
+    /// <param name="silent">If true, suppresses the congratulations message when the puzzle is completed. Useful for non-interactive status updates.</param>
     private void CurrentStatus(Boolean silent)
     {
         if(!controller.IsTimerRunning)
@@ -294,7 +406,9 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         }
     }
     /// <summary>
-    /// Sets the status text to a string stating that the current generation has been aborted by the user
+    /// Sets the status text to indicate that puzzle generation has been aborted by the user.
+    /// Restores the previous puzzle state from backup and displays the original puzzle values.
+    /// Resets any detached background processes and updates the UI accordingly.
     /// </summary>
     private void GenerationAborted()
     {
@@ -306,16 +420,20 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     }
 
     /// <summary>
-    /// Displays the current status of the generation of a controller.CurrentProblem in the status field
+    /// Displays the current progress status of an ongoing puzzle generation operation in the status bar.
+    /// Shows elapsed time and other generation metrics based on current controller state.
     /// </summary>
+    /// <param name="elapsed">The TimeSpan representing the elapsed time since generation started.</param>
     private void GenerationStatus(TimeSpan elapsed)
     {
         status.Text = controller.GenerationStatus(usePrecalculatedProblem, generationTimer.Elapsed);
         status.Update();
     }
-
+    
     /// <summary>
-    /// Resets all texts to their default values
+    /// Resets all status text labels to their default or empty values.
+    /// Disables solution navigation buttons, resets form title to product name,
+    /// and clears status bar text unless the timer is actively running.
     /// </summary>
     private void ResetTexts()
     {
@@ -326,7 +444,9 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     }
 
     /// <summary>
-    /// Clears the undo-stack
+    /// Clears the undo operation stack and disables the undo menu option.
+    /// Ensures that no previous operations can be undone after calling this method.
+    /// Delegates to the SudokuGrid's undo reset mechanism.
     /// </summary>
     private void ResetUndo()
     {
@@ -334,14 +454,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         undo.Enabled = false;
     }
 
-    // Misc functions
     /// <summary>
-    /// Checks whether or not the current controller.CurrentProblem is valid an solvable
+    /// Validates whether the current puzzle in the controller is valid and solvable.
+    /// Performs a pre-check by verifying that the grid is in sync with the controller state
+    /// and that the puzzle can be resolved using solving algorithms.
     /// </summary>
-    /// <returns>
-    /// true: Problem is valid and resolvable
-    /// false: otherwise
-    /// </returns>
+    /// <returns>True if the puzzle is valid and resolvable; false if validation fails or puzzle state is inconsistent.</returns>
     private Boolean PreCheck()
     {
         if(!SudokuGrid.InSync || !controller.IsProblemResolvable())
@@ -352,6 +470,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         return true;
     }
 
+    /// <summary>
+    /// Sets the puzzle grid to read-only (locked) or editable mode.
+    /// When locking (readOnly=true), synchronizes puzzle state with GUI and validates the puzzle is valid before locking.
+    /// Disables or enables grid cell editing based on the readOnly parameter.
+    /// </summary>
+    /// <param name="readOnly">If true, locks the puzzle for solving mode; if false, enables editing mode.</param>
     private void SetReadOnly(Boolean readOnly)
     {
         if(readOnly && !SudokuGrid.SyncProblemWithGUI(true, autoCheck.Checked))
@@ -365,11 +489,17 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     private void CheckVersion()
     {
         if(settings.LastVersion != AssemblyInfo.AssemblyVersion)
-            VersionHistoryClicked(null, null);
+            VersionHistoryClicked(this, EventArgs.Empty);
         settings.LastVersion = AssemblyInfo.AssemblyVersion;
     }
 
-    // Main functions
+    /// <summary>
+    /// Generates a new batch of Sudoku puzzles asynchronously with the specified parameters.
+    /// Updates the UI with progress information and handles cancellation via the form's cancellation token.
+    /// Supports both generating new puzzles and loading pre-calculated puzzle sets.
+    /// </summary>
+    /// <param name="count">The number of puzzles to generate in the batch.</param>
+    /// <param name="usePrecalculated">If true, loads pre-calculated puzzles; if false, generates new puzzles.</param>
     private async void GenerateProblems(int nProblems, Boolean xSudoku)
     {
         SudokuGrid.CreateNewProblem(xSudoku);
@@ -411,13 +541,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             EnableGUI();
         }
     }
-    public void GenerationFinished(Object o, string s)
-    {
-        if(controller.GenerateBooklet)
-            GenerationBookletProblemFinished(s);
-        else
-            GenerationSingleProblemFinished(s);
-    }
+    
+    /// <summary>
+    /// Displays definite or computable values in the current puzzle using simplified solving rules.
+    /// Backs up the current puzzle state, computes determined cell values, and updates the grid display.
+    /// Resets undo history and displays puzzle statistics in the status bar.
+    /// </summary>
     private void ShowDefiniteValues()
     {
         if(!PreCheck()) return;
@@ -431,6 +560,11 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         status.Update();
     }
 
+    /// <summary>
+    /// Asynchronously retrieves and displays visual hints for solving the current puzzle.
+    /// Highlights cells that can be determined using standard Sudoku solving techniques.
+    /// Shows an information message if no hints are available.
+    /// </summary>
     private async void Hints()
     {
         if(!PreCheck()) return;
@@ -444,7 +578,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
 
         await SudokuGrid.VisualizeHints(hints);
     }
-    // Neue asynchrone Methode
+
+    /// <summary>
+    /// Displays comprehensive information about the current puzzle including filled/computed cells,
+    /// difficulty level, solvability status, file path, and comments.
+    /// Preserves the puzzle's modified flag during the display operation.
+    /// </summary>
     private void DisplayProblemInfo()
     {
         String problemInfo;
@@ -468,6 +607,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         controller.CurrentProblem.Dirty = modified;
     }
 
+    /// <summary>
+    /// Displays detailed information about a specific cell in the puzzle including candidates,
+    /// constraints violated, and solving techniques that could determine the cell value.
+    /// </summary>
+    /// <param name="row">The zero-based row index of the cell (0-8).</param>
+    /// <param name="col">The zero-based column index of the cell (0-8).</param>
     private void DisplayCellInfo(int row, int col)
     {
         // TODO:
@@ -477,6 +622,11 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         return;
     }
 
+    /// <summary>
+    /// Initializes the pause overlay control that displays when the puzzle game is paused.
+    /// Creates a semi-transparent label covering the entire form with pause message and click-to-resume functionality.
+    /// Stops timers and hides puzzle values when initialized.
+    /// </summary>
     private void InitializePauseOverlay()
     {
         if(pauseOverlay != null) return;
@@ -501,14 +651,24 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         statusUpdateTimer.Stop();
     }
 
+    /// <summary>
+    /// Resumes a paused game by hiding the pause overlay and restarting the game timer.
+    /// Removes the "paused" indicator from the status bar and restores puzzle value visibility.
+    /// Restarts status update timer for clock display.
+    /// </summary>
     private void ResumeGame()
     {
         if(pauseOverlay != null) pauseOverlay.Visible = false;
 
-        sudokuStatusBarText.Text = sudokuStatusBarText.Text.Replace(Resources.Paused, "").Trim();
+        sudokuStatusBarText.Text = sudokuStatusBarText.Text?.Replace(Resources.Paused, "").Trim();
         SudokuGrid.ShowValues();
         controller.StartTimer();
     }
+    /// <summary>
+    /// Asynchronously publishes difficult or tricky puzzles to a designated publication server or destination.
+    /// Confirms with the user before publishing and provides feedback on success or failure.
+    /// Only proceeds if the controller has identified tricky problems worth publishing.
+    /// </summary>
     private async void PublishTrickyProblems()
     {
         if(!controller.HasTrickyProblems()) return;
@@ -522,6 +682,11 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         }
     }
 
+    /// <summary>
+    /// Validates the current puzzle state for correctness and displays validation results.
+    /// Synchronizes puzzle data with GUI input, checks puzzle validity, and reports resolvability status.
+    /// Handles invalid puzzles by displaying appropriate error messages.
+    /// </summary>
     private void CheckProblem()
     {
         if(SudokuGrid.SyncProblemWithGUI(false, autoCheck.Checked))
@@ -530,6 +695,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             ShowInfo(Resources.InvalidProblem + Environment.NewLine + Resources.NotResolvable);
     }
 
+    /// <summary>
+    /// Asynchronously validates the current puzzle and determines all possible solutions.
+    /// Displays progress during validation and reports the total number of solutions found.
+    /// Respects the "Find All Solutions" setting for extended validation.
+    /// Handles cancellation via the form's cancellation token.
+    /// </summary>
     private async void ValidateProblem()
     {
         if(!PreCheck()) return;
@@ -570,6 +741,11 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             EnableGUI();
         }
     }
+    /// <summary>
+    /// Resets the current puzzle to its original state by restoring from backup.
+    /// Clears all solutions found, resets undo history, resets text labels,
+    /// and restores the grid to initial puzzle state with original values displayed.
+    /// </summary>
     private void ResetProblem()
     {
         controller.RestoreProblem();
@@ -579,6 +755,13 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         SudokuGrid.ResetMatrix();
         SudokuGrid.DisplayValues();
     }
+    
+    /// <summary>
+    /// Asynchronously loads the Sudoku of the Day puzzle from a server or predefined source.
+    /// Updates the GUI and resets grid formatting after successful loading.
+    /// Clears undo history and resets cell font settings.
+    /// </summary>
+    /// <returns>True if the Sudoku of the Day was successfully loaded and displayed; false if loading failed.</returns>
     private async Task<Boolean> SudokuOfTheDay()
     {
         if(await controller.SudokuOfTheDay())
@@ -591,10 +774,19 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         else
             return false;
     }
+    /// <summary>
+    /// Creates a new puzzle from a file and loads it into the current controller.
+    /// Enables cell and block boundaries display and prepares the puzzle for solving or editing.
+    /// </summary>
+    /// <param name="filename">The full path to the file containing the puzzle definition.</param>
     private void CreateProblemFromFile(String filename)
     {
         controller.CreateProblemFromFile(filename, true, true, true);
     }
+    /// <summary>
+    /// Displays the next solution in the solutions list.
+    /// Increments the solution index and updates button states and form title to reflect the current solution number.
+    /// </summary>
     private void NextSolution()
     {
         SudokuGrid.DisplayValues(controller.CurrentProblem.Solutions[++currentSolution]);
@@ -603,6 +795,10 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         Text = String.Format(cultureInfo, Resources.DisplaySolution, currentSolution + 1, controller.CurrentProblem.Solutions[currentSolution].Counter);
     }
 
+    /// <summary>
+    /// Displays the previous solution in the solutions list.
+    /// Decrements the solution index and updates button states and form title to reflect the current solution number.
+    /// </summary>
     private void PriorSolution()
     {
         SudokuGrid.DisplayValues(controller.CurrentProblem.Solutions[--currentSolution]);
@@ -611,13 +807,22 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         Text = String.Format(cultureInfo, Resources.DisplaySolution, currentSolution + 1, controller.CurrentProblem.Solutions[currentSolution].Counter);
     }
 
+    /// <summary>
+    /// Resets the application state after a detached or background process completes.
+    /// Re-enables the GUI and sets the status bar to ready state.
+    /// </summary>
     private void ResetDetachedProcess()
     {
         sudokuStatusBarText.Text = Resources.Ready;
         EnableGUI();
     }
 
-    // Dialogs
+    /// <summary>
+    /// Checks whether the current puzzle has unsaved changes and prompts the user to save if necessary.
+    /// Returns false if the user cancels the operation, true otherwise.
+    /// Only prompts if the puzzle is marked as dirty and not yet completed.
+    /// </summary>
+    /// <returns>True if the user confirmed to continue (saving optional); False if user cancelled the operation.</returns>
     private Boolean UnsavedChanges()
     {
         Boolean rc = true;
@@ -634,6 +839,11 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         return rc;
     }
 
+    /// <summary>
+    /// Opens a file dialog for user to select and load an existing Sudoku puzzle file.
+    /// First checks for unsaved changes in the current puzzle.
+    /// Sets the file filter and initial directory from application settings.
+    /// </summary>
     private void OpenProblem()
     {
         if(UnsavedChanges())
@@ -646,6 +856,18 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         }
     }
 
+    /// <summary>
+    /// Loads a Sudoku problem from the specified file and updates the application state.
+    /// </summary>
+    /// <param name="filename">The path to the file containing the Sudoku problem to load.</param>
+    /// <remarks>
+    /// This method creates a backup of the current problem before attempting to load the new one.
+    /// If loading fails, the previous problem state is restored and an error message is displayed.
+    /// After successful loading, the GUI is updated and the undo history is cleared.
+    /// </remarks>
+    /// <exception cref="ArgumentException">Caught and handled; displays an invalid Sudoku file error message.</exception>
+    /// <exception cref="InvalidDataException">Caught and handled; displays an invalid Sudoku identifier error message.</exception>
+    /// <exception cref="Exception">Caught and handled; displays a generic file open error message with exception details.</exception>
     private void LoadProblem(String filename)
     {
         BaseProblem tmp = controller.CurrentProblem.Clone();
@@ -677,6 +899,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         ResetUndo();
     }
 
+    /// <summary>
+    /// Saves the current puzzle to a file.
+    /// Prompts the user for a filename if the puzzle hasn't been previously saved.
+    /// Handles file I/O errors and provides user feedback on success or failure.
+    /// </summary>
+    /// <returns>True if the puzzle was successfully saved; false if the operation was cancelled or failed.</returns>
     private Boolean SaveProblem(String filename)
     {
         Boolean returnCode = true;
@@ -692,6 +920,19 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         return returnCode;
     }
 
+    /// <summary>
+    /// Exports the current puzzle to an HTML file.
+    /// Attempts to export the current problem using the controller's <c>ExportHTML</c> method.
+    /// If an error occurs during export, an error message is shown to the user and the method returns <c>false</c>.
+    /// </summary>
+    /// <param name="filename">The destination file path for the exported HTML.</param>
+    /// <returns>
+    /// <c>true</c> if the export completed successfully; otherwise <c>false</c> if an exception was caught during export.
+    /// </returns>
+    /// <remarks>
+    /// This method handles exceptions internally and reports errors to the user via <c>ShowError</c>.
+    /// It does not rethrow exceptions to the caller.
+    /// </remarks>
     private Boolean ExportProblem(String filename)
     {
         Boolean returnCode = true;
@@ -706,7 +947,20 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         }
         return returnCode;
     }
-
+    /// <summary>
+    /// Saves the current puzzle by prompting the user for a filename and delegating the actual save to the
+    /// <c>SaveProblem(String)</c> overload.
+    /// The method first synchronizes the GUI with the internal problem representation. If synchronization fails,
+    /// an informational message is shown and no save dialog is displayed.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the problem was saved successfully; otherwise <c>false</c>. This includes cases where the
+    /// problem is invalid or the user cancels the save file dialog.
+    /// </returns>
+    /// <remarks>
+    /// This method displays UI dialogs (<c>ShowInfo</c> and the save file dialog) and relies on
+    /// <c>SaveProblem(String)</c> to perform the file write. No exceptions are propagated from this method.
+    /// </remarks>
     private Boolean SaveProblem()
     {
         if(!SudokuGrid.SyncProblemWithGUI(true, false))
@@ -720,7 +974,21 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         else
             return false;
     }
-
+    /// <summary>
+    /// Exports the current puzzle as HTML by prompting the user for a filename and delegating the actual export to
+    /// the <c>ExportProblem(String)</c> overload.
+    /// The method first synchronizes the GUI with the internal problem representation. If synchronization fails,
+    /// an error message is shown and no export dialog is displayed.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the problem was exported successfully; otherwise <c>false</c>. This includes cases where the
+    /// problem is invalid or the user cancels the save file dialog.
+    /// </returns>
+    /// <remarks>
+    /// Displays an error dialog via <c>ShowError</c> on invalid problems and uses <c>AskForFilename</c> with the
+    /// HTML file extension from <c>settings.HTMLFileExtension</c>. The actual file export is performed by
+    /// <c>ExportProblem(String)</c>. No exceptions are propagated from this method.
+    /// </remarks>
     private Boolean ExportProblem()
     {
         if(!SudokuGrid.SyncProblemWithGUI(true, false))
@@ -734,7 +1002,20 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         else
             return false;
     }
-
+    /// <summary>
+    /// Attempts to share the current Sudoku problem via Twitter.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the current problem was successfully synchronized with the GUI and the Twitter URL was opened;
+    /// otherwise <c>false</c>.
+    /// </returns>
+    /// <remarks>
+    /// The method first calls <c>SudokuGrid.SyncProblemWithGUI(true, false)</c> to validate and synchronize the GUI
+    /// state with the internal problem representation. If synchronization fails an error dialog is displayed via
+    /// <c>ShowError</c> and the method returns <c>false</c>. On success the Twitter share URL from
+    /// <c>controller.TwitterURL</c> is opened using <c>OpenUrl</c>. This method performs UI interactions and does not
+    /// propagate exceptions.
+    /// </remarks>
     private Boolean TwitterProblem()
     {
         if(!SudokuGrid.SyncProblemWithGUI(true, false))
@@ -747,99 +1028,30 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
 
         return true;
     }
-
     // Diverse Events
-    private void DropProblem(object sender, DragEventArgs e)
-    {
-        if(UnsavedChanges())
-        {
-            try
-            {
-                String[] droppedData = (String[])e.Data.GetData(DataFormats.FileDrop.ToString());
-                LoadProblem(droppedData[0]);
-            }
-            catch
-            {
-                // do nothing if the droped object was not a file
-            }
-        }
-    }
-
-    private void DragOverForm(object sender, DragEventArgs e)
-    {
-        if((e.AllowedEffect & DragDropEffects.Move) == DragDropEffects.Move)
-            e.Effect = DragDropEffects.Move;
-    }
-
-    private void ToggleHighlightSameValuesClicked(object sender, EventArgs e)
-    {
-        highlightSameValues.Checked = !highlightSameValues.Checked;
-        settings.HighlightSameValues = highlightSameValues.Checked;
-        if(settings.HighlightSameValues)
-            SudokuGrid.UpdateHighligts();
-        else
-            SudokuGrid.ClearHighlights();
-    }
-    public void TogglePencilModeClick(object sender, EventArgs e)
-    {
-        pencilMode.Checked = !pencilMode.Checked;
-        SudokuGrid.Cursor = pencilMode.Checked ? Cursors.Help : Cursors.Default;
-    }
-
-    private void DisplayCellInfo(object sender, EventArgs e)
-    {
-        DataGridViewSelectedCellCollection cells = SudokuGrid.SelectedCells;
-        if(cells.Count == 1)
-            DisplayCellInfo(cells[0].RowIndex, cells[0].ColumnIndex);
-    }
-
-    private void ActivateGrid(object sender, EventArgs e)
-    {
-        SudokuGrid.Focus();
-    }
-
-    private void ResizeForm(object sender, EventArgs e)
-    {
-        Opacity = (WindowState == FormWindowState.Minimized) ? 0 : 100;
-    }
-
-    // Buttons
-    private void NextClick(object sender, EventArgs e)
-    {
-        NextSolution();
-    }
-
-    private void PriorClick(object sender, EventArgs e)
-    {
-        PriorSolution();
-    }
-
-    // Timer Events
-    private void AutoPauseTick(object sender, EventArgs e)
-    {
-        if(WindowState != FormWindowState.Minimized) PauseClick(sender, e);
-    }
-
-    private void StatusUpdateTick(object sender, EventArgs e)
-    {
-        TimeSpan elapsed = controller.ElapsedTime + controller.CurrentProblem.SolvingTime;
-        sudokuStatusBarText.Text = Resources.SolutionTime + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#},{3:0#}", elapsed.Hours * 24 + elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
-    }
-
-    private void GenerationSingleProblemFinished(String s)
+    /// <summary>
+    /// Handles completion of single puzzle generation by updating GUI and displaying status.
+    /// </summary>
+    /// <param name="puzzleData">The puzzle data as a string from the generation callback.</param>
+    private void GenerationSingleProblemFinished(String puzzleData)
     {
         TimeSpan elapsed = generationTimer.Elapsed;
 
-        status.Text = usePrecalculatedProblem ? Resources.ProblemRetrieved : s + Environment.NewLine + Resources.TimeNeeded + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#},{3:0#}", elapsed.Hours * 24 + elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
+        status.Text = usePrecalculatedProblem ? Resources.ProblemRetrieved : puzzleData + Environment.NewLine + Resources.TimeNeeded + String.Format(cultureInfo, "{0:0#}:{1:0#}:{2:0#},{3:0#}", elapsed.Hours * 24 + elapsed.Hours, elapsed.Minutes, elapsed.Seconds, elapsed.Milliseconds);
         SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
         PublishTrickyProblems();
         ResetDetachedProcess();
         ShowInfo(status.Text);
     }
 
-    private async void GenerationBookletProblemFinished(String s)
+    /// <summary>
+    /// Handles completion of booklet (batch) puzzle generation.
+    /// Updates GUI to display the generated puzzles in batch format.
+    /// </summary>
+    /// <param name="puzzleData">The puzzle collection data as a string from the generation callback.</param>
+    private async void GenerationBookletProblemFinished(String puzzleData)
     {
-        status.Text = s;
+        status.Text = puzzleData;
         try
         {
             PrintBooklet();
@@ -854,7 +1066,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         controller.CurrentProblem.Dirty = false;
     }
 
-    // Menu handling
+    /// <summary>
+    /// Enables or disables GUI controls based on application state and available operations.
+    /// Processes menu items with tags to conditionally enable/disable based on current puzzle and controller state.
+    /// Updates button states for undo, solution navigation, and other context-dependent controls.
+    /// </summary>
+    /// <param name="enable">If true, enables appropriate controls based on state; if false, disables all interactive controls.</param>
     private void EnableGUI(Boolean enable)
     {
         const String disableTag = "disable";
@@ -872,7 +1089,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
                         ToolStripMenuItem ddm = (ToolStripMenuItem)mi.DropDownItems[j];
                         if(mi.DropDownItems[j].Tag != null)
                         {
-                            menuTag = mi.DropDownItems[j].Tag.ToString();
+                            menuTag = mi.DropDownItems[j].Tag!.ToString()!;
                             if(!String.IsNullOrEmpty(menuTag) && menuTag.StartsWith(disableTag))
                                 mi.DropDownItems[j].Enabled = ((menuTag.Substring(disableTagLength + 1, 1) == "1") == enable);
                         }
@@ -881,7 +1098,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
                             {
                                 if(ddm.DropDownItems[k].Tag != null)
                                 {
-                                    menuTag = ddm.DropDownItems[k].Tag.ToString();
+                                    menuTag = ddm.DropDownItems[k].Tag!.ToString()!;
                                     if(!String.IsNullOrEmpty(menuTag) && menuTag.StartsWith(disableTag))
                                         ddm.DropDownItems[k].Enabled = ((menuTag.Substring(disableTagLength + 1, 1) == "1") == enable);
                                 }
@@ -899,11 +1116,20 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             SudokuGrid.Focus();
     }
 
+    /// <summary>
+    /// Enables all interactive GUI controls and sets focus to the Sudoku grid.
+    /// Delegates to EnableGUI(true) to perform the actual enabling.
+    /// </summary>
     public void EnableGUI()
     {
         EnableGUI(true);
     }
 
+    /// <summary>
+    /// Disables all interactive GUI controls to prevent user interaction during long-running operations.
+    /// Stops the game timer and status update timer.
+    /// Delegates to EnableGUI(false) to perform the actual disabling.
+    /// </summary>
     public void DisableGUI()
     {
         EnableGUI(false);
@@ -911,12 +1137,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         statusUpdateTimer.Stop();
     }
 
-    // Menu Entries
-    private void AboutSudokuClick(object sender, EventArgs e)
-    {
-        new AboutSudoku(settings).ShowDialog();
-    }
-
+    /// <summary>
+    /// Retrieves the desired severity level for puzzle generation from user input or settings.
+    /// If settings specify that severity should be user-selected, displays a dialog.
+    /// Otherwise, returns the default severity level from settings.
+    /// </summary>
+    /// <returns>The selected severity level (0-based), or 0 if the user cancels selection.</returns>
     public int GetSeverity()
     {
         if(settings.SelectSeverity)
@@ -932,51 +1158,14 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             return settings.SeverityLevel;
     }
 
-    private void ExitClick(object sender, EventArgs e)
-    {
-        Application.Exit();
-    }
-
-    private void ResetClick(object sender, EventArgs e)
-    {
-        ResetProblem();
-    }
-
-    private void ClearCandidatesClick(object sender, EventArgs e)
-    {
-        controller.CurrentProblem.ResetCandidates();
-        clearCandidates.Enabled = false;
-        SudokuGrid.Refresh();
-    }
-
-    private void NewSudokuClick(object sender, EventArgs e)
-    {
-        if(UnsavedChanges())
-        {
-            controller.CreateNewProblem(false);
-            SudokuGrid.FormatBoard(true);
-        }
-    }
-
-    private void NewXSudokuClick(object sender, EventArgs e)
-    {
-        if(UnsavedChanges())
-        {
-            controller.CreateNewProblem(true);
-            SudokuGrid.FormatBoard(true);
-        }
-    }
-
-    private async void SolveClick(object sender, EventArgs e)
-    {
-        await SolveProblem();
-    }
-
-    private void GenerateClick(object sender, EventArgs e)
-    {
-        if(UnsavedChanges()) GenerateProblems(1, false);
-    }
-
+    /// <summary>
+    /// Asynchronously solves the current puzzle using the selected solving algorithm.
+    /// Displays progress during solving and reports solving time and pass count.
+    /// Optionally displays found solutions for user review.
+    /// Handles multiple solutions if "Find All Solutions" is enabled.
+    /// Supports cancellation via the form's cancellation token.
+    /// </summary>
+    /// <param name="showResult">If true, displays result dialog; if false, silently updates grid with solution.</param>
     private async Task SolveProblem(Boolean showResult = true)
     {
         if(!PreCheck()) return;
@@ -1053,90 +1242,6 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             EnableGUI();
         }
     }
-    private void OpenClick(object sender, EventArgs e)
-    {
-        OpenProblem();
-    }
-
-    private void SaveClick(object sender, EventArgs e)
-    {
-        SaveProblem();
-    }
-
-    private void ExportClick(object sender, EventArgs e)
-    {
-        ExportProblem();
-    }
-
-    private void TwitterProblemClick(object sender, EventArgs e)
-    {
-        TwitterProblem();
-    }
-
-    private void DefiniteClick(object sender, EventArgs e)
-    {
-        ShowDefiniteValues();
-    }
-
-    private void GenerateSudokuClick(object sender, EventArgs e)
-    {
-        if(UnsavedChanges()) GenerateProblems(1, false);
-    }
-
-    private void GenerateXSudokuClick(object sender, EventArgs e)
-    {
-        if(UnsavedChanges()) GenerateProblems(1, true);
-    }
-
-    private void ValidateClick(object sender, EventArgs e)
-    {
-        ValidateProblem();
-    }
-
-    private void CheckClick(object sender, EventArgs e)
-    {
-        CheckProblem();
-    }
-
-    private void OptionsClick(object sender, EventArgs e)
-    {
-        optionsDialog = new OptionsDialog(settings, this);
-        optionsDialog.MinBookletSize = (controller.GenerateBooklet ? Math.Max(controller.CurrentBookletProblem + 1, 2) : 2);
-
-        if(optionsDialog.ShowDialog() == DialogResult.OK)
-        {
-            Thread.CurrentThread.CurrentUICulture = (cultureInfo = new System.Globalization.CultureInfo(settings.DisplayLanguage));
-            ShowInTaskbar = !settings.HideWhenMinimized;
-            usePrecalculatedProblem = settings.UsePrecalculatedProblems;
-
-            if(controller.GenerateBooklet) severityLevel = settings.SeverityLevel;
-
-            SudokuGrid.UpdateFonts();
-
-            autoPauseTimer.Interval = Convert.ToInt32(settings.AutoPauseLag) * 1000;
-
-            UpdateGUI();
-        }
-    }
-
-    private void EditCommentClicked(object sender, EventArgs e)
-    {
-        String oldComment = String.Empty;
-        Comment commentDialog = new Comment(settings);
-
-        oldComment = commentDialog.SudokuComment = controller.CurrentProblem.Comment;
-        if(commentDialog.ShowDialog() == DialogResult.OK)
-        {
-            controller.CurrentProblem.Comment = commentDialog.SudokuComment;
-            controller.CurrentProblem.Dirty = controller.CurrentProblem.Comment != oldComment;
-        }
-    }
-
-    private async void AbortClick(object sender, EventArgs e)
-    {
-        await AbortThread();
-    }
-
     private async Task AbortThread()
     {
         if(controller.CurrentProblem == null) return;
@@ -1166,7 +1271,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
 
         try
         {
-            FormCTS.Cancel();
+            FormCTS?.Cancel();
             SudokuGrid.DisplayValues(controller.CurrentProblem.Matrix);
             if(controller.CurrentProblem.NumberOfSolutions > 0)
             {
@@ -1177,135 +1282,18 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         catch { }
     }
 
-    private async void PrintClick(object sender, EventArgs e)
-    {
-        await PrintDialog();
-    }
-
-    private void PrintBookletClick(object sender, EventArgs e)
-    {
-        GenerateProblems4Booklet();
-    }
-
-    private void LoadBookletClick(object sender, EventArgs e)
-    {
-        LoadProblems4Booklet();
-    }
-
-    private void InfoClick(object sender, EventArgs e)
-    {
-        DisplayProblemInfo();
-    }
-
-    private void ShowHintsClick(object sender, EventArgs e)
-    {
-        Hints();
-    }
-
-    private void UndoClick(object sender, EventArgs e)
-    {
-        if(!controller.CanUndo())
-            throw (new ApplicationException());
-
-        CoreValue cv = controller.PopUndo();
-        if(!SudokuGrid[cv.Col, cv.Row].ReadOnly)
-        {
-            SudokuGrid[cv.Col, cv.Row].Value = cv.UnformatedValue;
-            SudokuGrid.Update();
-            CurrentStatus(true);
-            SudokuGrid[cv.Col, cv.Row].Selected = true;
-
-            undo.Enabled = controller.CanUndo();
-            controller.CurrentProblem.Dirty = undo.Enabled;
-        }
-        else
-            controller.PushUndo(cv);
-    }
-
-    private void DebugClick(object sender, EventArgs e)
-    {
-        settings.TraceMode = traceMode.Checked;
-        SudokuGrid.SetDebugMode(traceMode.Checked);
-    }
-
-    private void FindallSolutionsClick(object sender, EventArgs e)
-    {
-        settings.FindAllSolutions = findallSolutions.Checked;
-    }
-
-    private void ShowPossibleValuesClick(object sender, EventArgs e)
-    {
-        settings.ShowHints = showPossibleValues.Checked;
-        UpdateGUI();
-    }
-
-    private void AutoCheckClick(object sender, EventArgs e)
-    {
-        settings.AutoCheck = autoCheck.Checked;
-    }
-
-    private void VisitHomepageClick(object sender, EventArgs e)
-    {
-        OpenUrl(Resources.Homepage);
-    }
-
-    private void ResetTimerClick(object sender, EventArgs e)
-    {
-        sudokuStatusBarText.Text = Resources.Ready;
-        controller.StopTimer();
-        controller.CurrentProblem.SolvingTime = TimeSpan.Zero;
-        statusUpdateTimer.Stop();
-    }
-
-    private void PauseClick(object sender, EventArgs e)
-    {
-        // Overlay initialisieren, falls noch nicht geschehen
-        InitializePauseOverlay();
-
-        if(!sudokuStatusBarText.Text.Contains(Resources.Paused))
-            sudokuStatusBarText.Text += Resources.Paused;
-
-        // Statt MessageBox nun das Overlay zeigen
-        pauseOverlay.Visible = true;
-        pauseOverlay.BringToFront();
-    }
-    private void MarkNeighborsClicked(object sender, EventArgs e)
-    {
-        settings.MarkNeighbors = markNeighbors.Checked;
-        if(!settings.MarkNeighbors)
-            FormatTable();
-    }
-
-    private async void MinimizeClick(object sender, EventArgs e)
-    {
-        int before = controller.CurrentProblem.nValues;
-        Boolean dirty = controller.CurrentProblem.Dirty;
-
-        if(!SudokuGrid.SyncProblemWithGUI(true, false))
-        {
-            ShowError(Resources.MinimizationNotPossible);
-            return;
-        }
-
-        await Minimize(int.MaxValue);
-
-        if(before - controller.CurrentProblem.nValues == 0)
-        {
-            ShowInfo(Resources.NoMinimizationPossible);
-            controller.CurrentProblem.Dirty = dirty;
-        }
-        else
-        {
-            ShowInfo(String.Format(Resources.Minimized, (before - controller.CurrentProblem.nValues).ToString()));
-            controller.CurrentProblem.Dirty = true;
-        }
-    }
-    // In SudokuMainWindow.cs
-
+    /// <summary>
+    /// Asynchronously minimizes the current puzzle to achieve the specified maximum severity level.
+    /// Disables the GUI during minimization and displays progress information.
+    /// Supports cancellation via the form's cancellation token.
+    /// Restores the minimal puzzle to the controller, updates the display, and re-enables GUI when complete.
+    /// </summary>
+    /// <param name="maxSeverity">The maximum severity level allowed for the minimized puzzle. Use int.MaxValue for unconstrained minimization.</param>
+    /// <returns>True if minimization succeeded and a minimal puzzle was found; false if minimization was cancelled or failed.</returns>
     public async Task<Boolean> Minimize(int maxSeverity)
     {
-        String oldStatusText = sudokuStatusBarText.Text;
-        BaseProblem minimizedProblem = null;
+        String? oldStatusText = sudokuStatusBarText.Text;
+        BaseProblem? minimizedProblem = null;
         Boolean rc = false;
 
         DisableGUI();
@@ -1337,21 +1325,6 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
 
         return rc;
     }
-    private void StartGameClick(object sender, EventArgs e)
-    {
-        SetReadOnly(true);
-        controller.StartTimer();
-        statusUpdateTimer.Start();
-    }
-    private void FixClick(object sender, EventArgs e)
-    {
-        SetReadOnly(true);
-    }
-
-    private void ReleaseClick(object sender, EventArgs e)
-    {
-        SetReadOnly(false);
-    }
     public void Cancel()
     {
         try
@@ -1362,6 +1335,12 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         catch { }
     }
 
+    /// <summary>
+    /// Initializes the main Sudoku controller with all necessary event subscriptions and state restoration.
+    /// Creates the controller from the factory or creates a new instance directly if factory is unavailable.
+    /// Subscribes to controller events for generation updates and restores application state if saved previously.
+    /// Configures grid controller reference and sets up grid event handlers for undo availability, candidates, and status updates.
+    /// </summary>
     private void InitializeController()
     {
         if(controllerFactory != null)
@@ -1369,7 +1348,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         else
             controller = new SudokuController(settings, this);
 
-        controller.Generating += (s, e) => OnGenerating(s, e);
+        controller.Generating += (s, e) => OnGenerating(s!, e);
         if(settings.State.Length > 0)
             controller.Deserialize();
         else
@@ -1388,75 +1367,5 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             status.Text = text;
             status.Update();
         };
-
-    }
-
-    private void OnGenerating(object s, EventArgs e)
-    {
-        if(InvokeRequired)
-        {
-            Invoke(new EventHandler(OnGenerating), s, e);
-            return;
-        }
-        GenerationStatus(((SudokuController)s).CurrentProblem.GenerationTime);
-    }
-    private void VersionHistoryClicked(object sender, EventArgs e)
-    {
-        OpenUrl(Resources.VersionHistory);
-    }
-
-    private void OptionsMenuOpening(object sender, EventArgs e)
-    {
-        pause.Enabled = resetTimer.Enabled = controller.IsTimerRunning;
-    }
-
-    private async void SudokuOfTheDayClicked(object sender, EventArgs e)
-    {
-        if(await SudokuOfTheDay())
-            ShowInfo(String.Format(Resources.SudokuOfTheDayInfo, controller.CurrentProblem.SeverityLevelText));
-        else
-            ShowError(Resources.SudokuOfTheDayNotLoaded);
-    }
-    private void HandleMinimizing(object sender, BaseProblem minimalProblem)
-    {
-        if(InvokeRequired)
-        {
-            Invoke(new Action<object, BaseProblem>(HandleMinimizing), sender, minimalProblem);
-            return;
-        }
-        status.Text = String.Format(Resources.CurrentMinimalProblem, minimalProblem.SeverityLevelText, minimalProblem.nValues, controller.CurrentProblem.nValues).Replace("\\n", Environment.NewLine);
-        status.Update();
-        sudokuStatusBarText.Text = Resources.Minimizing;
-    }
-    // Exit Sudoku
-    private void ExitSudoku(object sender, FormClosingEventArgs e)
-    {
-        if(controller.CurrentProblem != null)
-        {
-            try { FormCTS?.Cancel(); } catch { }
-            if(controller.CurrentProblem.SolverTask != null && !controller.CurrentProblem.SolverTask.IsCompleted)
-                try { controller.CurrentProblem.SolverTask.Wait(2000); } catch { } // Einfaches Join statt DoEvents-Loop
-        }
-
-        if(e.CloseReason != CloseReason.TaskManagerClosing && e.CloseReason != CloseReason.WindowsShutDown)
-        {
-            if(settings.AutoSaveState)
-            {
-                controller.SaveApplicationState();
-            }
-            else
-            {
-                settings.State = "";
-                settings.Save();
-                if(!SudokuGrid.SyncProblemWithGUI(true, autoCheck.Checked))
-                {
-                    e.Cancel = Confirm(Resources.CloseAnyway) == DialogResult.No;
-                }
-                else
-                    e.Cancel = !UnsavedChanges();
-            }
-        }
-        applicationExiting = !e.Cancel;
-        if(applicationExiting) { Dispose(); }
     }
 }

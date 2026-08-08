@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DefaultItemExcludes>$(DefaultItemExcludes);BenchmarkSuite1\**</DefaultItemExcludes>
     <OutputType>WinExe</OutputType>
     <GenerateManifests>true</GenerateManifests>
@@ -65,7 +67,7 @@
     <Company>pi-c-it</Company>
     <PackageTags>Sudoku;X-Sudoku</PackageTags>
     <Version>$(FileVersion)</Version>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>False</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(MSBuildRuntimeType)' == 'Full'">
     <GenerateManifests>true</GenerateManifests>
@@ -108,6 +110,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="CandidateSearchBenchmark.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="PrintSudoku.resx" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Sudoku.csproj.Backup.tmp" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -24,12 +25,12 @@ internal abstract class BaseProblem: EventArgs, IComparable
     private Int64 passCount = 0;
     private int nVarValues = 0;
     private Boolean findAll = false;
-    protected BaseMatrix matrix;
-    private List<Solution> solutions;
+    protected BaseMatrix? matrix;
+    private List<Solution>? solutions;
     private Boolean checkWellDefined = false;
     private Boolean problemSolved = false;
 
-    private Task solverTask = null;
+    private Task? solverTask = null;
 
     private float severityLevel = float.NaN;
     private String filename = String.Empty;
@@ -38,35 +39,36 @@ internal abstract class BaseProblem: EventArgs, IComparable
     private Boolean preparing = false;
     private TimeSpan solvingTime;
     private TimeSpan generationTime;
-    private BaseProblem minimalProblem;
-    private readonly IncrementalSolver incrementalSolver;
+    private BaseProblem? minimalProblem;
+    private readonly IncrementalSolver incrementalSolver = new IncrementalSolver();
 
     public static Char ProblemIdentifier = ' ';
     public virtual Char SudokuTypeIdentifier { get { return ProblemIdentifier; } }
     public static int Limit = 0;
     public virtual int MinimizeLimit{ get { return Limit; } }
 
-    public Action<Object, BaseProblem> Minimizing;
-    protected virtual void OnMinimizing(Object o, BaseProblem p)
+    public Action<Object, BaseProblem?>? Minimizing;
+    protected virtual void OnMinimizing(Object o, BaseProblem? p)
     {
-        Action<Object, BaseProblem> handler = Minimizing;
-        if(handler != null) handler(o, p);
+        // Only notify listeners when we have a concrete minimalProblem instance.
+        Action<Object, BaseProblem?>? handler = Minimizing;
+        if(handler != null && p != null) handler(o, p);
     }
 
-    public Action<Object, BaseCell> TestCell;
+    public Action<Object, BaseCell>? TestCell;
     protected virtual void OnTestCell(Object o, BaseCell c)
     {
-        Action<Object, BaseCell> handler = TestCell;
+        Action<Object, BaseCell>? handler = TestCell;
         if(handler != null) handler(o, c);
     }
 
-    public Action<Object, BaseCell> ResetCell;
+    public Action<Object, BaseCell>? ResetCell;
     protected virtual void OnResetCell(Object o, BaseCell c)
     {
-        Action<Object, BaseCell> handler = ResetCell;
+        Action<Object, BaseCell>? handler = ResetCell;
         if(handler != null) handler(o, c);
     }
-    public event EventHandler SolutionFound;
+    public event EventHandler? SolutionFound;
     private void NotifySolutionFound()
     {
         SolutionFound?.Invoke(this, EventArgs.Empty);
@@ -78,6 +80,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     /// <param name="settings">Application settings controlling generation and solver behavior.</param>
     public BaseProblem(ISudokuSettings settings)
     {
+        ArgumentNullException.ThrowIfNull(settings);
         createMatrix();
         solutions = new List<Solution>();
         solverTask = null;
@@ -109,12 +112,12 @@ internal abstract class BaseProblem: EventArgs, IComparable
     /// <summary>
     /// Gets the associated matrix instance.
     /// </summary>
-    public BaseMatrix Matrix { get { return matrix; } }
+    public BaseMatrix Matrix { get { return matrix!; } }
 
     /// <summary>
     /// Gets the currently stored list of found solutions.
     /// </summary>
-    public List<Solution> Solutions { get { return solutions; } }
+    public List<Solution> Solutions { get { return solutions!; } }
 
     /// <summary>
     /// Number of fixed (given) values in the matrix.
@@ -181,7 +184,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     /// <summary>
     /// The asynchronous task running the solver, if any.
     /// </summary>
-    public Task SolverTask
+    public Task? SolverTask
     {
         get { return solverTask; }
     }
@@ -258,7 +261,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     /// <summary>
     /// Compare problems by severity level to provide ordering for lists and collections.
     /// </summary>
-    public int CompareTo(System.Object obj)
+    public int CompareTo(System.Object? obj)
     {
         if(obj == null) return -1;
         BaseProblem tmpProblem;
@@ -313,7 +316,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     /// </summary>
     /// <param name="dest">Reference to the destination Solution instance which will be created and returned.</param>
     /// <returns>The created Solution instance containing the problem's current grid.</returns>
-    public Solution CopyTo(ref Solution dest)
+    public Solution CopyTo(ref Solution? dest)
     {
         dest = new Solution(settings);
         dest.Init();
@@ -361,8 +364,8 @@ internal abstract class BaseProblem: EventArgs, IComparable
     {
         if(NumberOfSolutions < settings.MaxSolutions)
         {
-            Solution solution = null;
-            Solutions.Add((Solution)CopyTo(ref solution));
+            Solution? solution = null;
+            Solutions.Add(CopyTo(ref solution));
             NotifySolutionFound();
         }
         else
@@ -813,7 +816,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     private BaseProblem Materialize(GivenState state)
     {
         BaseProblem clone = CreateInstance();
-        clone.matrix = matrix.Clone();
+        clone.matrix = matrix!.Clone();
         clone.Matrix.SetPredefinedValues = false;
 
         for(int r = 0; r < WinFormsSettings.SudokuSize; r++)
@@ -904,7 +907,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     /// Entry point to minimize the problem's givens using the chosen minimization algorithm.
     /// Returns a minimized BaseProblem (or null if no unique minimal variant found).
     /// </summary>
-    public async Task<BaseProblem> Minimize(int maxSeverity, MinimizeAlgorithm minimizeAlgorithm, CancellationToken token)
+    public async Task<BaseProblem?> Minimize(int maxSeverity, MinimizeAlgorithm minimizeAlgorithm, CancellationToken token)
     {
         ResetMatrix();
 
@@ -925,7 +928,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     /// <summary>
     /// Greedy minimization implementation that attempts recursive removals guided by neighbor counts.
     /// </summary>
-    private async Task<BaseProblem> MinimizeGreedy(GivenState initialState, GivenState greedyState, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
+    private async Task<BaseProblem?> MinimizeGreedy(GivenState initialState, GivenState greedyState, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
     {
         ResetMatrix();
 
@@ -1016,7 +1019,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
     /// <summary>
     /// Minimize using candidate-guided search. This implementation explores candidates recursively and returns a minimized problem.
     /// </summary>
-    protected async Task<BaseProblem> MinimizeWithCandidates(int maxSeverity, CancellationToken token)
+    protected async Task<BaseProblem?> MinimizeWithCandidates(int maxSeverity, CancellationToken token)
     {
         ResetMatrix();
 
@@ -1052,7 +1055,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
             if(token.IsCancellationRequested) return false;
             if(SeverityLevelInt > maxSeverity) return false;
 
-            if(nValues - (candidates.Count - start) < minimalProblem.nValues)
+            if(nValues - (candidates.Count - start) < minimalProblem!.nValues)
             {
                 OnTestCell(this, cell);
                 byte cellValue = cell.CellValue;
@@ -1087,7 +1090,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
 
         for(int i = start; i < source.Count; i++)
         {
-            if(nValues - candidates.Count - (source.Count - i) > minimalProblem.nValues) return null;
+            if(nValues - candidates.Count - (source.Count - i) > minimalProblem!.nValues) return new List<BaseCell>();
 
             byte cellValue = source[i].CellValue;
             if(cellValue != Values.Undefined)
@@ -1097,7 +1100,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
                     candidates.Add(source[i]);
                 else
                 {
-                    if(token.IsCancellationRequested) return null;
+                    if(token.IsCancellationRequested) return new List<BaseCell>();
 
                     await RunSolver(2, token);
 
@@ -1107,7 +1110,7 @@ internal abstract class BaseProblem: EventArgs, IComparable
                 SetValue(source[i], cellValue);
             }
 
-            if(token.IsCancellationRequested) return null;
+            if(token.IsCancellationRequested) return new List<BaseCell>();
         }
 
         return candidates;
@@ -1155,10 +1158,10 @@ internal abstract class BaseProblem: EventArgs, IComparable
         return count;
     }
 
-    public event EventHandler Progress;
+    public event EventHandler? Progress;
     protected virtual void OnProgress()
     {
-        EventHandler handler = Progress;
+        EventHandler? handler = Progress;
         if(handler != null) handler(this, EventArgs.Empty);
     }
 

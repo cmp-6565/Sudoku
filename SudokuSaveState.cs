@@ -16,12 +16,12 @@ internal class SudokuSaveState
     /// <summary>
     /// Gets or sets the type of Sudoku (Standard or X-Sudoku).
     /// </summary>
-    public string Type { get; set; }
+    public string Type { get; set; } = String.Empty;
 
     /// <summary>
     /// Gets or sets the serialized grid data containing all cell values.
     /// </summary>
-    public string GridData { get; set; }
+    public string GridData { get; set; } = String.Empty;
 
     /// <summary>
     /// Gets or sets the elapsed time for solving this puzzle.
@@ -31,10 +31,10 @@ internal class SudokuSaveState
     /// <summary>
     /// Gets or sets any user-provided comment for this puzzle state.
     /// </summary>
-    public string Comment { get; set; }
+    public string Comment { get; set; } = String.Empty;
 
     /// <summary>
     /// Gets or sets the serialized candidate values for each cell.
     /// </summary>
-    public string Candidates { get; set; }
+    public string Candidates { get; set; } = String.Empty;
 }
