@@ -30,7 +30,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ProblemDirectory" Type="System.String" Scope="User">
-      <Value Profile="(Default)">c:\temp\SudokuProblems</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="DefaultFileExtension" Type="System.String" Scope="Application">
       <Value Profile="(Default)">.sudoku</Value>

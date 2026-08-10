@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 using Sudoku.Properties;
@@ -213,7 +214,7 @@ public class WinFormsSettings: IObservableSudokuSettings
     /// </summary>
     public string ProblemDirectory
     {
-        get => GetSetting<string>(SettingKeys.ProblemDirectory);
+        get => GetSetting<string>(SettingKeys.ProblemDirectory).Length == 0? Path.Combine(Environment.GetEnvironmentVariable("TEMP", EnvironmentVariableTarget.User)!, "Sudoku Problems"): GetSetting<string>(SettingKeys.ProblemDirectory);
         set => SetSetting(SettingKeys.ProblemDirectory, value,
             v => SettingsValidator.ValidateDirectoryPath(v, AppContext.BaseDirectory));
     }
