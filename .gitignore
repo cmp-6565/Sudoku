@@ -420,3 +420,6 @@ FodyWeavers.xsd
 html/
 Images/
 *.aspx
+
+Thumbs.db
+/html/*	

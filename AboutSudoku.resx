@@ -130,17 +130,17 @@
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="linkLabel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>206, 109</value>
+    <value>295, 183</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="linkLabel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 4, 0</value>
+    <value>6, 0, 6, 0</value>
   </data>
   <data name="linkLabel1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 0, 0</value>
+    <value>6, 5, 0, 0</value>
   </data>
   <data name="linkLabel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>85, 18</value>
+    <value>130, 30</value>
   </data>
   <data name="linkLabel1.TabIndex" type="System.Int32, mscorlib">
     <value>26</value>
@@ -667,13 +667,13 @@
     <value>NoControl</value>
   </data>
   <data name="logoPictureBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 101</value>
+    <value>6, 168</value>
   </data>
   <data name="logoPictureBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
+    <value>6, 5, 6, 5</value>
   </data>
   <data name="logoPictureBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>194, 186</value>
+    <value>277, 310</value>
   </data>
   <data name="logoPictureBox.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
@@ -697,16 +697,16 @@
     <value>NoControl</value>
   </data>
   <data name="labelVersion.Location" type="System.Drawing.Point, System.Drawing">
-    <value>209, 19</value>
+    <value>299, 32</value>
   </data>
   <data name="labelVersion.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>7, 0, 4, 0</value>
+    <value>10, 0, 6, 0</value>
   </data>
   <data name="labelVersion.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>0, 20</value>
+    <value>0, 33</value>
   </data>
   <data name="labelVersion.Size" type="System.Drawing.Size, System.Drawing">
-    <value>269, 16</value>
+    <value>384, 27</value>
   </data>
   <data name="labelVersion.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -736,16 +736,16 @@
     <value>NoControl</value>
   </data>
   <data name="labelCopyright.Location" type="System.Drawing.Point, System.Drawing">
-    <value>209, 35</value>
+    <value>299, 59</value>
   </data>
   <data name="labelCopyright.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>7, 0, 4, 0</value>
+    <value>10, 0, 6, 0</value>
   </data>
   <data name="labelCopyright.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>0, 20</value>
+    <value>0, 33</value>
   </data>
   <data name="labelCopyright.Size" type="System.Drawing.Size, System.Drawing">
-    <value>269, 20</value>
+    <value>384, 33</value>
   </data>
   <data name="labelCopyright.TabIndex" type="System.Int32, mscorlib">
     <value>21</value>
@@ -778,16 +778,16 @@
     <value>NoControl</value>
   </data>
   <data name="labelCompanyName.Location" type="System.Drawing.Point, System.Drawing">
-    <value>209, 55</value>
+    <value>299, 92</value>
   </data>
   <data name="labelCompanyName.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>7, 0, 4, 0</value>
+    <value>10, 0, 6, 0</value>
   </data>
   <data name="labelCompanyName.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>0, 20</value>
+    <value>0, 33</value>
   </data>
   <data name="labelCompanyName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>269, 20</value>
+    <value>384, 33</value>
   </data>
   <data name="labelCompanyName.TabIndex" type="System.Int32, mscorlib">
     <value>22</value>
@@ -817,16 +817,16 @@
     <value>NoControl</value>
   </data>
   <data name="textBoxDescription.Location" type="System.Drawing.Point, System.Drawing">
-    <value>209, 132</value>
+    <value>299, 221</value>
   </data>
   <data name="textBoxDescription.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>7, 3, 4, 3</value>
+    <value>10, 5, 6, 5</value>
   </data>
   <data name="textBoxDescription.Multiline" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
   <data name="textBoxDescription.Size" type="System.Drawing.Size, System.Drawing">
-    <value>269, 116</value>
+    <value>384, 193</value>
   </data>
   <data name="textBoxDescription.TabIndex" type="System.Int32, mscorlib">
     <value>23</value>
@@ -853,13 +853,13 @@
     <value>NoControl</value>
   </data>
   <data name="okButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>367, 258</value>
+    <value>524, 430</value>
   </data>
   <data name="okButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
+    <value>6, 5, 6, 5</value>
   </data>
   <data name="okButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>111, 29</value>
+    <value>159, 48</value>
   </data>
   <data name="okButton.TabIndex" type="System.Int32, mscorlib">
     <value>24</value>
@@ -889,16 +889,16 @@
     <value>NoControl</value>
   </data>
   <data name="labelProductName.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 0</value>
+    <value>10, 0</value>
   </data>
   <data name="labelProductName.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>7, 0, 4, 0</value>
+    <value>10, 0, 6, 0</value>
   </data>
   <data name="labelProductName.MaximumSize" type="System.Drawing.Size, System.Drawing">
-    <value>0, 20</value>
+    <value>0, 33</value>
   </data>
   <data name="labelProductName.Size" type="System.Drawing.Size, System.Drawing">
-    <value>191, 19</value>
+    <value>273, 32</value>
   </data>
   <data name="labelProductName.TabIndex" type="System.Int32, mscorlib">
     <value>19</value>
@@ -928,16 +928,16 @@
     <value>NoControl</value>
   </data>
   <data name="contact.Location" type="System.Drawing.Point, System.Drawing">
-    <value>206, 86</value>
+    <value>295, 145</value>
   </data>
   <data name="contact.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 0, 4, 0</value>
+    <value>6, 0, 6, 0</value>
   </data>
   <data name="contact.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 0, 0</value>
+    <value>6, 5, 0, 0</value>
   </data>
   <data name="contact.Size" type="System.Drawing.Size, System.Drawing">
-    <value>53, 18</value>
+    <value>79, 30</value>
   </data>
   <data name="contact.TabIndex" type="System.Int32, mscorlib">
     <value>25</value>
@@ -961,16 +961,16 @@
     <value>Fill</value>
   </data>
   <data name="tableLayoutPanel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>10, 10</value>
+    <value>14, 17</value>
   </data>
   <data name="tableLayoutPanel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
+    <value>6, 5, 6, 5</value>
   </data>
   <data name="tableLayoutPanel.RowCount" type="System.Int32, mscorlib">
     <value>7</value>
   </data>
   <data name="tableLayoutPanel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>482, 290</value>
+    <value>689, 483</value>
   </data>
   <data name="tableLayoutPanel.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -988,22 +988,22 @@
     <value>0</value>
   </data>
   <data name="tableLayoutPanel.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="linkLabel1" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="logoPictureBox" Row="1" RowSpan="7" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelVersion" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="labelCopyright" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="labelCompanyName" Row="3" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="textBoxDescription" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="okButton" Row="7" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="labelProductName" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="contact" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100,759,Absolute,280" /&gt;&lt;Rows Styles="Percent,28,787878,Percent,24,242424,AutoSize,12,50333,Percent,46,969696,Absolute,23,Absolute,20,Absolute,122,Absolute,38,Absolute,20" /&gt;&lt;/TableLayoutSettings&gt;</value>
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="linkLabel1" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="logoPictureBox" Row="1" RowSpan="7" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="labelVersion" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="labelCopyright" Row="2" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="labelCompanyName" Row="3" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="textBoxDescription" Row="5" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="okButton" Row="7" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="labelProductName" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="contact" Row="4" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100,759,Absolute,400" /&gt;&lt;Rows Styles="Percent,28,787878,Percent,24,242424,AutoSize,12,50333,Percent,46,969696,Absolute,38,Absolute,33,Absolute,203,Absolute,63,Absolute,33" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>7, 15</value>
+    <value>10, 25</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>502, 310</value>
+    <value>717, 517</value>
   </data>
   <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>4, 3, 4, 3</value>
+    <value>6, 5, 6, 5</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>10, 10, 10, 10</value>
+    <value>14, 17, 14, 17</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterParent</value>

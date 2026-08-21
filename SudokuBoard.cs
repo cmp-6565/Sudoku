@@ -9,44 +9,78 @@ using System.Windows.Forms;
 
 namespace Sudoku;
 
-internal class SudokuBoard: DataGridView, IDisposable
+/// <summary>
+/// Represents the interactive Sudoku grid control used by the WinForms UI.
+/// Handles cell rendering, validation, hint display, undo support, and board synchronization
+/// with the underlying <see cref="SudokuController"/> state.
+/// </summary>
+internal class SudokuBoard : DataGridView, IDisposable
 {
     private ISudokuSettings settings = default!;
     private IUserInteraction ui = default!;
-
     private SudokuController controller = default!;
-    private Boolean debugMode = false;
+    private bool debugMode = false;
+    private bool mouseWheelEditing = false;
 
-    private Boolean mouseWheelEditing = false;
-    public Boolean InSync { get; private set; } = true;
+    /// <summary>
+    /// Gets a value indicating whether the board currently matches the underlying puzzle state.
+    /// </summary>
+    public bool InSync { get; private set; } = true;
 
-    public event EventHandler<Boolean>? UndoAvailableChanged;
-    public event EventHandler<Boolean>? CandidatesAvailableChanged;
-    public event EventHandler<Boolean>? UpdateStatus;
-    public event EventHandler<Boolean>? UpdateHints;
+    /// <summary>
+    /// Occurs when the availability of undo operations changes.
+    /// </summary>
+    public event EventHandler<bool>? UndoAvailableChanged;
+
+    /// <summary>
+    /// Occurs when the availability of candidate data changes.
+    /// </summary>
+    public event EventHandler<bool>? CandidatesAvailableChanged;
+
+    /// <summary>
+    /// Occurs when the board status should be refreshed.
+    /// </summary>
+    public event EventHandler<bool>? UpdateStatus;
+
+    /// <summary>
+    /// Occurs when the hint visualization state changes.
+    /// </summary>
+    public event EventHandler<bool>? UpdateHints;
+
+    /// <summary>
+    /// Occurs when the status text displayed by the UI should be updated.
+    /// </summary>
     public event EventHandler<string>? StatusTextChanged;
 
-    // Kontextmenü Variable
     private ContextMenuStrip? cellContextMenu;
-
     private Color highlightColor = Color.Cyan;
     private List<Point> highlightedCells = new List<Point>();
-
     private Font? normalDisplayFont;
     private Font? boldDisplayFont;
     private Font? strikethroughFont;
     private Font? hintFontSmall;
     private Font? hintFontNormal;
-    private String[]? fontSizes;
-    private Boolean valuesVisible = true;
+    private string[]? fontSizes;
+    private bool valuesVisible = true;
 
-    Color gray;
-    Color lightGray;
-    Color green;
-    Color lightGreen;
-    Color textColor;
-    public SudokuBoard() { }
+    private Color gray;
+    private Color lightGray;
+    private Color green;
+    private Color lightGreen;
+    private Color textColor;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SudokuBoard"/> class.
+    /// </summary>
+    public SudokuBoard()
+    {
+    }
+
+    /// <summary>
+    /// Initializes the board with the application settings and UI interaction layer.
+    /// </summary>
+    /// <param name="settings">The Sudoku settings used by the board.</param>
+    /// <param name="ui">The UI abstraction used for notifications and dialogs.</param>
     internal void Initialize(ISudokuSettings settings, IUserInteraction ui)
     {
         DoubleBuffered = true;
@@ -67,12 +101,12 @@ internal class SudokuBoard: DataGridView, IDisposable
 
         MultiSelect = false;
         SelectionMode = DataGridViewSelectionMode.CellSelect;
-        StandardTab = true; // Tab springt zur nächsten Zelle
+        StandardTab = true;
 
         DefaultCellStyle.SelectionBackColor = Color.FromArgb(180, 210, 255);
         DefaultCellStyle.SelectionForeColor = Color.Black;
 
-        MouseWheel += new MouseEventHandler(MouseWheelHandler);
+        MouseWheel += MouseWheelHandler;
         Rows.Add(WinFormsSettings.SudokuSize);
 
         CurrentCell = this[0, 0];
@@ -87,6 +121,10 @@ internal class SudokuBoard: DataGridView, IDisposable
         InitializeInputValidation();
         InitializeEvents();
     }
+
+    /// <summary>
+    /// Releases resources used by the board and its associated fonts.
+    /// </summary>
     public new void Dispose()
     {
         base.Dispose();
@@ -97,17 +135,21 @@ internal class SudokuBoard: DataGridView, IDisposable
         hintFontNormal?.Dispose(); hintFontNormal = null;
         cellContextMenu?.Dispose(); cellContextMenu = null;
     }
+
+    /// <summary>
+    /// Gets or sets the controller responsible for the current Sudoku problem state.
+    /// </summary>
     internal SudokuController Controller
     {
-        get { return controller!; }
+        get => controller!;
         set
         {
-            if(controller != null)
+            if (controller != null)
             {
                 controller.MatrixChanged -= OnMatrixChanged;
-                if(controller.CurrentProblem != null)
+                if (controller.CurrentProblem != null)
                 {
-                    controller.MinimizedFailed -= OnMinimizedFailed; // preserved for patch context
+                    controller.MinimizedFailed -= OnMinimizedFailed;
                     controller.CurrentProblem.SolutionFound -= OnSolutionFound;
                     controller.CurrentProblem.Matrix.CellChanged -= OnCellChanged;
                 }
@@ -115,51 +157,67 @@ internal class SudokuBoard: DataGridView, IDisposable
 
             controller = value;
 
-            if(controller != null)
+            if (controller != null)
             {
                 controller.MatrixChanged += OnMatrixChanged;
-                if(controller.CurrentProblem != null)
+                if (controller.CurrentProblem != null)
                 {
                     controller.MinimizedFailed += OnMinimizedFailed;
                     controller.CurrentProblem.SolutionFound += OnSolutionFound;
                     DisplayValues(controller.CurrentProblem.Matrix);
-                    if(debugMode)
+                    if (debugMode)
                         controller.CurrentProblem.Matrix.CellChanged += OnCellChanged;
                 }
             }
         }
     }
 
+    /// <summary>
+    /// Handles a failed minimization attempt by resetting the board and refreshing the current view.
+    /// </summary>
+    /// <param name="s">The event source or related context object.</param>
     private void OnMinimizedFailed(object s)
     {
-        if(InvokeRequired)
+        if (InvokeRequired)
         {
             Invoke(new Action<object>(OnMinimizedFailed), s);
             return;
         }
+
         ResetMatrix();
         DisplayValues();
     }
 
+    /// <summary>
+    /// Refreshes the board display whenever the underlying puzzle matrix changes.
+    /// </summary>
+    /// <param name="s">The event source.</param>
+    /// <param name="e">The event arguments.</param>
     private void OnMatrixChanged(object? s, EventArgs e)
     {
-        if(InvokeRequired)
+        if (InvokeRequired)
         {
             Invoke(new EventHandler(OnMatrixChanged), s, e);
             return;
         }
 
-        if(Controller?.CurrentProblem != null)
+        if (Controller?.CurrentProblem != null)
         {
-            DisplayValues(Controller!.CurrentProblem.Matrix);
+            DisplayValues(Controller.CurrentProblem.Matrix);
         }
-        FormatBoard();
 
+        FormatBoard();
         Refresh();
     }
+
+    /// <summary>
+    /// Updates the visual value of a single cell when the model reports a cell change.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="v">The changed cell data.</param>
     private void OnCellChanged(object? sender, BaseCell v)
     {
-        if(InvokeRequired)
+        if (InvokeRequired)
         {
             Invoke(new Action(() =>
             {
@@ -168,10 +226,12 @@ internal class SudokuBoard: DataGridView, IDisposable
             }));
 
             var tf = settings?.TraceFrequency ?? 0;
-            if(tf > 0)
+            if (tf > 0)
             {
-                try { Thread.Sleep(tf); } catch { }
+                try { Thread.Sleep(tf); }
+                catch { }
             }
+
             return;
         }
 
@@ -179,34 +239,56 @@ internal class SudokuBoard: DataGridView, IDisposable
         Update();
     }
 
+    /// <summary>
+    /// Re-renders the grid after a solution has been found.
+    /// </summary>
+    /// <param name="s">The event source.</param>
+    /// <param name="e">The event arguments.</param>
     private void OnSolutionFound(object? s, EventArgs e)
     {
-        if(InvokeRequired)
+        if (InvokeRequired)
         {
             Invoke(new EventHandler(OnSolutionFound), s, e);
             return;
         }
-        if(Controller?.CurrentProblem != null)
+
+        if (Controller?.CurrentProblem != null)
         {
-            DisplayValues(Controller!.CurrentProblem.Solutions[Controller!.CurrentProblem.NumberOfSolutions - 1]);
+            DisplayValues(Controller.CurrentProblem.Solutions[Controller.CurrentProblem.NumberOfSolutions - 1]);
         }
+
         Refresh();
     }
 
+    /// <summary>
+    /// Publishes the current hint-visibility status to subscribers.
+    /// </summary>
+    /// <param name="showHints">A value indicating whether hints are visible.</param>
     private void OnUpdateHints(bool showHints)
     {
         UpdateHints?.Invoke(this, showHints);
     }
 
+    /// <summary>
+    /// Publishes a status text update to the UI.
+    /// </summary>
+    /// <param name="text">The status text to display.</param>
     private void OnStatusTextChanged(string text)
     {
         StatusTextChanged?.Invoke(this, text);
     }
 
+    /// <summary>
+    /// Registers input validation for the active cell editor.
+    /// </summary>
     private void InitializeInputValidation()
     {
         EditingControlShowing += CellEditingControl;
     }
+
+    /// <summary>
+    /// Subscribes to the grid events used by the board logic.
+    /// </summary>
     private void InitializeEvents()
     {
         CellBeginEdit += new DataGridViewCellCancelEventHandler(HandleBeginEdit);
@@ -215,28 +297,42 @@ internal class SudokuBoard: DataGridView, IDisposable
         CellLeave += new DataGridViewCellEventHandler(HandleCellLeave);
         Paint += new PaintEventHandler(ShowCellHints);
         KeyDown += new KeyEventHandler(HandleSpecialChar);
-        // no-op: keep for tool logging.
     }
 
+    /// <summary>
+    /// Restricts the active cell editor to valid Sudoku input characters.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The editing-control event arguments.</param>
     private void CellEditingControl(object? sender, DataGridViewEditingControlShowingEventArgs e)
     {
-        if(e.Control is TextBox textBox)
+        if (e.Control is TextBox textBox)
         {
             textBox.KeyPress -= CellKeyPressValidation;
             textBox.KeyPress += CellKeyPressValidation;
         }
     }
+
+    /// <summary>
+    /// Rejects invalid key presses during cell editing.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The key press event arguments.</param>
     private void CellKeyPressValidation(object? sender, KeyPressEventArgs e)
     {
-        bool isValidDigit = char.IsDigit(e.KeyChar) && e.KeyChar != '0';
-        bool isControl = char.IsControl(e.KeyChar);
+        var isValidDigit = char.IsDigit(e.KeyChar) && e.KeyChar != '0';
+        var isControl = char.IsControl(e.KeyChar);
 
-        if(!isValidDigit && !isControl)
+        if (!isValidDigit && !isControl)
         {
             e.Handled = true;
             System.Media.SystemSounds.Beep.Play();
         }
     }
+
+    /// <summary>
+    /// Creates the context menu used for clearing cells and clearing candidates.
+    /// </summary>
     private void InitializeCellContextMenu()
     {
         cellContextMenu = new ContextMenuStrip();
@@ -245,8 +341,7 @@ internal class SudokuBoard: DataGridView, IDisposable
         itemClear.Enabled = true;
         itemClear.Click += (s, e) =>
         {
-            // no-op formatting; explicit null-check retained for clarity
-            if(CurrentCell != null && !CurrentCell.ReadOnly)
+            if (CurrentCell != null && !CurrentCell.ReadOnly)
             {
                 PushOnUndoStack(this);
                 CurrentCell.Value = "";
@@ -270,60 +365,85 @@ internal class SudokuBoard: DataGridView, IDisposable
         CellMouseDown += HandleCellMouseDown;
     }
 
+    /// <summary>
+    /// Handles right-click actions on a board cell.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The mouse event arguments.</param>
     private void HandleCellMouseDown(object? sender, DataGridViewCellMouseEventArgs e)
     {
-        if(e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex >= 0)
+        if (e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex >= 0)
         {
             HandleRightMouseButton(e.RowIndex, e.ColumnIndex);
         }
     }
 
+    /// <summary>
+    /// Handles mouse-wheel value changes for the currently selected cell.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The mouse event arguments.</param>
     private void MouseWheelHandler(object? sender, MouseEventArgs e)
     {
-        if(sender is DataGridView)
+        if (sender is DataGridView)
         {
-            if(EditingControl == null && CurrentCell != null && !CurrentCell.ReadOnly)
+            if (EditingControl == null && CurrentCell != null && !CurrentCell.ReadOnly)
             {
-                if(!mouseWheelEditing) PushOnUndoStack(this);
+                if (!mouseWheelEditing) PushOnUndoStack(this);
 
                 try
                 {
-                    int currentValue = (CurrentCell!.Value == null || ((String)CurrentCell!.Value).Trim().Length == 0 ? 0 : Convert.ToInt32(CurrentCell!.Value));
+                    int currentValue = (CurrentCell.Value == null || ((string)CurrentCell.Value).Trim().Length == 0
+                        ? 0
+                        : Convert.ToInt32(CurrentCell.Value));
                     currentValue += Math.Sign(e.Delta);
-                    if(currentValue > 0 && currentValue <= WinFormsSettings.SudokuSize)
-                        CurrentCell!.Value = currentValue.ToString();
-                    else if(currentValue == Values.Undefined)
-                        CurrentCell!.Value = "";
+
+                    if (currentValue > 0 && currentValue <= WinFormsSettings.SudokuSize)
+                        CurrentCell.Value = currentValue.ToString();
+                    else if (currentValue == Values.Undefined)
+                        CurrentCell.Value = "";
                     else
                         System.Media.SystemSounds.Hand.Play();
+
                     mouseWheelEditing = true;
                 }
-                catch(FormatException) { }
+                catch (FormatException) { }
             }
         }
     }
-    public void FormatCell(int row, int col, Boolean clearHighlight = false)
-    {
-        if(!clearHighlight && this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
-        Boolean xSudoku = (Controller?.CurrentProblem) is XSudokuProblem;
 
-        Boolean obfuscated = ((row / 3) % 2 == 1 && (col / 3) % 2 == 0) || ((row / 3) % 2 == 0 && (col / 3) % 2 == 1);
+    /// <summary>
+    /// Formats a single board cell using the active puzzle and visual style.
+    /// </summary>
+    /// <param name="row">The row index of the cell.</param>
+    /// <param name="col">The column index of the cell.</param>
+    /// <param name="clearHighlight">A value indicating whether the highlight should be cleared.</param>
+    public void FormatCell(int row, int col, bool clearHighlight = false)
+    {
+        if (!clearHighlight && this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
+        bool xSudoku = (Controller?.CurrentProblem) is XSudokuProblem;
+
+        bool obfuscated = ((row / 3) % 2 == 1 && (col / 3) % 2 == 0) || ((row / 3) % 2 == 0 && (col / 3) % 2 == 1);
         this[row, col].Style.BackColor = (obfuscated ? gray : ((xSudoku && (row == col || row + col == WinFormsSettings.SudokuSize - 1)) ? lightGray : Color.White));
         this[row, col].Style.ForeColor = (obfuscated ? textColor : Color.Black);
         this[row, col].Style.SelectionBackColor = SystemColors.AppWorkspace;
     }
 
+    /// <summary>
+    /// Highlights the neighboring cells of the currently selected cell.
+    /// </summary>
     public void MarkNeighbors()
     {
         BaseCell[] neighbors = Controller?.GetNeighbors(CurrentCellAddress.X, CurrentCellAddress.Y) ?? Array.Empty<BaseCell>();
-        Boolean obfuscated;
+        bool obfuscated;
 
-        if(this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
+        if (this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor == highlightColor) return;
 
         obfuscated = ((CurrentCellAddress.X / 3) % 2 == 1 && (CurrentCellAddress.Y / 3) % 2 == 0) || ((CurrentCellAddress.X / 3) % 2 == 0 && (CurrentCellAddress.Y / 3) % 2 == 1);
         this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.BackColor = (obfuscated ? green : lightGreen);
         this[CurrentCellAddress.X, CurrentCellAddress.Y].Style.SelectionBackColor = (obfuscated ? Color.DarkGreen : Color.SeaGreen);
-        foreach(BaseCell cell in neighbors)
+
+        foreach (BaseCell cell in neighbors)
         {
             obfuscated = ((cell.Row / 3) % 2 == 1 && (cell.Col / 3) % 2 == 0) || ((cell.Row / 3) % 2 == 0 && (cell.Col / 3) % 2 == 1);
             this[cell.Row, cell.Col].Style.BackColor = (obfuscated ? green : lightGreen);
@@ -331,25 +451,36 @@ internal class SudokuBoard: DataGridView, IDisposable
         }
     }
 
+    /// <summary>
+    /// Saves the current cell state to the undo stack before a change is applied.
+    /// </summary>
+    /// <param name="dgv">The grid instance from which the undo snapshot should be created.</param>
     public void PushOnUndoStack(DataGridView dgv)
     {
         CoreValue cv = new CoreValue();
         if (CurrentCell == null) return;
+
         cv.Row = CurrentCell.RowIndex;
         cv.Col = CurrentCell.ColumnIndex;
-        if(CurrentCell!.Value != null)
-            cv.UnformatedValue = (String)CurrentCell!.Value;
+
+        if (CurrentCell.Value != null)
+            cv.UnformatedValue = (string)CurrentCell.Value;
+
         Controller?.PushUndo(cv);
         UndoAvailableChanged?.Invoke(this, true);
     }
 
+    /// <summary>
+    /// Resizes the board to match the current Sudoku configuration and DPI settings.
+    /// </summary>
+    /// <returns>The board height after resizing.</returns>
     public int ResizeBoard()
     {
         int width = 0;
         int height = 0;
         int cellSize = (int)((float)(settings?.Size ?? 1) * (settings?.MagnificationFactor ?? 1f) * (settings?.CellWidth ?? 10) * 0.7f * (float)this.DeviceDpi / 96f);
 
-        for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
+        for (int i = 0; i < WinFormsSettings.SudokuSize; i++)
         {
             width += (Columns[i].Width = cellSize);
             height += (Rows[i].Height = cellSize);
@@ -361,137 +492,206 @@ internal class SudokuBoard: DataGridView, IDisposable
         return height;
     }
 
+    /// <summary>
+    /// Sets the underlying model value for the specified cell.
+    /// </summary>
+    /// <param name="row">The row index.</param>
+    /// <param name="col">The column index.</param>
+    /// <param name="value">The value to set.</param>
     private void SetValue(int row, int col, byte value)
     {
-        if(Controller?.CurrentProblem != null)
+        if (Controller?.CurrentProblem != null)
             Controller.CurrentProblem.SetValue(row, col, value);
     }
 
+    /// <summary>
+    /// Clears all values from the visual board while preserving the configured formatting.
+    /// </summary>
     public void ResetMatrix()
     {
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for (int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for (int col = 0; col < WinFormsSettings.SudokuSize; col++)
             {
                 this[col, row].Style.Font = normalDisplayFont;
-                this[col, row].Value = String.Empty;
-                this[col, row].ErrorText = String.Empty;
+                this[col, row].Value = string.Empty;
+                this[col, row].ErrorText = string.Empty;
                 FormatCell(row, col, true);
             }
+
         ClearHighlights();
         ClearErrorMessages();
     }
 
-    public Boolean IsCompleted { get { return FilledCells == WinFormsSettings.TotalCellCount; } }
+    /// <summary>
+    /// Gets a value indicating whether the puzzle has been filled completely.
+    /// </summary>
+    public bool IsCompleted => FilledCells == WinFormsSettings.TotalCellCount;
+
+    /// <summary>
+    /// Displays the provided values in the board grid.
+    /// </summary>
+    /// <param name="values">The matrix to render, or null to use the current controller state.</param>
     public void DisplayValues(Values? values = null)
     {
-        if(values == null)
+        if (values == null)
         {
-            values = Controller?.CurrentProblem?.Matrix; // no-op re-evaluation to ensure context
+            values = Controller?.CurrentProblem?.Matrix;
         }
-        if(values == null) return;
 
-        for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
-            for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
+        if (values == null) return;
+
+        for (int i = 0; i < WinFormsSettings.SudokuSize; i++)
+            for (int j = 0; j < WinFormsSettings.SudokuSize; j++)
                 DisplayValue(i, j, values.GetValue(i, j));
     }
 
+    /// <summary>
+    /// Displays a single cell value and applies the appropriate font based on its read-only state.
+    /// </summary>
+    /// <param name="row">The row index.</param>
+    /// <param name="col">The column index.</param>
+    /// <param name="value">The value to display.</param>
     public void DisplayValue(int row, int col, byte value)
     {
         this[col, row].Value = (value == Values.Undefined ? " " : value.ToString());
         SetCellFont(row, col);
     }
 
+    /// <summary>
+    /// Applies the current formatting and font settings to all cells.
+    /// </summary>
     public void SetCellFont()
     {
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for (int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for (int col = 0; col < WinFormsSettings.SudokuSize; col++)
                 SetCellFont(row, col);
     }
 
+    /// <summary>
+    /// Applies the correct font and read-only state to a specific cell.
+    /// </summary>
+    /// <param name="row">The row index.</param>
+    /// <param name="col">The column index.</param>
     public void SetCellFont(int row, int col)
     {
-        if(Controller == null) return;
-        this[col, row].Style.Font = Controller!.IsCellReadOnly(row, col) ? (boldDisplayFont ?? DefaultCellStyle.Font) : (normalDisplayFont ?? DefaultCellStyle.Font);
-        this[col, row].ReadOnly = Controller!.IsCellReadOnly(row, col);
+        if (Controller == null) return;
+        this[col, row].Style.Font = Controller.IsCellReadOnly(row, col) ? (boldDisplayFont ?? DefaultCellStyle.Font) : (normalDisplayFont ?? DefaultCellStyle.Font);
+        this[col, row].ReadOnly = Controller.IsCellReadOnly(row, col);
     }
 
-    public Boolean SyncProblemWithGUI(Boolean silent, Boolean autocheck)
+    /// <summary>
+    /// Synchronizes the model state from the current grid contents.
+    /// </summary>
+    /// <param name="silent">A value indicating whether validation messages should be suppressed.</param>
+    /// <param name="autocheck">A value indicating whether the board should display validation errors.</param>
+    /// <returns><c>true</c> if the current grid is valid; otherwise, <c>false</c>.</returns>
+    public bool SyncProblemWithGUI(bool silent, bool autocheck)
     {
         EndEdit();
         mouseWheelEditing = false;
 
         string[,] grid = new string[WinFormsSettings.SudokuSize, WinFormsSettings.SudokuSize];
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for (int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for (int col = 0; col < WinFormsSettings.SudokuSize; col++)
             {
-                this[col, row].ErrorText = String.Empty;
-                grid[row, col] = this[col, row].Value as string ?? String.Empty;
+                this[col, row].ErrorText = string.Empty;
+                grid[row, col] = this[col, row].Value as string ?? string.Empty;
             }
 
         ValidationResult result = Controller!.ParseAndSync(grid);
         InSync = result.IsValid;
 
-        if(autocheck)
+        if (autocheck)
         {
-            foreach(var error in result.Errors)
+            foreach (var error in result.Errors)
             {
                 this[error.Col, error.Row].ErrorText = error.Message;
             }
 
-            if(!silent && !result.IsValid)
+            if (!silent && !result.IsValid)
             {
                 ui?.ShowInfo(result.Errors[0].Message);
             }
         }
-        if(settings?.ShowHints == true) Refresh();
+
+        if (settings?.ShowHints == true) Refresh();
         return result.IsValid;
     }
 
-    public void FormatBoard(Boolean newProblem = false)
+    /// <summary>
+    /// Applies board formatting and visual styles for the current challenge state.
+    /// </summary>
+    /// <param name="newProblem">A value indicating whether the board should be reset before formatting.</param>
+    public void FormatBoard(bool newProblem = false)
     {
-        if(newProblem) ResetMatrix();
+        if (newProblem) ResetMatrix();
         SetCellFont();
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+
+        for (int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for (int col = 0; col < WinFormsSettings.SudokuSize; col++)
                 FormatCell(row, col);
-        if(settings.MarkNeighbors)
+
+        if (settings.MarkNeighbors)
             MarkNeighbors();
     }
 
+    /// <summary>
+    /// Counts the number of non-empty cells currently displayed on the board.
+    /// </summary>
     public int FilledCells
     {
         get
         {
             int count = 0;
 
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-                for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
-                    if((this[col, row].Value?.ToString()?.Trim() ?? String.Empty).Length > 0)
+            for (int row = 0; row < WinFormsSettings.SudokuSize; row++)
+                for (int col = 0; col < WinFormsSettings.SudokuSize; col++)
+                    if ((this[col, row].Value?.ToString()?.Trim() ?? string.Empty).Length > 0)
                         count++;
+
             return count;
         }
     }
 
-    public void SetReadOnly(Boolean readOnly)
+    /// <summary>
+    /// Sets the read-only state for all cells that currently contain a value.
+    /// </summary>
+    /// <param name="readOnly">A value indicating whether the board should be locked.</param>
+    public void SetReadOnly(bool readOnly)
     {
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
-                Controller!.SetCellReadOnly(row, col, (readOnly && ((this[col, row].Value?.ToString()?.Trim() ?? String.Empty) != String.Empty)));
+        for (int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for (int col = 0; col < WinFormsSettings.SudokuSize; col++)
+                Controller!.SetCellReadOnly(row, col, (readOnly && ((this[col, row].Value?.ToString()?.Trim() ?? string.Empty) != string.Empty)));
+
         DisplayValues();
     }
 
+    /// <summary>
+    /// Handles the begin-edit phase and pushes the previous cell state to the undo stack.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The cell event arguments.</param>
     private void HandleBeginEdit(object? sender, DataGridViewCellCancelEventArgs e)
     {
-        if(sender is DataGridView)
-            if(!((DataGridView)sender).CurrentCell.ReadOnly)
+        if (sender is DataGridView)
+            if (!((DataGridView)sender).CurrentCell.ReadOnly)
                 PushOnUndoStack((DataGridView)sender);
     }
 
+    /// <summary>
+    /// Handles the end-edit phase for a cell value update.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The cell event arguments.</param>
     private void HandleEndEdit(object? sender, DataGridViewCellEventArgs e)
     {
         HandleCellEndEdit(sender);
     }
 
+    /// <summary>
+    /// Finalizes a cell edit and refreshes the visual and model state.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
     private void HandleCellEndEdit(object? sender)
     {
         SetValue(CurrentCell!.RowIndex, CurrentCell.ColumnIndex, Values.Undefined);
@@ -500,6 +700,7 @@ internal class SudokuBoard: DataGridView, IDisposable
 
         UpdateStatus?.Invoke(this, false);
     }
+
     private static readonly IReadOnlyDictionary<Keys, int> ShiftNumPadMap = new Dictionary<Keys, int>
     {
         { Keys.End, -1 }, { Keys.Down, -2 }, { Keys.PageDown, -3 },
@@ -507,11 +708,16 @@ internal class SudokuBoard: DataGridView, IDisposable
         { Keys.Home, -7 }, { Keys.Up, -8 }, { Keys.PageUp, -9 }
     };
 
+    /// <summary>
+    /// Handles delete and context-menu key actions for a cell.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The key event arguments.</param>
     public void HandleDeleteAndMenuKeys(object? sender, KeyEventArgs e)
     {
-        if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
+        if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
         {
-            if(!this[CurrentCell!.ColumnIndex, CurrentCell.RowIndex].ReadOnly)
+            if (!this[CurrentCell!.ColumnIndex, CurrentCell.RowIndex].ReadOnly)
             {
                 PushOnUndoStack(this);
                 this[CurrentCell.ColumnIndex, CurrentCell.RowIndex].Value = "";
@@ -523,9 +729,15 @@ internal class SudokuBoard: DataGridView, IDisposable
             HandleRightMouseButton(CurrentCell!.RowIndex, CurrentCell.ColumnIndex);
         }
     }
+
+    /// <summary>
+    /// Processes special key input such as delete, context menu, and candidate operations.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The key event arguments.</param>
     private void HandleSpecialChar(object? sender, KeyEventArgs e)
     {
-        if(e.KeyCode == Keys.Delete || e.KeyCode == Keys.Apps || e.KeyCode == Keys.Back)
+        if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.Apps || e.KeyCode == Keys.Back)
         {
             HandleDeleteAndMenuKeys(sender, e);
             e.Handled = true;
@@ -533,127 +745,184 @@ internal class SudokuBoard: DataGridView, IDisposable
             return;
         }
 
-        if(!e.Modifiers.HasFlag(Keys.Shift) && !e.Modifiers.HasFlag(Keys.Control)) return;
+        if (!e.Modifiers.HasFlag(Keys.Shift) && !e.Modifiers.HasFlag(Keys.Control)) return;
 
         int value = 0;
-        if(e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9) value = e.KeyCode - Keys.D0;
-        else if(e.KeyCode >= Keys.NumPad1 && e.KeyCode <= Keys.NumPad9) value = e.KeyCode - Keys.NumPad0;
-        else if(e.Modifiers.HasFlag(Keys.Control) && !ShiftNumPadMap.TryGetValue(e.KeyCode, out value)) value=0;
+        if (e.KeyCode >= Keys.D1 && e.KeyCode <= Keys.D9) value = e.KeyCode - Keys.D0;
+        else if (e.KeyCode >= Keys.NumPad1 && e.KeyCode <= Keys.NumPad9) value = e.KeyCode - Keys.NumPad0;
+        else if (e.Modifiers.HasFlag(Keys.Control) && !ShiftNumPadMap.TryGetValue(e.KeyCode, out value)) value = 0;
 
-        if(value == 0) return;
+        if (value == 0) return;
 
-        if(CurrentCell?.ReadOnly == true) return;
+        if (CurrentCell?.ReadOnly == true) return;
 
-        ProcessCandidate(Math.Abs(value), e.Modifiers.HasFlag(Keys.Shift) || value < 0); // that means it's a shift numpad key, so we set the candidate in shift mode
+        ProcessCandidate(Math.Abs(value), e.Modifiers.HasFlag(Keys.Shift) || value < 0);
         e.Handled = true;
         e.SuppressKeyPress = true;
 
         Refresh();
     }
+
+    /// <summary>
+    /// Adds or removes a candidate value for the current cell.
+    /// </summary>
+    /// <param name="value">The candidate value.</param>
+    /// <param name="shiftMode">A value indicating whether candidate mode is active.</param>
     private void ProcessCandidate(int value, bool shiftMode)
     {
         Controller!.CurrentProblem.SetCandidate(CurrentCell!.RowIndex, CurrentCell.ColumnIndex, (byte)value, shiftMode);
-        CandidatesAvailableChanged?.Invoke(this, Controller!.CurrentProblem.HasCandidates());
+        CandidatesAvailableChanged?.Invoke(this, Controller.CurrentProblem.HasCandidates());
         InvalidateCell(CurrentCell.ColumnIndex, CurrentCell.RowIndex);
     }
 
+    /// <summary>
+    /// Handles cell leave events and optionally refreshes neighbor highlighting.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The cell event arguments.</param>
     private void HandleCellLeave(object? sender, DataGridViewCellEventArgs e)
     {
-        if(mouseWheelEditing) HandleCellEndEdit(sender);
+        if (mouseWheelEditing) HandleCellEndEdit(sender);
 
-        if(settings?.MarkNeighbors == true) FormatBoard();
+        if (settings?.MarkNeighbors == true) FormatBoard();
     }
 
+    /// <summary>
+    /// Handles cell enter events and refreshes same-value highlighting and hint visibility.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The cell event arguments.</param>
     private void HandleCellEnter(object? sender, DataGridViewCellEventArgs e)
     {
-        if(settings?.HighlightSameValues == true) UpdateHighligts();
-        if(settings?.MarkNeighbors == true) FormatBoard();
+        if (settings?.HighlightSameValues == true) UpdateHighligts();
+        if (settings?.MarkNeighbors == true) FormatBoard();
         ShowValues();
     }
 
+    /// <summary>
+    /// Applies a visual strike-through to cells that fail validation during testing.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="cell">The cell that failed validation.</param>
     internal void HandleOnTestCell(object? sender, BaseCell cell)
     {
-        if(InvokeRequired)
+        if (InvokeRequired)
         {
             Invoke(new Action<object, BaseCell>(HandleOnTestCell), sender, cell);
             return;
         }
+
         this[cell.Col, cell.Row].Style.Font = strikethroughFont;
         this[cell.Col, cell.Row].Style.BackColor = Color.Coral;
     }
 
+    /// <summary>
+    /// Resets the visual state of a cell after a validation test completes.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="cell">The cell whose visuals should be reset.</param>
     internal void ResetCellVisuals(object? sender, BaseCell cell)
     {
-        if(InvokeRequired)
+        if (InvokeRequired)
         {
             Invoke(new Action<object, BaseCell>(ResetCellVisuals), sender, cell);
             return;
         }
+
         this[cell.Col, cell.Row].Style.Font = boldDisplayFont;
         FormatCell(cell.Col, cell.Row);
     }
 
+    /// <summary>
+    /// Clears all validation error messages from the board.
+    /// </summary>
     public void ClearErrorMessages()
     {
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
-                this[col, row].ErrorText = String.Empty;
+        for (int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for (int col = 0; col < WinFormsSettings.SudokuSize; col++)
+                this[col, row].ErrorText = string.Empty;
     }
+
+    /// <summary>
+    /// Highlights all cells with the same value as the currently selected cell.
+    /// </summary>
     public void UpdateHighligts()
     {
         ClearHighlights();
 
-        if(CurrentCell == null || CurrentCell.Value == null || String.IsNullOrWhiteSpace(CurrentCell.Value.ToString())) return;
+        if (CurrentCell == null || CurrentCell.Value == null || string.IsNullOrWhiteSpace(CurrentCell.Value.ToString())) return;
 
-        // no-op change to re-evaluate context while keeping CurrentCell checks intact
         highlightedCells = GetSameValueCells(CurrentCell.Value);
 
-        foreach(Point p in highlightedCells)
+        foreach (Point p in highlightedCells)
             this[p.X, p.Y].Style.BackColor = highlightColor;
     }
 
+    /// <summary>
+    /// Clears all active highlights from the board.
+    /// </summary>
     public void ClearHighlights()
     {
-        foreach(Point p in highlightedCells)
+        foreach (Point p in highlightedCells)
             FormatCell(p.X, p.Y, true);
+
         highlightedCells.Clear();
     }
 
+    /// <summary>
+    /// Finds all cells whose displayed value matches the specified value.
+    /// </summary>
+    /// <param name="value">The value to compare against.</param>
+    /// <returns>A list of matching cell coordinates.</returns>
     private List<Point> GetSameValueCells(object value)
     {
         List<Point> cells = new List<Point>();
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
-                if(this[col, row].Value != null && this[col, row].Value.Equals(value))
+        for (int row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for (int col = 0; col < WinFormsSettings.SudokuSize; col++)
+                if (this[col, row].Value != null && this[col, row].Value.Equals(value))
                     cells.Add(new Point(col, row));
+
         return cells;
     }
 
+    /// <summary>
+    /// Hides all cell values and keeps the board in a hidden-value state.
+    /// </summary>
     public void HideCells()
     {
         int row, col;
 
-        for(row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for (row = 0; row < WinFormsSettings.SudokuSize; row++)
+            for (col = 0; col < WinFormsSettings.SudokuSize; col++)
                 this[row, col].Value = "";
+
         valuesVisible = false;
     }
+
+    /// <summary>
+    /// Restores the displayed values when they were temporarily hidden.
+    /// </summary>
     public void ShowValues()
     {
-        if(!valuesVisible)
+        if (!valuesVisible)
         {
             DisplayValues(Controller!.CurrentProblem.Matrix);
             valuesVisible = true;
         }
     }
 
+    /// <summary>
+    /// Renders candidate hints or watch-hand hints into the visible board area.
+    /// </summary>
+    /// <param name="sender">The source of the paint event.</param>
+    /// <param name="e">The paint event arguments.</param>
     private void ShowCellHints(object? sender, PaintEventArgs e)
     {
         var currentProblem = Controller?.CurrentProblem;
-        if(sender is not DataGridView || currentProblem == null) return;
+        if (sender is not DataGridView || currentProblem == null) return;
 
         bool showCandidatesMode = !(settings?.ShowHints ?? false);
-        if(showCandidatesMode && !currentProblem.HasCandidates()) return;
+        if (showCandidatesMode && !currentProblem.HasCandidates()) return;
 
         EnsureHintFonts();
         Font hintFont = (settings?.Size ?? 1) == 1 ? (hintFontSmall ?? DefaultCellStyle.Font) : (hintFontNormal ?? DefaultCellStyle.Font);
@@ -666,35 +935,46 @@ internal class SudokuBoard: DataGridView, IDisposable
         int startCol = Math.Max(0, (int)(clip.Left / cellSize));
         int endCol = Math.Min(WinFormsSettings.SudokuSize, (int)(clip.Right / cellSize) + 1);
 
-        for(int row = startRow; row < endRow; row++)
+        for (int row = startRow; row < endRow; row++)
         {
-            for(int col = startCol; col < endCol; col++)
+            for (int col = startCol; col < endCol; col++)
             {
-                if(currentProblem.GetValue(row, col) != Values.Undefined) continue;
-                if(showCandidatesMode && !currentProblem.HasCandidate(row, col)) continue;
+                if (currentProblem.GetValue(row, col) != Values.Undefined) continue;
+                if (showCandidatesMode && !currentProblem.HasCandidate(row, col)) continue;
 
                 RectangleF cellBounds = new RectangleF(col * cellSize, row * cellSize, cellSize, cellSize);
                 BaseCell cell = currentProblem.Cell(row, col);
 
-                if(settings?.UseWatchHandHints == true)
+                if (settings?.UseWatchHandHints == true)
                     SudokuRenderer.DrawWatchHands(cell, cellBounds, e.Graphics, showCandidatesMode);
                 else
                     SudokuRenderer.DrawHints(cell, cellBounds, e.Graphics, hintFont, this[col, row].Style.ForeColor, showCandidatesMode);
             }
         }
     }
+
+    /// <summary>
+    /// Enables or disables the context menu for the current cell.
+    /// </summary>
+    /// <param name="row">The row index.</param>
+    /// <param name="col">The column index.</param>
     private void HandleRightMouseButton(int row, int col)
     {
-        if(cellContextMenu != null)
+        if (cellContextMenu != null)
         {
             var val = CurrentCell?.Value?.ToString() ?? string.Empty;
             cellContextMenu.Items[0].Enabled = val.Trim().Length != 0;
         }
-        if(cellContextMenu != null)
+
+        if (cellContextMenu != null)
             cellContextMenu.Items[1].Enabled = Controller!.CurrentProblem.HasCandidate(row, col);
     }
 
-    public void CreateNewProblem(Boolean xSudoku)
+    /// <summary>
+    /// Creates a new Sudoku problem and resets the visual board state.
+    /// </summary>
+    /// <param name="xSudoku">A value indicating whether an X-Sudoku should be created.</param>
+    public void CreateNewProblem(bool xSudoku)
     {
         Controller!.CreateNewProblem(xSudoku);
         ResetMatrix();
@@ -702,11 +982,18 @@ internal class SudokuBoard: DataGridView, IDisposable
         InSync = true;
     }
 
+    /// <summary>
+    /// Clears the undo stack and notifies listeners that no undo operations are available.
+    /// </summary>
     public void ResetUndo()
     {
         Controller!.ClearUndo();
         UndoAvailableChanged?.Invoke(this, false);
     }
+
+    /// <summary>
+    /// Updates the font and color settings used to render the board.
+    /// </summary>
     public void UpdateFonts()
     {
         int colorIndex = 255 - (int)(255f * ((float)settings.Contrast / 100f));
@@ -734,23 +1021,39 @@ internal class SudokuBoard: DataGridView, IDisposable
 
         textColor = Color.FromArgb(255 - colorIndex, 255 - colorIndex, 255 - colorIndex);
     }
+
+    /// <summary>
+    /// Ensures the hint fonts are initialized before drawing candidate hints.
+    /// </summary>
     private void EnsureHintFonts()
     {
-        if(hintFontSmall != null && hintFontNormal != null) return;
+        if (hintFontSmall != null && hintFontNormal != null) return;
 
         var printParameters = new PrintParameters(settings);
         hintFontSmall ??= (Font)printParameters.SmallFont.Clone();
         hintFontNormal ??= (Font)printParameters.NormalFont.Clone();
     }
+
+    /// <summary>
+    /// Updates the visual representation of a generation progress state.
+    /// </summary>
+    /// <param name="state">The current generation state.</param>
     public void UpdateProblemState(GenerationProgressState state)
     {
-        if(state.Value != Values.Undefined)
+        if (state.Value != Values.Undefined)
             DisplayValue(state.Row, state.Col, state.Value);
         else
             this[state.Col, state.Row].Value = "";
 
-        if(state.ReadOnly) SetCellFont(state.Row, state.Col);
+        if (state.ReadOnly) SetCellFont(state.Row, state.Col);
     }
+
+    /// <summary>
+    /// Animates a hint cell by briefly changing its background color.
+    /// </summary>
+    /// <param name="row">The row index of the cell.</param>
+    /// <param name="col">The column index of the cell.</param>
+    /// <param name="isSingle">A value indicating whether the hint is a single candidate.</param>
     public async Task AnimateHint(int row, int col, bool isSingle)
     {
         Color originalColor = this[col, row].Style.BackColor;
@@ -762,30 +1065,40 @@ internal class SudokuBoard: DataGridView, IDisposable
 
         this[col, row].Style.BackColor = originalColor;
     }
-    public void SetDebugMode(Boolean debug)
+
+    /// <summary>
+    /// Enables or disables debug mode for the board and attaches the cell-change listener accordingly.
+    /// </summary>
+    /// <param name="debug">A value indicating whether debug mode should be enabled.</param>
+    public void SetDebugMode(bool debug)
     {
         debugMode = debug;
-        if(debug)
+        if (debug)
             controller.CurrentProblem.Matrix.CellChanged += OnCellChanged;
         else
             controller.CurrentProblem.Matrix.CellChanged -= OnCellChanged;
     }
+
+    /// <summary>
+    /// Animates the hint cells in the currently selected set.
+    /// </summary>
+    /// <param name="hints">The hints to visualize.</param>
     public async Task VisualizeHints(List<BaseCell> hints)
     {
         var selectedPositions = new List<Point>();
-        foreach(DataGridViewCell cell in SelectedCells)
+        foreach (DataGridViewCell cell in SelectedCells)
             selectedPositions.Add(new Point(cell.ColumnIndex, cell.RowIndex));
 
         ClearSelection();
 
-        foreach(var hint in hints)
+        foreach (var hint in hints)
         {
             await AnimateHint(hint.Row, hint.Col, hint.nPossibleValues == 1);
         }
 
-        foreach(var pos in selectedPositions)
+        foreach (var pos in selectedPositions)
             this[pos.X, pos.Y].Selected = true;
 
-        this.Update();
+        Update();
     }
 }
