@@ -5,6 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Sudoku.Core;
+
 namespace Sudoku.Sudoku.Tests;
 
 [TestClass]
@@ -340,8 +342,8 @@ public sealed class BaseProblemTests
 
     private static void LoadSolvedPuzzle(BaseProblem problem)
     {
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for(int row = 0; row < SudokuGrid.SudokuSize; row++)
+            for(int col = 0; col < SudokuGrid.SudokuSize; col++)
                 problem.SetValue(row, col, SolvedGrid[row, col], true);
     }
 

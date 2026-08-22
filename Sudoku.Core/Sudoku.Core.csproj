@@ -1,0 +1,19 @@
+<!-- Sudoku.Core/Sudoku.Core.csproj -->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>   <!-- kein -windows8.0 mehr! -->
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RootNamespace>Sudoku.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Sudoku" />
+    <InternalsVisibleTo Include="Sudoku.Tests" />
+    <InternalsVisibleTo Include="BenchmarkSuite1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Hashing" Version="10.0.11" />
+  </ItemGroup>
+</Project>

@@ -1,5 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Sudoku.Core;
+
 namespace Sudoku.Sudoku.Tests;
 
 [TestClass]

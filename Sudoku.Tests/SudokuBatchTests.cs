@@ -9,6 +9,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Sudoku.Core;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Sudoku.Sudoku.Tests;
@@ -40,7 +42,7 @@ public sealed class SudokuBatchTests
     private record struct TestResult(string Puzzle, string MinimalProblem, int Diff, string Solution, double TotalRuntime, double GreedyRuntime, double CandidateRuntime, Boolean XSudoku, BaseProblem.AlgorithmParameters Parameters);
 
     private WinFormsSettings settings;
-    public TestContext? TestContext { get; set; }
+    public TestContext TestContext { get; set; }
 
     [TestInitialize]
     public void Setup()
