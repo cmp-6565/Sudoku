@@ -373,7 +373,7 @@ internal static class ProblemTestHelper
             SeedFixedValues(problem, requiredValues - problem.Matrix.nValues);
         }
 
-        FieldInfo severityField = typeof(BaseMatrix).GetField("severityLevel", BindingFlags.Instance | BindingFlags.NonPublic)!;
+        FieldInfo severityField = typeof(BaseMatrix).GetField("internalSeverityLevel", BindingFlags.Instance | BindingFlags.NonPublic)!;
         severityField.SetValue(problem.Matrix, severity);
     }
 

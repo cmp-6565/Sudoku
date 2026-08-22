@@ -2,11 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO.Hashing;
 using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO.Hashing;
+
+using Sudoku.Core.Minimizing;
 
 namespace Sudoku.Core;
 
@@ -36,7 +38,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     private Boolean preparing = false;
     private TimeSpan solvingTime;
     private TimeSpan generationTime;
-    private BaseProblem? minimalProblem;
+    internal BaseProblem? minimalProblem;
     private readonly IncrementalSolver incrementalSolver = new IncrementalSolver();
 
     public static Char ProblemIdentifier = ' ';
@@ -45,7 +47,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     public virtual int MinimizeLimit{ get { return Limit; } }
 
     public Action<Object, BaseProblem?>? Minimizing;
-    protected virtual void OnMinimizing(Object o, BaseProblem? p)
+    protected internal virtual void OnMinimizing(Object o, BaseProblem? p)
     {
         // Only notify listeners when we have a concrete minimalProblem instance.
         Action<Object, BaseProblem?>? handler = Minimizing;
@@ -53,14 +55,14 @@ public abstract class BaseProblem: EventArgs, IComparable
     }
 
     public Action<Object, BaseCell>? TestCell;
-    protected virtual void OnTestCell(Object o, BaseCell c)
+    protected internal virtual void OnTestCell(Object o, BaseCell c)
     {
         Action<Object, BaseCell>? handler = TestCell;
         if(handler != null) handler(o, c);
     }
 
     public Action<Object, BaseCell>? ResetCell;
-    protected virtual void OnResetCell(Object o, BaseCell c)
+    protected internal virtual void OnResetCell(Object o, BaseCell c)
     {
         Action<Object, BaseCell>? handler = ResetCell;
         if(handler != null) handler(o, c);
@@ -579,7 +581,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     /// <summary>
     /// Prepare and run the solver asynchronously. Sets up internal flags and invokes the synchronous Solve entry point.
     /// </summary>
-    private async Task RunSolver(int maxSolutions, CancellationToken token)
+    internal async Task RunSolver(int maxSolutions, CancellationToken token)
     {
         if(token.IsCancellationRequested) return;
 
@@ -722,7 +724,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     /// <param name="cache">Cache mapping state signatures to uniqueness boolean.</param>
     /// <param name="token">Cancellation token.</param>
     /// <returns>The reduced GivenState after greedy removals.</returns>
-    private async Task<GivenState> GreedyReduce(GivenState state, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
+    internal async Task<GivenState> GreedyReduce(GivenState state, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
     {
         var queue = new PriorityQueue<int, int>();
 
@@ -759,7 +761,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     /// <summary>
     /// Create a defensive clone of a GivenState.
     /// </summary>
-    private static GivenState CloneState(GivenState state)
+    internal static GivenState CloneState(GivenState state)
     {
         return new GivenState((byte[])state.values.Clone(), state.FixedCount);
     }
@@ -787,7 +789,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     /// <param name="cache">Cache for seen state signatures.</param>
     /// <param name="token">Cancellation token.</param>
     /// <returns>True when the supplied state has a unique solution respecting severity constraints.</returns>
-    private async Task<bool> IsUnique(GivenState state, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
+    internal async Task<bool> IsUnique(GivenState state, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
     {
         ulong signature = XxHash64.HashToUInt64(state.values);
         if(cache.TryGetValue(signature, out bool unique)) return unique;
@@ -813,7 +815,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     /// </summary>
     /// <param name="state">Source GivenState describing fixed cells.</param>
     /// <returns>A BaseProblem instance representing the provided givens.</returns>
-    private BaseProblem Materialize(GivenState state)
+    internal BaseProblem Materialize(GivenState state)
     {
         BaseProblem clone = CreateInstance();
         clone.cellMatrix = cellMatrix!.Clone();
@@ -861,7 +863,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     /// Heuristic decision whether a candidate-based minimization search is likely beneficial.
     /// Returns parameters used for diagnostics and tuning.
     /// </summary>
-    private bool ShouldUseCandidateSearch(GivenState initial, GivenState greedyState, out AlgorithmParameters parameters)
+    internal bool ShouldUseCandidateSearch(GivenState initial, GivenState greedyState, out AlgorithmParameters parameters)
     {
         const int GreedyOffset = 2; // If greedy is within this many clues of the minimum, skip candidate search
         parameters=GetAlgorithmParameters(initial, greedyState);
@@ -903,219 +905,31 @@ public abstract class BaseProblem: EventArgs, IComparable
 
         return parameters;
     }
-    /// <summary>
-    /// Entry point to minimize the problem's givens using the chosen minimization algorithm.
-    /// Returns a minimized BaseProblem (or null if no unique minimal variant found).
-    /// </summary>
+    private static readonly Dictionary<MinimizeAlgorithm, IMinimizeStrategy> strategies = BuildStrategies();
+
+    private static Dictionary<MinimizeAlgorithm, IMinimizeStrategy> BuildStrategies()
+    {
+        var candidate = new CandidateMinimizeStrategy();
+        var greedy = new GreedyMinimizeStrategy();
+        return new()
+        {
+            [MinimizeAlgorithm.Candidate] = candidate,
+            [MinimizeAlgorithm.Greedy] = greedy,
+            [MinimizeAlgorithm.Calculate] = new AutoMinimizeStrategy(candidate, greedy)
+        };
+    }
+
     public async Task<BaseProblem?> Minimize(int maxSeverity, MinimizeAlgorithm minimizeAlgorithm, CancellationToken token)
     {
         ResetMatrix();
-
         GivenState initialState = GivenState.FromMatrix(Matrix);
         if(initialState.FixedCount <= Matrix.MinimumValues) return this;
 
         var cache = new Dictionary<ulong, bool>();
         GivenState greedyState = await GreedyReduce(CloneState(initialState), maxSeverity, cache, token).ConfigureAwait(false);
 
-        AlgorithmParameters parameters;
-        if((minimizeAlgorithm == MinimizeAlgorithm.Calculate && ShouldUseCandidateSearch(initialState, greedyState, out parameters)) || minimizeAlgorithm == MinimizeAlgorithm.Candidate)
-        {
-            return await MinimizeWithCandidates(maxSeverity, token).ConfigureAwait(false);
-        }
-
-        return await MinimizeGreedy(initialState, greedyState, maxSeverity, cache, token).ConfigureAwait(false);
+        return await strategies[minimizeAlgorithm].MinimizeAsync(this, initialState, greedyState, maxSeverity, cache, token).ConfigureAwait(false);
     }
-    /// <summary>
-    /// Greedy minimization implementation that attempts recursive removals guided by neighbor counts.
-    /// </summary>
-    private async Task<BaseProblem?> MinimizeGreedy(GivenState initialState, GivenState greedyState, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
-    {
-        ResetMatrix();
-
-        if(initialState.FixedCount <= Matrix.MinimumValues) return this;
-
-        GivenState? bestState = UpdateBestState(null, greedyState);
-
-        BaseCell[] minimizationOrder = Matrix.Cells
-            .Where(cell => initialState[cell.Row, cell.Col] != Values.Undefined)
-            .OrderByDescending(cell => cell.FilledNeighborCount)
-            .ToArray();
-
-        GivenState? recursiveResult = await MinimizeGreedyRecursive(initialState, minimizationOrder, 0, maxSeverity, cache, token).ConfigureAwait(false);
-        if(recursiveResult.HasValue)
-        {
-            bestState = UpdateBestState(bestState, recursiveResult.Value);
-        }
-
-        GivenState finalState = bestState ?? greedyState;
-        minimalProblem = Materialize(finalState);
-        minimalProblem.severityLevel = float.NaN;
-        await minimalProblem.RunSolver(2, token).ConfigureAwait(false);
-
-        return minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null;
-    }
-
-    /// <summary>
-    /// Recursive helper for greedy minimization exploring removing givens in order.
-    /// Returns best found GivenState or null if none found.
-    /// </summary>
-    private async Task<GivenState?> MinimizeGreedyRecursive(GivenState state, BaseCell[] order, int startIndex, int maxSeverity, Dictionary<ulong, bool> cache, CancellationToken token)
-    {
-        if(token.IsCancellationRequested) return null;
-
-        if(state.FixedCount <= Matrix.MinimumValues)
-            return await IsUnique(state, maxSeverity, cache, token).ConfigureAwait(false) ? state : null;
-
-        GivenState? best = null;
-
-        for(int i = startIndex; i < order.Length; i++)
-        {
-            BaseCell cell = order[i];
-            if(state[cell.Row, cell.Col] == Values.Undefined) continue;
-
-            OnTestCell(this, cell);
-
-            GivenState reducedState = state.WithRemoved(cell.Row, cell.Col);
-            if(await IsUnique(reducedState, maxSeverity, cache, token).ConfigureAwait(false))
-            {
-                best = UpdateBestState(best, reducedState);
-                if(best.HasValue && best.Value.FixedCount <= Matrix.MinimumValues)
-                {
-                    OnResetCell(this, cell);
-                    return best;
-                }
-
-                GivenState? candidate = await MinimizeGreedyRecursive(reducedState, order, i + 1, maxSeverity, cache, token).ConfigureAwait(false);
-                if(candidate.HasValue)
-                {
-                    best = UpdateBestState(best, candidate.Value);
-                    if(best.HasValue && best.Value.FixedCount <= Matrix.MinimumValues)
-                    {
-                        OnResetCell(this, cell);
-                        return best;
-                    }
-                }
-            }
-
-            OnResetCell(this, cell);
-        }
-
-        return best;
-    }
-    /// <summary>
-    /// Update the currently best found state; materialize and notify when a new best is found.
-    /// </summary>
-    private GivenState? UpdateBestState(GivenState? currentBest, GivenState candidate)
-    {
-        if(!currentBest.HasValue || candidate.FixedCount < currentBest.Value.FixedCount)
-        {
-            minimalProblem = Materialize(candidate);
-            OnMinimizing(this, minimalProblem);
-            return candidate;
-        }
-
-        return currentBest;
-    }
-    /// <summary>
-    /// Minimize using candidate-guided search. This implementation explores candidates recursively and returns a minimized problem.
-    /// </summary>
-    protected async Task<BaseProblem?> MinimizeWithCandidates(int maxSeverity, CancellationToken token)
-    {
-        ResetMatrix();
-
-        minimalProblem = Clone();
-
-        List<BaseCell> candidates = await GetCandidates(Matrix.Cells, 0, CancellationToken.None);
-        candidates.Sort(new NeighborCountComparer());
-
-        if(await MinimizeWithCandidatesRecursive(candidates, maxSeverity, token))
-        {
-            minimalProblem.severityLevel = float.NaN;
-
-            await minimalProblem.RunSolver(2, token);
-
-            return (minimalProblem.NumberOfSolutions == 1 ? minimalProblem : null);
-        }
-        else
-            return null;
-    }
-
-    // Async Recursive Minimize
-    /// <summary>
-    /// Recursive loop for candidate-based minimization. Tries to remove candidate cells and recursively refines.
-    /// </summary>
-    private async Task<Boolean> MinimizeWithCandidatesRecursive(List<BaseCell> candidates, int maxSeverity, CancellationToken token)
-    {
-        if(candidates == null) return true;
-        if(nValues <= Matrix.MinimumValues) return true;
-
-        int start = 0;
-        foreach(BaseCell cell in candidates)
-        {
-            if(token.IsCancellationRequested) return false;
-            if(SeverityLevelInt > maxSeverity) return false;
-
-            if(nValues - (candidates.Count - start) < minimalProblem!.nValues)
-            {
-                OnTestCell(this, cell);
-                byte cellValue = cell.CellValue;
-                SetValue(cell, Values.Undefined);
-
-                ResetMatrix();
-                if(nValues < minimalProblem.nValues) minimalProblem = Clone();
-
-                OnMinimizing(this, minimalProblem);
-
-                var nextCandidates = await GetCandidates(candidates, ++start, token);
-
-                if(token.IsCancellationRequested) return false;
-                if(!await MinimizeWithCandidatesRecursive(nextCandidates, maxSeverity, token)) return false;
-
-                OnResetCell(this, cell);
-                ResetMatrix();
-                SetValue(cell, cellValue);
-            }
-        }
-        return true;
-    }
-
-    // Private helper now async
-    /// <summary>
-    /// Build a set of candidate cells from the provided source starting at index 'start'.
-    /// A candidate is a cell that can be removed while leaving a uniquely solvable puzzle.
-    /// </summary>
-    private async Task<List<BaseCell>> GetCandidates(List<BaseCell> source, int start, CancellationToken token)
-    {
-        List<BaseCell> candidates = new List<BaseCell>();
-
-        for(int i = start; i < source.Count; i++)
-        {
-            if(nValues - candidates.Count - (source.Count - i) > minimalProblem!.nValues) return new List<BaseCell>();
-
-            byte cellValue = source[i].CellValue;
-            if(cellValue != Values.Undefined)
-            {
-                SetValue(source[i], Values.Undefined);
-                if(source[i].DefinitiveValue == cellValue)
-                    candidates.Add(source[i]);
-                else
-                {
-                    if(token.IsCancellationRequested) return new List<BaseCell>();
-
-                    await RunSolver(2, token);
-
-                    if(NumberOfSolutions == 1) candidates.Add(source[i]);
-                }
-                ResetMatrix();
-                SetValue(source[i], cellValue);
-            }
-
-            if(token.IsCancellationRequested) return new List<BaseCell>();
-        }
-
-        return candidates;
-    }
-
 
     /// <summary>
     /// Check whether the current problem is potentially solvable by ensuring each unit and each cell has at least one possible placement for every value.
@@ -1190,7 +1004,7 @@ public abstract class BaseProblem: EventArgs, IComparable
     /// Immutable struct representing a snapshot of given values and the count of fixed givens.
     /// Provides helpers to create from a matrix and to remove a given.
     /// </summary>
-    private record struct GivenState(byte[] values, int FixedCount)
+    internal record struct GivenState(byte[] values, int FixedCount)
     {
         public static GivenState FromMatrix(BaseMatrix matrix)
         {
