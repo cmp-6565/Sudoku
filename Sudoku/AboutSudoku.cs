@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.Windows.Forms;
 
+using Sudoku.Application;
+
 namespace Sudoku;
 
 /// <summary>
@@ -31,7 +33,7 @@ partial class AboutSudoku: Form
         this.labelCopyright.Text = AssemblyInfo.AssemblyCopyright;
         this.labelCompanyName.Text = Resources.picit;
         this.textBoxDescription.Text = AssemblyInfo.AssemblyDescription.Replace("\\n", Environment.NewLine);
-        this.logoPictureBox.Image = Resources.SudokuProblem;
+        this.logoPictureBox.Image = UIResources.SudokuProblem;
         this.settings = settings;
     }
 

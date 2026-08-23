@@ -6,6 +6,9 @@ using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 
+using Sudoku.Application;
+using Sudoku.Properties;
+
 namespace Sudoku;
 
 internal partial class OptionsDialog: Form
@@ -31,9 +34,9 @@ internal partial class OptionsDialog: Form
         this.settings = settings;
         this.ui = ui;
 
-        hard.Text = Resources.Hard;
-        easy.Text = Resources.Easy;
-        intermediate.Text = Resources.Intermediate;
+        hard.Text = Sudoku.Application.Resources.Hard;
+        easy.Text = Sudoku.Application.Resources.Easy;
+        intermediate.Text = Sudoku.Application.Resources.Intermediate;
         minValues.Maximum = settings.MaxValues;
 
         bookletSizeNew.Value = settings.BookletSizeNew;
@@ -72,7 +75,7 @@ internal partial class OptionsDialog: Form
 
         useWatchHands.Checked = settings.UseWatchHandHints;
         useDigits.Checked = !useWatchHands.Checked;
-        possibleValuesExamplePicture.Image = useWatchHands.Checked ? Resources.watchHandCandidates : Resources.digitCandidates;
+        possibleValuesExamplePicture.Image = useWatchHands.Checked ? UIResources.watchHandCandidates : UIResources.digitCandidates;
 
         int i = supportedGridSizes.Length;
         foreach(RadioButton rb in problemPrintSize.Controls)
@@ -163,7 +166,7 @@ internal partial class OptionsDialog: Form
                         return;
                     }
         }
-        ui.ShowError(Resources.InvalidCulture);
+        ui.ShowError(Application.Resources.InvalidCulture);
     }
 
     private void unlimitedCheckedChanged(object sender, EventArgs e)
@@ -175,7 +178,7 @@ internal partial class OptionsDialog: Form
     {
         if(!easy.Checked && !intermediate.Checked && !hard.Checked)
         {
-            ui.ShowError(Resources.SeverityLevelError);
+            ui.ShowError(Application.Resources.SeverityLevelError);
             ((CheckBox)sender).Checked = true;
         }
     }
@@ -184,14 +187,14 @@ internal partial class OptionsDialog: Form
     {
         if(!xSudoku.Checked && !normalSudoku.Checked)
         {
-            ui.ShowError(Resources.SudokuTypeError);
+            ui.ShowError(Application.Resources.SudokuTypeError);
             ((CheckBox)sender).Checked = true;
         }
     }
 
     private void exchangePicture(object sender, EventArgs e)
     {
-        possibleValuesExamplePicture.Image = useWatchHands.Checked ? Resources.watchHandCandidates : Resources.digitCandidates;
+        possibleValuesExamplePicture.Image = useWatchHands.Checked ? UIResources.watchHandCandidates : UIResources.digitCandidates;
     }
 
     private void generateMinimumProblemsChanged(object sender, EventArgs e)

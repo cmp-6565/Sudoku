@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Represents the saved state of a Sudoku puzzle for restoration purposes.

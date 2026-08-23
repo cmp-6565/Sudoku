@@ -6,6 +6,7 @@ using System.Reflection;
 using Sudoku.Core;
 
 using Sudoku.Properties;
+using Sudoku.Application;
 
 namespace Sudoku;
 

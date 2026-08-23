@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using Sudoku.Core;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Provides file I/O and serialization operations for Sudoku problems.
@@ -267,59 +267,59 @@ internal class SudokuFileService
         return;
     }
     /// <summary>
-        /// Serializes the Sudoku problem to a JSON string.
-        /// </summary>
-        /// <param name="includeROFlag">Whether to include read-only flags for cells.</param>
-        /// <returns>A JSON string representing the Sudoku problem.</returns>
-        public string Serialize(Boolean includeROFlag)
+    /// Serializes the Sudoku problem to a JSON string.
+    /// </summary>
+    /// <param name="includeROFlag">Whether to include read-only flags for cells.</param>
+    /// <returns>A JSON string representing the Sudoku problem.</returns>
+    public string Serialize(Boolean includeROFlag)
+    {
+        var state = new SudokuSaveState
         {
-            var state = new SudokuSaveState
-            {
-                Id = Sudoku.Id,
-                Type = SudokuTypeIdentifier.ToString(),
-                GridData = SerializeMatrix(includeROFlag),
-                Time = SolvingTime,
-                Comment = Sudoku.Comment,
-                Candidates = SerializeCandidates()
-            };
+            Id = Sudoku.Id,
+            Type = SudokuTypeIdentifier.ToString(),
+            GridData = SerializeMatrix(includeROFlag),
+            Time = SolvingTime,
+            Comment = Sudoku.Comment,
+            Candidates = SerializeCandidates()
+        };
 
-            return System.Text.Json.JsonSerializer.Serialize(state);
-        }
+        return System.Text.Json.JsonSerializer.Serialize(state);
+    }
 
-        /// <summary>
-        /// Deserializes a Sudoku problem from a JSON string.
-        /// </summary>
-        /// <param name="jsonState">The JSON string representing the Sudoku problem.</param>
-        public void Deserialize(string jsonState)
+    /// <summary>
+    /// Deserializes a Sudoku problem from a JSON string.
+    /// </summary>
+    /// <param name="jsonState">The JSON string representing the Sudoku problem.</param>
+    public void Deserialize(string jsonState)
+    {
+        if(string.IsNullOrEmpty(jsonState)) return;
+
+        try
         {
-            if(string.IsNullOrEmpty(jsonState)) return;
+            var state = System.Text.Json.JsonSerializer.Deserialize<SudokuSaveState>(jsonState);
+            if(state == null) throw new ArgumentException("Invalid sudoku state", nameof(jsonState));
+            NotifyReadProblem(state.Type[0] == XSudokuProblem.ProblemIdentifier);
 
-            try
-            {
-                var state = System.Text.Json.JsonSerializer.Deserialize<SudokuSaveState>(jsonState);
-                if(state == null) throw new ArgumentException("Invalid sudoku state", nameof(jsonState));
-                NotifyReadProblem(state.Type[0] == XSudokuProblem.ProblemIdentifier);
-
-                Sudoku.Id = state.Id;
-                InitMatrix(state.GridData.ToCharArray());
-                Sudoku.SolvingTime = state.Time;
-                Sudoku.Comment = state.Comment;
-                LoadCandidates(state.Candidates.Substring(state.Candidates.IndexOf('\n') + 1), false);
-                LoadCandidates(state.Candidates.Substring(state.Candidates.LastIndexOf('\n') + 1), true);
-            }
-            catch
-            {
-                throw;
-            }
-            return;
+            Sudoku.Id = state.Id;
+            InitMatrix(state.GridData.ToCharArray());
+            Sudoku.SolvingTime = state.Time;
+            Sudoku.Comment = state.Comment;
+            LoadCandidates(state.Candidates.Substring(state.Candidates.IndexOf('\n') + 1), false);
+            LoadCandidates(state.Candidates.Substring(state.Candidates.LastIndexOf('\n') + 1), true);
         }
+        catch
+        {
+            throw;
+        }
+        return;
+    }
 
-        /// <summary>
-        /// Serializes the Sudoku problem to a legacy text format string.
-        /// </summary>
-        /// <param name="includeROFlag">Whether to include read-only flags for cells.</param>
-        /// <returns>A legacy format string representing the Sudoku problem.</returns>
-        public String SerializeLegacy(Boolean includeROFlag = true)
+    /// <summary>
+    /// Serializes the Sudoku problem to a legacy text format string.
+    /// </summary>
+    /// <param name="includeROFlag">Whether to include read-only flags for cells.</param>
+    /// <returns>A legacy format string representing the Sudoku problem.</returns>
+    public String SerializeLegacy(Boolean includeROFlag = true)
     {
         String serializedProblem;
 
@@ -342,8 +342,8 @@ internal class SudokuFileService
         String serializedProblem = String.Empty;
         byte offset = (byte)'0';
 
-        for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
-            for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
+        for(int i = 0; i < SudokuGrid.SudokuSize; i++)
+            for(int j = 0; j < SudokuGrid.SudokuSize; j++)
                 serializedProblem += (char)(GetValue(i, j) + (Matrix.Cell(i, j).ReadOnly && includeROFlag ? ReadOnlyOffset : 0) + offset);
 
         return serializedProblem;
@@ -369,10 +369,10 @@ internal class SudokuFileService
         Byte bit = 0;
         String serializedCandidates = "";
 
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for(int row = 0; row < SudokuGrid.SudokuSize; row++)
+            for(int col = 0; col < SudokuGrid.SudokuSize; col++)
             {
-                for(int candidate = 1; candidate <= WinFormsSettings.SudokuSize; candidate++)
+                for(int candidate = 1; candidate <= SudokuGrid.SudokuSize; candidate++)
                 {
                     if(GetCandidate(row, col, candidate, exclusionCandidate))
                         oneCandidate += (Byte)(1 << bit);
@@ -409,13 +409,13 @@ internal class SudokuFileService
             {
                 if((oneCandidate & (1 << bit)) > 0)
                     SetCandidate(row, col, candidate, exclusionCandidates);
-                if(++candidate > WinFormsSettings.SudokuSize)
+                if(++candidate > SudokuGrid.SudokuSize)
                 {
                     candidate = 1;
-                    if(++col >= WinFormsSettings.SudokuSize)
+                    if(++col >= SudokuGrid.SudokuSize)
                     {
                         col = 0;
-                        if(++row >= WinFormsSettings.SudokuSize)
+                        if(++row >= SudokuGrid.SudokuSize)
                             return;
                     }
                 }
@@ -450,7 +450,7 @@ internal class SudokuFileService
     {
         try
         {
-            var content = new StringContent(SerializeLegacy().Substring(0, WinFormsSettings.TotalCellCount + 1), Encoding.UTF8, "application/x-www-form-urlencoded");
+            var content = new StringContent(SerializeLegacy().Substring(0, SudokuGrid.TotalCellCount + 1), Encoding.UTF8, "application/x-www-form-urlencoded");
 
             HttpResponseMessage response = await httpClient.PostAsync("https://sudoku.pi-c-it.de/misc/TrickyProblems/Upload.php", content);
 
@@ -532,7 +532,7 @@ internal class SudokuFileService
     {
         Sudoku.Matrix.Init();
 
-        char[] values = new char[WinFormsSettings.TotalCellCount];
+        char[] values = new char[SudokuGrid.TotalCellCount];
         char[] elapsedTime = new char[16];
 
         sr.Read(values, 0, values.Length);
@@ -568,10 +568,10 @@ internal class SudokuFileService
         byte v = 0;
 
         Sudoku.Matrix.SetPredefinedValues = false;
-        for(int i = 0; i < WinFormsSettings.SudokuSize; i++)
-            for(int j = 0; j < WinFormsSettings.SudokuSize; j++)
+        for(int i = 0; i < SudokuGrid.SudokuSize; i++)
+            for(int j = 0; j < SudokuGrid.SudokuSize; j++)
             {
-                v = Convert.ToByte(values[i * WinFormsSettings.SudokuSize + j] - offset);
+                v = Convert.ToByte(values[i * SudokuGrid.SudokuSize + j] - offset);
                 if(v >= ReadOnlyOffset)
                 {
                     Sudoku.Matrix.Cell(i, j).ReadOnly = (v > ReadOnlyOffset);

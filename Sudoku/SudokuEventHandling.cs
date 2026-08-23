@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 using Sudoku.Core;
+using Sudoku.Application;
 
 namespace Sudoku;
 #nullable enable
@@ -106,7 +107,7 @@ public partial class SudokuForm
                 settings.Save();
                 if(!SudokuGrid.SyncProblemWithGUI(true, autoCheck.Checked))
                 {
-                    e.Cancel = Confirm(Resources.CloseAnyway) == DialogResult.No;
+                    e.Cancel = Confirm(Resources.CloseAnyway) == ConfirmResult.No;
                 }
             }
         }
@@ -120,7 +121,7 @@ public partial class SudokuForm
     /// <param name="e">The event arguments.</param>
     private void ExitClick(object? sender, EventArgs e)
     {
-        Application.Exit();
+        Close();
     }
 
     /// <summary>

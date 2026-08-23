@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Example helper class demonstrating how to listen to and react to settings changes.
@@ -50,9 +50,7 @@ public class SettingsChangeListener
     /// <summary>
     /// Creates a listener for a specific setting.
     /// </summary>
-    public static SettingsChangeListener ForSetting(IObservableSudokuSettings settings, 
-        string settingName, 
-        Action<object?> onChanged)
+    public static SettingsChangeListener ForSetting(IObservableSudokuSettings settings, string settingName, Action<object?> onChanged)
     {
         ArgumentNullException.ThrowIfNull(settings);
         ArgumentException.ThrowIfNullOrEmpty(settingName, nameof(settingName));

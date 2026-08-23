@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Provides event data for setting change notifications.

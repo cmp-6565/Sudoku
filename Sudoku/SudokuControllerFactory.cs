@@ -1,4 +1,5 @@
 using System;
+using Sudoku.Application;
 
 namespace Sudoku;
 
@@ -19,9 +20,10 @@ internal class SudokuControllerFactory : ISudokuControllerFactory
     }
 
     /// <inheritdoc/>
-    public SudokuController Create(IUserInteraction ui)
+    public SudokuController Create(IUserInteraction ui, IPrintServiceFactory printServiceFactory)
     {
         if (ui == null) throw new ArgumentNullException(nameof(ui));
-        return new SudokuController(settings, ui);
+        if (printServiceFactory == null) throw new ArgumentNullException(nameof(printServiceFactory));
+        return new SudokuController(settings, ui, printServiceFactory);
     }
 }

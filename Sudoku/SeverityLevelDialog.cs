@@ -1,6 +1,6 @@
 #nullable enable
 using System.Windows.Forms;
-
+using Sudoku.Application;
 namespace Sudoku;
 
 public partial class SeverityLevelDialog: Form

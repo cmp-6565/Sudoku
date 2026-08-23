@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using Sudoku.Core;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Controls creation, generation, solving and persistence of Sudoku problems.
@@ -33,7 +33,8 @@ internal class SudokuController: IDisposable
     public TimeSpan TotalGenerationTime { get; private set; }
     private TrickyProblems trickyProblems;
     private GenerationParameters generationParameters;
-    private SudokuPrinterService printerService;
+    private readonly IPrintServiceFactory printServiceFactory;
+    private IPrintService printerService;
 
     // Events
     /// <summary>
@@ -59,14 +60,17 @@ internal class SudokuController: IDisposable
     /// </summary>
     /// <param name="settings">Application settings used for generation and behavior.</param>
     /// <param name="ui">UI callback interface used for user interaction and prompts.</param>
-    public SudokuController(ISudokuSettings settings, IUserInteraction ui)
+    /// <param name="printServiceFactory">Factory for creating print service instances.</param>
+    public SudokuController(ISudokuSettings settings, IUserInteraction ui, IPrintServiceFactory printServiceFactory)
     {
         ArgumentNullException.ThrowIfNull(settings);
         ArgumentNullException.ThrowIfNull(ui);
+        ArgumentNullException.ThrowIfNull(printServiceFactory);
         undoStack = new Stack<CoreValue>();
         trickyProblems = new TrickyProblems(settings, ui);
         generationParameters = new GenerationParameters(settings);
-        printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
+        this.printServiceFactory = printServiceFactory;
+        printerService = printServiceFactory.Create();
         this.settings = settings;
         this.ui = ui;
         // Initialize default problem placeholders so other members can assume non-null
@@ -81,7 +85,8 @@ internal class SudokuController: IDisposable
     /// <param name="loadCandidates">If true, candidate lists are loaded together with the problem.</param>
     /// <param name="settings">Application settings used by the controller.</param>
     /// <param name="ui">UI interaction helper used for prompts and messages.</param>
-    public SudokuController(String filenname, Boolean loadCandidates, ISudokuSettings settings, IUserInteraction ui) : this(settings, ui)
+    /// <param name="printServiceFactory">Factory for creating print service instances.</param>
+    public SudokuController(String filenname, Boolean loadCandidates, ISudokuSettings settings, IUserInteraction ui, IPrintServiceFactory printServiceFactory) : this(settings, ui, printServiceFactory)
     {
         ArgumentNullException.ThrowIfNull(filenname);
         try
@@ -316,7 +321,7 @@ internal class SudokuController: IDisposable
         {
             // CurrentProblem is non-nullable and initialized by CreateNewProblem
             var fileService = new SudokuFileService(CurrentProblem, settings, ui);
-            fileService.InitProblem(settings.State.Substring(1, WinFormsSettings.TotalCellCount).ToCharArray(), settings.State.Substring(WinFormsSettings.TotalCellCount + 1, 16).ToCharArray(), null);
+            fileService.InitProblem(settings.State.Substring(1, SudokuGrid.TotalCellCount).ToCharArray(), settings.State.Substring(SudokuGrid.TotalCellCount + 1, 16).ToCharArray(), null);
 
             if(settings.State.IndexOf('\n') > 0)
             {
@@ -364,7 +369,7 @@ internal class SudokuController: IDisposable
     {
         get
         {
-            return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), SerializeProblem(false).Substring(1, WinFormsSettings.TotalCellCount));
+            return Resources.TwitterURL + String.Format(Thread.CurrentThread.CurrentUICulture, Resources.TwitterText, (CurrentProblem is XSudokuProblem ? "X" : ""), SerializeProblem(false).Substring(1, SudokuGrid.TotalCellCount));
         }
     }
 
@@ -668,7 +673,7 @@ internal class SudokuController: IDisposable
                         NotifyGeneration(stopwatch, token);
                     }
 
-                } while(!token.IsCancellationRequested && (generationParameters.Reset || CurrentProblem.NumDistinctValues() < WinFormsSettings.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
+                } while(!token.IsCancellationRequested && (generationParameters.Reset || CurrentProblem.NumDistinctValues() < SudokuGrid.SudokuSize - 1 || generationParameters.PreAllocatedValues < minPreAllocations));
             }, token);
         }
 
@@ -924,16 +929,16 @@ internal class SudokuController: IDisposable
     public ValidationResult ParseAndSync(string[,] grid)
     {
         if(grid == null) throw new ArgumentNullException(nameof(grid));
-        if(grid.GetLength(0) != WinFormsSettings.SudokuSize || grid.GetLength(1) != WinFormsSettings.SudokuSize)
+        if(grid.GetLength(0) != SudokuGrid.SudokuSize || grid.GetLength(1) != SudokuGrid.SudokuSize)
             throw new ArgumentException("grid must be SudokuSize x SudokuSize", nameof(grid));
 
         ValidationResult result = new ValidationResult();
 
         BackupProblem();
 
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
+        for(int row = 0; row < SudokuGrid.SudokuSize; row++)
         {
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+            for(int col = 0; col < SudokuGrid.SudokuSize; col++)
             {
                 string raw = grid[row, col];
                 if(string.IsNullOrEmpty(raw)) continue;
@@ -1174,12 +1179,12 @@ internal class SudokuController: IDisposable
             cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.DefiniteValue) + cell.DefinitiveValue.ToString();
         else
             if(cell.FixedValue)
-                cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.CellValue) + cell.CellValue.ToString() + " (" + Resources.Remaining + ": " + (WinFormsSettings.SudokuSize - CurrentProblem.Matrix.nCells(cell.CellValue)).ToString() + ", " + Resources.Used + ": " + CurrentProblem.Matrix.nCells(cell.CellValue).ToString() + ")";
+                cellInfo += Environment.NewLine + String.Format(cultureInfo, Resources.CellValue) + cell.CellValue.ToString() + " (" + Resources.Remaining + ": " + (SudokuGrid.SudokuSize - CurrentProblem.Matrix.nCells(cell.CellValue)).ToString() + ", " + Resources.Used + ": " + CurrentProblem.Matrix.nCells(cell.CellValue).ToString() + ")";
 
         String directBlockedCells = "";
         String indirectBlockedCells = "";
 
-        for(int i = 1; i <= WinFormsSettings.SudokuSize; i++)
+        for(int i = 1; i <= SudokuGrid.SudokuSize; i++)
         {
             if(i != cell.DefinitiveValue && i != cell.CellValue)
             {
@@ -1300,7 +1305,7 @@ internal class SudokuController: IDisposable
     public void InitializePrinterService()
     {
         printerService?.Dispose();
-        printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
+        printerService = printServiceFactory.Create();
     }
 
     /// <summary>
@@ -1309,7 +1314,7 @@ internal class SudokuController: IDisposable
     /// <param name="showCandidates">If true, include candidate digits in the printout.</param>
     public void PrintSingleProblem(Boolean showCandidates)
     {
-        SudokuPrinterService printerService = new SudokuPrinterService(WinFormsSettings.SudokuSize, settings);
+        IPrintService printerService = printServiceFactory.Create();
         printerService.ShowCandidates = showCandidates;
         CurrentProblem.ResetMatrix();
         printerService.AddProblem(CurrentProblem);
@@ -1399,7 +1404,7 @@ internal class SudokuController: IDisposable
             int problemNumber = rand.Next(0, filenames.Count - 1);
             try
             {
-                SudokuController bookletController = new SudokuController(filenames[problemNumber], false, settings, ui);
+                SudokuController bookletController = new SudokuController(filenames[problemNumber], false, settings, ui, printServiceFactory);
                 if(bookletController.CurrentProblem != null && (bookletController.CurrentProblem.SeverityLevelInt & settings.SeverityLevel) != 0)
                 {
                     await bookletController.CurrentProblem.FindSolutions(2, token);

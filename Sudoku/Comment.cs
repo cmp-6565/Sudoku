@@ -3,6 +3,10 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 
+using Sudoku.Application;
+
+[assembly: CLSCompliant(false)]
+
 namespace Sudoku;
 
 /// <summary>
@@ -10,7 +14,7 @@ namespace Sudoku;
 /// </summary>
 public partial class Comment: Form
 {
-    private readonly ISudokuSettings settings;
+    private readonly ISudokuSettings sudokuSettings;
 
     /// <summary>
     /// Initializes a new instance of the Comment dialog form.
@@ -21,7 +25,7 @@ public partial class Comment: Form
         Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(settings.DisplayLanguage);
         InitializeComponent();
         commentTextBox.Focus();
-        this.settings = settings;
+        sudokuSettings = settings;
     }
 
     /// <summary>

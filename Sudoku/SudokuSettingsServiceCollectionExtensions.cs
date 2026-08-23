@@ -1,6 +1,8 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
+using Sudoku.Application;
+
 namespace Sudoku.DependencyInjection;
 
 /// <summary>

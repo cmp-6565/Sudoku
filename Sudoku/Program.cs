@@ -3,8 +3,8 @@ using System;
 using System.Windows.Forms;
 using Microsoft.Extensions.DependencyInjection;
 using Sudoku.DependencyInjection;
+using Sudoku.Application;
 
-[assembly: CLSCompliant(true)]
 namespace Sudoku;
 
 /// <summary>
@@ -19,11 +19,11 @@ static class Program
     [STAThread]
     static void Main(string[] args)
     {
-        Application.SetHighDpiMode(HighDpiMode.SystemAware);
-        Application.EnableVisualStyles();
-        Application.SetCompatibleTextRenderingDefault(false);
+        System.Windows.Forms.Application.SetHighDpiMode(HighDpiMode.SystemAware);
+        System.Windows.Forms.Application.EnableVisualStyles();
+        System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
-        Application.ThreadException += (s, e) =>
+        System.Windows.Forms.Application.ThreadException += (s, e) =>
         {
             MessageBox.Show(Resources.UnknownError + e.Exception.Message, Resources.Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
         };
@@ -41,14 +41,15 @@ static class Program
 
         // register controller factory
         services.AddSingleton<SudokuControllerFactory>();
+        services.AddSingleton<IUserInteraction, WinFormsUserInteraction>();
+        services.AddSingleton<IPrintServiceFactory, WinFormsPrintServiceFactory>();
 
         // register the form so DI can construct it with injected settings and factory
         services.AddTransient<SudokuForm>(sp =>
-            new SudokuForm(sp.GetRequiredService<ISudokuSettings>(), sp.GetRequiredService<SudokuControllerFactory>()));
-
+            new SudokuForm(sp.GetRequiredService<ISudokuSettings>(), sp.GetRequiredService<SudokuControllerFactory>(), sp.GetRequiredService<IPrintServiceFactory>()));
         using var provider = services.BuildServiceProvider();
 
         var mainForm = provider.GetRequiredService<SudokuForm>();
-        Application.Run(mainForm);
+        System.Windows.Forms.Application.Run(mainForm);
     }
 }

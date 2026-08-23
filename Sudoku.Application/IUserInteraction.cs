@@ -1,7 +1,6 @@
 ﻿#nullable enable
-using System.Windows.Forms;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Defines the interface for user interaction and messaging in the Sudoku application.
@@ -27,7 +26,7 @@ internal interface IUserInteraction
     /// <param name="message">The confirmation message to display.</param>
     /// <param name="buttons">The buttons to show in the dialog (default is YesNo).</param>
     /// <returns>The user's choice as a DialogResult.</returns>
-    DialogResult Confirm(string message, MessageBoxButtons buttons = MessageBoxButtons.YesNo);
+    ConfirmResult Confirm(string message, ConfirmOptions options = ConfirmOptions.YesNo);
 
     /// <summary>
     /// Prompts the user to select a severity level for problem generation.

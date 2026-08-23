@@ -9,7 +9,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Sudoku;
 using Sudoku.Core;
+using Sudoku.Application;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -202,9 +204,11 @@ public sealed class SudokuBatchTests
         TestContext?.WriteLine($"Generiere und löse {SudokuBatchSize} Sudokus mit der Einstellung \"{(settings.GenerateXSudoku ? "X-Sudoku" : "Normal-Sudoku")}\".");
         TestContext?.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Lösung",-81} {"Sekunden",10}");
 
+        IPrintServiceFactory printServiceFactory = new PrintServiceFactory(settings);
+        IUserInteraction userInteraction = new UserInteraction();
         for(int index = 0; index < SudokuBatchSize; index++)
         {
-            var controller = new SudokuController(settings, null);
+            var controller = new SudokuController(settings, userInteraction, printServiceFactory);
             controller.CreateNewProblem(settings.GenerateXSudoku, false);
 
             Stopwatch stopwatch = Stopwatch.StartNew();

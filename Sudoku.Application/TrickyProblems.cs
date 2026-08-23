@@ -5,7 +5,7 @@ using System.Net.Http;
 
 using Sudoku.Core;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Manages a collection of "tricky" or difficult Sudoku problems for publishing.

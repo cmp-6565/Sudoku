@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Extended interface for observable Sudoku settings that supports event-driven change notifications.

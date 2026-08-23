@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Core;
+using Sudoku.Application;
 
 namespace Sudoku;
 #nullable enable
@@ -22,6 +23,8 @@ namespace Sudoku;
 /// </summary>
 public partial class SudokuForm: Form, IUserInteraction, IDisposable
 {
+    private WinFormsUserInteraction? userInteraction;
+
     /// <summary>
     /// Application settings instance injected via dependency injection. Provides configuration for the application behavior.
     /// </summary>
@@ -31,6 +34,8 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     /// Factory for creating instances of SudokuController with appropriate configuration.
     /// </summary>
     private readonly SudokuControllerFactory controllerFactory;
+
+    private readonly IPrintServiceFactory printServiceFactory;
 
     /// <summary>
     /// Timer for handling automatic pause functionality when the form loses focus.
@@ -106,7 +111,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     /// Parameterless constructor kept for Windows Forms designer compatibility.
     /// Creates a SudokuForm with default settings and no controller factory specified.
     /// </summary>
-    public SudokuForm() : this(new WinFormsSettings(), null) { }
+    public SudokuForm() : this(new WinFormsSettings(), null, null) { }
 
     /// <summary>
     /// Constructor used by dependency injection. Initializes the form with injected application settings and controller factory.
@@ -114,11 +119,13 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     /// </summary>
     /// <param name="applicationSettings">The injected application settings instance for configuration.</param>
     /// <param name="applicationControllerFactory">The injected controller factory; if null, a local factory is created.</param>
-    internal SudokuForm(ISudokuSettings applicationSettings, SudokuControllerFactory? applicationControllerFactory)
+    /// <param name="printServiceFactory">The injected print service factory; if null, a local factory is created.</param>
+    internal SudokuForm(ISudokuSettings applicationSettings, SudokuControllerFactory? applicationControllerFactory, IPrintServiceFactory? printServiceFactory)
     {
         settings = applicationSettings ?? new WinFormsSettings();
-        // wenn DI null (Designer-Fall) lokale Factory erstellen
+        userInteraction = new WinFormsUserInteraction();
         controllerFactory = applicationControllerFactory ?? new SudokuControllerFactory(settings);
+        this.printServiceFactory = printServiceFactory ?? new WinFormsPrintServiceFactory(settings);
 
         Thread.CurrentThread.CurrentUICulture = (cultureInfo = new System.Globalization.CultureInfo(settings.DisplayLanguage));
 
@@ -252,7 +259,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     public void ShowError(string message)
     {
         ArgumentNullException.ThrowIfNull(message);
-        MessageBox.Show(this, message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        userInteraction?.ShowError(message);
     }
 
     /// <summary>
@@ -262,7 +269,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     public void ShowInfo(string message)
     {
         ArgumentNullException.ThrowIfNull(message);
-        MessageBox.Show(this, message, ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        userInteraction?.ShowInfo(message);
     }
 
     /// <summary>
@@ -271,10 +278,32 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     /// <param name="message">The question or confirmation message to display.</param>
     /// <param name="buttons">The button configuration for the dialog; defaults to YesNo.</param>
     /// <returns>The dialog result indicating which button the user clicked.</returns>
-    public DialogResult Confirm(string message, MessageBoxButtons buttons = MessageBoxButtons.YesNo)
+    [CLSCompliant(false)]
+    public ConfirmResult Confirm(string message, ConfirmOptions buttons = ConfirmOptions.YesNo)
     {
         ArgumentNullException.ThrowIfNull(message);
-        return MessageBox.Show(this, message, ProductName, buttons, MessageBoxIcon.Question);
+        return userInteraction?.Confirm(message, buttons) ?? ConfirmResult.Cancel;
+    }
+
+    /// <summary>
+    /// Retrieves the desired severity level for puzzle generation from user input or settings.
+    /// If settings specify that severity should be user-selected, displays a dialog.
+    /// Otherwise, returns the default severity level from settings.
+    /// </summary>
+    /// <returns>The selected severity level (0-based), or 0 if the user cancels selection.</returns>
+    public int GetSeverity()
+    {
+        if(settings.SelectSeverity)
+        {
+            SeverityLevelDialog severityLevelDialog = new SeverityLevelDialog();
+
+            if(severityLevelDialog.ShowDialog() == DialogResult.OK)
+                return severityLevelDialog.SeverityLevel;
+            else
+                return 0;
+        }
+        else
+            return settings.SeverityLevel;
     }
 
     /// <summary>
@@ -670,7 +699,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     {
         if(!controller.HasTrickyProblems()) return;
 
-        if(Confirm((controller.GenerateBooklet ? Resources.OneOrMoreProblems : Resources.OneProblem) + Resources.Publish) == DialogResult.Yes)
+        if(Confirm((controller.GenerateBooklet ? Resources.OneOrMoreProblems : Resources.OneProblem) + Resources.Publish) == ConfirmResult.Yes)
         {
             if(await controller.PublishTrickyProblems())
                 ShowInfo(String.Format(Resources.PublishOK, controller.NumberOfTrickyProblems));
@@ -823,15 +852,15 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     private Boolean UnsavedChanges()
     {
         Boolean rc = true;
-        DialogResult dialogResult;
+        ConfirmResult dialogResult;
 
         if(controller.CurrentProblem.Dirty && !SudokuGrid.IsCompleted)
         {
-            dialogResult = Confirm(Resources.UnsavedChanges, MessageBoxButtons.YesNoCancel);
-            if(dialogResult == DialogResult.Yes)
+            dialogResult = Confirm(Resources.UnsavedChanges, ConfirmOptions.YesNoCancel);
+            if(dialogResult == ConfirmResult.Yes)
                 rc = SaveProblem();
             else
-                rc = (dialogResult == DialogResult.No);
+                rc = (dialogResult == ConfirmResult.No);
         }
         return rc;
     }
@@ -1135,27 +1164,6 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     }
 
     /// <summary>
-    /// Retrieves the desired severity level for puzzle generation from user input or settings.
-    /// If settings specify that severity should be user-selected, displays a dialog.
-    /// Otherwise, returns the default severity level from settings.
-    /// </summary>
-    /// <returns>The selected severity level (0-based), or 0 if the user cancels selection.</returns>
-    public int GetSeverity()
-    {
-        if(settings.SelectSeverity)
-        {
-            SeverityLevelDialog severityLevelDialog = new SeverityLevelDialog();
-
-            if(severityLevelDialog.ShowDialog() == DialogResult.OK)
-                return severityLevelDialog.SeverityLevel;
-            else
-                return 0;
-        }
-        else
-            return settings.SeverityLevel;
-    }
-
-    /// <summary>
     /// Asynchronously solves the current puzzle using the selected solving algorithm.
     /// Displays progress during solving and reports solving time and pass count.
     /// Optionally displays found solutions for user review.
@@ -1340,10 +1348,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     /// </summary>
     private void InitializeController()
     {
-        if(controllerFactory != null)
-            controller = controllerFactory.Create(this);
-        else
-            controller = new SudokuController(settings, this);
+        controller = controllerFactory.Create(this, printServiceFactory);
 
         controller.Generating += (s, e) => OnGenerating(s!, e);
         if(settings.State.Length > 0)
@@ -1356,7 +1361,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         SudokuGrid.UpdateStatus += (s, silent) => { CurrentStatus(silent); };
         SudokuGrid.UpdateHints += (s, e) =>
         {
-            if(settings.ShowHints && Confirm(Resources.CandidatesNotShown, MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if(settings.ShowHints && Confirm(Resources.CandidatesNotShown, ConfirmOptions.YesNo) == ConfirmResult.Yes)
                 showPossibleValues.Checked = settings.ShowHints = false;
         };
         SudokuGrid.StatusTextChanged += (s, text) =>

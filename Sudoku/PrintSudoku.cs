@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Core;
+using Sudoku.Application;
 
 namespace Sudoku;
 
@@ -64,7 +65,7 @@ public partial class SudokuForm
             Boolean sc;
             // Check if candidates/hints are available and if user wants to include them
             if((sc = controller!.CurrentProblem.HasCandidates()) && settings.PrintHints)
-                sc = Confirm(Resources.PrintCandidates) == DialogResult.Yes;
+                sc = Confirm(Resources.PrintCandidates) == ConfirmResult.Yes;
 
             // Initiate printing of the single problem
             controller.PrintSingleProblem(sc);

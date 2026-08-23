@@ -3,7 +3,7 @@ using System;
 
 using Sudoku.Core;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Defines the interface for managing Sudoku application settings and configuration.

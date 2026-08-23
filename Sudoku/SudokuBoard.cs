@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Core;
+using Sudoku.Application;
 
 namespace Sudoku;
 

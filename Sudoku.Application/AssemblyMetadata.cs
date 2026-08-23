@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Provides access to assembly metadata attributes for the current assembly.
@@ -36,9 +36,9 @@ public static class AssemblyMetadata
     /// <returns>A dictionary of metadata key-value pairs.</returns>
     private static Dictionary<string, string> LoadMetadata()
     {
-        return Assembly.GetExecutingAssembly()
-            .GetCustomAttributes<AssemblyMetadataAttribute>()
-            .GroupBy(a => a.Key)
-            .ToDictionary(g => g.Key, g => g.First().Value ?? "");
+        return (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly())
+             .GetCustomAttributes<AssemblyMetadataAttribute>()
+             .GroupBy(a => a.Key)
+             .ToDictionary(g => g.Key, g => g.First().Value ?? "");
     }
 }

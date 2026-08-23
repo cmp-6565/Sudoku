@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using Sudoku.Application;
 
 namespace Sudoku;
 
@@ -12,6 +13,7 @@ internal interface ISudokuControllerFactory
     /// Create a new <see cref="SudokuController"/> bound to the specified <paramref name="ui"/>.
     /// </summary>
     /// <param name="ui">UI interaction implementation (usually the Form).</param>
+    /// <param name="printServiceFactory">Factory for creating print services.</param>
     /// <returns>A new <see cref="SudokuController"/> instance.</returns>
-    SudokuController Create(IUserInteraction ui);
+    SudokuController Create(IUserInteraction ui, IPrintServiceFactory printServiceFactory);
 }

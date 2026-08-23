@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Sudoku.Core;
+using Sudoku.Application;   
 
 namespace Sudoku;
 

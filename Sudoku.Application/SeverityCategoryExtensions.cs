@@ -1,9 +1,8 @@
-﻿// Sudoku/SeverityCategoryExtensions.cs (neu, UI-Projekt)
-using Sudoku.Core;
+﻿using Sudoku.Core;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
-internal static class SeverityCategoryExtensions
+public static class SeverityCategoryExtensions
 {
     public static string ToDisplayText(this SeverityCategory category) => category switch
     {

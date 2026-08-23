@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using Sudoku.Core;
+using Sudoku.Application;
 
 namespace Sudoku;
 
@@ -12,7 +13,7 @@ namespace Sudoku;
 /// Manages Sudoku puzzle printing functionality including problems and solutions.
 /// Handles print dialog, page layout, and rendering of puzzles to printer.
 /// </summary>
-internal class SudokuPrinterService: IDisposable
+public class SudokuPrinterService: IDisposable, IPrintService
 {
     private readonly ISudokuSettings settings;
 

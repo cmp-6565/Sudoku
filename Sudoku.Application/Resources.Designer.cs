@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Sudoku {
+namespace Sudoku.Application {
     using System;
     
     
@@ -22,7 +22,7 @@ namespace Sudoku {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,10 +36,10 @@ namespace Sudoku {
         ///   Gibt die zwischengespeicherte ResourceManager-Instanz zurück, die von dieser Klasse verwendet wird.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sudoku.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Sudoku.Application.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace Sudoku {
         ///   Ressourcenzuordnungen, die diese stark typisierte Ressourcenklasse verwenden.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  at least one  ähnelt.
         /// </summary>
-        internal static string AtLeast {
+        public static string AtLeast {
             get {
                 return ResourceManager.GetString("AtLeast", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Since the option &quot;Show Possible Values&quot; is enabled, candidates are not shown. Disable option &quot;Show Possible Values&quot;? ähnelt.
         /// </summary>
-        internal static string CandidatesNotShown {
+        public static string CandidatesNotShown {
             get {
                 return ResourceManager.GetString("CandidatesNotShown", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Data for Cell in row {0}, column {1}{2}: ähnelt.
         /// </summary>
-        internal static string Cellinfo {
+        public static string Cellinfo {
             get {
                 return ResourceManager.GetString("Cellinfo", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Value:  ähnelt.
         /// </summary>
-        internal static string CellValue {
+        public static string CellValue {
             get {
                 return ResourceManager.GetString("CellValue", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Checking... ähnelt.
         /// </summary>
-        internal static string Checking {
+        public static string Checking {
             get {
                 return ResourceManager.GetString("Checking", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Passes so far: {0:n0} ähnelt.
         /// </summary>
-        internal static string CheckingStatus {
+        public static string CheckingStatus {
             get {
                 return ResourceManager.GetString("CheckingStatus", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem ({0}Sudoku) has{1}solution. ähnelt.
         /// </summary>
-        internal static string CheckResult {
+        public static string CheckResult {
             get {
                 return ResourceManager.GetString("CheckResult", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die classic  ähnelt.
         /// </summary>
-        internal static string Classic {
+        public static string Classic {
             get {
                 return ResourceManager.GetString("Classic", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Clear Candidates ähnelt.
         /// </summary>
-        internal static string ClearCandidates {
+        public static string ClearCandidates {
             get {
                 return ResourceManager.GetString("ClearCandidates", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Clear Content ähnelt.
         /// </summary>
-        internal static string ClearContent {
+        public static string ClearContent {
             get {
                 return ResourceManager.GetString("ClearContent", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Current problem was modified but could not be saved since it is invalid. Close anyway? ähnelt.
         /// </summary>
-        internal static string CloseAnyway {
+        public static string CloseAnyway {
             get {
                 return ResourceManager.GetString("CloseAnyway", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Complexity Level:  ähnelt.
         /// </summary>
-        internal static string ComplexityLevel {
+        public static string ComplexityLevel {
             get {
                 return ResourceManager.GetString("ComplexityLevel", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Congratulations! ähnelt.
         /// </summary>
-        internal static string Congratulations {
+        public static string Congratulations {
             get {
                 return ResourceManager.GetString("Congratulations", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Crash ähnelt.
         /// </summary>
-        internal static string Crash {
+        public static string Crash {
             get {
                 return ResourceManager.GetString("Crash", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Directory {0} could not be created, Booklet problems will not be saved! ähnelt.
         /// </summary>
-        internal static string CreateDirectoryFailed {
+        public static string CreateDirectoryFailed {
             get {
                 return ResourceManager.GetString("CreateDirectoryFailed", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Critical Error ähnelt.
         /// </summary>
-        internal static string CriticalError {
+        public static string CriticalError {
             get {
                 return ResourceManager.GetString("CriticalError", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Minimal problem ({0}): {1} values\nChecking problem: {2} values ähnelt.
         /// </summary>
-        internal static string CurrentMinimalProblem {
+        public static string CurrentMinimalProblem {
             get {
                 return ResourceManager.GetString("CurrentMinimalProblem", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Definite Cells: ähnelt.
         /// </summary>
-        internal static string DefiniteCells {
+        public static string DefiniteCells {
             get {
                 return ResourceManager.GetString("DefiniteCells", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Definite Value:  ähnelt.
         /// </summary>
-        internal static string DefiniteValue {
+        public static string DefiniteValue {
             get {
                 return ResourceManager.GetString("DefiniteValue", resourceCulture);
             }
@@ -234,26 +234,16 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sudoku Solver and Generator\nSupports both classic 9*9 Sudokus and X-Sudokus ähnelt.
         /// </summary>
-        internal static string Description {
+        public static string Description {
             get {
                 return ResourceManager.GetString("Description", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap digitCandidates {
-            get {
-                object obj = ResourceManager.GetObject("digitCandidates", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Direct Blocks:  ähnelt.
         /// </summary>
-        internal static string DirectBlocks {
+        public static string DirectBlocks {
             get {
                 return ResourceManager.GetString("DirectBlocks", resourceCulture);
             }
@@ -262,7 +252,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sudoku (Solution #{0}, {1:n0} passes) ähnelt.
         /// </summary>
-        internal static string DisplaySolution {
+        public static string DisplaySolution {
             get {
                 return ResourceManager.GetString("DisplaySolution", resourceCulture);
             }
@@ -271,7 +261,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Easy ähnelt.
         /// </summary>
-        internal static string Easy {
+        public static string Easy {
             get {
                 return ResourceManager.GetString("Easy", resourceCulture);
             }
@@ -280,7 +270,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Please enter all given values (e.g., from a problem of your newspaper) and than click on &quot;Problem|Start Game&quot;. ähnelt.
         /// </summary>
-        internal static string EnterValues {
+        public static string EnterValues {
             get {
                 return ResourceManager.GetString("EnterValues", resourceCulture);
             }
@@ -289,7 +279,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Error ähnelt.
         /// </summary>
-        internal static string Error {
+        public static string Error {
             get {
                 return ResourceManager.GetString("Error", resourceCulture);
             }
@@ -298,7 +288,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Export of Problem as HTML is not possible! ähnelt.
         /// </summary>
-        internal static string ExportNotPossible {
+        public static string ExportNotPossible {
             get {
                 return ResourceManager.GetString("ExportNotPossible", resourceCulture);
             }
@@ -307,7 +297,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Original Problem saved as: ähnelt.
         /// </summary>
-        internal static string Filename {
+        public static string Filename {
             get {
                 return ResourceManager.GetString("Filename", resourceCulture);
             }
@@ -316,7 +306,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Filled Cells:  ähnelt.
         /// </summary>
-        internal static string FilledCells {
+        public static string FilledCells {
             get {
                 return ResourceManager.GetString("FilledCells", resourceCulture);
             }
@@ -325,7 +315,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sudoku Problems (*{0}) | *{0} ähnelt.
         /// </summary>
-        internal static string FilterString {
+        public static string FilterString {
             get {
                 return ResourceManager.GetString("FilterString", resourceCulture);
             }
@@ -334,7 +324,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die New Problems generated so far: {0} (of {1}) ähnelt.
         /// </summary>
-        internal static string GeneratedProblems {
+        public static string GeneratedProblems {
             get {
                 return ResourceManager.GetString("GeneratedProblems", resourceCulture);
             }
@@ -343,7 +333,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Generating... ähnelt.
         /// </summary>
-        internal static string Generating {
+        public static string Generating {
             get {
                 return ResourceManager.GetString("Generating", resourceCulture);
             }
@@ -352,7 +342,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problems analyzed so far: {0:n0} ähnelt.
         /// </summary>
-        internal static string GeneratingStatus {
+        public static string GeneratingStatus {
             get {
                 return ResourceManager.GetString("GeneratingStatus", resourceCulture);
             }
@@ -361,7 +351,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Generation aborted!\n{0}Problems analyzed so far: {1:n0}\nPasses done so far: {2:n0} ähnelt.
         /// </summary>
-        internal static string GenerationAborted {
+        public static string GenerationAborted {
             get {
                 return ResourceManager.GetString("GenerationAborted", resourceCulture);
             }
@@ -370,7 +360,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Hard ähnelt.
         /// </summary>
-        internal static string Hard {
+        public static string Hard {
             get {
                 return ResourceManager.GetString("Hard", resourceCulture);
             }
@@ -379,7 +369,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die https://sudoku.pi-c-it.de/index.php/en/ ähnelt.
         /// </summary>
-        internal static string Homepage {
+        public static string Homepage {
             get {
                 return ResourceManager.GetString("Homepage", resourceCulture);
             }
@@ -388,7 +378,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xml:lang=&quot;de&quot; lang=&quot;de&quot;&gt;&lt;head&gt;&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;&lt;meta name=&quot;robots&quot; content=&quot;index, follow&quot; /&gt;&lt;meta name=&quot;keywords&quot; content=&quot;Sudoku, pi-c-it&quot; /&gt;&lt;link rel=&quot;home&quot; type=&quot;text/html&quot; title=&quot;home:pi-c-it&quot; href=&quot;https://www.pi-c-it.de&quot; /&gt;&lt;link rel=&quot;author&quot; title=&quot;Contact&quot; href=&quot;mailto:kontakt%40pi-c-it.de?subject=p [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string HTMLFrame {
+        public static string HTMLFrame {
             get {
                 return ResourceManager.GetString("HTMLFrame", resourceCulture);
             }
@@ -397,7 +387,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &lt;table class=&quot;grid&quot;&gt;&lt;tr class=&quot;grid&quot;&gt;&lt;td class=&quot;normal&quot;&gt;{00}&lt;/td&gt;&lt;td class=&quot;normal&quot;&gt;{01}&lt;/td&gt;&lt;td class=&quot;rightedge&quot;&gt;{02}&lt;/td&gt;&lt;td class=&quot;normal dark&quot;&gt;{03}&lt;/td&gt;&lt;td class=&quot;normal dark&quot;&gt;{04}&lt;/td&gt;&lt;td class=&quot;rightedge dark&quot;&gt;{05}&lt;/td&gt;&lt;td class=&quot;normal&quot;&gt;{06}&lt;/td&gt;&lt;td class=&quot;normal&quot;&gt;{07}&lt;/td&gt;&lt;td class=&quot;rightedge&quot;&gt;{08}&lt;/td&gt;&lt;/tr&gt;&lt;tr class=&quot;grid&quot;&gt;&lt;td class=&quot;normal&quot;&gt;{09}&lt;/td&gt;&lt;td class=&quot;normal&quot;&gt;{10}&lt;/td&gt;&lt;td class=&quot;rightedge&quot;&gt;{11}&lt;/td&gt;&lt;td class=&quot;normal dark&quot;&gt;{12}&lt;/td&gt;&lt;td class=&quot;normal dark&quot;&gt;{13}&lt;/td&gt;&lt;td class=&quot;rightedge dar [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string HTMLTemplate {
+        public static string HTMLTemplate {
             get {
                 return ResourceManager.GetString("HTMLTemplate", resourceCulture);
             }
@@ -406,7 +396,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die &lt;table class=&quot;grid&quot;&gt;&lt;tr class=&quot;grid&quot;&gt;&lt;td class=&quot;normal lightdark&quot;&gt;{00}&lt;/td&gt;&lt;td class=&quot;normal&quot;&gt;{01}&lt;/td&gt;&lt;td class=&quot;rightedge&quot;&gt;{02}&lt;/td&gt;&lt;td class=&quot;normal dark&quot;&gt;{03}&lt;/td&gt;&lt;td class=&quot;normal dark&quot;&gt;{04}&lt;/td&gt;&lt;td class=&quot;rightedge dark&quot;&gt;{05}&lt;/td&gt;&lt;td class=&quot;normal&quot;&gt;{06}&lt;/td&gt;&lt;td class=&quot;normal&quot;&gt;{07}&lt;/td&gt;&lt;td class=&quot;rightedge lightdark&quot;&gt;{08}&lt;/td&gt;&lt;/tr&gt;&lt;tr class=&quot;grid&quot;&gt;&lt;td class=&quot;normal&quot;&gt;{09}&lt;/td&gt;&lt;td class=&quot;normal lightdark&quot;&gt;{10}&lt;/td&gt;&lt;td class=&quot;rightedge&quot;&gt;{11}&lt;/td&gt;&lt;td class=&quot;normal dark&quot;&gt;{12}&lt;/td&gt;&lt;td class=&quot;normal dark&quot;&gt;{13 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string HTMLTemplateX {
+        public static string HTMLTemplateX {
             get {
                 return ResourceManager.GetString("HTMLTemplateX", resourceCulture);
             }
@@ -415,7 +405,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Number of incorrect tries:  ähnelt.
         /// </summary>
-        internal static string IncorrectTries {
+        public static string IncorrectTries {
             get {
                 return ResourceManager.GetString("IncorrectTries", resourceCulture);
             }
@@ -424,7 +414,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Additional indirect Blocks:  ähnelt.
         /// </summary>
-        internal static string IndirectBlocks {
+        public static string IndirectBlocks {
             get {
                 return ResourceManager.GetString("IndirectBlocks", resourceCulture);
             }
@@ -433,7 +423,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Intermediate ähnelt.
         /// </summary>
-        internal static string Intermediate {
+        public static string Intermediate {
             get {
                 return ResourceManager.GetString("Intermediate", resourceCulture);
             }
@@ -442,7 +432,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Interrupt!\nTime past: {0}\nPasses made: {1:n0} ähnelt.
         /// </summary>
-        internal static string Interrupt {
+        public static string Interrupt {
             get {
                 return ResourceManager.GetString("Interrupt", resourceCulture);
             }
@@ -451,7 +441,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Invalid Display Language selected! ähnelt.
         /// </summary>
-        internal static string InvalidCulture {
+        public static string InvalidCulture {
             get {
                 return ResourceManager.GetString("InvalidCulture", resourceCulture);
             }
@@ -460,7 +450,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die You must enter a number in row {0}, column {1}. ähnelt.
         /// </summary>
-        internal static string InvalidNumber {
+        public static string InvalidNumber {
             get {
                 return ResourceManager.GetString("InvalidNumber", resourceCulture);
             }
@@ -469,7 +459,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Invalid Problem ähnelt.
         /// </summary>
-        internal static string InvalidProblem {
+        public static string InvalidProblem {
             get {
                 return ResourceManager.GetString("InvalidProblem", resourceCulture);
             }
@@ -478,7 +468,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Paper size too small for selected print size. ähnelt.
         /// </summary>
-        internal static string InvalidSize {
+        public static string InvalidSize {
             get {
                 return ResourceManager.GetString("InvalidSize", resourceCulture);
             }
@@ -487,7 +477,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The file {0} does not contain a valid Sudoku-Problem ähnelt.
         /// </summary>
-        internal static string InvalidSudokuFile {
+        public static string InvalidSudokuFile {
             get {
                 return ResourceManager.GetString("InvalidSudokuFile", resourceCulture);
             }
@@ -496,7 +486,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The file neither contains a classic 9*9-Sudoku nor a X-Sudoku ähnelt.
         /// </summary>
-        internal static string InvalidSudokuIdentifier {
+        public static string InvalidSudokuIdentifier {
             get {
                 return ResourceManager.GetString("InvalidSudokuIdentifier", resourceCulture);
             }
@@ -505,7 +495,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The value {0} in row {1}, column {2} leads to an invalid problem. ähnelt.
         /// </summary>
-        internal static string InvalidValue {
+        public static string InvalidValue {
             get {
                 return ResourceManager.GetString("InvalidValue", resourceCulture);
             }
@@ -514,7 +504,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Loading problem from sudoku.pi-c-it.de... ähnelt.
         /// </summary>
-        internal static string Loading {
+        public static string Loading {
             get {
                 return ResourceManager.GetString("Loading", resourceCulture);
             }
@@ -523,7 +513,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Loading Sudoku Problems... ähnelt.
         /// </summary>
-        internal static string LoadingFiles {
+        public static string LoadingFiles {
             get {
                 return ResourceManager.GetString("LoadingFiles", resourceCulture);
             }
@@ -532,7 +522,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Loading Problem # ähnelt.
         /// </summary>
-        internal static string LoadingProblem {
+        public static string LoadingProblem {
             get {
                 return ResourceManager.GetString("LoadingProblem", resourceCulture);
             }
@@ -541,7 +531,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem not resolvable. Minimization not possible. ähnelt.
         /// </summary>
-        internal static string MinimizationNotPossible {
+        public static string MinimizationNotPossible {
             get {
                 return ResourceManager.GetString("MinimizationNotPossible", resourceCulture);
             }
@@ -550,7 +540,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0} pre-allocated values removed ähnelt.
         /// </summary>
-        internal static string Minimized {
+        public static string Minimized {
             get {
                 return ResourceManager.GetString("Minimized", resourceCulture);
             }
@@ -559,7 +549,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Minimizing... ähnelt.
         /// </summary>
-        internal static string Minimizing {
+        public static string Minimizing {
             get {
                 return ResourceManager.GetString("Minimizing", resourceCulture);
             }
@@ -568,7 +558,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die More than one Solution! ähnelt.
         /// </summary>
-        internal static string MoreThanOne {
+        public static string MoreThanOne {
             get {
                 return ResourceManager.GetString("MoreThanOne", resourceCulture);
             }
@@ -577,7 +567,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Passes needed:  ähnelt.
         /// </summary>
-        internal static string NeededPasses {
+        public static string NeededPasses {
             get {
                 return ResourceManager.GetString("NeededPasses", resourceCulture);
             }
@@ -586,7 +576,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die New Problem generated! ({0})\nProblem has {1:n0} pre-allocated cells\nProblems analyzed: {2:n0}\nPasses needed: {3:n0} ähnelt.
         /// </summary>
-        internal static string NewProblemGenerated {
+        public static string NewProblemGenerated {
             get {
                 return ResourceManager.GetString("NewProblemGenerated", resourceCulture);
             }
@@ -595,7 +585,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0} new Problems generated, now printing... ähnelt.
         /// </summary>
-        internal static string NewProblems {
+        public static string NewProblems {
             get {
                 return ResourceManager.GetString("NewProblems", resourceCulture);
             }
@@ -604,7 +594,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  no  ähnelt.
         /// </summary>
-        internal static string No {
+        public static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
             }
@@ -613,7 +603,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem has no definite cells ähnelt.
         /// </summary>
-        internal static string NoHints {
+        public static string NoHints {
             get {
                 return ResourceManager.GetString("NoHints", resourceCulture);
             }
@@ -622,7 +612,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die No further minimization possible ähnelt.
         /// </summary>
-        internal static string NoMinimizationPossible {
+        public static string NoMinimizationPossible {
             get {
                 return ResourceManager.GetString("NoMinimizationPossible", resourceCulture);
             }
@@ -631,7 +621,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die none ähnelt.
         /// </summary>
-        internal static string None {
+        public static string None {
             get {
                 return ResourceManager.GetString("None", resourceCulture);
             }
@@ -640,7 +630,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die No Problems for printout found ähnelt.
         /// </summary>
-        internal static string NoProblems {
+        public static string NoProblems {
             get {
                 return ResourceManager.GetString("NoProblems", resourceCulture);
             }
@@ -649,7 +639,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  not  ähnelt.
         /// </summary>
-        internal static string Not {
+        public static string Not {
             get {
                 return ResourceManager.GetString("Not", resourceCulture);
             }
@@ -658,7 +648,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Since the current problem is not solvable it cannot be fixed ähnelt.
         /// </summary>
-        internal static string NotFixable {
+        public static string NotFixable {
             get {
                 return ResourceManager.GetString("NotFixable", resourceCulture);
             }
@@ -667,7 +657,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem could not be printed: ähnelt.
         /// </summary>
-        internal static string NotPrinted {
+        public static string NotPrinted {
             get {
                 return ResourceManager.GetString("NotPrinted", resourceCulture);
             }
@@ -676,7 +666,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem is not resolvable! ähnelt.
         /// </summary>
-        internal static string NotResolvable {
+        public static string NotResolvable {
             get {
                 return ResourceManager.GetString("NotResolvable", resourceCulture);
             }
@@ -685,7 +675,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die At least one of the generated problems  ähnelt.
         /// </summary>
-        internal static string OneOrMoreProblems {
+        public static string OneOrMoreProblems {
             get {
                 return ResourceManager.GetString("OneOrMoreProblems", resourceCulture);
             }
@@ -694,7 +684,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The generated problem  ähnelt.
         /// </summary>
-        internal static string OneProblem {
+        public static string OneProblem {
             get {
                 return ResourceManager.GetString("OneProblem", resourceCulture);
             }
@@ -703,7 +693,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Open Failed! ähnelt.
         /// </summary>
-        internal static string OpenFailed {
+        public static string OpenFailed {
             get {
                 return ResourceManager.GetString("OpenFailed", resourceCulture);
             }
@@ -712,7 +702,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die You must enter a number between 1 and {0} in row {1}, column {2}. ähnelt.
         /// </summary>
-        internal static string OutOfBounds {
+        public static string OutOfBounds {
             get {
                 return ResourceManager.GetString("OutOfBounds", resourceCulture);
             }
@@ -721,7 +711,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Page  ähnelt.
         /// </summary>
-        internal static string Page {
+        public static string Page {
             get {
                 return ResourceManager.GetString("Page", resourceCulture);
             }
@@ -730,7 +720,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  (paused) ähnelt.
         /// </summary>
-        internal static string Paused {
+        public static string Paused {
             get {
                 return ResourceManager.GetString("Paused", resourceCulture);
             }
@@ -739,7 +729,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Paused!\n\nClick to continue! ähnelt.
         /// </summary>
-        internal static string PausedMessage {
+        public static string PausedMessage {
             get {
                 return ResourceManager.GetString("PausedMessage", resourceCulture);
             }
@@ -748,7 +738,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die IT Consulting &amp;&amp; Development ähnelt.
         /// </summary>
-        internal static string picit {
+        public static string picit {
             get {
                 return ResourceManager.GetString("picit", resourceCulture);
             }
@@ -757,7 +747,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die s ähnelt.
         /// </summary>
-        internal static string Plural {
+        public static string Plural {
             get {
                 return ResourceManager.GetString("Plural", resourceCulture);
             }
@@ -766,7 +756,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Pre-Allocations:  ähnelt.
         /// </summary>
-        internal static string PreAllocatedValues {
+        public static string PreAllocatedValues {
             get {
                 return ResourceManager.GetString("PreAllocatedValues", resourceCulture);
             }
@@ -775,7 +765,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Print candidates instead of the possible values? ähnelt.
         /// </summary>
-        internal static string PrintCandidates {
+        public static string PrintCandidates {
             get {
                 return ResourceManager.GetString("PrintCandidates", resourceCulture);
             }
@@ -784,7 +774,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Printing the Problem is not possible! ähnelt.
         /// </summary>
-        internal static string PrintNotPossible {
+        public static string PrintNotPossible {
             get {
                 return ResourceManager.GetString("PrintNotPossible", resourceCulture);
             }
@@ -793,7 +783,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die #{0} ähnelt.
         /// </summary>
-        internal static string Problem {
+        public static string Problem {
             get {
                 return ResourceManager.GetString("Problem", resourceCulture);
             }
@@ -802,7 +792,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem has\n{0} pre-allocated cells,\n{1} computed cells,\n{2} cells remaining ähnelt.
         /// </summary>
-        internal static string ProblemInfo {
+        public static string ProblemInfo {
             get {
                 return ResourceManager.GetString("ProblemInfo", resourceCulture);
             }
@@ -811,7 +801,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem not solved correctly! ähnelt.
         /// </summary>
-        internal static string ProblemNotSolved {
+        public static string ProblemNotSolved {
             get {
                 return ResourceManager.GetString("ProblemNotSolved", resourceCulture);
             }
@@ -820,7 +810,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem loaded ähnelt.
         /// </summary>
-        internal static string ProblemRetrieved {
+        public static string ProblemRetrieved {
             get {
                 return ResourceManager.GetString("ProblemRetrieved", resourceCulture);
             }
@@ -829,7 +819,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problems loaded: {0} of {1} ähnelt.
         /// </summary>
-        internal static string ProblemsLoaded {
+        public static string ProblemsLoaded {
             get {
                 return ResourceManager.GetString("ProblemsLoaded", resourceCulture);
             }
@@ -838,7 +828,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem solved! ähnelt.
         /// </summary>
-        internal static string ProblemSolved {
+        public static string ProblemSolved {
             get {
                 return ResourceManager.GetString("ProblemSolved", resourceCulture);
             }
@@ -847,7 +837,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die is extremely tricky. Do you want to publish it on the Sudoku-Homepage? ähnelt.
         /// </summary>
-        internal static string Publish {
+        public static string Publish {
             get {
                 return ResourceManager.GetString("Publish", resourceCulture);
             }
@@ -856,7 +846,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Publishing of the tricky problems failed. Please, save and email them to {0}. Thank You! ähnelt.
         /// </summary>
-        internal static string PublishFailed {
+        public static string PublishFailed {
             get {
                 return ResourceManager.GetString("PublishFailed", resourceCulture);
             }
@@ -865,7 +855,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die {0} Very Tricky Problems published. Thank You! ähnelt.
         /// </summary>
-        internal static string PublishOK {
+        public static string PublishOK {
             get {
                 return ResourceManager.GetString("PublishOK", resourceCulture);
             }
@@ -874,7 +864,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Read Only ähnelt.
         /// </summary>
-        internal static string ReadOnly {
+        public static string ReadOnly {
             get {
                 return ResourceManager.GetString("ReadOnly", resourceCulture);
             }
@@ -883,7 +873,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Ready ähnelt.
         /// </summary>
-        internal static string Ready {
+        public static string Ready {
             get {
                 return ResourceManager.GetString("Ready", resourceCulture);
             }
@@ -892,7 +882,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Remaining ähnelt.
         /// </summary>
-        internal static string Remaining {
+        public static string Remaining {
             get {
                 return ResourceManager.GetString("Remaining", resourceCulture);
             }
@@ -917,7 +907,7 @@ namespace Sudoku {
         ///    &lt;resheader name=&quot;resmimetype&quot;&gt;text/microsoft-resx&lt;/resheader&gt;
         ///    &lt;resheader n [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
         /// </summary>
-        internal static string Resources_de_DE {
+        public static string Resources_de_DE {
             get {
                 return ResourceManager.GetString("Resources_de_DE", resourceCulture);
             }
@@ -926,7 +916,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die  ähnelt.
         /// </summary>
-        internal static string Resources_de_DE_Designer {
+        public static string Resources_de_DE_Designer {
             get {
                 return ResourceManager.GetString("Resources_de_DE_Designer", resourceCulture);
             }
@@ -935,7 +925,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Loading Problem... ähnelt.
         /// </summary>
-        internal static string RetrieveProblem {
+        public static string RetrieveProblem {
             get {
                 return ResourceManager.GetString("RetrieveProblem", resourceCulture);
             }
@@ -944,7 +934,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Save failed! ähnelt.
         /// </summary>
-        internal static string SaveFailed {
+        public static string SaveFailed {
             get {
                 return ResourceManager.GetString("SaveFailed", resourceCulture);
             }
@@ -953,7 +943,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Save of Problem is not possible! ähnelt.
         /// </summary>
-        internal static string SaveNotPossible {
+        public static string SaveNotPossible {
             get {
                 return ResourceManager.GetString("SaveNotPossible", resourceCulture);
             }
@@ -962,7 +952,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die At least on severity level must be selected! ähnelt.
         /// </summary>
-        internal static string SeverityLevelError {
+        public static string SeverityLevelError {
             get {
                 return ResourceManager.GetString("SeverityLevelError", resourceCulture);
             }
@@ -971,7 +961,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Solution ähnelt.
         /// </summary>
-        internal static string Solution {
+        public static string Solution {
             get {
                 return ResourceManager.GetString("Solution", resourceCulture);
             }
@@ -980,7 +970,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Solution #1 ähnelt.
         /// </summary>
-        internal static string SolutionOne {
+        public static string SolutionOne {
             get {
                 return ResourceManager.GetString("SolutionOne", resourceCulture);
             }
@@ -989,7 +979,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Solution{0} found! ähnelt.
         /// </summary>
-        internal static string SolutionsFound {
+        public static string SolutionsFound {
             get {
                 return ResourceManager.GetString("SolutionsFound", resourceCulture);
             }
@@ -998,7 +988,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Solutions so far: {0:n0} ähnelt.
         /// </summary>
-        internal static string SolutionsSoFar {
+        public static string SolutionsSoFar {
             get {
                 return ResourceManager.GetString("SolutionsSoFar", resourceCulture);
             }
@@ -1007,7 +997,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Time elapsed:  ähnelt.
         /// </summary>
-        internal static string SolutionTime {
+        public static string SolutionTime {
             get {
                 return ResourceManager.GetString("SolutionTime", resourceCulture);
             }
@@ -1016,7 +1006,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sudoku Error ähnelt.
         /// </summary>
-        internal static string SudokuError {
+        public static string SudokuError {
             get {
                 return ResourceManager.GetString("SudokuError", resourceCulture);
             }
@@ -1025,7 +1015,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Today&apos;s Sudoku of The Day is {0} ähnelt.
         /// </summary>
-        internal static string SudokuOfTheDayInfo {
+        public static string SudokuOfTheDayInfo {
             get {
                 return ResourceManager.GetString("SudokuOfTheDayInfo", resourceCulture);
             }
@@ -1034,26 +1024,16 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Sorry. Sudoku of the Day could not be loaded ähnelt.
         /// </summary>
-        internal static string SudokuOfTheDayNotLoaded {
+        public static string SudokuOfTheDayNotLoaded {
             get {
                 return ResourceManager.GetString("SudokuOfTheDayNotLoaded", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap SudokuProblem {
-            get {
-                object obj = ResourceManager.GetObject("SudokuProblem", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die At least one type must be selected! ähnelt.
         /// </summary>
-        internal static string SudokuTypeError {
+        public static string SudokuTypeError {
             get {
                 return ResourceManager.GetString("SudokuTypeError", resourceCulture);
             }
@@ -1062,7 +1042,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Thinking... ähnelt.
         /// </summary>
-        internal static string Thinking {
+        public static string Thinking {
             get {
                 return ResourceManager.GetString("Thinking", resourceCulture);
             }
@@ -1071,7 +1051,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Time so far:  ähnelt.
         /// </summary>
-        internal static string TimeElapsed {
+        public static string TimeElapsed {
             get {
                 return ResourceManager.GetString("TimeElapsed", resourceCulture);
             }
@@ -1080,7 +1060,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Time Needed:  ähnelt.
         /// </summary>
-        internal static string TimeNeeded {
+        public static string TimeNeeded {
             get {
                 return ResourceManager.GetString("TimeNeeded", resourceCulture);
             }
@@ -1089,7 +1069,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Not Resolvable! ähnelt.
         /// </summary>
-        internal static string TitleNotResolvable {
+        public static string TitleNotResolvable {
             get {
                 return ResourceManager.GetString("TitleNotResolvable", resourceCulture);
             }
@@ -1098,7 +1078,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Total Number of Solutions:  ähnelt.
         /// </summary>
-        internal static string TotalNumberOfSolutions {
+        public static string TotalNumberOfSolutions {
             get {
                 return ResourceManager.GetString("TotalNumberOfSolutions", resourceCulture);
             }
@@ -1107,7 +1087,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Total Number of Solutions so far:  ähnelt.
         /// </summary>
-        internal static string TotalNumberOfSolutionsSoFar {
+        public static string TotalNumberOfSolutionsSoFar {
             get {
                 return ResourceManager.GetString("TotalNumberOfSolutionsSoFar", resourceCulture);
             }
@@ -1116,7 +1096,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Trivial ähnelt.
         /// </summary>
-        internal static string Trivial {
+        public static string Trivial {
             get {
                 return ResourceManager.GetString("Trivial", resourceCulture);
             }
@@ -1125,7 +1105,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Not a valid problem. problem cannot be twittered ähnelt.
         /// </summary>
-        internal static string TwitterNotPossible {
+        public static string TwitterNotPossible {
             get {
                 return ResourceManager.GetString("TwitterNotPossible", resourceCulture);
             }
@@ -1134,7 +1114,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die %40CPichl%20Great%20%23{0}Sudoku%20Problem:%20{1}&amp;url=https://sudoku.pi-c-it.de ähnelt.
         /// </summary>
-        internal static string TwitterText {
+        public static string TwitterText {
             get {
                 return ResourceManager.GetString("TwitterText", resourceCulture);
             }
@@ -1143,7 +1123,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die https://twitter.com/intent/tweet?text= ähnelt.
         /// </summary>
-        internal static string TwitterURL {
+        public static string TwitterURL {
             get {
                 return ResourceManager.GetString("TwitterURL", resourceCulture);
             }
@@ -1152,7 +1132,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die An unexpected error occured:  ähnelt.
         /// </summary>
-        internal static string UnexpectedError {
+        public static string UnexpectedError {
             get {
                 return ResourceManager.GetString("UnexpectedError", resourceCulture);
             }
@@ -1161,7 +1141,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Unknown Error ähnelt.
         /// </summary>
-        internal static string UnknownError {
+        public static string UnknownError {
             get {
                 return ResourceManager.GetString("UnknownError", resourceCulture);
             }
@@ -1170,7 +1150,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die The current problem has unsaved changes. Do you want to save it? ähnelt.
         /// </summary>
-        internal static string UnsavedChanges {
+        public static string UnsavedChanges {
             get {
                 return ResourceManager.GetString("UnsavedChanges", resourceCulture);
             }
@@ -1179,7 +1159,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die used ähnelt.
         /// </summary>
-        internal static string Used {
+        public static string Used {
             get {
                 return ResourceManager.GetString("Used", resourceCulture);
             }
@@ -1188,7 +1168,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Problem is a formal valid {0}Sudoku. ähnelt.
         /// </summary>
-        internal static string ValidationStatus {
+        public static string ValidationStatus {
             get {
                 return ResourceManager.GetString("ValidationStatus", resourceCulture);
             }
@@ -1197,7 +1177,7 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die Version  ähnelt.
         /// </summary>
-        internal static string Version {
+        public static string Version {
             get {
                 return ResourceManager.GetString("Version", resourceCulture);
             }
@@ -1206,19 +1186,9 @@ namespace Sudoku {
         /// <summary>
         ///   Sucht eine lokalisierte Zeichenfolge, die https://sudoku.pi-c-it.de/index.php/en/version-history ähnelt.
         /// </summary>
-        internal static string VersionHistory {
+        public static string VersionHistory {
             get {
                 return ResourceManager.GetString("VersionHistory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap watchHandCandidates {
-            get {
-                object obj = ResourceManager.GetObject("watchHandCandidates", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
