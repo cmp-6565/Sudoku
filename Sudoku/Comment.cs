@@ -5,8 +5,6 @@ using System.Windows.Forms;
 
 using Sudoku.Application;
 
-[assembly: CLSCompliant(false)]
-
 namespace Sudoku;
 
 /// <summary>

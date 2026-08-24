@@ -4,8 +4,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-[assembly: InternalsVisibleTo("Sudoku.Tests")]
-
 namespace Sudoku.Application;
 
 /// <summary>

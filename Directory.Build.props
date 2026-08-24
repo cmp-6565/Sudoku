@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <CLSCompliant>true</CLSCompliant>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>

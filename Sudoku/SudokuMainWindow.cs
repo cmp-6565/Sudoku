@@ -278,7 +278,6 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     /// <param name="message">The question or confirmation message to display.</param>
     /// <param name="buttons">The button configuration for the dialog; defaults to YesNo.</param>
     /// <returns>The dialog result indicating which button the user clicked.</returns>
-    [CLSCompliant(false)]
     public ConfirmResult Confirm(string message, ConfirmOptions buttons = ConfirmOptions.YesNo)
     {
         ArgumentNullException.ThrowIfNull(message);
