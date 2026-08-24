@@ -15,7 +15,7 @@ using Sudoku.Application;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Sudoku.Sudoku.Tests;
+namespace Sudoku.Tests;
 
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -43,7 +43,7 @@ public sealed class SudokuBatchTests
 
     private record struct TestResult(string Puzzle, string MinimalProblem, int Diff, string Solution, double TotalRuntime, double GreedyRuntime, double CandidateRuntime, Boolean XSudoku, BaseProblem.AlgorithmParameters Parameters);
 
-    private WinFormsSettings settings;
+    private FakeSudokuSettings settings;
     public TestContext TestContext { get; set; }
 
     [TestInitialize]
@@ -204,8 +204,8 @@ public sealed class SudokuBatchTests
         TestContext?.WriteLine($"Generiere und löse {SudokuBatchSize} Sudokus mit der Einstellung \"{(settings.GenerateXSudoku ? "X-Sudoku" : "Normal-Sudoku")}\".");
         TestContext?.WriteLine($"{"Nr.",-4} {"Problem",-81} {"Lösung",-81} {"Sekunden",10}");
 
-        IPrintServiceFactory printServiceFactory = new PrintServiceFactory(settings);
-        IUserInteraction userInteraction = new UserInteraction();
+        IPrintServiceFactory printServiceFactory = new FakePrintServiceFactory();
+        IUserInteraction userInteraction = new FakeUserInteraction();
         for(int index = 0; index < SudokuBatchSize; index++)
         {
             var controller = new SudokuController(settings, userInteraction, printServiceFactory);
@@ -315,9 +315,9 @@ public sealed class SudokuBatchTests
         return referenceIndex;
     }
 
-    private static WinFormsSettings CreateSettings(bool xSudoku)
+    private static FakeSudokuSettings CreateSettings(bool xSudoku)
     {
-        var configuration = new WinFormsSettings
+        var configuration = new FakeSudokuSettings
         {
             GenerateNormalSudoku = !xSudoku,
             GenerateXSudoku = xSudoku,
@@ -346,7 +346,7 @@ public sealed class SudokuBatchTests
         Assert.AreEqual(SudokuBatchSize, puzzles.Length, $"Es konnten nur {puzzles.Length} von {SudokuBatchSize} Sudokus geladen werden.");
 
         foreach(string puzzle in puzzles)
-            Assert.AreEqual(WinFormsSettings.TotalCellCount, puzzle.Length, "Eine Sudoku-Zeile besitzt nicht exakt 81 Zeichen.");
+            Assert.AreEqual(SudokuGrid.TotalCellCount, puzzle.Length, "Eine Sudoku-Zeile besitzt nicht exakt 81 Zeichen.");
 
         return puzzles;
     }
@@ -379,7 +379,7 @@ public sealed class SudokuBatchTests
 
     private static void LoadSerializedPuzzle(BaseProblem problem, string serializedPuzzle)
     {
-        Assert.AreEqual(WinFormsSettings.TotalCellCount, serializedPuzzle.Length, "Ungültige Sudoku-Länge.");
+        Assert.AreEqual(SudokuGrid.TotalCellCount, serializedPuzzle.Length, "Ungültige Sudoku-Länge.");
 
         problem.ResetSolutions();
 
@@ -391,8 +391,8 @@ public sealed class SudokuBatchTests
                 encodedValue -= ReadOnlyEncodingOffset;
 
             byte cellValue = encodedValue;
-            int row = index / WinFormsSettings.SudokuSize;
-            int col = index % WinFormsSettings.SudokuSize;
+            int row = index / SudokuGrid.SudokuSize;
+            int col = index % SudokuGrid.SudokuSize;
 
             problem.SetValue(row, col, cellValue, cellValue != Values.Undefined);
             problem.SetReadOnly(row, col, readOnly && cellValue != Values.Undefined);
@@ -412,10 +412,10 @@ public sealed class SudokuBatchTests
     }
     private static string SerializeSolution(BaseProblem problem)
     {
-        var builder = new StringBuilder(WinFormsSettings.TotalCellCount);
+        var builder = new StringBuilder(SudokuGrid.TotalCellCount);
 
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for(int row = 0; row < SudokuGrid.SudokuSize; row++)
+            for(int col = 0; col < SudokuGrid.SudokuSize; col++)
             {
                 byte value = problem.Solutions[0].GetValue(row, col);
                 Assert.AreNotEqual(Values.Undefined, value, "Die berechnete Lösung ist unvollständig.");
@@ -426,10 +426,10 @@ public sealed class SudokuBatchTests
     }
     private static string SerializeProblem(BaseProblem problem)
     {
-        var builder = new StringBuilder(WinFormsSettings.TotalCellCount);
+        var builder = new StringBuilder(SudokuGrid.TotalCellCount);
 
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for(int row = 0; row < SudokuGrid.SudokuSize; row++)
+            for(int col = 0; col < SudokuGrid.SudokuSize; col++)
             {
                 byte value = problem.GetValue(row, col);
                 builder.Append((char)('0' + value));

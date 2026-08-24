@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sudoku.Core;
 using Sudoku.Application;
 
-namespace Sudoku.Sudoku.Tests;
+namespace Sudoku.Tests;
 
 [TestClass]
 public sealed class SudokuProblemTests
@@ -101,7 +101,7 @@ public sealed class XSudokuProblemTests
     public void Resolvable_ShouldReturnFalse_WhenBaseConstraintsFail()
     {
         var problem = new XSudokuProblem(ProblemTestHelper.CreateSettings());
-        for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for(int col = 0; col < SudokuGrid.SudokuSize; col++)
             try
             {
                 problem.SetValue(0, col, (byte)(col + 1), true);
@@ -119,10 +119,10 @@ public sealed class XSudokuProblemTests
         var problem = new XSudokuProblem(ProblemTestHelper.CreateSettings());
         try
         {
-            for(int index = 0; index < WinFormsSettings.SudokuSize - 1; index++)
+            for(int index = 0; index < SudokuGrid.SudokuSize - 1; index++)
                 problem.SetValue(index, index, (byte)(index + 1), true);
 
-            problem.SetValue(WinFormsSettings.SudokuSize - 1, WinFormsSettings.SudokuSize - 1, 1, true);
+            problem.SetValue(SudokuGrid.SudokuSize - 1, SudokuGrid.SudokuSize - 1, 1, true);
         }
         catch
         {
@@ -135,7 +135,7 @@ public sealed class XSudokuProblemTests
     public void Resolvable_ShouldReturnTrue_WhenBaseAndDiagonalConstraintsSucceed()
     {
         var problem = new XSudokuProblem(ProblemTestHelper.CreateSettings());
-        for(int index = 0; index < WinFormsSettings.SudokuSize; index++)
+        for(int index = 0; index < SudokuGrid.SudokuSize; index++)
             problem.SetValue(index, index, (byte)(index + 1), true);
 
         Assert.IsTrue(problem.Resolvable());
@@ -307,8 +307,8 @@ public sealed class BaseProblemTests
 
         Assert.AreEqual(1, problem.NumberOfSolutions);
         Assert.AreEqual(1, problem.Solutions.Count);
-        for(int row = 0; row < WinFormsSettings.SudokuSize; row++)
-            for(int col = 0; col < WinFormsSettings.SudokuSize; col++)
+        for(int row = 0; row < SudokuGrid.SudokuSize; row++)
+            for(int col = 0; col < SudokuGrid.SudokuSize; col++)
                 Assert.AreEqual(SolvedGrid[row, col], problem.Solutions[0].GetValue(row, col));
     }
 
@@ -387,16 +387,16 @@ internal static class ProblemTestHelper
     private static void SeedFixedValues(BaseProblem problem, int valuesToAdd)
     {
         byte value = 1;
-        for(int row = 0; row < WinFormsSettings.SudokuSize && valuesToAdd > 0; row++)
+        for(int row = 0; row < SudokuGrid.SudokuSize && valuesToAdd > 0; row++)
         {
-            for(int col = 0; col < WinFormsSettings.SudokuSize && valuesToAdd > 0; col++)
+            for(int col = 0; col < SudokuGrid.SudokuSize && valuesToAdd > 0; col++)
             {
                 if(problem.FixedValue(row, col)) continue;
 
                 try
                 {
                     problem.SetValue(row, col, value, true);
-                    value = (byte)(value % WinFormsSettings.SudokuSize + 1);
+                    value = (byte)(value % SudokuGrid.SudokuSize + 1);
                     valuesToAdd--;
                 }
                 catch

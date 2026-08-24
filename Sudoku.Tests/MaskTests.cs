@@ -2,7 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Sudoku.Core;
 
-namespace Sudoku.Sudoku.Tests;
+namespace Sudoku.Tests;
 
 [TestClass]
 public class MaskTests

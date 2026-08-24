@@ -4,9 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-[assembly: InternalsVisibleTo("BenchmarkSuite1")]
 [assembly: InternalsVisibleTo("Sudoku.Tests")]
-[assembly: CLSCompliant(false)]
 
 namespace Sudoku.Application;
 

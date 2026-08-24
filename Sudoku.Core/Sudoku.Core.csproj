@@ -10,7 +10,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Sudoku" />
     <InternalsVisibleTo Include="Sudoku.Tests" />
-    <InternalsVisibleTo Include="BenchmarkSuite1" />
   </ItemGroup>
 
   <ItemGroup>

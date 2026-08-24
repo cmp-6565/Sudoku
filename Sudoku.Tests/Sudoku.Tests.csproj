@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0-windows8.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <IsTestProject>true</IsTestProject>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
@@ -15,6 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sudoku.Core\Sudoku.Core.csproj" />
-    <ProjectReference Include="..\Sudoku\Sudoku.csproj" />
+    <ProjectReference Include="..\Sudoku.Application\Sudoku.Application.csproj" />
   </ItemGroup>
 </Project>

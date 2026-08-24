@@ -2,7 +2,7 @@
 using System;
 using Sudoku.Application;
 
-namespace Sudoku;
+namespace Sudoku.Application;
 
 /// <summary>
 /// Factory interface to create <see cref="SudokuController"/> instances for a given <see cref="IUserInteraction"/>.
