@@ -4,10 +4,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Sudoku.Core;
+using Sudoku.Core.Solving;
 
 namespace Sudoku.Application;
 
@@ -35,7 +37,8 @@ internal class SudokuController: IDisposable
     private GenerationParameters generationParameters;
     private readonly IPrintServiceFactory printServiceFactory;
     private IPrintService printerService;
-
+    private readonly HintExplainer hintExplainer = new();
+    
     // Events
     /// <summary>
     /// Raised when the sudoku matrix has changed and consumers should refresh their view.
@@ -551,6 +554,15 @@ internal class SudokuController: IDisposable
         return values;
     }
 
+    /// <summary>
+    /// Liefert zu jeder "orangenen" Hint-Zelle (die keinen direkten Single hat) den Namen
+    /// der einfachsten Technik, die dort aktuell greift.
+    /// </summary>
+    public IReadOnlyDictionary<BaseCell, StrategyFinding> ExplainHints(List<BaseCell> hints)
+    {
+        var needsExplanation = hints.Where(c => c.nPossibleValues != 1);
+        return hintExplainer.ExplainCells(CurrentProblem.Matrix, needsExplanation);
+    }
     /// <summary>
     /// Generates the base puzzle either by loading a precalculated problem or by constructing one incrementally.
     /// </summary>
@@ -1441,68 +1453,4 @@ internal class SudokuController: IDisposable
     /// Number of problems currently collected in the internal printer/booklet service.
     /// </summary>
     public int NumberOfProblems => printerService.NumberOfProblems;
-}
-
-/// <summary>
-/// Represents progress information emitted during generation or solving.
-/// </summary>
-public class GenerationProgressState
-{
-    /// <summary>Number of solver/generation passes performed so far.</summary>
-    public long PassCount { get; set; }
-    /// <summary>Number of solutions found so far.</summary>
-    public long SolutionCount { get; set; }
-    /// <summary>Elapsed time since the operation started.</summary>
-    public TimeSpan Elapsed { get; set; }
-    /// <summary>Row index of the current cell related to the progress update.</summary>
-    public int Row { get; set; }
-    /// <summary>Column index of the current cell related to the progress update.</summary>
-    public int Col { get; set; }
-    /// <summary>Value of the cell related to the progress update.</summary>
-    public byte Value { get; set; }
-    /// <summary>Indicates whether the reported cell is read-only.</summary>
-    public bool ReadOnly { get; set; }
-    /// <summary>Optional status text describing the current operation.</summary>
-    public string? StatusText { get; set; }
-}
-
-/// <summary>
-/// Result object returned after parsing and validating an externally provided puzzle grid.
-/// Contains a validity flag, an optional message and a list of specific cell errors.
-/// </summary>
-public class ValidationResult
-{
-    /// <summary>Represents a validation error for a specific cell.</summary>
-    public struct Error
-    {
-        public int Row { get; set; }
-        public int Col { get; set; }
-        public string Message { get; set; }
-    }
-
-    /// <summary>True when no validation errors were found.</summary>
-    public bool IsValid { get; set; }
-    /// <summary>Optional human-readable message about the validation result.</summary>
-    public string Message { get; set; }
-    /// <summary>List of cell-level validation errors.</summary>
-    public List<Error> Errors { get; set; }
-
-    /// <summary>
-    /// Adds an error entry to the validation result.
-    /// </summary>
-    /// <param name="error">The error to add.</param>
-    public void AddError(Error error)
-    {
-        Errors.Add(error);
-    }
-
-    /// <summary>
-    /// Creates a new empty ValidationResult that is considered valid by default.
-    /// </summary>
-    public ValidationResult()
-    {
-        IsValid = true;
-        Message = string.Empty;
-        Errors = new List<Error>();
-    }
 }

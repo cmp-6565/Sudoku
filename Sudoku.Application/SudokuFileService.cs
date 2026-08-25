@@ -130,12 +130,12 @@ internal class SudokuFileService
             Sudoku.Dirty = false;
             return true;
         }
-        catch (System.IO.IOException ex)
+        catch(System.IO.IOException ex)
         {
             ui?.ShowError(String.Format(Thread.CurrentThread.CurrentCulture, Resources.SaveFailed + " {0}", ex.Message));
             return false;
         }
-        catch (UnauthorizedAccessException ex)
+        catch(UnauthorizedAccessException ex)
         {
             ui?.ShowError(String.Format(Thread.CurrentThread.CurrentCulture, Resources.SaveFailed + " {0}", ex.Message));
             return false;

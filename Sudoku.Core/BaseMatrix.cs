@@ -125,7 +125,7 @@ public abstract class BaseMatrix: Values
 			}
 		}
 
-		// Verbinde Zeilen-Nachbarn einmalig paarweise
+		// Connect row neighbors once in pairs
 		for(int row = 0; row < size; row++)
 		{
 			BaseCell[] rowCells = Matrix[row];
@@ -139,7 +139,7 @@ public abstract class BaseMatrix: Values
 			}
 		}
 
-		// Verbinde Spalten-Nachbarn einmalig paarweise
+		// Connect column neighbors once in pairs
 		for(int col = 0; col < size; col++)
 		{
 			BaseCell[] columnCells = Cols[col];
@@ -153,7 +153,7 @@ public abstract class BaseMatrix: Values
 			}
 		}
 
-		// Verbinde Block-Nachbarn (ohne Zeilen/Spalten-Duplikate)
+		// Connect block neighbors (without row/column duplicates)
 		for(int rect = 0; rect < Rectangles.Length; rect++)
 		{
 			BaseCell[] rectCells = Rectangles[rect];
@@ -1073,7 +1073,6 @@ public abstract class BaseMatrix: Values
 							nVal--;
 						else if(Cell(row, col).CellValue != Values.Undefined)
 							digitCounter[Cell(row, col).CellValue - 1]++;
-
 					}
 					minValuesRow = Math.Min(minValuesRow, nVal);
 					maxValuesRow = Math.Max(maxValuesRow, nVal);
