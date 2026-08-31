@@ -25,18 +25,26 @@ public class SolvingStrategyTests
     public void HiddenSingleStrategy_FindsSingleCandidateCellInRow()
     {
         var problem = CreateEmptyProblem();
-        for(byte col = 0; col < 6; col++)
-            problem.SetValue(0, col, (byte)(col + 1), true);
-        problem.SetValue(3, 6, 9, true);
-        problem.SetValue(6, 7, 9, true);
+        problem.Matrix.SetPredefinedValues = false;
+        try
+        {
+            for(byte col = 0; col < 6; col++)
+                problem.SetValue(0, col, (byte)(col + 1), true);
+            problem.SetValue(3, 6, 9, true);
+            problem.SetValue(6, 7, 9, true);
 
-        var strategy = new HiddenSingleStrategy();
-        var findings = strategy.FindAll(problem.Matrix);
+            var strategy = new HiddenSingleStrategy();
+            var findings = strategy.FindAll(problem.Matrix);
 
-        Assert.IsTrue(findings.Any(f =>
-            f.AffectedCells.Count == 1 &&
-            f.AffectedCells[0].Row == 0 && f.AffectedCells[0].Col == 8),
-            "Erwarteter Hidden Single bei (0,8) wurde nicht gefunden.");
+            Assert.IsTrue(findings.Any(f =>
+                f.AffectedCells.Count == 1 &&
+                f.AffectedCells[0].Row == 0 && f.AffectedCells[0].Col == 8),
+                "Erwarteter Hidden Single bei (0,8) wurde nicht gefunden.");
+        }
+        finally
+        {
+            problem.Matrix.SetPredefinedValues = true;
+        }
     }
 
     // --- Naked Pair ---
@@ -46,22 +54,30 @@ public class SolvingStrategyTests
     public void NakedPairStrategy_FindsPairAndEliminatesFromRemainingCell()
     {
         var problem = CreateEmptyProblem();
-        for(byte col = 0; col < 6; col++)
-            problem.SetValue(0, col, (byte)(col + 1), true);
-        problem.SetValue(3, 6, 9, true);
-        problem.SetValue(6, 7, 9, true);
+        problem.Matrix.SetPredefinedValues = false;
+        try
+        {
+            for(byte col = 0; col < 6; col++)
+                problem.SetValue(0, col, (byte)(col + 1), true);
+            problem.SetValue(3, 6, 9, true);
+            problem.SetValue(6, 7, 9, true);
 
-        var strategy = new NakedPairStrategy();
-        var findings = strategy.FindAll(problem.Matrix);
+            var strategy = new NakedPairStrategy();
+            var findings = strategy.FindAll(problem.Matrix);
 
-        var rowFinding = findings.FirstOrDefault(f =>
-            f.KeyCells.Count == 2 &&
-            f.KeyCells.Any(c => c.Row == 0 && c.Col == 6) &&
-            f.KeyCells.Any(c => c.Row == 0 && c.Col == 7));
+            var rowFinding = findings.FirstOrDefault(f =>
+                f.KeyCells.Count == 2 &&
+                f.KeyCells.Any(c => c.Row == 0 && c.Col == 6) &&
+                f.KeyCells.Any(c => c.Row == 0 && c.Col == 7));
 
-        Assert.IsNotNull(rowFinding, "Erwartetes Naked Pair (0,6)/(0,7) wurde nicht gefunden.");
-        Assert.IsTrue(rowFinding!.AffectedCells.Any(c => c.Row == 0 && c.Col == 8),
-            "(0,8) hätte als betroffene Zelle erkannt werden müssen.");
+            Assert.IsNotNull(rowFinding, "Erwartetes Naked Pair (0,6)/(0,7) wurde nicht gefunden.");
+            Assert.IsTrue(rowFinding!.AffectedCells.Any(c => c.Row == 0 && c.Col == 8),
+                "(0,8) hätte als betroffene Zelle erkannt werden müssen.");
+        }
+        finally
+        {
+            problem.Matrix.SetPredefinedValues = true;
+        }
     }
 
     // --- Pointing Pair ---
@@ -72,21 +88,29 @@ public class SolvingStrategyTests
     public void PointingPairStrategy_FindsCandidateConfinedToSingleRowInBox()
     {
         var problem = CreateEmptyProblem();
-        problem.SetValue(0, 0, 1, true);
-        problem.SetValue(0, 1, 2, true);
-        problem.SetValue(0, 2, 3, true);
-        problem.SetValue(2, 0, 4, true);
-        problem.SetValue(2, 1, 6, true);
-        problem.SetValue(2, 2, 7, true);
+        problem.Matrix.SetPredefinedValues = false;
+        try
+        {
+            problem.SetValue(0, 0, 1, true);
+            problem.SetValue(0, 1, 2, true);
+            problem.SetValue(0, 2, 3, true);
+            problem.SetValue(2, 0, 4, true);
+            problem.SetValue(2, 1, 6, true);
+            problem.SetValue(2, 2, 7, true);
 
-        var strategy = new PointingPairStrategy();
-        var findings = strategy.FindAll(problem.Matrix);
+            var strategy = new PointingPairStrategy();
+            var findings = strategy.FindAll(problem.Matrix);
 
-        var finding = findings.FirstOrDefault(f =>
-            f.KeyCells.All(c => c.Row == 1 && c.Col <= 2) &&
-            f.AffectedCells.Any(c => c.Row == 1 && c.Col == 5));
+            var finding = findings.FirstOrDefault(f =>
+                f.KeyCells.All(c => c.Row == 1 && c.Col <= 2) &&
+                f.AffectedCells.Any(c => c.Row == 1 && c.Col == 5));
 
-        Assert.IsNotNull(finding, "Erwartetes Pointing Pair in Zeile 1 (Block oben-links) wurde nicht gefunden.");
+            Assert.IsNotNull(finding, "Erwartetes Pointing Pair in Zeile 1 (Block oben-links) wurde nicht gefunden.");
+        }
+        finally
+        {
+            problem.Matrix.SetPredefinedValues = true;
+        }
     }
 
     // --- X-Wing ---
@@ -97,22 +121,30 @@ public class SolvingStrategyTests
     public void XWingStrategy_FindsRectanglePatternAcrossTwoRows()
     {
         var problem = CreateEmptyProblem();
-        SetRow(problem, row: 0, freeColumns: new[] { 2, 6 }, fillerValues: new byte[] { 1, 2, 3, 5, 6, 7, 8 });
-        SetRow(problem, row: 3, freeColumns: new[] { 2, 6 }, fillerValues: new byte[] { 2, 3, 5, 6, 7, 8, 1 });
+        try
+        {
+            problem.Matrix.SetPredefinedValues = false;
+            SetRow(problem, row: 0, freeColumns: new[] { 2, 6 }, fillerValues: new byte[] { 1, 2, 3, 5, 6, 7, 8 });
+            SetRow(problem, row: 3, freeColumns: new[] { 2, 6 }, fillerValues: new byte[] { 2, 3, 5, 6, 7, 8, 1 });
 
-        var strategy = new XWingStrategy();
-        var findings = strategy.FindAll(problem.Matrix);
+            var strategy = new XWingStrategy();
+            var findings = strategy.FindAll(problem.Matrix);
 
-        var finding = findings.FirstOrDefault(f =>
-            f.KeyCells.Count == 4 &&
-            f.KeyCells.Any(c => c.Row == 0 && c.Col == 2) &&
-            f.KeyCells.Any(c => c.Row == 0 && c.Col == 6) &&
-            f.KeyCells.Any(c => c.Row == 3 && c.Col == 2) &&
-            f.KeyCells.Any(c => c.Row == 3 && c.Col == 6));
+            var finding = findings.FirstOrDefault(f =>
+                f.KeyCells.Count == 4 &&
+                f.KeyCells.Any(c => c.Row == 0 && c.Col == 2) &&
+                f.KeyCells.Any(c => c.Row == 0 && c.Col == 6) &&
+                f.KeyCells.Any(c => c.Row == 3 && c.Col == 2) &&
+                f.KeyCells.Any(c => c.Row == 3 && c.Col == 6));
 
-        Assert.IsNotNull(finding, "Erwartetes X-Wing-Muster über Zeile 0/3, Spalte 2/6 wurde nicht gefunden.");
-        Assert.IsTrue(finding!.AffectedCells.Any(c => c.Row == 5 && c.Col == 2),
-            "(5,2) hätte als betroffene Zelle erkannt werden müssen.");
+            Assert.IsNotNull(finding, "Erwartetes X-Wing-Muster über Zeile 0/3, Spalte 2/6 wurde nicht gefunden.");
+            Assert.IsTrue(finding!.AffectedCells.Any(c => c.Row == 5 && c.Col == 2),
+                "(5,2) hätte als betroffene Zelle erkannt werden müssen.");
+        }
+        finally
+        {
+            problem.Matrix.SetPredefinedValues = true;
+        }
     }
 
     // --- Swordfish ---
@@ -123,20 +155,28 @@ public class SolvingStrategyTests
     public void SwordfishStrategy_FindsRectanglePatternAcrossThreeRows()
     {
         var problem = CreateEmptyProblem();
-        SetRow(problem, row: 0, freeColumns: new[] { 2, 5, 8 }, fillerValues: new byte[] { 1, 2, 3, 5, 6, 7 });
-        SetRow(problem, row: 3, freeColumns: new[] { 2, 5, 8 }, fillerValues: new byte[] { 2, 3, 5, 6, 7, 1 });
-        SetRow(problem, row: 6, freeColumns: new[] { 2, 5, 8 }, fillerValues: new byte[] { 3, 5, 6, 7, 1, 2 });
+        problem.Matrix.SetPredefinedValues = false;
+        try
+        {
+            SetRow(problem, row: 0, freeColumns: new[] { 2, 5, 8 }, fillerValues: new byte[] { 1, 2, 3, 5, 6, 7 });
+            SetRow(problem, row: 3, freeColumns: new[] { 2, 5, 8 }, fillerValues: new byte[] { 2, 3, 5, 6, 7, 1 });
+            SetRow(problem, row: 6, freeColumns: new[] { 2, 5, 8 }, fillerValues: new byte[] { 3, 5, 6, 7, 1, 2 });
 
-        var strategy = new SwordfishStrategy();
-        var findings = strategy.FindAll(problem.Matrix);
+            var strategy = new SwordfishStrategy();
+            var findings = strategy.FindAll(problem.Matrix);
 
-        var finding = findings.FirstOrDefault(f =>
-            f.KeyCells.Count == 9 &&
-            new[] { 0, 3, 6 }.All(r => f.KeyCells.Any(c => c.Row == r)));
+            var finding = findings.FirstOrDefault(f =>
+                f.KeyCells.Count == 9 &&
+                new[] { 0, 3, 6 }.All(r => f.KeyCells.Any(c => c.Row == r)));
 
-        Assert.IsNotNull(finding, "Erwartetes Swordfish-Muster über Zeile 0/3/6 wurde nicht gefunden.");
-        Assert.IsTrue(finding!.AffectedCells.Any(c => c.Row == 4 && c.Col == 5),
-            "(4,5) hätte als betroffene Zelle erkannt werden müssen.");
+            Assert.IsNotNull(finding, "Erwartetes Swordfish-Muster über Zeile 0/3/6 wurde nicht gefunden.");
+            Assert.IsTrue(finding!.AffectedCells.Any(c => c.Row == 4 && c.Col == 5),
+                "(4,5) hätte als betroffene Zelle erkannt werden müssen.");
+        }
+        finally
+        {
+            problem.Matrix.SetPredefinedValues = true;
+        }
     }
 
     /// <summary>
