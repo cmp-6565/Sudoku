@@ -38,7 +38,8 @@ internal class SudokuController: IDisposable
     private readonly IPrintServiceFactory printServiceFactory;
     private IPrintService printerService;
     private readonly HintExplainer hintExplainer = new();
-    
+    private BaseMatrix? matrixBeforeLastHintSearch;
+
     // Events
     /// <summary>
     /// Raised when the sudoku matrix has changed and consumers should refresh their view.
@@ -537,6 +538,7 @@ internal class SudokuController: IDisposable
     /// </summary>
     public List<BaseCell> GetHints()
     {
+        matrixBeforeLastHintSearch = CurrentProblem.Matrix.Clone();
         List<BaseCell> values = CurrentProblem.GetObviousCells();
         if(values.Count == 0)
             values = CurrentProblem.GetHints();
@@ -560,8 +562,22 @@ internal class SudokuController: IDisposable
     /// </summary>
     public IReadOnlyDictionary<BaseCell, StrategyFinding> ExplainHints(List<BaseCell> hints)
     {
-        var needsExplanation = hints.Where(c => c.nPossibleValues != 1);
-        return hintExplainer.ExplainCells(CurrentProblem.Matrix, needsExplanation);
+        if(matrixBeforeLastHintSearch == null)
+            return new Dictionary<BaseCell, StrategyFinding>();
+
+        // "Orange" = Zellen, die VOR der Tiefensuche mehr als einen Kandidaten hatten
+        // (auf dem sauberen Snapshot geprüft, nicht auf der inzwischen mutierten Live-Matrix!).
+        var positionsNeedingExplanation = hints
+            .Select(c => (c.Row, c.Col))
+            .Where(pos => matrixBeforeLastHintSearch.Cell(pos.Row, pos.Col).nPossibleValues != 1);
+
+        var findingsByPosition = hintExplainer.ExplainPositions(matrixBeforeLastHintSearch, positionsNeedingExplanation);
+
+        var result = new Dictionary<BaseCell, StrategyFinding>();
+        foreach(var (pos, finding) in findingsByPosition)
+            result[CurrentProblem.Matrix.Cell(pos.Row, pos.Col)] = finding;   // zurück auf Live-Zellen mappen
+
+        return result;
     }
     /// <summary>
     /// Generates the base puzzle either by loading a precalculated problem or by constructing one incrementally.

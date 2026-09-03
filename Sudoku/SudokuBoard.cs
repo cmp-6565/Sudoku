@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Sudoku.Core;
+using Sudoku.Core.Solving;
 using Sudoku.Application;
 
 namespace Sudoku;
@@ -24,6 +25,7 @@ internal class SudokuBoard : DataGridView, IDisposable
     private SudokuController controller = default!;
     private bool debugMode = false;
     private bool mouseWheelEditing = false;
+    private Dictionary<BaseCell, StrategyFinding>? currentHintExplanations;
 
     /// <summary>
     /// Gets a value indicating whether the board currently matches the underlying puzzle state.
@@ -54,6 +56,12 @@ internal class SudokuBoard : DataGridView, IDisposable
     /// Occurs when the status text displayed by the UI should be updated.
     /// </summary>
     public event EventHandler<string>? StatusTextChanged;
+
+    /// <summary>
+    /// Wird ausgelöst, wenn die Maus über eine Zelle mit Strategie-Erklärung bewegt wird
+    /// (Erklärungstext) bzw. die Zelle wieder verlässt (null).
+    /// </summary>
+    public event EventHandler<string?>? HintExplanationHover;
 
     private ContextMenuStrip? cellContextMenu;
     private Color highlightColor = Color.Cyan;
@@ -536,6 +544,8 @@ internal class SudokuBoard : DataGridView, IDisposable
     /// <param name="values">The matrix to render, or null to use the current controller state.</param>
     public void DisplayValues(Values? values = null)
     {
+        currentHintExplanations = null; 
+        
         if (values == null)
         {
             values = Controller?.CurrentProblem?.Matrix;
@@ -590,6 +600,8 @@ internal class SudokuBoard : DataGridView, IDisposable
     /// <returns><c>true</c> if the current grid is valid; otherwise, <c>false</c>.</returns>
     public bool SyncProblemWithGUI(bool silent, bool autocheck)
     {
+        currentHintExplanations = null; 
+        
         EndEdit();
         mouseWheelEditing = false;
 
@@ -1086,9 +1098,12 @@ internal class SudokuBoard : DataGridView, IDisposable
     /// Animates the hint cells in the currently selected set.
     /// </summary>
     /// <param name="hints">The hints to visualize.</param>
-    public async Task VisualizeHints(List<BaseCell> hints)
+    /// <param name="explanations">The explanations for the hints.</param>
+    public async Task VisualizeHints(List<BaseCell> hints, IReadOnlyDictionary<BaseCell, StrategyFinding>? explanations = null)
     {
+        currentHintExplanations = explanations != null? new Dictionary<BaseCell, StrategyFinding>(explanations): null; 
         var selectedPositions = new List<Point>();
+
         foreach (DataGridViewCell cell in SelectedCells)
             selectedPositions.Add(new Point(cell.ColumnIndex, cell.RowIndex));
 
@@ -1104,4 +1119,33 @@ internal class SudokuBoard : DataGridView, IDisposable
 
         Update();
     }
+    /// <summary>
+    /// Meldet die Strategie-Erklärung für die Zelle unter dem Mauszeiger, falls vorhanden.
+    /// </summary>
+    protected override void OnCellMouseEnter(DataGridViewCellEventArgs e)
+    {
+        base.OnCellMouseEnter(e);
+
+        if(currentHintExplanations == null || e.RowIndex < 0 || e.ColumnIndex < 0) return;
+
+        BaseCell cell = controller.CurrentProblem.Matrix.Cell(e.RowIndex, e.ColumnIndex);
+        if(currentHintExplanations.TryGetValue(cell, out StrategyFinding? finding))
+            HintExplanationHover?.Invoke(this, $"{finding.StrategyName}: {finding.Description}");
+    }
+
+    /// <summary>
+    /// Setzt die Statusleiste zurück, sobald die Maus eine erklärte Hint-Zelle verlässt.
+    /// </summary>
+    protected override void OnCellMouseLeave(DataGridViewCellEventArgs e)
+    {
+        base.OnCellMouseLeave(e);
+
+        if(currentHintExplanations != null)
+            HintExplanationHover?.Invoke(this, null);
+    }
+
+    /// <summary>
+    /// Löscht gespeicherte Hint-Erklärungen, z. B. wenn sich das Puzzle ändert oder ein neues geladen wird.
+    /// </summary>
+    public void ClearHintExplanations() => currentHintExplanations = null;
 }

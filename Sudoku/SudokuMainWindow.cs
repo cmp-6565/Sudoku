@@ -9,8 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using Sudoku.Core;
 using Sudoku.Application;
+using Sudoku.Core;
+using Sudoku.Core.Solving;
 
 namespace Sudoku;
 #nullable enable
@@ -107,6 +108,8 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
     /// </summary>
     private Progress<MinimizationUpdate>? minimizationProgress;
 
+    private string? statusTextBeforeHintHover;
+
     /// <summary>
     /// Parameterless constructor kept for Windows Forms designer compatibility.
     /// Creates a SudokuForm with default settings and no controller factory specified.
@@ -137,6 +140,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
 
         sudokuMenu.Renderer = new FlatRenderer();
 
+        SudokuGrid.HintExplanationHover += OnHintExplanationHover;
         traceMode.Checked = settings.TraceMode;
         autoCheck.Checked = settings.AutoCheck;
         showPossibleValues.Checked = settings.ShowHints;
@@ -235,6 +239,23 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         });
     }
 
+    /// <summary>
+    /// Zeigt die Strategie-Erklärung für die aktuell mit der Maus überfahrene Hint-Zelle in der
+    /// Statusleiste an bzw. stellt den vorherigen Statustext wieder her, sobald die Zelle verlassen wird.
+    /// </summary>
+    private void OnHintExplanationHover(object? sender, string? explanation)
+    {
+        if(explanation != null)
+        {
+            statusTextBeforeHintHover ??= status.Text;
+            status.Text = explanation;
+        }
+        else if(statusTextBeforeHintHover != null)
+        {
+            status.Text = statusTextBeforeHintHover;
+            statusTextBeforeHintHover = null;
+        }
+    }
     /// <summary>
     /// Helper method to safely open URLs in .NET Core/.NET 8+.
     /// In .NET 8 UseShellExecute defaults to false, which prevents URLs from opening without this flag.
@@ -380,7 +401,7 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         int height = SudokuGrid.ResizeBoard();
 
         int newClientWidth = SudokuGrid.Location.X + SudokuGrid.Width + SudokuGrid.Location.X;
-        int newClientHeight = height + 140 + (int)(60 * settings.Size * (float)DeviceDpi / 96f);
+        int newClientHeight = height + (int)(60 * settings.Size * (float)DeviceDpi / 96f)+Math.Abs(settings.Size-3)*80;
 
         ClientSize = new Size(newClientWidth, newClientHeight);
 
@@ -601,7 +622,8 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             return;
         }
 
-        await SudokuGrid.VisualizeHints(hints);
+        IReadOnlyDictionary<BaseCell, StrategyFinding> explanations = controller.ExplainHints(hints);
+        await SudokuGrid.VisualizeHints(hints, explanations);
     }
 
     /// <summary>

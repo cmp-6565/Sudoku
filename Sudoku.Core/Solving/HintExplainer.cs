@@ -35,10 +35,10 @@ public sealed class HintExplainer
     /// den Namen der einfachsten Technik, die für diese Zelle aktuell greift.
     /// Zellen, für die keine der bekannten Techniken (noch) etwas findet, fehlen im Ergebnis.
     /// </summary>
-    public IReadOnlyDictionary<BaseCell, StrategyFinding> ExplainCells(BaseMatrix matrix, IEnumerable<BaseCell> cellsNeedingExplanation)
+    public IReadOnlyDictionary<(int Row, int Col), StrategyFinding> ExplainPositions(BaseMatrix matrix, IEnumerable<(int Row, int Col)> positionsNeedingExplanation)
     {
-        var remaining = new HashSet<BaseCell>(cellsNeedingExplanation);
-        var result = new Dictionary<BaseCell, StrategyFinding>();
+        var remaining = new HashSet<(int Row, int Col)>(positionsNeedingExplanation);
+        var result = new Dictionary<(int Row, int Col), StrategyFinding>();
 
         foreach(ISolvingStrategy strategy in strategies)
         {
@@ -48,8 +48,9 @@ public sealed class HintExplainer
             {
                 foreach(BaseCell cell in finding.AffectedCells)
                 {
-                    if(remaining.Remove(cell))
-                        result[cell] = finding;
+                    var pos = (cell.Row, cell.Col);
+                    if(remaining.Remove(pos))
+                        result[pos] = finding;
                 }
             }
         }
