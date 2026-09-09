@@ -5,30 +5,34 @@ using System.Collections.Generic;
 namespace Sudoku.Core.Solving;
 
 /// <summary>
-/// Eine benannte, menschlich nachvollziehbare Lösungstechnik (z. B. "Hidden Single", "X-Wing").
-/// Untersucht den aktuellen Zustand einer <see cref="BaseMatrix"/> rein lesend – verändert nie
-/// selbst Kandidaten oder Werte. Die tatsächliche Anwendung (Kandidaten eliminieren, Wert setzen)
-/// bleibt Aufgabe des Solvers; diese Klassen dienen ausschließlich der Erklärung/Anzeige.
+/// Represents a named, human-readable solving technique such as "Hidden Single" or "X-Wing".
+/// Strategies inspect the current state of a <see cref="BaseMatrix"/> without modifying values or candidate sets.
+/// The actual elimination or assignment work is carried out by the solver, while this interface is intended
+/// for detection and explanatory reporting only.
 /// </summary>
 public interface ISolvingStrategy
 {
-    /// <summary>Anzeigename der Technik, z. B. "Naked Pair".</summary>
+    /// <summary>
+    /// Gets the display name of the technique, for example "Naked Pair".
+    /// </summary>
     string Name { get; }
 
     /// <summary>
-    /// Grober Schwierigkeitsgrad zur Sortierung – niedrigere Werte werden zuerst geprüft,
-    /// damit stets die einfachste anwendbare Erklärung gefunden wird (wie ein Mensch lösen würde).
+    /// Gets a rough difficulty rating used to sort strategies. Lower values are checked first so that the simplest
+    /// applicable explanation is discovered before more advanced patterns are evaluated.
     /// </summary>
     int Difficulty { get; }
 
     /// <summary>
-    /// Findet alle aktuell im Gitter anwendbaren Vorkommen dieser Technik.
+    /// Finds all occurrences of this technique that are currently applicable in the provided matrix.
     /// </summary>
+    /// <param name="matrix">The Sudoku matrix to inspect.</param>
+    /// <returns>A collection of all findings produced by the strategy in the current state.</returns>
     IReadOnlyList<StrategyFinding> FindAll(BaseMatrix matrix);
 }
 
 /// <summary>
-/// Ein einzelner Fund einer Lösungstechnik: die "Schlüsselzellen", die das Muster bilden,
-/// und die Zellen, deren Kandidaten dadurch reduziert werden (bzw. die dadurch lösbar werden).
+/// Represents a single finding produced by a solving strategy. The record stores the pattern-defining cells and the
+/// cells affected by that pattern, along with a textual explanation suitable for hints and UI display.
 /// </summary>
 public sealed record StrategyFinding(string StrategyName, IReadOnlyList<BaseCell> KeyCells, IReadOnlyList<BaseCell> AffectedCells, string Description);

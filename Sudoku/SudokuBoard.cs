@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using Sudoku.Application;
 using Sudoku.Core;
 using Sudoku.Core.Solving;
-using Sudoku.Application;
 
 namespace Sudoku;
 
@@ -206,18 +207,19 @@ internal class SudokuBoard : DataGridView, IDisposable
     /// <param name="e">The event arguments.</param>
     private void OnMatrixChanged(object? s, EventArgs e)
     {
-        if (InvokeRequired)
+        if(InvokeRequired)
         {
             Invoke(new EventHandler(OnMatrixChanged), s, e);
             return;
         }
 
-        if (Controller?.CurrentProblem != null)
+        if(Controller?.CurrentProblem != null)
         {
             DisplayValues(Controller.CurrentProblem.Matrix);
         }
 
         FormatBoard();
+        OnStatusTextChanged(GetCurrentCellStrategyText() ?? string.Empty);
         Refresh();
     }
 
@@ -797,9 +799,12 @@ internal class SudokuBoard : DataGridView, IDisposable
     /// <param name="e">The cell event arguments.</param>
     private void HandleCellLeave(object? sender, DataGridViewCellEventArgs e)
     {
-        if (mouseWheelEditing) HandleCellEndEdit(sender);
+        if(mouseWheelEditing) HandleCellEndEdit(sender);
 
-        if (settings?.MarkNeighbors == true) FormatBoard();
+        if(settings?.MarkNeighbors == true) FormatBoard();
+
+        OnStatusTextChanged(string.Empty);
+        HintExplanationHover?.Invoke(this, null);
     }
 
     /// <summary>
@@ -809,11 +814,46 @@ internal class SudokuBoard : DataGridView, IDisposable
     /// <param name="e">The cell event arguments.</param>
     private void HandleCellEnter(object? sender, DataGridViewCellEventArgs e)
     {
-        if (settings?.HighlightSameValues == true) UpdateHighligts();
-        if (settings?.MarkNeighbors == true) FormatBoard();
+        if(settings?.HighlightSameValues == true) UpdateHighligts();
+        if(settings?.MarkNeighbors == true) FormatBoard();
+
+        var text = GetCurrentCellStrategyText();
+        OnStatusTextChanged(text ?? string.Empty);
+        HintExplanationHover?.Invoke(this, text);
+
         ShowValues();
     }
+    /// <summary>
+    /// Finds the first strategy explanation that matches the currently selected cell.
+    /// </summary>
+    private string? GetCurrentCellStrategyText()
+    {
+        if(Controller?.CurrentProblem == null || CurrentCell == null)
+            return null;
 
+        var cell = Controller.CurrentProblem.Matrix.Cell(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
+        var strategies = new ISolvingStrategy[]
+        {
+        new HiddenSingleStrategy(),
+        new NakedPairStrategy(),
+        new PointingPairStrategy(),
+        new XWingStrategy(),
+        new SwordfishStrategy()
+        };
+
+        foreach(var strategy in strategies)
+        {
+            var finding = strategy.FindAll(Controller.CurrentProblem.Matrix)
+                .FirstOrDefault(f =>
+                    f.KeyCells.Contains(cell) ||
+                    f.AffectedCells.Contains(cell));
+
+            if(finding != null)
+                return $"{strategy.Name}: {finding.Description}";
+        }
+
+        return null;
+    }
     /// <summary>
     /// Applies a visual strike-through to cells that fail validation during testing.
     /// </summary>

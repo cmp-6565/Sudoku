@@ -6,18 +6,32 @@ using System.Linq;
 namespace Sudoku.Core.Solving;
 
 /// <summary>
-/// Gemeinsame Basis für X-Wing (n=2) und Swordfish (n=3): ein Kandidat kommt in n Zeilen jeweils
-/// nur in denselben n Spalten vor (oder umgekehrt) – dann kann er in diesen Spalten außerhalb
-/// der n Zeilen eliminiert werden.
+/// Base class for fish-based solving techniques such as X-Wing and Swordfish.
+/// A fish pattern occurs when a candidate value appears in a fixed number of rows and is restricted to the same
+/// number of columns, or vice versa. If the pattern is complete, the candidate can be eliminated from the
+/// corresponding crossing lines outside the identified fish.
 /// </summary>
 public abstract class FishStrategyBase: ISolvingStrategy
 {
     private readonly int size;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FishStrategyBase"/> class.
+    /// </summary>
+    /// <param name="size">The fish size to detect, for example 2 for X-Wing or 3 for Swordfish.</param>
     protected FishStrategyBase(int size) => this.size = size;
 
+    /// <inheritdoc />
     public abstract string Name { get; }
+
+    /// <inheritdoc />
     public abstract int Difficulty { get; }
 
+    /// <summary>
+    /// Searches the matrix for fish patterns for every candidate value.
+    /// </summary>
+    /// <param name="matrix">The Sudoku matrix to analyze.</param>
+    /// <returns>All fish findings discovered in the current position.</returns>
     public IReadOnlyList<StrategyFinding> FindAll(BaseMatrix matrix)
     {
         var findings = new List<StrategyFinding>();
@@ -29,9 +43,16 @@ public abstract class FishStrategyBase: ISolvingStrategy
         return findings;
     }
 
+    /// <summary>
+    /// Checks one board orientation for a fish pattern involving a specific candidate value.
+    /// </summary>
+    /// <param name="baseLines">The primary lines used for the pattern, such as rows or columns.</param>
+    /// <param name="coverLines">The crossing lines that must be validated against the pattern.</param>
+    /// <param name="value">The candidate value to analyze.</param>
+    /// <param name="rowsAreBase">True when the primary axis is rows; otherwise it is columns.</param>
+    /// <param name="findings">The collection of findings to append to.</param>
     private void FindOrientation(BaseCell[][] baseLines, BaseCell[][] coverLines, int value, bool rowsAreBase, List<StrategyFinding> findings)
     {
-        // Zeilen (bzw. Spalten), in denen der Kandidat 2..size mal vorkommt
         var candidateLines = new List<(int lineIndex, int[] crossIndices)>();
 
         for(int i = 0; i < SudokuGrid.SudokuSize; i++)
@@ -65,11 +86,25 @@ public abstract class FishStrategyBase: ISolvingStrategy
             if(affected.Length == 0) continue;
 
             findings.Add(new StrategyFinding(
-                Name, keyCells, affected,
-                $"Kandidat {value} bildet ein {Name}-Muster über {size} {(rowsAreBase ? "Zeilen" : "Spalten")} – kann in den zugehörigen {(rowsAreBase ? "Spalten" : "Zeilen")} sonst entfernt werden."));
+                Name,
+                keyCells,
+                affected,
+                StrategyFindingResourceProvider.GetFishDescription(
+                    value,
+                    Name,
+                    size,
+                    rowsAreBase ? "rows" : "columns",
+                    rowsAreBase ? "columns" : "rows")));
         }
     }
 
+    /// <summary>
+    /// Enumerates all combinations of the given size from the supplied list.
+    /// </summary>
+    /// <typeparam name="T">The element type.</typeparam>
+    /// <param name="items">The source collection to combine.</param>
+    /// <param name="size">The size of each combination.</param>
+    /// <returns>All combinations of the requested size.</returns>
     private static IEnumerable<T[]> Combinations<T>(List<T> items, int size)
     {
         if(size == 0) { yield return System.Array.Empty<T>(); yield break; }

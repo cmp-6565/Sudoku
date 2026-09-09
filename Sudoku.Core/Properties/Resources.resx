@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="HiddenSingleDescription" xml:space="preserve">
+    <value>In this {0}, only this cell can take the value {1}.</value>
+  </data>
+
+  <data name="NakedSubsetDescription" xml:space="preserve">
+    <value>The cells {0} share exactly the candidates {1}. These candidates can be removed from the remaining cells in the unit.</value>
+  </data>
+
+  <data name="FishDescription" xml:space="preserve">
+    <value>Candidate {0} forms a {1} pattern across {2} {3} and can therefore be removed from the related {4} outside the pattern.</value>
+  </data>
+
+  <data name="PointingPairDescription" xml:space="preserve">
+    <value>Candidate {0} appears only in this row/column within this block and can therefore be removed outside the block in that row/column.</value>
+  </data>
+</root>

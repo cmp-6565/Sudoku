@@ -6,7 +6,9 @@ using System.Linq;
 namespace Sudoku.Core.Solving;
 
 /// <summary>
-/// Detects pointing-pair patterns where a candidate value appears in only one row or column within a block.
+/// Detects a pointing-pair pattern where a candidate value appears in only one row or column within a box.
+/// When such a pattern exists, the candidate can be eliminated from the remaining cells in that row or column
+/// outside the current box.
 /// </summary>
 public sealed class PointingPairStrategy: ISolvingStrategy
 {
@@ -17,10 +19,10 @@ public sealed class PointingPairStrategy: ISolvingStrategy
     public int Difficulty => 4;
 
     /// <summary>
-    /// Searches every block for candidate values confined to a single row or column.
+    /// Scans each 3x3 block for candidate values restricted to a single row or column.
     /// </summary>
     /// <param name="matrix">The Sudoku matrix to analyze.</param>
-    /// <returns>All pointing-pair findings found in the matrix.</returns>
+    /// <returns>All pointing-pair findings found in the current board state.</returns>
     public IReadOnlyList<StrategyFinding> FindAll(BaseMatrix matrix)
     {
         var findings = new List<StrategyFinding>();
@@ -49,12 +51,12 @@ public sealed class PointingPairStrategy: ISolvingStrategy
     }
 
     /// <summary>
-    /// Adds a finding if a candidate in a block is restricted to a single row or column.
+    /// Adds a finding when the candidate in the block is confined to a single row or column.
     /// </summary>
     /// <param name="line">The row or column to inspect.</param>
-    /// <param name="keyCells">The cells in the block that carry the candidate.</param>
-    /// <param name="value">The candidate value to analyze.</param>
-    /// <param name="findings">The findings collection to update.</param>
+    /// <param name="keyCells">The cells in the block carrying the candidate.</param>
+    /// <param name="value">The candidate value under analysis.</param>
+    /// <param name="findings">The collection to append the finding to.</param>
     private void TryAdd(BaseCell[] line, BaseCell[] keyCells, int value, List<StrategyFinding> findings)
     {
         var affected = line
@@ -67,6 +69,6 @@ public sealed class PointingPairStrategy: ISolvingStrategy
             Name,
             keyCells,
             affected,
-            $"Candidate {value} appears only in this row/column within this block and can therefore be removed outside the block in that row/column."));
+            StrategyFindingResourceProvider.GetPointingPairDescription(value)));
     }
 }

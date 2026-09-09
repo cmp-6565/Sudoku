@@ -5,8 +5,10 @@ using System.Collections.Generic;
 namespace Sudoku.Core.Solving;
 
 /// <summary>
-/// Identifies hidden singles in each unit of the puzzle.
-/// A hidden single is a value that appears as the only possible candidate in a row, column, or box.
+/// Detects hidden singles in rows, columns, and boxes.
+/// A hidden single is a candidate value that appears exactly once in a unit, even if it is not the only
+/// candidate in its own cell. This pattern means the value is forced in that cell and can be used as a
+/// valid solving hint or explanation.
 /// </summary>
 public sealed class HiddenSingleStrategy: ISolvingStrategy
 {
@@ -17,10 +19,10 @@ public sealed class HiddenSingleStrategy: ISolvingStrategy
     public int Difficulty => 1;
 
     /// <summary>
-    /// Searches all rows, columns, and blocks for hidden single candidates.
+    /// Scans every row, column, and box for hidden single candidates.
     /// </summary>
     /// <param name="matrix">The Sudoku matrix to analyze.</param>
-    /// <returns>A list of findings describing every hidden single found.</returns>
+    /// <returns>All hidden-single findings found in the current board state.</returns>
     public IReadOnlyList<StrategyFinding> FindAll(BaseMatrix matrix)
     {
         var findings = new List<StrategyFinding>();
@@ -34,11 +36,11 @@ public sealed class HiddenSingleStrategy: ISolvingStrategy
     }
 
     /// <summary>
-    /// Checks a single unit for a hidden single candidate.
+    /// Checks a single unit for a hidden single.
     /// </summary>
-    /// <param name="unit">The unit to inspect.</param>
-    /// <param name="unitLabel">The unit label used for the description text.</param>
-    /// <param name="findings">The collection of findings to append to.</param>
+    /// <param name="unit">The row, column, or block to inspect.</param>
+    /// <param name="unitLabel">The unit type used in the explanation text.</param>
+    /// <param name="findings">The collection to append matching findings to.</param>
     private void FindInUnit(BaseCell[] unit, string unitLabel, List<StrategyFinding> findings)
     {
         for(int value = 1; value <= SudokuGrid.SudokuSize; value++)
@@ -61,7 +63,7 @@ public sealed class HiddenSingleStrategy: ISolvingStrategy
                     Name,
                     KeyCells: new[] { only },
                     AffectedCells: new[] { only },
-                    Description: $"In this {unitLabel}, only this cell can take the value {value}."));
+                    Description: StrategyFindingResourceProvider.GetHiddenSingleDescription(unitLabel, value)));
             }
         }
     }

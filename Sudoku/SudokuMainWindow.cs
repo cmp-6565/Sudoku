@@ -166,6 +166,8 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
         ResetUndo();
         ResetTexts();
 
+        SudokuGrid.StatusTextChanged += (_, text) => status.Text = text;
+
         CheckVersion();
         string[] args = Environment.GetCommandLineArgs();
         if(args.Length > 1)

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="HiddenSingleDescription" xml:space="preserve">
+    <value>In dieser {0} kann nur diese Zelle den Wert {1} annehmen.</value>
+  </data>
+
+  <data name="NakedSubsetDescription" xml:space="preserve">
+    <value>Die Zellen {0} teilen genau die Kandidaten {1}. Diese Kandidaten können aus den übrigen Zellen der Einheit entfernt werden.</value>
+  </data>
+
+  <data name="FishDescription" xml:space="preserve">
+    <value>Kandidat {0} bildet ein {1}-Muster über {2} {3} und kann deshalb in den zugehörigen {4} außerhalb des Musters entfernt werden.</value>
+  </data>
+
+  <data name="PointingPairDescription" xml:space="preserve">
+    <value>Kandidat {0} erscheint innerhalb dieses Blocks nur in dieser Zeile/Spalte und kann daher außerhalb des Blocks in dieser Zeile/Spalte entfernt werden.</value>
+  </data>
+</root>

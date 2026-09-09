@@ -6,9 +6,9 @@ using System.Linq;
 namespace Sudoku.Core.Solving;
 
 /// <summary>
-/// Common base class for naked pair and naked triple solving strategies.
-/// If n cells in a unit jointly contain exactly n candidate values, those values can be eliminated
-/// from the remaining cells in the same unit.
+/// Shared base class for naked-pair and naked-triple solving strategies.
+/// If n cells in the same unit collectively contain exactly n candidate values, then those values are
+/// restricted to the subset and may be eliminated from the other cells in the unit.
 /// </summary>
 public abstract class NakedSubsetStrategyBase: ISolvingStrategy
 {
@@ -27,7 +27,7 @@ public abstract class NakedSubsetStrategyBase: ISolvingStrategy
     public abstract int Difficulty { get; }
 
     /// <summary>
-    /// Searches all units for naked subset patterns.
+    /// Searches all rows, columns, and boxes for naked subset patterns.
     /// </summary>
     /// <param name="matrix">The matrix to analyze.</param>
     /// <returns>A list of findings with all identified naked subsets.</returns>
@@ -75,24 +75,26 @@ public abstract class NakedSubsetStrategyBase: ISolvingStrategy
                 Name,
                 KeyCells: combo,
                 AffectedCells: affected,
-                Description: $"The cells {CellList(combo)} share exactly the candidates {string.Join(",", unionOfValues.OrderBy(v => v))}; these candidates can be removed from the remaining cells in the unit."));
+                Description: StrategyFindingResourceProvider.GetNakedSubsetDescription(
+                    CellList(combo),
+                    string.Join(",", unionOfValues.OrderBy(v => v)))));
         }
     }
 
     /// <summary>
-    /// Formats a set of cells as a readable coordinate list.
+    /// Formats a set of cells as a readable list of coordinates.
     /// </summary>
     /// <param name="cells">The cells to format.</param>
-    /// <returns>A formatted list of coordinates in row/column format.</returns>
+    /// <returns>A comma-separated coordinate list in row/column form.</returns>
     private static string CellList(IEnumerable<BaseCell> cells) =>
         string.Join(", ", cells.Select(c => $"({c.Row + 1},{c.Col + 1})"));
 
     /// <summary>
-    /// Enumerates all combinations of the specified size from the given cell collection.
+    /// Enumerates all combinations of the specified size from the supplied cell collection.
     /// </summary>
     /// <param name="items">The items to combine.</param>
     /// <param name="size">The subset size.</param>
-    /// <returns>All combinations of the specified size.</returns>
+    /// <returns>All combinations of the given size.</returns>
     private static IEnumerable<BaseCell[]> Combinations(BaseCell[] items, int size)
     {
         if(size == 0) { yield return System.Array.Empty<BaseCell>(); yield break; }
