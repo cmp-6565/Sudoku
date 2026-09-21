@@ -248,6 +248,11 @@ namespace Sudoku
             // 
             resources.ApplyResources(status, "status");
             status.Name = "status";
+            status.AutoSize = false;
+            status.Dock = System.Windows.Forms.DockStyle.Fill;
+            status.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom
+                         | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            status.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // next
             // 

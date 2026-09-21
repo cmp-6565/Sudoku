@@ -1,5 +1,4 @@
-﻿// Sudoku.Core/Solving/HintExplainer.cs
-#nullable enable
+﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 

@@ -3,6 +3,8 @@
     <TargetFramework>net8.0-windows8.0</TargetFramework>
     <DefaultItemExcludes>$(DefaultItemExcludes);BenchmarkSuite1\**</DefaultItemExcludes>
     <OutputType>WinExe</OutputType>
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>    
     <GenerateManifests>true</GenerateManifests>
     <GenerateTrustInfo>false</GenerateTrustInfo>
     <SignManifests>false</SignManifests>

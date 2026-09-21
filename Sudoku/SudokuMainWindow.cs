@@ -240,19 +240,30 @@ public partial class SudokuForm: Form, IUserInteraction, IDisposable
             }
         });
     }
+    protected override void OnResize(EventArgs e)
+    {
+        base.OnResize(e);
 
+        if(status != null)
+        {
+            status.MaximumSize = new Size(ClientSize.Width - 30, 0);
+            status.Width = ClientSize.Width - 30;
+        }
+    }
     /// <summary>
-    /// Zeigt die Strategie-Erklärung für die aktuell mit der Maus überfahrene Hint-Zelle in der
-    /// Statusleiste an bzw. stellt den vorherigen Statustext wieder her, sobald die Zelle verlassen wird.
+    /// Displays the strategy explanation for the currently hovered hint cell in the status bar
+    /// and restores the previous status text once the cell is left.
     /// </summary>
     private void OnHintExplanationHover(object? sender, string? explanation)
     {
-        if(explanation != null)
+        if(!string.IsNullOrWhiteSpace(explanation))
         {
             statusTextBeforeHintHover ??= status.Text;
             status.Text = explanation;
+            return;
         }
-        else if(statusTextBeforeHintHover != null)
+
+        if(statusTextBeforeHintHover != null)
         {
             status.Text = statusTextBeforeHintHover;
             statusTextBeforeHintHover = null;

@@ -814,12 +814,24 @@ internal class SudokuBoard : DataGridView, IDisposable
     /// <param name="e">The cell event arguments.</param>
     private void HandleCellEnter(object? sender, DataGridViewCellEventArgs e)
     {
-        if(settings?.HighlightSameValues == true) UpdateHighligts();
-        if(settings?.MarkNeighbors == true) FormatBoard();
+        if(settings?.HighlightSameValues == true)
+            UpdateHighligts();
 
-        var text = GetCurrentCellStrategyText();
-        OnStatusTextChanged(text ?? string.Empty);
-        HintExplanationHover?.Invoke(this, text);
+        if(settings?.MarkNeighbors == true)
+            FormatBoard();
+
+        var explanation = GetCurrentCellStrategyText();
+
+        if(!string.IsNullOrWhiteSpace(explanation))
+        {
+            OnStatusTextChanged(explanation);
+            HintExplanationHover?.Invoke(this, explanation);
+        }
+        else
+        {
+            OnStatusTextChanged(string.Empty);
+            HintExplanationHover?.Invoke(this, null);
+        }
 
         ShowValues();
     }
@@ -832,24 +844,27 @@ internal class SudokuBoard : DataGridView, IDisposable
             return null;
 
         var cell = Controller.CurrentProblem.Matrix.Cell(CurrentCell.RowIndex, CurrentCell.ColumnIndex);
-        var strategies = new ISolvingStrategy[]
-        {
-        new HiddenSingleStrategy(),
-        new NakedPairStrategy(),
-        new PointingPairStrategy(),
-        new XWingStrategy(),
-        new SwordfishStrategy()
-        };
+
+        var strategies = typeof(ISolvingStrategy)
+            .Assembly
+            .GetTypes()
+            .Where(type => !type.IsAbstract
+                && !type.IsInterface
+                && typeof(ISolvingStrategy).IsAssignableFrom(type))
+            .Select(type => Activator.CreateInstance(type) as ISolvingStrategy)
+            .Where(strategy => strategy != null)
+            .OrderBy(strategy => strategy!.Difficulty)
+            .ToArray();
 
         foreach(var strategy in strategies)
         {
-            var finding = strategy.FindAll(Controller.CurrentProblem.Matrix)
+            var finding = strategy!.FindAll(Controller.CurrentProblem.Matrix)
                 .FirstOrDefault(f =>
                     f.KeyCells.Contains(cell) ||
                     f.AffectedCells.Contains(cell));
 
             if(finding != null)
-                return $"{strategy.Name}: {finding.Description}";
+                return $"{finding.StrategyName}: {finding.Description}";
         }
 
         return null;
